@@ -1,0 +1,41 @@
+Package: magclass
+Type: Package
+Title: Data Class and Tools for Handling Spatial-Temporal Data
+Version: 4.39
+Date: 2017-05-23
+Author: Jan Philipp Dietrich,
+    Benjamin Bodirsky,
+    Misko Stevanovic,
+    Lavinia Baumstark,
+    Christoph Bertram,
+    Markus Bonsch,
+    Anastasis Giannousakis,
+    Florian Humpenoeder,
+    David Klein,
+    Ina Neher,
+    Michaja Pehl,
+    Anselm Schultes,
+	Xiaoxi Wang
+Maintainer: Jan Philipp Dietrich <dietrich@pik-potsdam.de>
+Description: Data class for increased interoperability working with spatial-
+    temporal data together with corresponding functions and methods (conversions,
+    basic calculations and basic data manipulation). The class distinguishes
+    between spatial, temporal and other dimensions to facilitate the development
+    and interoperability of tools build for it. Additional features are name-based
+    addressing of data and internal consistency checks (e.g. checking for the right
+    data order in calculations).
+Depends:
+    R(>= 2.10.0),
+    methods
+Imports:
+    sp,
+    maptools,
+    abind,
+    ncdf4,
+    reshape2
+Suggests:
+	testthat
+License: LGPL-3 | file LICENSE
+LazyData: no
+RoxygenNote: 6.0.1
+Suggests: testthat
