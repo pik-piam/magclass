@@ -54,6 +54,13 @@ write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=
       dimnames(x)[[1]] <- sub("^GLO(\\.{0,1}[0-9]*)$","World\\1",dimnames(x)[[1]])
       dimnames(x)[[2]] <- substring(dimnames(x)[[2]],2)
       
+      # check for duplicates and possibly remove duplicates
+      d <- duplicated(getNames(x))
+      if(any(d)) {
+        warning("Data contains duplicate entries, only first found entries will be written to file!")
+        x <- x[,,which(!d)]
+      }
+      
       # convert to data frame
       x <- dcast(melt(x,as.is=TRUE,na.rm = skipempty),eval(parse(text=paste0("...~",names(dimnames(x))[2]))))
       
