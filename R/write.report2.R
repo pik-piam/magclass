@@ -57,7 +57,7 @@ write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=
       # check for duplicates and possibly remove duplicates
       d <- duplicated(getNames(x))
       if(any(d)) {
-        warning("Data contains duplicate entries, only first found entries will be written to file!")
+        warning("Data contains duplicate entries (",paste(getNames(x)[d],collapse=", "),"), only first found entries will be written to file!")
         x <- x[,,which(!d)]
       }
       
