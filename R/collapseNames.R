@@ -7,7 +7,8 @@
 #' @param x MAgPIE object
 #' @param collapsedim If you want to remove the names of particular dimensions
 #' provide the dimensions here. Since the function only works in the third dimension, 
-#' you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2). Default: NULL.
+#' you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2). 
+#' Alternatively, you can also specify the name of the dimension. Default: NULL.
 #' CAUTION with parameter collapsedim! You could also force him to remove dimnames, 
 #' which are NOT the same for each element and so create duplicates in dimnames.
 #' @return The provided MAgPIE object with collapsed names
@@ -51,7 +52,14 @@ collapseNames <- function(x,collapsedim=NULL) {
   f <- fulldim(x)
   if (is.null(collapsedim)) {
     collapsedim <- which(f[[1]][-1:-2]==1)
-  } 
+  } else if(is.character(collapsedim)) {
+    tmp <- match(collapsedim,names(f[[2]]))-2
+    if(any(is.na(tmp))) {
+      warning("Unknown collapsedim(s) specified. Unknown collapsedim(s) will be ignored (\"",paste(collapsedim[is.na(tmp)],collapse="\", \""),"\")!")
+      tmp <- tmp[!is.na(tmp)]
+    }
+    collapsedim <- tmp
+  }
   maxdim <- length(f[[1]])-2
   tmp <- getNames(x)
   tmp2 <- names(dimnames(x))[3]

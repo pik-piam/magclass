@@ -11,7 +11,8 @@ collapseNames(x, collapsedim = NULL)
 
 \item{collapsedim}{If you want to remove the names of particular dimensions
 provide the dimensions here. Since the function only works in the third dimension, 
-you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2). Default: NULL.
+you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2). 
+Alternatively, you can also specify the name of the dimension. Default: NULL.
 CAUTION with parameter collapsedim! You could also force him to remove dimnames, 
 which are NOT the same for each element and so create duplicates in dimnames.}
 }
