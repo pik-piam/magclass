@@ -230,6 +230,15 @@ setMethod("as.magpie",
               return(as.magpie(x,...))
             }
             x$period <- format(x$period, format = "y%Y")
+            filter <- function(x) {
+              return(gsub("\\.","_",x))
+            }
+            # filter illegal characters
+            x$model    <- filter(x$model)
+            x$scenario <- filter(x$scenario)
+            x$region   <- filter(x$region)
+            x$variable <- filter(x$variable)
+
             if(length(grep("^cell$",names(x),ignore.case=TRUE)) > 0) {
               i <- grep("^cell$",names(x),ignore.case=TRUE,value=TRUE)
               x$region <- paste(x$region,x[[i]],sep=".")
