@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-This tutorial provides a basic introduction to magpie objects in R. If you would like to get more details on the concept of and the idea behind magpie objects you can have a look at "magclass vs other data-classes":bla.htm, where this is explained in more detail by comparing the magpie class to other data classes in R.
+This tutorial provides a basic introduction to magpie objects in R. If you would like to get more details on the concept of and the idea behind magpie objects you can have a look at [magclass-concept](magclass-concept.html), where this is explained in more detail by comparing the magpie class to other data classes in R.
 
 ## Generate a magpie object
 
@@ -223,7 +223,7 @@ dd <- mbind(d1,d2)
 dd
 ```
 
-set all values greater than 0.5 to 0.5
+set all values greater than 0.5 to 0.51
 ```{r, echo = TRUE}
 d[d > 0.5] <- 0.51
 d
