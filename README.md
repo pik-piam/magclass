@@ -1,7 +1,3 @@
-# magclass
-R package | Data Class and Tools for Handling Spatial-Temporal Data
-
-
 # R magclass package
 
 ## Purpose and Functionality
