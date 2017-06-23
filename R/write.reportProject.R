@@ -11,7 +11,9 @@
 #' @param mapping mapping of the varialbe names of the read in mif. the header
 #' is used for naming.
 #' @param file name of the project specipic report, default=NULL means that the names of the header of the reporting is used
-#' @author Christoph Bertram, Lavinia Baumstark, Anastasis Giannousakis
+#' @param max_file_size maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files
+#' @param ... arguments passed to write.report and write.report2
+#' @author Christoph Bertram, Lavinia Baumstark, Anastasis Giannousakis, Florian Humpenoeder
 #' @seealso \code{\link{write.report}}
 #' @examples
 #' 
@@ -22,7 +24,7 @@
 #' @export write.reportProject
 #' @importFrom utils read.csv2
 #' 
-write.reportProject <- function(mif,mapping,file=NULL){
+write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
   if(is.character(mif)){
     data <- read.report(mif,as.list=TRUE)
   } else if (is.list(mif)){
@@ -71,7 +73,40 @@ write.reportProject <- function(mif,mapping,file=NULL){
     file <- gsub(names(map)[1],names(map)[2],mif)
   }  
   # save project reporting
-  write.report(new_data,file=file)
+  write.report(new_data,file=file,...)
+  
+  if (!is.null(max_file_size)) {
+    file_size <- file.size(file)/10^6 #file size in MB
+    if(file_size > max_file_size) {
+      x <- read.report(file,as.list=FALSE)
+      scen <- getNames(x,dim=1)
+      n_scen <- length(scen)
+      n_files <- ceiling(file_size / max_file_size)
+      if (n_files > n_scen) {
+        n_files <- n_scen
+        warning("Minimum is one scenario per file!")
+        }
+      scen_per_file <- floor(length(scen)/n_files)
+      first_scen <- 1
+      for (f in 1:n_files) {
+        print(paste0("File ",f))
+        #prepare scenario subset
+        last_scen <- (first_scen+scen_per_file-1)
+        if (last_scen > n_scen) last_scen <- n_scen
+        scen_subset <- scen[first_scen:last_scen]
+        print(scen_subset)
+        #subset data
+        tmp <- x[,,scen_subset]
+        #prepare file name
+        file_name <- unlist(strsplit(file,"\\."))
+        last <- length(file_name)
+        #write report
+        write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
+        #set counter for next loop
+        first_scen <- first_scen+scen_per_file
+      }
+    }
+  }
 }
 
 
