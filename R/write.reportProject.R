@@ -73,7 +73,7 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
     file <- gsub(names(map)[1],names(map)[2],mif)
   }  
   # save project reporting
-  write.report(new_data,file=file,...)
+  write.report2(new_data,file=file,...)
   
   if (!is.null(max_file_size)) {
     file_size <- file.size(file)/10^6 #file size in MB
