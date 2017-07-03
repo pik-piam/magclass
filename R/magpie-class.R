@@ -33,7 +33,10 @@
 #' as first data column. In addition an argument \code{tidy=TRUE} can be used
 #' to indicate that the data.frame structure is following the rules of tidy
 #' data (last column is the data column all other columns contain dimension
-#' information). This information will help the conversion.
+#' information). This information will help the conversion. \code{sep} defines
+#' the dimension separator (default is ".") and \code{replacement} defines how 
+#' the separator as a reserved character should be converted in order to not
+#' mess up with the object (default "_").
 #' @section Objects from the Class: Objects can be created by calls of the form
 #' \code{new("magpie", data, dim, dimnames, ...)}. MAgPIE objects have three
 #' dimensions (cells,years,datatype) and the dimensionnames of the first
