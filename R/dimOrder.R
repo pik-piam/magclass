@@ -23,7 +23,7 @@ dimOrder <- function(x,perm){
   if (dimensions!=length(perm)) {stop("perm has to have the length of the 3rd dimensions")}
   if (!identical(levels(as.factor(1:dimensions)),levels(as.factor(perm)))) {stop("perm has to include all 3rd dimensions")}
   if (dimensions>1){
-    pattern=paste0("^([^\\.]*)\\.",rep("([^\\.]*)\\.",dimensions-2),"([^\\.]*)$")
+    pattern=paste0("^([^\\.]*)\\.",paste0(rep("([^\\.]*)\\.",dimensions-2),collapse = ""),"([^\\.]*)$")
     order=paste0(paste0("\\",perm),collapse=".")
     getNames(x) <- gsub(pattern = pattern,replacement=order,getNames(x))  
   }
