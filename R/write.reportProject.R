@@ -66,9 +66,9 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
   indicatorcols=which(!names(map) %in% c("factor","weight","unit"))
   if(!1 %in% indicatorcols) {stop("first column has to be reporting mif output indicator name")}
   # merge multiple indicator columns
-  map2 <- data.frame(map[,1],apply(map[,setdiff(indicatorcols,1)],MARGIN=1,paste,collapse="."),map[,-indicatorcols],stringsAsFactors = FALSE)
-  map2<-map2[apply(map[,setdiff(indicatorcols,1)],MARGIN=1,paste,collapse="")!="",]
-  names(map2)<-c(names(map)[1],paste(names(map[,setdiff(indicatorcols,1)]),collapse="."),names(map)[-indicatorcols])
+  map2 <- data.frame(map[,1],apply(map[,setdiff(indicatorcols,1),drop=FALSE],MARGIN=1,paste,collapse="."),map[,-indicatorcols],stringsAsFactors = FALSE)
+  map2<-map2[apply(map[,setdiff(indicatorcols,1),drop=FALSE],MARGIN=1,paste,collapse="")!="",]
+  names(map2)<-c(names(map)[1],paste(names(map[,setdiff(indicatorcols,1),drop=FALSE]),collapse="."),names(map)[-indicatorcols])
   
   map<-map2
   remove(map2)
@@ -90,15 +90,15 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
           lapply(
             map[ind,names(map)[1]],
             function(x) {
-              as.numeric(map[which(map[,names(map)[1]]==x),"factor"])*(data[[n]][[m]][,,x])
+              as.numeric(map[which(map[,names(map)[1],drop=FALSE]==x),"factor"])*(data[[n]][[m]][,,x])
             }
-          )), map[ind,indicatorcols])
+          )), map[ind,indicatorcols[-1]])
       
         # correct sets for multicolumn objects
         getSets(tmp)<-c(getSets(tmp)[1:3],strsplit(names(map)[2],"[.]")[[1]][-1])
         new_data[[n]][[m]] <- tmp
         
-        tmp<-setdiff(map[,names(map)[1]],getNames(data[[n]][[m]]))
+        tmp<-setdiff(map[,names(map)[1],drop=FALSE],getNames(data[[n]][[m]]))
         if (length(tmp) !=0) {
           missingc <- c(missingc,tmp)
         }
@@ -117,7 +117,7 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
         for (ind_x in unique(map[,2])){
           mapindex=which(map[,2]==ind_x)
           weight_x=map$weight[mapindex]
-          factor_x=setNames(as.magpie(map$factor[mapindex]),map[mapindex,1])
+          factor_x=setNames(as.magpie(as.numeric(map$factor[mapindex])),map[mapindex,1])
           original_x=map[mapindex,1]
           
           if(!all(original_x %in% getNames(data[[n]][[m]]))) {stop(paste0("Indicator ", original_x[which(!original_x%in%getNames(data[[n]][[m]]))]," missing in data but exists in mapping"))}
