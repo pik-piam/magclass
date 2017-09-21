@@ -26,6 +26,7 @@ dimOrder <- function(x,perm){
     pattern=paste0("^([^\\.]*)\\.",paste0(rep("([^\\.]*)\\.",dimensions-2),collapse = ""),"([^\\.]*)$")
     order=paste0(paste0("\\",perm),collapse=".")
     getNames(x) <- gsub(pattern = pattern,replacement=order,getNames(x))  
+    getSets(x)[3:length(getSets(x))]<-getSets(x)[3:length(getSets(x))][perm]
   }
   return(x)
 }
