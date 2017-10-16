@@ -187,7 +187,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     } else if(file_type=="nc") {
       write.magpie.ncdf(x=x,
                         file_path=file_path,
-                        units=substring(attr(a,"comment")[2],8),
+                        units=substring(comment[2],8),
                         nc_compression = nc_compression)  
     } else if(file_type=="cs3" | file_type=="cs3r") {
       if(file_type=="cs3r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
