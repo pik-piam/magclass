@@ -1,7 +1,7 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.54.2
+Version: 4.44.2
 Author: Jan Philipp Dietrich,
     Benjamin Bodirsky,
     Misko Stevanovic,
@@ -37,6 +37,6 @@ Suggests:
     knitr,
     rmarkdown
 License: LGPL-3 | file LICENSE
-LazyData: true
+LazyData: no
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
