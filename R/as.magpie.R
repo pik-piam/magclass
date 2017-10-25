@@ -5,6 +5,16 @@ setGeneric("as.magpie", function(x,...)standardGeneric("as.magpie"))
 
 setMethod("as.magpie",signature(x = "magpie"),function (x) return(x))
 
+tmpfilter <- function(x, sep="\\.", replacement="_") {
+  if(is.factor(x)) {
+    levels(x) <- gsub(sep,replacement,levels(x))
+  } else if(is.character(x)) {
+    x < gsub(paste0("\\",sep),replacement,x)
+  }
+  return(x)
+}
+
+
 setMethod("as.magpie",
           signature(x = "lpj"),
           function (x, ...)
@@ -161,8 +171,13 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "data.frame"),
-          function (x, datacol=NULL, tidy=FALSE, ...)
+          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", ...)
           {
+            # filter illegal characters
+            for(i in 1:dim(x)[2]) {
+              x[[i]] <- tmpfilter(x[[i]], sep=paste0("\\",sep), replacement=replacement)
+              x[[i]] <- tmpfilter(x[[i]], sep="^$", replacement=" ")
+            }
             if(tidy) return(tidy2magpie(x,...))
             if(dim(x)[1]==0) return(copy.attributes(x,new.magpie(NULL)))
             if(is.null(datacol)) {
@@ -185,7 +200,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "quitte"),
-          function(x, ...)
+          function(x, sep=".", replacement="_", ...)
           {
               is.quitte <- function(x, warn=FALSE) {
                   # object is not formally defined as quitte class
@@ -230,15 +245,14 @@ setMethod("as.magpie",
               return(as.magpie(x,...))
             }
             x$period <- format(x$period, format = "y%Y")
-            filter <- function(x) {
-              return(gsub("\\.","_",x))
-            }
+            x$unit <- tmpfilter(x$unit, sep="^$", replacement = " ")
             # filter illegal characters
-            x$model    <- filter(x$model)
-            x$scenario <- filter(x$scenario)
-            x$region   <- filter(x$region)
-            x$variable <- filter(x$variable)
-
+            for(i in 1:dim(x)[2]) {
+              x[[i]] <- tmpfilter(x[[i]], sep=paste0("\\",sep), replacement=replacement)
+              x[[i]] <- tmpfilter(x[[i]], sep="^$", replacement=" ")
+            }
+            
+            
             if(length(grep("^cell$",names(x),ignore.case=TRUE)) > 0) {
               i <- grep("^cell$",names(x),ignore.case=TRUE,value=TRUE)
               x$region <- paste(x$region,x[[i]],sep=".")

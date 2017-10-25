@@ -1,0 +1,71 @@
+#' @title write.magpie.ncdf
+#' @description Writes magpie object into netcdf4 file.
+#'
+#' @param x MAgPIE object. Has to be on half degree resolution.
+#' @param file_path file path as provided in write.magpie
+#' @param units will be passed on as unit in netcdf
+#' @param nc_compression Only used if filetype="nc". Sets the compression
+#' level for netCDF files (default is 9). If set to an integer between 1 (least
+#' compression) and 9 (most compression), the netCDF file is written in netCDF
+#' version 4 format. If set to NA, the netCDF file is written in netCDF version
+#' 3 format.
+#' @return netcdf file. Writes one file per year per
+#' data column. In the case that more than one year and data column is supplied
+#' several files are written with the structure filename_year_datacolumn.asc. In the case several data dimensions exist, they are saved as subcategories.
+#' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky
+#' @seealso \code{\link{write.magpie}}
+#' 
+write.magpie.ncdf<-function(x,file_path,units="",nc_compression = 9){
+  if (is.null(getNames(x)) | is.null(getYears(x))) 
+    stop("Year and Data name are necessary for saving to NetCDF format")
+  
+  getNames(x)<-gsub(pattern = "\\.",replacement = "/",getNames(x))
+  
+  mag <- as.array(x)
+  coord <- magclass:::magclassdata$half_deg[, c("lon", "lat")]
+  NODATA <- NA
+  lon <- seq(-179.75, 179.75, by = 0.5)
+  lat <- seq(-89.75, 89.75, by = 0.5)
+  time <- as.numeric(unlist(lapply(strsplit(dimnames(mag)[[2]], 
+                                            "y"), function(mag) mag[2])))
+  data <- dimnames(mag)[[3]]
+  cat("Converting MAgPIE Data to 720 x 360 array")
+  netcdf <- array(NODATA, dim = c(720, 360, dim(mag)[2], 
+                                  dim(mag)[3]), dimnames = list(lon, lat, time, 
+                                                                data))
+  pb <- txtProgressBar(min = 0, max = dim(mag)[1], 
+                       style = 3)
+  for (i in 1:ncells(mag)) {
+    netcdf[which(coord[i, 1] == lon), which(coord[i, 
+                                                  2] == lat), , ] <- mag[i, , , drop = FALSE]
+    setTxtProgressBar(pb, i)
+  }
+  close(pb)
+  dim_lon <- ncdf4::ncdim_def("lon", "degrees_east", 
+                              lon)
+  dim_lat <- ncdf4::ncdim_def("lat", "degrees_north", 
+                              lat)
+  dim_time <- ncdf4::ncdim_def("time", "years", time, 
+                               calendar = "standard")
+  ncv <- list()
+  for (i in dimnames(netcdf)[[4]]) ncv[[i]] <- ncdf4::ncvar_def(i, 
+                                                                units=units, 
+                                                                dim=list(dim_lon, dim_lat, dim_time), 
+                                                                missval=NODATA, 
+                                                                prec = "double", 
+                                                                compression = nc_compression)
+  if (file.exists(file_path)) 
+    file.remove(file_path)
+  ncf <- ncdf4::nc_create(file_path, ncv)
+  cat("Saving to NetCDF format")
+  pb <- txtProgressBar(min = 0, max = dim(netcdf)[4], 
+                       style = 3)
+  for (i in dimnames(netcdf)[[4]]) {
+    ncdf4::ncvar_put(ncf, ncv[[i]], netcdf[, , , 
+                                           i])
+    setTxtProgressBar(pb, which(dimnames(netcdf)[[4]] == 
+                                  i))
+  }
+  close(pb)
+  ncdf4::nc_close(ncf)
+}

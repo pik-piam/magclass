@@ -16,6 +16,9 @@
   j <- getYears(x)
   k <- getNames(x)
   
+  if(is.null(j)) j <- 1
+  if(is.null(k)) k <- 1
+  
   for(n in names(args)) {
     where <-grep(paste0("^",n,"$"),unlist(sets))
     if(length(where)>1) stop(paste0("set name \"",n,"\" found more than once!"))

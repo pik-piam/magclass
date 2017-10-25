@@ -19,6 +19,7 @@
 #' 
 #' @export add_columns
 add_columns<-function(x,addnm=c("new"),dim=3.1){
+  if(length(addnm)==0) return(x)
   dim=old_dim_convention(dim)
   if (dim==1) {
     new_columns<-x[rep(1,length(addnm)),,]

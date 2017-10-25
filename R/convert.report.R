@@ -12,7 +12,7 @@
 #' @param inmodel Model the input comes from. If NULL the script tries to
 #' detect the inmodel automatically.
 #' @param outmodel Model format the data should be converted to. Currently,
-#' only "MAgPIE" is available
+#' "MAgPIE" and "REMIND" are available
 #' @param full Boolean deciding whether only the converted output should be
 #' returned (FALSE) or the new output together with the input (TRUE)
 #' @param as.list if TRUE a list is returned (default), if FALSE it is tried to
@@ -30,17 +30,25 @@
 convert.report <- function(rep,inmodel=NULL,outmodel="MAgPIE",full=FALSE,as.list=TRUE) {
   # Commets would improve the code
   .convert <- function(input,inmodel=NULL,outmodel="MAgPIE",full=FALSE) {
+    # load all region mappings available and check wether inmodel and outmodel are available
     map  <- magclassdata$map
     if(!(outmodel %in% names(map)))            stop("No existing transformation rules for output model \"",outmodel,"\"!",call.=FALSE)
     if(!(inmodel %in% names(map[[outmodel]]))) stop("No existing transformation rules for input model \"",inmodel,"\" in combination with output model \"",outmodel,"\"!",call.=FALSE)
     if(outmodel %in% names(input))             stop("Input already contains data for model \"",outmodel,"\"",call.=FALSE)
+    # read regional mapping from inmodel regions to outmodel regions
     map <- map[[outmodel]][[inmodel]]
     if(!inmodel %in% names(input)) stop(paste0("The inmodel ",inmodel," is not available in the names of input: ",names(input)))
     mag <- input[[inmodel]]
+    # add "GLO" if present in data
     if("GLO" %in% getRegions(mag)) map$GLO <- "GLO"
+    # construct empty outmag object without region names and with variable names that are defined in trans and present in the input data
     outmag <- mag[rep(1,length(map)),,unlist(magclassdata$trans)[unlist(magclassdata$trans) %in% getNames(mag)]]
     outmag[,,] <- NA
-    dimnames(outmag)[[1]] <- names(map)   
+    # set regions names to outmodel regions
+    dimnames(outmag)[[1]] <- names(map)
+    # transfer data
+    # map[[reg]] refers to the inmodel region
+    # reg refers to the outmodel region
     for(reg in names(map)) {
       #sum
       elem <- getNames(mag)[getNames(mag) %in% magclassdata$trans$sum]
@@ -54,14 +62,18 @@ convert.report <- function(rep,inmodel=NULL,outmodel="MAgPIE",full=FALSE,as.list
     out[[outmodel]]=outmag;
     return(out)
   }
+  
   if(is.character(rep)) rep <- read.report(rep)
   if(is.null(inmodel)) {
     if(length(names(rep[[1]]))==1) inmodel <- names(rep[[1]])
     else stop("Not clear which model should be used as input!")
   }
+  
+  # convert data from inmodel to outmodel
   if(inmodel!=outmodel) {
     rep <- lapply(rep,.convert,inmodel,outmodel,full)  
   } 
+  
   if(!as.list) {
     for(scenario in names(rep)) {
       for(model in names(rep[[scenario]])) {
