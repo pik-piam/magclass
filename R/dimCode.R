@@ -30,6 +30,14 @@ dimCode <- function(dim,x,missing=0){
     if(length(dim)>length(dnames)) stop('One or more elements were found more than once in x!')
     names(dim) <- dnames
     
+    #checks if spatial dimension is doubled (like for cellular input "GLO.1")
+    #if so, set spatial dimension to 1.1 and 1.2 and shift all others 
+    if(grepl("\\.", names(dimnames(x))[[1]])){
+      dim[1] <- 1.1
+      dim[2] <- 1.2
+      dim[dim>2] <- dim[dim>2] - 1 
+    }
+    
     #translate sub-datadimensions to 3.1, 3.2,...
     dim[dim>=3] <- 3 + (dim[dim>=3]-2)/10
   }
