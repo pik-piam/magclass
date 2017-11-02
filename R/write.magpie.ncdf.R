@@ -2,42 +2,48 @@
 #' @description Writes magpie object into netcdf4 file.
 #'
 #' @param x MAgPIE object. Has to be on half degree resolution. If x as comments in attr, they are plotted as global attributes.
-#' @param file_path file path as provided in write.magpie
+#' @param file file path as provided in write.magpie
 #' @param nc_compression Only used if filetype="nc". Sets the compression
 #' level for netCDF files (default is 9). If set to an integer between 1 (least
 #' compression) and 9 (most compression), the netCDF file is written in netCDF
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
+#' @param comment Vector of comments. Comments are set as global attributes in the netcdf file. Comments have to have the format "indicator: comment" or " indicator:comment"
+
 #' @return netcdf file. Writes one file per year per
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc. In the case several data dimensions exist, they are saved as subcategories.
 #' 
-#' Global Attributes can be set by using the comments within the attr of X. Comments have to have the format "indicator: comment" or " indicator:comment"
 #' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky
 #' @seealso \code{\link{write.magpie}}
 #' 
-write.magpie.ncdf<-function(x,file_path,nc_compression = 9){
+write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
 
   # metadata
-  comments=getComment(x)
-  indicator = substring(text = comments,first = 1, last=regexpr(pattern = ": ",text = comments)-1)
-  commentary = substring(text = comments,first = (regexpr(pattern = ": ",text = comments)+2))
-  
-  commentary<-commentary[which(indicator!="")]
-  indicator<-indicator[which(indicator!="")]
-  
-  if(!any(indicator=="unit:")) { 
-    units="not specified" 
-  } else {
-    units <- commentary[which(indicator=="unit:")]
-  }
-  
-  if(any(regexpr(pattern = " ",text = indicator)==1)) { # delete space at first place
-    indicator[regexpr(pattern = " ",text = indicator)==1]<-substring(indicator[regexpr(pattern = " ",text = indicator)==1],first = 2)
-  }
-  
+  if(!is.null(comment)){
+    metadata=TRUE
+    indicator = substring(text = comment,first = 1, last=regexpr(pattern = ": ",text = comment)-1)
+    commentary = substring(text = comment,first = (regexpr(pattern = ": ",text = comment)+2))
+    if(any(indicator=="")){
+      warning("incomplete metadata entry provided as comment. For netcdf, format should be 'indicator: comment'")
+      tmp<-which(indicator=="")
+      indicator[tmp]<-paste0("metadata",tmp)
+    }
+    commentary<-commentary[which(indicator!="")]
+    indicator<-indicator[which(indicator!="")]
+    
+    if(!any(indicator=="unit:")) { 
+      units="not specified" 
+    } else {
+      units <- commentary[which(indicator=="unit:")]
+    }
+    
+    if(any(regexpr(pattern = " ",text = indicator)==1)) { # delete space at first place
+      indicator[regexpr(pattern = " ",text = indicator)==1]<-substring(indicator[regexpr(pattern = " ",text = indicator)==1],first = 2)
+    }
+  }  
   
   getNames(x)<-gsub(pattern = "\\.",replacement = "/",getNames(x))
   
@@ -78,14 +84,17 @@ write.magpie.ncdf<-function(x,file_path,nc_compression = 9){
   
 
   
-  if (file.exists(file_path)) 
-    file.remove(file_path)
-  ncf <- ncdf4::nc_create(file_path, ncv)
+  if (file.exists(file)) 
+    file.remove(file)
+  ncf <- ncdf4::nc_create(file, ncv)
   cat("Saving to NetCDF format")
   
-  for (i in 1:length(indicator)){
-    ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[i],prec="text")  
+  if(metadata){
+    for (i in 1:length(indicator)){
+      ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[i],prec="text")  
+    }
   }
+  
   
   pb <- txtProgressBar(min = 0, max = dim(netcdf)[4], 
                        style = 3)
