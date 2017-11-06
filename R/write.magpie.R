@@ -186,9 +186,9 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
     } else if(file_type=="nc") {
       write.magpie.ncdf(x=x,
-                        file_path=file_path,
-                        units=substring(comment[2],8),
-                        nc_compression = nc_compression)  
+                        file=file_path,
+                        nc_compression = nc_compression,
+                        comment=comment)  
     } else if(file_type=="cs3" | file_type=="cs3r") {
       if(file_type=="cs3r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
       if(dim(x)[3]!=prod(fulldim(x)[[1]][-1:-2])) stop("Input data seems to be sparse but ",file_type," does not support sparse data. Please use ",sub("3","4",file_type)," instead!")
