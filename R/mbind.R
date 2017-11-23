@@ -37,8 +37,14 @@ mbind <- function(...) {
   inputs <- list(...)
   if(length(inputs)==1 & is.list(inputs[[1]])) inputs <- inputs[[1]]
   #Remove NULL elements from list
-  for(i in length(inputs):1) if(is.null(inputs[[i]])) inputs[[i]] <- NULL
-  
+  for(i in length(inputs):1) {
+    if(is.null(inputs[[i]])) {
+      inputs[[i]] <- NULL
+    } else if(prod(dim(inputs[[i]]))==0) {
+      inputs[[i]] <- NULL
+      warning("You are trying to mbind an empty magclass object. Is that really intended?")
+    }
+  }
 
   regio <- NULL
   cells <- NULL
