@@ -34,10 +34,10 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
     commentary<-commentary[which(indicator!="")]
     indicator<-indicator[which(indicator!="")]
     
-    if(!any(indicator=="unit:")) { 
+    if(!any(indicator=="unit")) { 
       units="not specified" 
     } else {
-      units <- commentary[which(indicator=="unit:")]
+      units <- commentary[which(indicator=="unit")]
     }
     
     if(any(regexpr(pattern = " ",text = indicator)==1)) { # delete space at first place
