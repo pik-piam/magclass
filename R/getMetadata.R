@@ -3,12 +3,12 @@
 #' This function allows users to set and retrieve metadata for magclass objects 
 #' 
 #' Metadata is an attribute of a magclass object, and it includes the default 
-#' fields of "unit", "source", "creationDate", "user" and "calcHistory", 
-#' contained in a list.
+#' fields of "unit", "source", "creationDate", "user", "calcHistory" and "description", 
+#' all contained in a list.
 #' 
-#' The "source" component should include all information about the source(s)
+#' The "source" element should include all information about the source(s)
 #' where the data was originally reported. Specifically, the authors,
-#' publication date, article title, journal 
+#' publication date, article title, journal name and volume, page numbers, DOI, ISSN
 #' 
 #' @aliases getMetadata getMetadata<-
 #' @param x MAgPIE object
@@ -26,8 +26,16 @@
 #'  a <- as.magpie(1)
 #'  #returns NULL
 #'  getMetadata(a)
-#'  #set the comment
-#'  getMetadata(a, "unit")<- "btu"
+#'  #set the unit field
+#'  getMetadata(a, "unit")<- "GtCO2eq"
+#'  getMetadata(a)
+#'  
+#'  #set all Metadata fields
+#'  M <- list('unit'='kg', 'source'=list('author'='John Doe', 'date'='January 1, 2017', 
+#'  'title'='example', 'journal'='BigJournal, Vol. 200, pp. 100-115'), 
+#'  'creationDate'=sys.Date(), 'user'='you', calcHistory'='readSource', 
+#'  'description'='nonsense')
+#'  getMetadata(a) <- M
 #'  getMetadata(a)
 #' 
 #' @export
@@ -45,9 +53,16 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
-"getMetadata<-" <- function(x, type, value) {
+"getMetadata<-" <- function(x, type=NULL, value) {
   M <- attr(x, "Metadata")
-  M[[type]] <- value
+  if (!is.list(M))  M <- list()
+  if (!is.null(type))  M[[type]] <- value
+  if (is.null(type)){
+    if (!is.list(value)){
+      stop("Metadata must be a list object if no type is specified")
+    }else
+      M <- value
+  }
   attr(x, "Metadata") <- M
   return(x)
 }
