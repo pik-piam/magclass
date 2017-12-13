@@ -8,6 +8,8 @@ tidy2magpie <- function(x,spatial=NULL,temporal=NULL) {
   }
   sep <- "."
   
+  if(is.null(colnames(x))) colnames(x) <- paste0("col",1:dim(x)[2])
+  if(anyNA(colnames(x)))   colnames(x)[is.na(colnames(x))] <- "NA"
   colnames(x) <- make.unique(colnames(x),sep="")
   
   if(dim(x)[1]==0) return(copy.attributes(x,new.magpie(NULL)))
@@ -52,7 +54,7 @@ tidy2magpie <- function(x,spatial=NULL,temporal=NULL) {
   } else if(sum(!(colnames(x)[-dim(x)[2]] %in% c(temporal,spatial)))==1) {
     d <- x[,which(!(colnames(x)[-dim(x)[2]] %in% c(temporal,spatial))),drop=FALSE]
   } else {
-    d <- data.frame(data=rep("NODATA",dim(x)[1]))
+    d <- data.frame(data=rep(tail(colnames(x),1),dim(x)[1]))
   }
   d[[1]] <- as.character(d[[1]])
   
