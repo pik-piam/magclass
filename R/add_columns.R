@@ -40,5 +40,6 @@ add_columns<-function(x,addnm=c("new"),dim=3.1){
       }}
     new_columns[,,]<-NA
   }
-  return(mbind(x,new_columns))
+  output <- mbind(x,new_columns)
+  return(output)
 }
