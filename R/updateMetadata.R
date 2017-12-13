@@ -32,9 +32,11 @@
 #' "copy", "update", which retrieves the username currently logged into the system, or a character string 
 #' which specifies a new user. "update" by default.
 #' @param description A character string containing a description of the dataset. Possible arguments are 
-#' "keep", "copy", "clear", "merge", or a character string which sets a new description. "keep" by default.
+#' "keep", "copy", "clear", "update", which combines the descriptions of all magpie inputs into a list, or 
+#' a new description can be defined here by a character string. "keep" by default.
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
-#' find the function to add to the the object's calcHistory. 
+#' find the function to append to the the object's calcHistory. n=1 by default. Use n=0 to simply merge the
+#' calcHistory fields of magpie inputs without appending any new function.
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
@@ -54,19 +56,23 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
   
   if (is.list(y)){
     for (i in 1:length(y)){
-      if (i>1){
+      if (i==1){
+        if (n==0) x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=0)
+        else x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=i+1)
+      }else{
         if (!is.null(getMetadata(y[[i]], "unit"))){
-          if (getMetadata(y[[i]],"unit") == getMetadata(y[[i-1]],"unit"))  iUnit <- "keep"
-          else iUnit <- "clear"
-        }else iUnit <- "clear"
+            if (!is.null(getMetadata(y[[i-1]], "unit"))){
+              if (getMetadata(y[[i]],"unit") == getMetadata(y[[i-1]],"unit"))  iUnit <- "keep"
+              else iUnit <- "clear"
+            }else iUnit <- unit
+        }else iUnit <- unit
         if (!is.null(getMetadata(y[[i]],"source"))) iSource <- "update"
         else iSource <- "keep"
         if (!is.null(getMetadata(y[[i]],"description")))  iDescription <- "update"
         else iDescription <- "keep"
         if (n==0) x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=0)
         else x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=i+1)
-      }else if (n==0) x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=0)
-      else x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=i+1)
+      }
     }
     return(x)
   }else if (!is.null(y) & !is.magpie(y))  warning("y argument must be a magpie object or a list of magpie objects!")
@@ -123,21 +129,25 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
     if (source=="copy")  if(!is.null(My$source)) Mx$source <- My$source else warning("Attempting to copy a NULL source!")
     else if (source=="update"){ 
       if (!is.null(Mx$source)){
-        if (!is.null(My$source)) Mx$source <- list(Mx$source, My$source)
+        if (!is.null(My$source)) Mx$source <- append(Mx$source, list(My$source))
         else warning("y has a NULL entry for source!")
       }else if (is.null(My$source))  warning("y has a NULL entry for source!")
-      else Mx$source <- My$source
+      else Mx$source <- list(My$source)
     }else if (source=="clear")  Mx$source <- NULL
     else if (source!="keep")  if(is.list(source)) Mx$source <- source else warning("Invalid argument for source!")
     
     if (calcHistory=="update"){
       if (!is.null(My$calcHistory)){
         if (n==0){
-          if (!is.null(Mx$calcHistory))  Mx$calcHistory <- list(Mx$calcHistory, My$calcHistory)
-          else Mx$calcHistory <- My$calcHistory
+          if (!is.null(Mx$calcHistory)){ 
+            if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- My$calcHistory
+            else  Mx$calcHistory <- list(Mx$calcHistory, My$calcHistory)
+          }else Mx$calcHistory <- My$calcHistory
         }else{
-          if (!is.null(Mx$calcHistory))  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, sys.call(-n)))
-          else Mx$calcHistory <- c(My$calcHistory, sys.call(-n))
+          if (!is.null(Mx$calcHistory)){
+            if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- c(My$calcHistory, sys.call(-n))
+            else  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, sys.call(-n)))
+          }else Mx$calcHistory <- c(My$calcHistory, sys.call(-n))
         }
       }else if (!is.null(Mx$calcHistory) & n!=0)  Mx$calcHistory <- c(Mx$calcHistory, sys.call(-n))
     }else if (calcHistory=="copy"){
@@ -160,8 +170,12 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
 
     if (description=="copy")  if(!is.null(My$description)) Mx$description <- My$description else warning("Attempting to copy a NULL description!")
     else if (description=="clear")  Mx$description <- NULL
-    else if (description=="update")  if(!is.null(Mx$description)) Mx$description <- list(Mx$description, My$description) else Mx$description <- My$description
-    else if (description!="keep") if(is.character(description)||is.list(description)) Mx$description <- description else warning("Invalid argument for description!")
+    else if (description=="update"){
+      if (!is.null(Mx$description)){
+        if (!is.list(Mx$description))  Mx$description <- list(Mx$description, My$description)
+        else  Mx$description[[length(Mx$description)+1]] <- My$description
+      }else  Mx$description <- My$description
+    }else if (description!="keep") if(is.character(description)||is.list(description)) Mx$description <- description else warning("Invalid argument for description!")
   }
   getMetadata(x) <- Mx
   return(x)

@@ -58,7 +58,7 @@ getMetadata <- function(x, type=NULL) {
   if (!is.list(M))  M <- list()
   if (!is.null(type))  M[[type]] <- value
   if (is.null(type)){
-    if (!is.list(value)){
+    if (!is.list(value) & !is.null(value)){
       stop("Metadata must be a list object if no type is specified")
     }else
       M <- value
