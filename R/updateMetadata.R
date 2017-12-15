@@ -56,22 +56,23 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
   
   if (is.list(y)){
     for (i in 1:length(y)){
-      if (i==1){
-        if (n==0) x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=0)
-        else x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=i+1)
-      }else{
-        if (!is.null(getMetadata(y[[i]], "unit"))){
+      if (!is.null(getMetadata(y[[i]])))
+        if (i==1){
+          if (n==0) x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=0)
+          else x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, creationDate, description, n=n+i)
+        }else{
+          if (!is.null(getMetadata(y[[i]], "unit"))){
             if (!is.null(getMetadata(y[[i-1]], "unit"))){
               if (getMetadata(y[[i]],"unit") == getMetadata(y[[i-1]],"unit"))  iUnit <- "keep"
               else iUnit <- "clear"
             }else iUnit <- unit
-        }else iUnit <- unit
-        if (!is.null(getMetadata(y[[i]],"source"))) iSource <- "update"
-        else iSource <- "keep"
-        if (!is.null(getMetadata(y[[i]],"description")))  iDescription <- "update"
-        else iDescription <- "keep"
-        if (n==0) x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=0)
-        else x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=i+1)
+          }else iUnit <- unit
+          if (!is.null(getMetadata(y[[i]],"source"))) iSource <- "update"
+          else iSource <- "keep"
+          if (!is.null(getMetadata(y[[i]],"description")))  iDescription <- "update"
+          else iDescription <- "keep"
+          if (n==0) x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=0)
+          else x <- updateMetadata(x, y[[i]], iUnit, iSource, calcHistory, user, creationDate, iDescription, n=n+i)
       }
     }
     return(x)
@@ -79,6 +80,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
   
   Mx <- getMetadata(x)
   My <- getMetadata(y)
+  fn <- as.character(sys.call(-n))
   
   if (user=="update"){
     env <- if(.Platform$OS.type == "windows") "USERNAME" else "USER"
@@ -98,7 +100,9 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
     else if (source=="clear") Mx$source <- NULL
     else if (source!="keep")  if(is.list(source)) Mx$source <- source else warning("Invalid argument for source!")
     
-    if (calcHistory=="update" & n!=0) Mx$calcHistory <- c(Mx$calcHistory, sys.call(-n))
+    if (calcHistory=="update" & n!=0){ 
+      if (!is.na(fn[1]) && !is.null(fn[1]))  Mx$calcHistory <- c(Mx$calcHistory, fn[1])
+    }
     else if (calcHistory=="copy")  warning("calcHistory cannot be copied without a second magpie argument provided!")
     #Should calcHistory be deletable?
     else if (calcHistory=="clear") warning("Calculation history cannot be cleared! Please specify keep, update, or copy.")
@@ -145,11 +149,11 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="u
           }else Mx$calcHistory <- My$calcHistory
         }else{
           if (!is.null(Mx$calcHistory)){
-            if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- c(My$calcHistory, sys.call(-n))
-            else  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, sys.call(-n)))
-          }else Mx$calcHistory <- c(My$calcHistory, sys.call(-n))
+            if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- c(My$calcHistory, fn[1])
+            else  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, fn[1]))
+          }else Mx$calcHistory <- c(My$calcHistory, fn[1])
         }
-      }else if (!is.null(Mx$calcHistory) & n!=0)  Mx$calcHistory <- c(Mx$calcHistory, sys.call(-n))
+      }else if (!is.null(Mx$calcHistory) & n!=0)  Mx$calcHistory <- c(Mx$calcHistory, fn[1])
     }else if (calcHistory=="copy"){
       if (!is.null(My$calcHistory)) Mx$calcHistory <- My$calcHistory else warning("Attempting to copy a NULL calcHistory!")
     }else if (calcHistory=="clear") warning("Calculation history cannot be cleared! Please specify keep, update, or copy.")
