@@ -45,6 +45,8 @@ mcalc <- function(x,f,dim=NULL,append=FALSE) {
   if(append) {
     assign(as.character(as.list(match.call())$x),mbind(x,eval(f[[3]])),envir =  parent.frame()) 
   } else {
-    return(eval(f[[3]]))
+    out <- eval(f[[3]])
+    if (isTRUE(getOption("magclass_metadata")))  out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="update", description="copy")
+    return(out)
   }
 }

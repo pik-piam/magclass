@@ -85,13 +85,11 @@ mbind <- function(...) {
   } else {
     tmp <- function(x) return(length(getNames(x,fulldim = TRUE)))
     tmp <- sapply(inputs,tmp)
-    if(length(unique(tmp))>1) warning("mbind most likely returned an erronous magpie object due to differnt numbers of data subdimensions in inputs!")
+    if(length(unique(tmp))>1) warning("mbind most likely returned an erronous magpie object due to different numbers of data subdimensions in inputs!")
     output <- new("magpie",abind::abind(inputs,along=3))
   }
   if(length(grep("dummydimname",getNames(output),fixed=TRUE))==ndata(output)) dimnames(output)[[3]] <- NULL 
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
-  if(isTRUE(getOption("magclass_metadata")))
-    if (!is.null(sys.call(-1)))  output <- updateMetadata(output, inputs, unit="copy", source="update", description="update", n=2)
-    else  output <- updateMetadata(output, inputs, unit="copy", source="update", description="update", n=0)
+  if(isTRUE(getOption("magclass_metadata"))) output <- updateMetadata(output, inputs, unit="merge", calcHistory="merge", source="merge", description="merge")
   return(output)
 }

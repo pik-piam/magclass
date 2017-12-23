@@ -83,6 +83,7 @@ mselect <- function(x,...,collapseNames=FALSE) {
 "mselect<-" <- function(x,...,value) {
   m <- .mselect_coords(x,...)
   x[m$i,m$j,m$k] <- value
+  if(isTRUE(getOption("magclass_metadata")))  x <- updateMetadata(x)
   return(x)
 }
 
