@@ -25,7 +25,9 @@ setMethod("rowSums",
           signature(x = "magpie"),
           function (x, na.rm = FALSE, dims = 1, ...) 
           {
-            x <- rowSums(as.array(x), na.rm=na.rm, dims=dims, ...)
-            return(as.magpie(as.array(x),spatial=1))
+            out <- rowSums(as.array(x), na.rm=na.rm, dims=dims, ...)
+            out <- as.magpie(as.array(out),spatial=1)
+            if (isTRUE(getOption("magclass_metadata")))  getMetadata(out) <- getMetadata(x)
+            return(out)
           }
           )

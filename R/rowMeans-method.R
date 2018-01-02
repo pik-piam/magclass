@@ -4,7 +4,9 @@ setMethod("rowMeans",
           signature(x = "magpie"),
           function (x, na.rm = FALSE, dims = 1, ...) 
           {
-            x <- rowMeans(as.array(x), na.rm=na.rm, dims=dims, ...)
-            return(as.magpie(as.array(x)))
+            out <- rowMeans(as.array(x), na.rm=na.rm, dims=dims, ...)
+            out <- as.magpie(as.array(x))
+            if (isTRUE(getOption("magclass_metadata")))  getMetadata(out) <- getMetadata(x)
+            return(out)
           }
           )

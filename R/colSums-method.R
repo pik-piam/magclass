@@ -28,8 +28,9 @@ setMethod("colSums",
           {
             x_array<-as.array(x)
             x_glo<-colSums(x_array,na.rm=na.rm,...)
-            x<-new("magpie",array(x_glo,dim=c(1,dim(x_glo)),dimnames=c("GLO",dimnames(x_glo))))
-            return(x)
+            out<-new("magpie",array(x_glo,dim=c(1,dim(x_glo)),dimnames=c("GLO",dimnames(x_glo))))
+            if(isTRUE(getOption("magclass_metadata")))  getMetadata(out) <- getMetadata(x)
+            return(out)
           }
           )
 
