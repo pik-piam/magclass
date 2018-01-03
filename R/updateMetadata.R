@@ -128,7 +128,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     
   }else{
     if (is(unit,"units"))  Mx$unit <- unit
-    else if (unit=="copy")  if(!is.null(My$unit)) Mx$unit <- My$unit else warning("Attempting to copy NULL unit!")
+    else if (unit=="copy") Mx$unit <- My$unit
     else if (unit=="clear")  Mx$unit <- NULL
     else if (unit=="merge"){
       if (!is.null(Mx$unit)){
@@ -136,16 +136,12 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
         else  Mx$unit[[length(Mx$unit)+1]] <- My$unit
       }else  Mx$unit <- My$unit
     }else if (unit=="update")  warning("Invalid argument for unit!")
-    else if (unit!="keep")  if(is.character(unit))  Mx$unit <- unit else warning("Invalid argument for unit!")
+    else if (unit!="keep") Mx$unit <- unit
     
-    if (source=="copy")  if(!is.null(My$source)) Mx$source <- My$source else warning("Attempting to copy a NULL source!")
+    if (source=="copy") Mx$source <- My$source
     else if (source=="merge"){ 
-      if (!is.null(Mx$source)){
-        if (!is.null(My$source)) Mx$source <- append(Mx$source, list(My$source))
-        else warning("y has a NULL entry for source!")
-      }else if (is.null(My$source))  warning("y has a NULL entry for source!")
-      else Mx$source <- list(My$source)
-    }else if (source=="clear")  Mx$source <- NULL
+      if(!is.null(Mx$source) | !is.null(My$source)) Mx$source <- append(Mx$source, list(My$source))
+    } else if (source=="clear")  Mx$source <- NULL
     else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, merge, clear, or a new source in a list")
     else if (source!="keep")  if(is.list(source)) Mx$source <- source else warning("Invalid argument for source!")
     

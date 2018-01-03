@@ -10,7 +10,7 @@ test_that("read/write do not affect content", {
     write.magpie(mag,tmpfile)
     mag2 <- read.magpie(tmpfile)
     names(dimnames(mag2)) <- NULL
-    expect_equal(mag,mag2)
+    expect_equivalent(mag,mag2)
   }
 })
 

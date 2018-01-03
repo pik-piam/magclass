@@ -22,7 +22,6 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
 #' @examples
-#' 
 #'  a <- as.magpie(1)
 #'  #returns NULL
 #'  getMetadata(a)
@@ -43,6 +42,7 @@
 
 getMetadata <- function(x, type=NULL) {
   M <- attr(x, "Metadata")
+  if(is.null(M$unit)) M$unit <- make_unit(NULL) 
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -55,28 +55,23 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 "getMetadata<-" <- function(x, type=NULL, value) {
+  conv2unit <- function(x) {
+    if(is(x,"units")) {
+      return(x)
+    } else {
+      return(make_unit(as.character(x)))
+    }
+  }
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){
     if (!is.list(value) & !is.null(value))  stop("Metadata must be a list object if no type is specified")
     else{
-      if (is(value$unit,"units"))  M$unit <- value$unit
-      else if (is.character(value$unit))  M$unit <- make_unit(value$unit)
-      else if (is.list(value$unit)){
-        for (i in 1:length(value$unit))
-          if (is(value$unit[[i]],"units") || is.character(value$unit[[i]]))  M$unit[[i]] <- make_unit(value$unit[[i]])
-          else  stop("The unit list must consist of only objects of type units or character!")
-      }else  warning("The unit field must be of object type units or character, or a list of either!")
+      value$unit <- conv2unit(value$unit)
       M <- value
     }
   }else if (type=="unit"){
-    if (is(value,"units"))  M[[type]] <- value
-    else if (is.character(value))  M$unit <- make_unit(value)
-    else if (is.list(value)){
-      for (i in 1:length(value))  
-        if (is(value[[i]],"units") || is.character(value[[i]]))  M$unit[[i]] <- make_unit(value[[i]])
-        else  stop("The unit list must consist of only objects of type units or character!")
-    }else  warning("The unit field must be of object type units or character, or a vector of either!")
+    M$unit <- conv2unit(value)
   }else if (type=="source"){
     if (is.list(value))  M[[type]] <- value
     else  warning("Source field must be a list! Please include at least author, title, date, and journal.")
