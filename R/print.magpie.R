@@ -17,7 +17,14 @@
 #'   print(population_magpie[,1,], drop=FALSE)
 #'   print(population_magpie[,1,])
 #' 
+#' @importFrom units deparse_unit
 #' @export
 print.magpie <- function(x, drop=TRUE, ...) {
-    print(as.array(x)[,,,drop=drop], ...)
+    p <- print(as.array(x)[,,,drop=drop], ...)
+    
+    unit <- getMetadata(x,"unit")
+    if(!is.null(unit)) {
+      factor <- ifelse(as.numeric(unit)!=1,paste0(as.character(unit),"*"),"")
+      cat("Unit: ",factor,as.character(attr(unit, "units")),"\n", sep="")
+    }
 }
