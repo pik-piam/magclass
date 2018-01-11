@@ -191,5 +191,6 @@ magpie_expand <- function(x,ref) {
       }
     }
   }
+  if(isTRUE(getOption("magclass_metadata")))  x <- updateMetadata(x)
   return(x)
 }

@@ -34,5 +34,6 @@ magpply<-function(X,FUN,MARGIN,...,integrate=FALSE){
   } else {
     out<-as.magpie(out)
   }
+  if(isTRUE(getOption("magclass_metadata")))  out <- updateMetadata(out,X,unit="copy",source="copy",calcHistory="copy",description="copy")
   return(out)
 }

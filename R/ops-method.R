@@ -1,5 +1,6 @@
 #' @importFrom methods Ops callGeneric new
 #' @importFrom units set_units
+#' @importFrom units as.units
 #' @exportMethod Ops
 setMethod(Ops, signature(e1='magpie', e2='magpie'),
           function(e1, e2){
@@ -29,7 +30,7 @@ setMethod(Ops, signature(e1='magpie', e2='magpie'),
               out <- updateMetadata(out,list(e1,e2), calcHistory = "merge", source = "merge")
               if(eq | mod) getMetadata(out,"unit") <- getMetadata(e1,"unit")
               if(prd) getMetadata(out,"unit") <- callGeneric(getMetadata(e1,"unit"),getMetadata(e2,"unit"))
-              if(pw) getMetadata(out,"unit") <- "mixed"
+              if(pw) getMetadata(out,"unit") <- as.units("mixed")
               print(getMetadata(out))
             }
             return(out)  

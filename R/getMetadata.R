@@ -3,7 +3,7 @@
 #' This function allows users to set and retrieve metadata for magclass objects 
 #' 
 #' Metadata is an attribute of a magclass object, and it includes the default 
-#' fields of "unit", "source", "creationDate", "user", "calcHistory" and "description", 
+#' fields of "unit", "source", "date", "user", "calcHistory" and "description", 
 #' all contained in a list.
 #' 
 #' The "source" element should include all information about the source(s)
@@ -26,13 +26,13 @@
 #'  #returns NULL
 #'  getMetadata(a)
 #'  #set the unit field
-#'  getMetadata(a, "unit")<- "GtCO2eq"
+#'  getMetadata(a, "unit") <- "GtCO2eq"
 #'  getMetadata(a)
 #'  
 #'  #set all Metadata fields
 #'  M <- list('unit'='kg', 'source'=list('author'='John Doe', 'date'='January 1, 2017', 
 #'  'title'='example', 'journal'='BigJournal, Vol. 200, pp. 100-115'), 
-#'  'creationDate'=sys.Date(), 'user'='you', calcHistory'='readSource', 
+#'  'date'=sys.Date(), 'user'='you', calcHistory'='readSource', 
 #'  'description'='nonsense')
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
@@ -42,7 +42,7 @@
 
 getMetadata <- function(x, type=NULL) {
   M <- attr(x, "Metadata")
-  if(is.null(M$unit)) M$unit <- make_unit(NULL) 
+  if(is.null(M$unit)) M$unit <- as.units(1) 
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -54,6 +54,7 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
+#' @importFrom units make_unit
 "getMetadata<-" <- function(x, type=NULL, value) {
   conv2unit <- function(x) {
     if(is(x,"units")) {
@@ -68,19 +69,37 @@ getMetadata <- function(x, type=NULL) {
     if (!is.list(value) & !is.null(value))  stop("Metadata must be a list object if no type is specified")
     else{
       value$unit <- conv2unit(value$unit)
+      if (!is.null(value$source)){
+        if (is.list(value$source)){
+          for (i in 1:(length(value$source)-1)){
+            if (is.list(value$source[[i]])){
+              if (!is.null(value$source[[i+1]]) & !is.list(value$source[[i+1]])){
+                warning("Source [",i+1,"] must be formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+                value$source[[i+1]] <- NULL
+              }
+            }else if (!is.null(value$source[[i]]) & is.list(value$source[[i+1]])){
+              warning("Source [",i,"] must be formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+              value$source[[i]] <- NULL
+            }
+          }
+        }else{
+          warning("Source must be a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+          value$source <- NULL
+        }
+      }
       M <- value
     }
   }else if (type=="unit"){
     M$unit <- conv2unit(value)
   }else if (type=="source"){
     if (is.list(value))  M[[type]] <- value
-    else  warning("Source field must be a list! Please include at least author, title, date, and journal.")
+    else  warning("Source field must be a list! Please include at least author, title, date, and journal. DOI, ISSN, URL, etc are also encouraged")
   }else if (type == "calcHistory"){
     if (is.character(value))  M[[type]] <- value
     else  warning("calcHistory field must be a character!")
-  }else if (type=="creationDate"){
+  }else if (type=="date"){
     if (is.character(value))  M[[type]] <- value
-    else  warning("creationDate field must be a character!")
+    else  warning("date field must be a character!")
   }else if (type=="user"){
     if (is.character(value))  M[[type]] <- value
     else  warning("user field must be a character!")
