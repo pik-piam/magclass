@@ -124,7 +124,7 @@ dimSums<-function (x, na.rm = FALSE, dims = NULL, dim = 3, sep = ".", ...)
     if (2 %in% dim && nyears(x) == 1) 
       dimnames(out)[[2]] <- getYears(x)
     out <- clean_magpie(out)
-    if (isTRUE(getOption("magclass_metadata")))  out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="copy", description="copy")
+    out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="copy", description="copy")
   } else {
     out <- aperm(as.array(out), perm = remaining_dims)
   }

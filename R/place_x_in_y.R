@@ -44,6 +44,6 @@ place_x_in_y<-function(x,y,expand=T){
     x<-x[,,getNames(x)[getNames(x)%in%getNames(y)]]
   }
   y[getRegions(x),getYears(x),getNames(x)]<-x
-  if(isTRUE(getOption("magclass_metadata")))  y<-updateMetadata(y,x,source='merge',calcHistory='update')
+  y <- updateMetadata(y,x,source='merge',calcHistory='update')
   return(y)
 }

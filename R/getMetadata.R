@@ -1,6 +1,9 @@
-#' getMetadata
+#' getMetadata (!experimental!)
 #' 
-#' This function allows users to set and retrieve metadata for magclass objects 
+#' This function is currently experimental and non-functional by default! To activate it,
+#' set options(magclass_metadata=TRUE), otherwise it will not return or modify any metadata!
+#' 
+#' The function allows users to set and retrieve metadata for magclass objects 
 #' 
 #' Metadata is an attribute of a magclass object, and it includes the default 
 #' fields of "unit", "source", "date", "user", "calcHistory" and "description", 
@@ -22,6 +25,7 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
 #' @examples
+#'  options(magclass_metadata=TRUE)
 #'  a <- as.magpie(1)
 #'  #returns NULL
 #'  getMetadata(a)
@@ -36,11 +40,12 @@
 #'  'description'='nonsense')
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
-#' 
+#'  options(magclass_metadata=FALSE)
 #' @export
 #' @importFrom units make_unit
 
 getMetadata <- function(x, type=NULL) {
+  if(!isTRUE(getOption("magclass_metadata"))) return(NULL)
   M <- attr(x, "Metadata")
   if(is.null(M$unit)) M$unit <- as.units(1) 
   if(is.null(type)) {
@@ -56,6 +61,7 @@ getMetadata <- function(x, type=NULL) {
 #' @export
 #' @importFrom units make_unit
 "getMetadata<-" <- function(x, type=NULL, value) {
+  if(!isTRUE(getOption("magclass_metadata"))) return(x)
   conv2unit <- function(x) {
     if(is(x,"units")) {
       return(x)

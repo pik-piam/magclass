@@ -14,7 +14,6 @@ tmpfilter <- function(x, sep="\\.", replacement="_") {
   return(x)
 }
 
-
 setMethod("as.magpie",
           signature(x = "lpj"),
           function (x, ...)
