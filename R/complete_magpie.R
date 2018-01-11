@@ -34,7 +34,7 @@ complete_magpie<-function(x,fill=NA) {
     add<-new.magpie(cells_and_regions = full[[1]],years = full[[2]],names = missing,fill=fill)
     out<-mbind(x,add)
   } else {out<-x}
-  out<-out[,,order(getNames(out))]
-  if (isTRUE(getOption("magclass_metadata")))  out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="copy", user="copy", creationDate="copy", description="copy")
+  out <- out[,,order(getNames(out))]
+  out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="copy", user="copy", creationDate="copy", description="copy")
   return(out)
 }

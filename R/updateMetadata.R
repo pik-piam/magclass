@@ -1,6 +1,9 @@
-#' updateMetadata
+#' updateMetadata  (!experimental!)
 #' 
-#' This function is to be used by other functions to update metadata for magclass objects 
+#' This function is currently experimental and non-functional by default! To activate it,
+#' set options(magclass_metadata=TRUE), otherwise it will not return or modify any metadata!
+#' 
+#' The function is to be used by other functions to update metadata for magclass objects 
 #' 
 #' When an operation is performed on a MAgPIE dataset, updateMetadata can be used to copy 
 #' Metadata entries to the new MAgPIE object or update the Metadata fields appropriately.  
@@ -41,19 +44,12 @@
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
-#' @examples
-#' 
-#' x <- as.magpie(0)
-#' y <- as.magpie(1)
-#' getMetadata(y, "unit") = "km"
-#' x <- updateMetadata(x, y, description = "bla")
-#' getMetadata(x)
-#' 
+
 #' @export
 #' @importFrom units make_unit
 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", creationDate="update", description="keep", n=1){
-  
+  if(!isTRUE(getOption("magclass_metadata"))) return(x)
   if (is.list(y)){
     for (i in 1:length(y)){
       if (!is.null(getMetadata(y[[i]])))

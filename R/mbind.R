@@ -90,6 +90,6 @@ mbind <- function(...) {
   }
   if(length(grep("dummydimname",getNames(output),fixed=TRUE))==ndata(output)) dimnames(output)[[3]] <- NULL 
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
-  if(isTRUE(getOption("magclass_metadata"))) output <- updateMetadata(output, inputs, unit="merge", calcHistory="merge", source="merge", description="merge")
+  output <- updateMetadata(output, inputs, unit="merge", calcHistory="merge", source="merge", description="merge")
   return(output)
 }

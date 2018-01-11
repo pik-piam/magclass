@@ -41,7 +41,7 @@ mbind2 <- function(...) {
       names(dimnames(output)) <- names(dimnames(list(...)[ismagpie][[1]]))
       for(i in 1:length(list(...)[ismagpie])) output[,,getNames(list(...)[ismagpie][[i]])] <- list(...)[ismagpie][[i]]      
     }
-    if (isTRUE(getOption("magclass_metadata")))  output <- updateMetadata(output, list(...), unit="merge", calcHistory="merge", source="merge", description="merge")
+    output <- updateMetadata(output, list(...), unit="merge", calcHistory="merge", source="merge", description="merge")
     return(output)
   }
 }  
