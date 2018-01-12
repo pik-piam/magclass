@@ -16,10 +16,8 @@
 #' 
 #' 
 "units<-.magpie" <- function (x, value) {
-  unit <- getMetadata(x,"unit")
-  multiplier <- as.numeric(set_units(unit,value))
   getMetadata(x,"unit") <- value
-  return(x*multiplier)
+  return(x)
 }
 
 #' @export 

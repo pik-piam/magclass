@@ -23,7 +23,7 @@
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getRegions}}, \code{\link{getNames}},
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
-#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
+#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @examples
 #'  options(magclass_metadata=TRUE)
 #'  a <- as.magpie(1)
@@ -42,12 +42,11 @@
 #'  getMetadata(a)
 #'  options(magclass_metadata=FALSE)
 #' @export
-#' @importFrom units make_unit
 
 getMetadata <- function(x, type=NULL) {
   if(!isTRUE(getOption("magclass_metadata"))) return(NULL)
   M <- attr(x, "Metadata")
-  if(is.null(M$unit)) M$unit <- make_unit(NULL) 
+  if(is.null(M$unit)) M$unit <- 1
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -61,23 +60,15 @@ getMetadata <- function(x, type=NULL) {
 #' @export
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!isTRUE(getOption("magclass_metadata"))) return(x)
-  conv2unit <- function(x) {
-    if(is(x,"units")) {
-      return(x)
-    } else {
-      return(make_unit(as.character(x)))
-    }
-  }
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){
     if (!is.list(value) & !is.null(value))  stop("Metadata must be a list object if no type is specified")
     else{
-      value$unit <- conv2unit(value$unit)
       M <- value
     }
   }else if (type=="unit"){
-    M$unit <- conv2unit(value)
+    M$unit <- value
   }else if (type=="source"){
     if (is.list(value))  M[[type]] <- value
     else  warning("Source field must be a list! Please include at least author, title, date, and journal.")

@@ -43,10 +43,9 @@
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
-#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
+#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 
 #' @export
-#' @importFrom units make_unit
 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", creationDate="update", description="keep", n=1){
   if(!isTRUE(getOption("magclass_metadata"))) return(x)
