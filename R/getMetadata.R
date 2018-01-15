@@ -23,7 +23,7 @@
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getRegions}}, \code{\link{getNames}},
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
-#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
+#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @examples
 #'  options(magclass_metadata=TRUE)
 #'  a <- as.magpie(1)
@@ -42,12 +42,11 @@
 #'  getMetadata(a)
 #'  options(magclass_metadata=FALSE)
 #' @export
-#' @importFrom units make_unit
 
 getMetadata <- function(x, type=NULL) {
   if(!isTRUE(getOption("magclass_metadata"))) return(NULL)
   M <- attr(x, "Metadata")
-  if(is.null(M$unit)) M$unit <- as.units(1) 
+  if(is.null(M$unit)) M$unit <- 1
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -59,46 +58,20 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
-#' @importFrom units make_unit
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!isTRUE(getOption("magclass_metadata"))) return(x)
-  conv2unit <- function(x) {
-    if(is(x,"units")) {
-      return(x)
-    } else {
-      return(make_unit(as.character(x)))
-    }
-  }
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){
     if (!is.list(value) & !is.null(value))  stop("Metadata must be a list object if no type is specified")
     else{
-      value$unit <- conv2unit(value$unit)
-      if (!is.null(value$source)){
-        if (is.list(value$source)){
-          for (i in 1:(length(value$source)-1)){
-            if (is.list(value$source[[i]])){
-              if (!is.null(value$source[[i+1]]) & !is.list(value$source[[i+1]])){
-                warning("Source [",i+1,"] must be formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-                value$source[[i+1]] <- NULL
-              }
-            }else if (!is.null(value$source[[i]]) & is.list(value$source[[i+1]])){
-              warning("Source [",i,"] must be formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-              value$source[[i]] <- NULL
-            }
-          }
-        }else{
-          warning("Source must be a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-          value$source <- NULL
-        }
-      }
       M <- value
     }
   }else if (type=="unit"){
-    M$unit <- conv2unit(value)
+    if (length(value)<=1)  M[[type]] <- value
+    else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
-    if (is.list(value))  M[[type]] <- value
+    if (is.list(value) || is.null(value))  M[[type]] <- value
     else  warning("Source field must be a list! Please include at least author, title, date, and journal. DOI, ISSN, URL, etc are also encouraged")
   }else if (type == "calcHistory"){
     if (is.character(value))  M[[type]] <- value
@@ -110,7 +83,7 @@ getMetadata <- function(x, type=NULL) {
     if (is.character(value))  M[[type]] <- value
     else  warning("user field must be a character!")
   }else if (type=="description"){
-    if(is.character(value))  M[[type]] <- value
+    if(is.character(value) || is.null(value))  M[[type]] <- value
     else  warning("description field must be a character!")
   }
   attr(x, "Metadata") <- M

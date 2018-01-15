@@ -39,17 +39,8 @@
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
-#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}, \code{\link{make_unit}}
-#' @examples
-#' 
-#' x <- as.magpie(0)
-#' y <- as.magpie(1)
-#' getMetadata(y, "unit") = "km"
-#' x <- updateMetadata(x, y, description = "bla")
-#' getMetadata(x)
-#' 
+#' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @export
-#' @importFrom units make_unit
 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
   
@@ -64,8 +55,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   Mx <- getMetadata(x)
   My <- getMetadata(y)
   
-  if (is(unit,"units"))  Mx$unit <- unit
-  else if (unit=="copy"){
+  if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL

@@ -33,7 +33,6 @@
 #' 
 #' @export mbind
 #' @importFrom methods new
-#' @importFrom units make_unit
 mbind <- function(...) {  
   inputs <- list(...)
   if(length(inputs)==1 & is.list(inputs[[1]])) inputs <- inputs[[1]]
@@ -92,16 +91,17 @@ mbind <- function(...) {
   if(length(grep("dummydimname",getNames(output),fixed=TRUE))==ndata(output)) dimnames(output)[[3]] <- NULL 
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
   
-  if(isTRUE(getOption("magclass_metadata"))){
+  if (!is.null(getMetadata(output,"unit"))){
     for (i in 1:length(inputs)){
-      if (getMetadata(output,"unit")!=getMetadata(inputs[[i]],"unit")){
-        mixed <- make_unit("mixed")
-        u <- mixed
-        warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
-        break
-      }else  u <- "keep"
+      if (!is.null(getMetadata(inputs[[i]],"unit"))){
+        if (getMetadata(output,"unit")!=getMetadata(inputs[[i]],"unit")){
+          u <- "mixed"
+          warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
+          break
+        }else  u <- "keep"
+      }else  u <- "mixed"
     }
-    output <- updateMetadata(output, inputs, unit=u, calcHistory="copy", source="copy", description="copy")
-  }
+  }else  u <- "mixed"
+  output <- updateMetadata(output, inputs, unit=u, calcHistory="copy", source="copy", description="copy")
   return(output)
 }

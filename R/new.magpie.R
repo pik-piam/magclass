@@ -14,8 +14,7 @@
 #' @param sort Bolean. Decides, wheher output should be sorted or not.
 #' @param sets A vector of dimension names. See \code{\link{getSets}} for more
 #' information.
-#' @param unit An object of type units which specifies the magpie object's unit
-#' metadata field. Argument can either be a units object or a string.
+#' @param unit A character which sets the MAgPIE object's unit field in its metadata atrribute
 #' @return an empty magpie object filled with fill, with the given dimnames
 #' @author Benjamin Bodirsky, Jan Philipp Dietrich
 #' @seealso \code{\link{as.magpie}}
@@ -27,8 +26,7 @@
 #' 
 #' @export new.magpie
 #' @importFrom methods new
-#' @importFrom units as.units
-new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit=as.units(1)) {
+new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit=1) {
   ncells <- length(cells_and_regions)
   nyears <- ifelse(is.null(years),1,length(years))
   ndata  <- ifelse(is.null(names),1,length(names))
@@ -47,9 +45,6 @@ new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sor
   object <- clean_magpie(object,"sets")
   if(!is.null(sets)) getSets(object) <- sets
   
-  if(isTRUE(getOption("magclass_metadata"))){
-    if (!is(unit,"units"))  unit <- make_unit("unit") 
-    object <- updateMetadata(object,unit=unit)
-  }
+  object <- updateMetadata(object,unit=unit)
   return(object)
 }
