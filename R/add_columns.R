@@ -40,7 +40,6 @@ add_columns<-function(x,addnm=c("new"),dim=3.1){
       }}
     new_columns[,,]<-NA
   }
-  getMetadata(new_columns) <- NULL
   output <- mbind(x,new_columns)
   return(output)
 }

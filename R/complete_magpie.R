@@ -35,6 +35,6 @@ complete_magpie<-function(x,fill=NA) {
     out<-mbind(x,add)
   } else {out<-x}
   out<-out[,,order(getNames(out))]
-  if (isTRUE(getOption("magclass_metadata")))  getMetadata(out) <- getMetadata(x)
+  getMetadata(out) <- getMetadata(x)
   return(out)
 }

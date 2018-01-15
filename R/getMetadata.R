@@ -46,7 +46,7 @@
 getMetadata <- function(x, type=NULL) {
   if(!isTRUE(getOption("magclass_metadata"))) return(NULL)
   M <- attr(x, "Metadata")
-  if(is.null(M$unit)) M$unit <- 1
+  if(is.null(M$unit)) M$unit <- '1'
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -63,29 +63,73 @@ getMetadata <- function(x, type=NULL) {
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){
-    if (!is.list(value) & !is.null(value))  stop("Metadata must be a list object if no type is specified")
+    if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
-      M <- value
+      if (length(value$unit)>1){
+        warning(value$unit," is an invalid argument for unit")
+        value$unit <- 1
+      }
+      if (!is.null(value$source)){
+        if (is.list(value$source)){
+          for (i in 1:(length(value$source)-1)){
+            if (is.list(value$source[[i]])){
+              if (!is.null(value$source[[i+1]]) & !is.list(value$source[[i+1]])){
+                warning("Source [",i+1,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+                value$source[[i+1]] <- NULL
+              }
+            }else if (!is.null(value$source[[i]]) & is.list(value$source[[i+1]])){
+              warning("Source [",i,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+              value$source[[i]] <- NULL
+            }
+          }
+        }else{
+          warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+          value$source <- NULL
+        }
+      }
+      if (!is.null(value$user)){
+        if (!is.character(value$user) & length(value$user)!=1){
+          warning(value$user," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user")
+          value$user <- NULL
+        }
+      }
+      if(!is.null(value$date)){
+        if(!is.character(value$date) & length(value$date)!=1){
+          warning(value$date," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date")
+          value$date <- NULL
+        }
+      }
+      if(!is.null(value$description)){
+        if(!is.character(value$description)){
+          warning(value$description," is an invalid argument for description!")
+          value$description <- NULL
+        }
+      }
     }
+    M <- value
   }else if (type=="unit"){
     if (length(value)<=1)  M[[type]] <- value
     else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
-    if (is.list(value) || is.null(value))  M[[type]] <- value
+    if (is.null(value) || is.list(value))  M[[type]] <- value
     else  warning("Source field must be a list! Please include at least author, title, date, and journal. DOI, ISSN, URL, etc are also encouraged")
   }else if (type == "calcHistory"){
-    if (is.character(value))  M[[type]] <- value
-    else  warning("calcHistory field must be a character!")
+    if (is.character(value)){
+      if (is.list(M$calcHistory))  M$calcHistory[[length(M$calcHistory)]] <- append(M$calcHistory[[length(M$calcHistory)]],value)
+      else if (is.null(M[[type]]))  M[[type]] <- value
+      else  M[[type]] <- list(M[[type]],value)
+    }else if (is.null(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for calcHistory! Please use getMetadata.R to provide the most recent function executed on, ",x)
   }else if (type=="date"){
-    if (is.character(value))  M[[type]] <- value
-    else  warning("date field must be a character!")
+    if  ((is.character(value) & length(value)==1))  M[[type]] <- value
+    else  warning(value," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date for ",x)
   }else if (type=="user"){
-    if (is.character(value))  M[[type]] <- value
-    else  warning("user field must be a character!")
+    if ((is.character(value) & length(value)==1))  M[[type]] <- value
+    else  warning(value," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user for ",x)
   }else if (type=="description"){
-    if(is.character(value) || is.null(value))  M[[type]] <- value
-    else  warning("description field must be a character!")
-  }
+    if(is.null(value) || is.character(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for description! Please use getMetadata.R to provide a description for ",x)
+  }else  warning(type," is not a valid metadata field!")
   attr(x, "Metadata") <- M
   return(x)
 }

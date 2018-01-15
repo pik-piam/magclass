@@ -41,13 +41,17 @@ mbind2 <- function(...) {
       names(dimnames(output)) <- names(dimnames(list(...)[ismagpie][[1]]))
       for(i in 1:length(list(...)[ismagpie])) output[,,getNames(list(...)[ismagpie][[i]])] <- list(...)[ismagpie][[i]]      
     }
-    for (i in 1:length(list(...))){
-      if (getMetadata(output,"unit")!=getMetadata(list(...)[[i]],"unit")){
-        u <- "mixed"
-        warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
-        break
-      }else  u <- "keep"
-    }
+    if (!is.null(getMetadata(output,"unit"))){
+      for (i in 1:length(list(...))){
+        if (!is.null(getMetadata(list(...)[[i]],"unit"))){
+          if (getMetadata(output,"unit")!=getMetadata(list(...)[[i]],"unit")){
+            u <- "mixed"
+            warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
+            break
+          }else  u <- "keep"
+        }else  u <- "mixed"
+      }
+    }else  u <- "mixed"
     output <- updateMetadata(output, list(...), unit=u, calcHistory="copy", source="copy", description="copy")
     return(output)
   }

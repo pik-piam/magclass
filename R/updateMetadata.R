@@ -1,4 +1,7 @@
-#' updateMetadata
+#' updateMetadata (!experimental!)
+#' 
+#' This function is currently experimental and non-functional by default! To activate it,
+#' set options(magclass_metadata=TRUE), otherwise it will not return or modify any metadata!
 #' 
 #' This function is to be used by other functions to update metadata for magclass objects 
 #' 
@@ -41,9 +44,9 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @export
-
+#' 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
-  
+  if(!isTRUE(getOption("magclass_metadata"))) return(x)
   if (is.list(y)){
     for (i in 1:length(y)){
       if (is.magpie(y[[i]]))  x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, date, description, n=n+i)
@@ -54,19 +57,22 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   
   Mx <- getMetadata(x)
   My <- getMetadata(y)
-  
+
   if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL
   else if (unit=="update")  warning("Update is an invalid argument for unit!")
-  else if (unit!="keep")  Mx$unit <- unit
+  else if (unit!="keep")  if(length(unit)==1) Mx$unit <- unit  else warning("Invalid argument ",unit," for unit!")
   
   if (source=="copy"){
     if (!is.null(y)){
-      if (is.null(getMetadata(x)))  Mx$source <- My$source
-      else if (is.list(Mx$source))  Mx$source <- append(Mx$source, list(My$source))
-      else  Mx$source <- list(Mx$source, My$source)
+      if (is.list(My$source)){
+        if (is.list(Mx$source)){
+          if (is.list(Mx$source[[2]]))  Mx$source <- append(Mx$source, list(My$source))
+          else  Mx$source <- list(Mx$source, My$source)
+        }else  Mx$source <- My$source
+      }
     }else  warning("Source cannot be copied without a second magpie argument provided!")
   }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
   else if (source=="clear")  Mx$source <- NULL
@@ -76,10 +82,11 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     fn <- as.character(sys.call(-n))
     if (!is.na(fn[1]) & !is.null(fn[1])){
       if (is.null(y)){
-        if (!is.null(Mx$calcHistory))  Mx$calcHistory <- c(Mx$calcHistory, fn[1])
+        if (!is.null(Mx$calcHistory) & !is.list(Mx$calcHistory))  Mx$calcHistory <- list(Mx$calcHistory, fn[1])
+        else if (is.list(Mx$calcHistory))  Mx$calcHistory <- append(Mx$calcHistory, fn[1])
         else  Mx$calcHistory <- fn[1]
       }else if (is.null(getMetadata(x))){
-        if (!is.null(My$calcHistory))  Mx$calcHistory <- c(My$calcHistory, fn[1])
+        if (!is.null(My$calcHistory))  Mx$calcHistory <- list(My$calcHistory, fn[1])
         else  Mx$calcHistory <- fn[1]
       }else if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- c(My$calcHistory, fn[1])
       else  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, fn[1]))
@@ -91,7 +98,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
       else  Mx$calcHistory <- list(Mx$calcHistory, My$calcHistory)
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
-  else if (calcHistory!="keep")  warning("Invalid argument for calcHistory!")
+  else if (calcHistory!="keep")  warning("Invalid argument ",calcHistory," for calcHistory!")
   
   if (user=="update"){
     env <- if(.Platform$OS.type == "windows") "USERNAME" else "USER"
@@ -104,7 +111,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   }else if (user=="clear")  Mx$user <- NULL
   else if (user!="keep"){
     if (is.character(user) & length(user)==1)  Mx$user <- user
-    else  warning("Invalid argument for user!")
+    else  warning("Invalid argument ",user," for user!")
   }
   
   if (date=="update")  Mx$date <- as.character(Sys.time())
@@ -114,19 +121,16 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
       else  warning("Attempting to copy a NULL date!")
     }else  warning("date cannot be copied without a second magpie argument provided!")
   }else if (date=="clear")  warning("date cannot be cleared! Please specify keep, copy, or update.")
-  else if (date!="keep")  warning("Invalid argument for date!")
+  else if (date!="keep")  warning("Invalid argument ", date," for date!")
     
   if (description=="copy"){
-    if (!is.null(y)){
-      if (is.null(getMetadata(x)))  Mx$description <- My$description
-      else if (is.list(Mx$description))  Mx$description[[length(Mx$description)+1]] <- My$description
-      else  Mx$description <- list(Mx$description, My$description)
-    }else  warning("Description cannot be copied without a second magpie argument provided!")
+    if (!is.null(y))  Mx$description <- My$description
+    else  warning("Description cannot be copied without a second magpie argument provided!")
   }else if (description=="clear")  Mx$description <- NULL
   else if (description=="update")  warning("Update is an invalid argument for description! Please specify keep, copy, merge, or clear.")
   else if (description!="keep"){
     if (is.character(description))  Mx$description <- description
-    else  warning("Invalid argument for description!")
+    else  warning("Invalid argument ",description," for description!")
   }
   getMetadata(x) <- Mx
   return(x)

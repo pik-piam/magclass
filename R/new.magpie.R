@@ -26,7 +26,7 @@
 #' 
 #' @export new.magpie
 #' @importFrom methods new
-new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit=1) {
+new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit="1") {
   ncells <- length(cells_and_regions)
   nyears <- ifelse(is.null(years),1,length(years))
   ndata  <- ifelse(is.null(names),1,length(names))
@@ -44,7 +44,6 @@ new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sor
   if(sort) object <- magpiesort(object)
   object <- clean_magpie(object,"sets")
   if(!is.null(sets)) getSets(object) <- sets
-  
-  object <- updateMetadata(object,unit=unit)
-  return(object)
+  return(updateMetadata(object,unit=unit))
+
 }

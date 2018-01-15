@@ -16,7 +16,7 @@ tmpfilter <- function(x, sep="\\.", replacement="_") {
 
 setMethod("as.magpie",
           signature(x = "lpj"),
-          function (x, ...)
+          function (x, unit="1", ...)
           {
             xdimnames <- dimnames(x)
             xdim <- dim(x)
@@ -24,13 +24,13 @@ setMethod("as.magpie",
             dimnames(x) <- list(paste(magclassdata$half_deg$region,1:59199,sep='.'),
                                 xdimnames[[2]],
                                 paste(rep(xdimnames[[3]],xdim[4]),rep(xdimnames[[4]],each=xdim[3]),sep="."))
-            return(new("magpie",x))
+            return(updateMetadata(new("magpie",x), unit=unit))
           }
 )
 
 setMethod("as.magpie",
     signature(x = "array"),
-    function (x, spatial=NULL, temporal=NULL, ...)
+    function (x, spatial=NULL, temporal=NULL, unit="1", ...)
     {
       store_attributes <- copy.attributes(x,0)
 
@@ -148,15 +148,15 @@ setMethod("as.magpie",
 
       #Now temporal and regiospatial dimension should both exist
       #Return MAgPIE object
-      return(copy.attributes(store_attributes,new("magpie",wrap(x,list(d$regiospatial,d$temporal,NA)))))
+      return(updateMetadata(copy.attributes(store_attributes,new("magpie",wrap(x,list(d$regiospatial,d$temporal,NA)))), unit=unit))
     }
 )
 
 setMethod("as.magpie",
     signature(x = "numeric"),
-    function(x,...)
+    function(x, unit="1", ...)
     {
-      return(copy.attributes(x,as.magpie(as.array(x),...)))
+      return(updateMetadata(copy.attributes(x,as.magpie(as.array(x),...)), unit=unit))
     }
 )
 
@@ -170,7 +170,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "data.frame"),
-          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", ...)
+          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="1", ...)
           {
             # filter illegal characters
             for(i in 1:dim(x)[2]) {
@@ -193,7 +193,7 @@ setMethod("as.magpie",
               if(datacol==dim(x)[2]) return(tidy2magpie(x,...))
               x[[datacol-1]] <- as.factor(x[[datacol-1]])
             }
-            return(copy.attributes(x,tidy2magpie(suppressMessages(reshape2::melt(x)),...)))
+            return(updateMetadata(copy.attributes(x,tidy2magpie(suppressMessages(reshape2::melt(x)),...)), unit=unit))
           }
 )
 
@@ -262,19 +262,20 @@ setMethod("as.magpie",
 
             #put value column as last column
             x <- x[c(which(names(x)!="value"),which(names(x)=="value"))]
-            return(tidy2magpie(x,spatial="region",temporal="period"))
+            return(updateMetadata(tidy2magpie(x,spatial="region",temporal="period")))
           }
 )
 
 setMethod("as.magpie",
           signature(x = "tbl_df"),
-          function(x, ...)
+          function(x, unit="1", ...)
           {
             if("quitte" %in% class(x)) {
               class(x) <- c("quitte","data.frame")
+              return(updateMetadata(as.magpie(x,...)))
             } else {
               class(x) <- "data.frame"
+              return(updateMetadata(as.magpie(x,...), unit=unit))
             }
-            return(as.magpie(x,...))
           }
 )

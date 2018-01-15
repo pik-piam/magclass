@@ -1,7 +1,7 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.72.3
+Version: 4.72.4
 Author: Jan Philipp Dietrich,
     Benjamin Bodirsky,
     Misko Stevanovic,
