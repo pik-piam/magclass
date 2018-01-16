@@ -67,8 +67,8 @@ getMetadata <- function(x, type=NULL) {
     else{
       if (length(value$unit)>1){
         warning(value$unit," is an invalid argument for unit")
-        value$unit <- 1
-      }
+        value$unit <- "1"
+      }else if (is.null(value$unit))  value$unit <- "1"
       if (!is.null(value$source)){
         if (is.list(value$source)){
           for (i in 1:(length(value$source)-1)){
@@ -108,27 +108,45 @@ getMetadata <- function(x, type=NULL) {
     }
     M <- value
   }else if (type=="unit"){
-    if (length(value)<=1)  M[[type]] <- value
+    if (is.character(value) & length(value)==1)  M[[type]] <- value
+    else if (is.null(value))  M$unit <- '1'
     else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
-    if (is.null(value) || is.list(value))  M[[type]] <- value
-    else  warning("Source field must be a list! Please include at least author, title, date, and journal. DOI, ISSN, URL, etc are also encouraged")
+    if (is.null(value))  M[[type]] <- value
+    else if (is.list(value)){
+      for (i in 1:(length(value)-1)){
+        if (is.list(value[[i]])){
+          if (!is.null(value[[i+1]]) & !is.list(value[[i+1]])){
+            warning("Source [",i+1,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+            value[[i+1]] <- NULL
+          }else{
+            M$source[[i]] <- value[[i]]
+            M$source[[i+1]] <- value[[i+1]]
+          }
+        }else if (!is.null(value[[i]]) & is.list(value[[i+1]])){
+          warning("Source [",i,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+          value[[i]] <- NULL
+        }
+      }
+    }else{
+      warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+   }
   }else if (type == "calcHistory"){
     if (is.character(value)){
       if (is.list(M$calcHistory))  M$calcHistory[[length(M$calcHistory)]] <- append(M$calcHistory[[length(M$calcHistory)]],value)
       else if (is.null(M[[type]]))  M[[type]] <- value
       else  M[[type]] <- list(M[[type]],value)
     }else if (is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for calcHistory! Please use getMetadata.R to provide the most recent function executed on, ",x)
+    else  warning(value," is an invalid argument for calcHistory! Please use getMetadata.R to append the most recent function executed to calcHistory.")
   }else if (type=="date"){
     if  ((is.character(value) & length(value)==1))  M[[type]] <- value
-    else  warning(value," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date for ",x)
+    else  warning(value," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date.")
   }else if (type=="user"){
     if ((is.character(value) & length(value)==1))  M[[type]] <- value
-    else  warning(value," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user for ",x)
+    else  warning(value," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user")
   }else if (type=="description"){
     if(is.null(value) || is.character(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for description! Please use getMetadata.R to provide a description for ",x)
+    else  warning(value," is an invalid argument for description! Please use getMetadata.R to provide a description")
   }else  warning(type," is not a valid metadata field!")
   attr(x, "Metadata") <- M
   return(x)
