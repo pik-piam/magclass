@@ -34,10 +34,10 @@
 #'  getMetadata(a)
 #'  
 #'  #set all Metadata fields
-#'  M <- list('unit'='kg', 'source'=list('author'='John Doe', 'date'='January 1, 2017', 
-#'  'title'='example', 'journal'='BigJournal, Vol. 200, pp. 100-115'), 
-#'  'date'=sys.Date(), 'user'='you', calcHistory'='readSource', 
-#'  'description'='nonsense')
+#'  M <- list(unit='kg', source=list(author='John Doe', date='January 1, 2017', 
+#'  title='example', publication='BigJournal, Vol. 200, pp. 100-115', institution='IEA'), 
+#'  date=as.character(Sys.time()), user='my name', calcHistory=list('downloadSource','readSource'), 
+#'  description='nonsense data')
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
 #'  options(magclass_metadata=FALSE)
@@ -68,22 +68,59 @@ getMetadata <- function(x, type=NULL) {
       if (length(value$unit)>1){
         warning(value$unit," is an invalid argument for unit")
         value$unit <- "1"
-      }else if (is.null(value$unit))  value$unit <- "1"
+      }
       if (!is.null(value$source)){
         if (is.list(value$source)){
-          for (i in 1:(length(value$source)-1)){
+          for (i in 1:(length(value$source))){
             if (is.list(value$source[[i]])){
-              if (!is.null(value$source[[i+1]]) & !is.list(value$source[[i+1]])){
-                warning("Source [",i+1,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-                value$source[[i+1]] <- NULL
+              if (is.null(value$source[[i]]$author)){
+                warning("No author provided for source #",i,"!")
+                value$source[[i]]$author <- "Not provided"
               }
-            }else if (!is.null(value$source[[i]]) & is.list(value$source[[i+1]])){
-              warning("Source [",i,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+              if (is.null(value$source[[i]]$title)){
+                warning("No title provided for source #",i,"!")
+                value$source[[i]]$title <- "Not provided"
+              }
+              if (is.null(value$source[[i]]$date)){
+                warning("No date provided for source #",i,"!")
+                value$source[[i]]$date <- "Not provided"
+              }
+              if (is.null(value$source[[i]]$publication)){
+                warning("No publication provided for source #",i,"!")
+                value$source[[i]]$publication <- "Not provided"
+              }
+              if (is.null(value$source[[i]]$institution)){
+                warning("No institution provided for source #",i,"!")
+                value$source[[i]]$institution <- "Not provided"
+              }
+            }else if (i==1){
+              if (is.null(value$source$author)){
+                warning("No author provided for source!")
+                value$source$author <- "Not provided"
+              }
+              if (is.null(value$source$title)){
+                warning("No title provided for source!")
+                value$source$title <- "Not provided"
+              }
+              if (is.null(value$source$date)){
+                warning("No date provided for source!")
+                value$source$date <- "Not provided"
+              }
+              if (is.null(value$source$publication)){
+                warning("No publication provided for source!")
+                value$source$publication <- "Not provided"
+              }
+              if (is.null(value$source$institution)){
+                warning("No institution provided for source!")
+                value$source$institution <- "Not provided"
+              }
+            }else if (is.list(value$source[[i-1]])){
+              warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
               value$source[[i]] <- NULL
             }
           }
         }else{
-          warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
+          warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
           value$source <- NULL
         }
       }
@@ -114,23 +151,55 @@ getMetadata <- function(x, type=NULL) {
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
     else if (is.list(value)){
-      for (i in 1:(length(value)-1)){
+      for (i in 1:(length(value))){
         if (is.list(value[[i]])){
-          if (!is.null(value[[i+1]]) & !is.list(value[[i+1]])){
-            warning("Source [",i+1,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-            value[[i+1]] <- NULL
-          }else{
-            M$source[[i]] <- value[[i]]
-            M$source[[i+1]] <- value[[i+1]]
+          if (is.null(value[[i]]$author)){
+            warning("No author provided for source #",i,"!")
+            value[[i]]$author <- "Not provided"
           }
-        }else if (!is.null(value[[i]]) & is.list(value[[i+1]])){
-          warning("Source [",i,"] is not a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-          value[[i]] <- NULL
+          if (is.null(value[[i]]$title)){
+            warning("No title provided for source #",i,"!")
+            value[[i]]$title <- "Not provided"
+          }
+          if (is.null(value[[i]]$date)){
+            warning("No date provided for source #",i,"!")
+            value[[i]]$date <- "Not provided"
+          }
+          if (is.null(value[[i]]$publication)){
+            warning("No publication provided for source #",i,"!")
+            value[[i]]$publication <- "Not provided"
+          }
+          if (is.null(value[[i]]$institution)){
+            warning("No institution provided for source #",i,"!")
+            value[[i]]$institution <- "Not provided"
+          }
+        }else if (i==1){
+          if (is.null(value$author)){
+            warning("No author provided for source!")
+            value$author <- "Not provided"
+          }
+          if (is.null(value$title)){
+            warning("No title provided for source!")
+            value$title <- "Not provided"
+          }else if (is.null(value$date)){
+            warning("No date provided for source!")
+            value$date <- "Not provided"
+          }
+          if (is.null(value$publication)){
+            warning("No publication provided for source!")
+            value$publication <- "Not provided"
+          }
+          if (is.null(value$institution)){
+            warning("No institution provided for source!")
+            value$institution <- "Not provided"
+          }
+        }else if (is.list(value[[i-1]])){
+          warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
         }
       }
     }else{
-      warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. Also DOI, ISSN, URL, etc")
-   }
+      warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
+    }
   }else if (type == "calcHistory"){
     if (is.character(value)){
       if (is.list(M$calcHistory))  M$calcHistory[[length(M$calcHistory)]] <- append(M$calcHistory[[length(M$calcHistory)]],value)
