@@ -32,12 +32,6 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
-## Citation
-
-[![DOI](https://zenodo.org/badge/93050064.svg)](https://zenodo.org/badge/latestdoi/93050064)
-
-
-
 ## Tutorial
 
 The package comes with a vignette describing the basic functionality of the package and how to use it. You can load it with the following command (the package needs to be installed):
@@ -49,3 +43,9 @@ vignette("magclass")
 ## Questions / Problems
 
 In case of questions / problems please contact Jan Dietrich <dietrich@pik-potsdam.de>.
+
+
+## Citation
+
+[![DOI](https://zenodo.org/badge/93050064.svg)](https://zenodo.org/badge/latestdoi/93050064)
+
