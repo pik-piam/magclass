@@ -61,14 +61,18 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
             fn <- Node$new(as.character(sys.call(-n))[1])
             if (is(Mx$calcHistory,"Node")){
               cHx <- Clone(Mx$calcHistory)
+              cHx$name <- paste(i,cHx$name)
               if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
                 cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
-                fn$AddChild(paste(sys.call(-n)[1],i))$AddChildNode(cHx)$AddSiblingNode(cHy)
-              }else  fn$AddChild(paste(sys.call(-n)[1],i))$AddChildNode(cHx)
+                cHy$name <- paste(i+1,cHy$name)
+                fn$AddChildNode(cHx)$AddSiblingNode(cHy)
+                j <- i+2
+              }else  fn$AddChildNode(cHx)
             }else if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
               cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
-              cHy$name <- paste(cHy$name,i)
-              fn$AddChildNode(cHy$clone())
+              cHy$name <- paste(i,cHy$name)
+              fn$AddChildNode(cHy)
+              j <- i+1
             }
             Mx$calcHistory <- fn
           }else{
@@ -76,10 +80,11 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
               cHx <- Clone(Mx$calcHistory)
               if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
                 cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
-                cHy$name <- paste(cHy$name,i)
+                cHy$name <- paste(j,cHy$name)
                 cHx$AddChildNode(cHy)
-              }else  cHx$AddChild(paste(sys.call(-n)[1],i))$AddChild("calcHistory missing")
+              }else  cHx$AddChild(paste(j, "calcHistory missing"))
               Mx$calcHistory <- cHx
+              j <- j+1
             }
           }
         }
