@@ -43,3 +43,9 @@ vignette("magclass")
 ## Questions / Problems
 
 In case of questions / problems please contact Jan Dietrich <dietrich@pik-potsdam.de>.
+
+
+## Citation
+
+[![DOI](https://zenodo.org/badge/93050064.svg)](https://zenodo.org/badge/latestdoi/93050064)
+

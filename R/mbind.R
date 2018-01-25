@@ -94,14 +94,14 @@ mbind <- function(...) {
   if (!is.null(getMetadata(output,"unit"))){
     for (i in 1:length(inputs)){
       if (!is.null(getMetadata(inputs[[i]],"unit"))){
-        if (getMetadata(output,"unit")!=getMetadata(inputs[[i]],"unit")){
+        if (getMetadata(inputs[[1]],"unit")!=getMetadata(inputs[[i]],"unit")){
           u <- "mixed"
           warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
           break
-        }else  u <- "keep"
+        }else  u <- "copy"
       }else  u <- "mixed"
     }
   }else  u <- "mixed"
-  output <- updateMetadata(output, inputs, unit=u, calcHistory="copy", source="copy", description="copy")
+  output <- updateMetadata(output, inputs, unit=u, calcHistory="update", source="copy", description="copy")
   return(output)
 }

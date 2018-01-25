@@ -52,7 +52,7 @@ mbind2 <- function(...) {
         }else  u <- "mixed"
       }
     }else  u <- "mixed"
-    output <- updateMetadata(output, list(...), unit=u, calcHistory="copy", source="copy", description="copy")
+    output <- updateMetadata(output, list(...), unit=u, calcHistory="update", source="copy", description="copy")
     return(output)
   }
 }  

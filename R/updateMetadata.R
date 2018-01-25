@@ -26,9 +26,10 @@
 #' The default argument is "keep". 
 #' @param source A list indicating the source(s) of the MAgPIE data. Possible arguments are "keep", "copy",
 #' "clear", or a new source can be entered here in the form of a list. "keep" by default.
-#' @param calcHistory A vector indicating the functions through which x has passed. Possible arguments are
-#' "keep", "copy", "clear", and "update", which adds the function presently calling updateMetadata (or a 
-#' function further upstream if specified by n) to calcHistory and also merges if y is provided. "keep" by default.
+#' @param calcHistory A tree-like Node object indicating the functions through which x has passed. Possible 
+#' arguments are "keep", "copy", "clear", and "update", which adds the function presently calling updateMetadata 
+#' (or a function further upstream if specified by n) to calcHistory and also merges if y is provided. "keep" by 
+#' default.
 #' @param date A character indicating the MAgPIE object's last modified date. Possible arguments are 
 #' "keep", "copy", and "update", which sets the date of x to the current time. "update" by default.
 #' @param user A string indicating the user who last modified the MAgPIE object. Possible arguments are "keep",
@@ -44,20 +45,52 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @export
+#' @importFrom data.tree Node
+#' @importFrom data.tree Clone
 #' 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
   if(!isTRUE(getOption("magclass_metadata"))) return(x)
+  
+  Mx <- getMetadata(x)
+  
   if (is.list(y)){
     for (i in 1:length(y)){
-      if (is.magpie(y[[i]]))  x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, date, description, n=n+i)
-      else  stop("All list components of y must be magpie objects!")
+      if (is.magpie(y[[i]])){
+        if (calcHistory == "update"){
+          if (i==1){
+            fn <- Node$new(as.character(sys.call(-n))[1])
+            if (is(Mx$calcHistory,"Node")){
+              cHx <- Clone(Mx$calcHistory)
+              if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
+                cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+                fn$AddChild(paste(sys.call(-n)[1],i))$AddChildNode(cHx)$AddSiblingNode(cHy)
+              }else  fn$AddChild(paste(sys.call(-n)[1],i))$AddChildNode(cHx)
+            }else if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
+              cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+              cHy$name <- paste(cHy$name,i)
+              fn$AddChildNode(cHy$clone())
+            }
+            Mx$calcHistory <- fn
+          }else{
+            if (is(Mx$calcHistory,"Node")){
+              cHx <- Clone(Mx$calcHistory)
+              if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
+                cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+                cHy$name <- paste(cHy$name,i)
+                cHx$AddChildNode(cHy)
+              }else  cHx$AddChild(paste(sys.call(-n)[1],i))$AddChild("calcHistory missing")
+              Mx$calcHistory <- cHx
+            }
+          }
+        }
+      x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description, n=n+1)
+      }else  stop("All list components of y must be magpie objects!")
     }
     return(x)
   }else if (!is.null(y) & !is.magpie(y))  warning("y argument must be a magpie object or a list of magpie objects!")
   
-  Mx <- getMetadata(x)
   My <- getMetadata(y)
-
+  
   if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
@@ -78,24 +111,30 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   else if (source=="clear")  Mx$source <- NULL
   else if (source!="keep")  Mx$source <- source
   
-  if (calcHistory=="update"){
-    fn <- as.character(sys.call(-n))
-    if (!is.na(fn[1]) & !is.null(fn[1])){
-      if (is.null(y)){
-        if (!is.null(Mx$calcHistory) & !is.list(Mx$calcHistory))  Mx$calcHistory <- list(Mx$calcHistory, fn[1])
-        else if (is.list(Mx$calcHistory))  Mx$calcHistory <- append(Mx$calcHistory, fn[1])
-        else  Mx$calcHistory <- fn[1]
-      }else if (is.null(getMetadata(x))){
-        if (!is.null(My$calcHistory))  Mx$calcHistory <- list(My$calcHistory, fn[1])
-        else  Mx$calcHistory <- fn[1]
-      }else if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- c(My$calcHistory, fn[1])
-      else  Mx$calcHistory <- list(Mx$calcHistory, c(My$calcHistory, fn[1]))
-    }else  warning("n argument is out of range! calcHistory has not been updated!")
+  if (is(calcHistory,"Node"))  Mx$calcHistory <- calcHistory
+  else if (calcHistory=="update"){
+    #if (as.character(sys.call(-1))[1]=="updateMetadata" & is(Mx$calcHistory,"Node"))  fn <- Mx$calcHistory
+    #else{
+      if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
+        fn <- Node$new(as.character(sys.call(-n))[1])
+        if (is(Mx$calcHistory,"Node")){
+          cHx <- Clone(Mx$calcHistory)
+          fn$AddChildNode(cHx)
+        }
+      }else  warning("n argument is out of range! calcHistory has not been updated!")
+    #}
+    if (!is.null(y)){
+      if (is(My$calcHistory,"Node")){
+        cHy <- Clone(My$calcHistory)
+        fn$AddChildNode(cHy)
+      }
+    }
+    Mx$calcHistory <- fn
   }else if (calcHistory=="copy"){
     if (!is.null(y)){
-      if (is.null(getMetadata(x)))  Mx$calcHistory <- My$calcHistory
-      else if (is.list(Mx$calcHistory))  Mx$calcHistory[[length(Mx$calcHistory)+1]] <- My$calcHistory
-      else  Mx$calcHistory <- list(Mx$calcHistory, My$calcHistory)
+      if (is(Mx$calcHistory,"Node"))  warning("Cannot overwrite calcHistory! Use update argument to merge.")
+      else if (!is(My$calcHistory, "Node"))  warning("Attempting to copy a calcHistory which is not a Node object!")
+      else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
   else if (calcHistory!="keep")  warning("Invalid argument ",calcHistory," for calcHistory!")
