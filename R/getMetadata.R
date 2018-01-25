@@ -124,6 +124,12 @@ getMetadata <- function(x, type=NULL) {
           value$source <- NULL
         }
       }
+      if (!is.null(value$calcHistory)){
+        if (!is(value$calcHistory,"Node")){
+          warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a Node object.")
+          value$calcHistory <- NULL
+        }
+      }
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
           warning(value$user," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user")
@@ -201,12 +207,8 @@ getMetadata <- function(x, type=NULL) {
       warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
     }
   }else if (type == "calcHistory"){
-    if (is.character(value)){
-      if (is.list(M$calcHistory))  M$calcHistory[[length(M$calcHistory)]] <- append(M$calcHistory[[length(M$calcHistory)]],value)
-      else if (is.null(M[[type]]))  M[[type]] <- value
-      else  M[[type]] <- list(M[[type]],value)
-    }else if (is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for calcHistory! Please use getMetadata.R to append the most recent function executed to calcHistory.")
+    if (is(value,"Node") || is.null(value))  M[[type]] <- value
+    else  warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a Node object.")
   }else if (type=="date"){
     if  ((is.character(value) & length(value)==1))  M[[type]] <- value
     else  warning(value," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date.")

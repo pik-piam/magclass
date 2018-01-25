@@ -1,7 +1,7 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.72.6
+Version: 4.73.0
 Author: Jan Philipp Dietrich,
     Benjamin Bodirsky,
     Misko Stevanovic,
@@ -26,7 +26,8 @@ Description: Data class for increased interoperability working with spatial-
     data order in calculations).
 Depends:
     R(>= 2.10.0),
-    methods
+    methods,
+    data.tree
 Imports:
     sp,
     maptools,
