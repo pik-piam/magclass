@@ -1,21 +1,19 @@
 
 
-#' MAgPIE Class Functions
+#' Data Class and Tools for Handling Spatial-Temporal Data
 #' 
-#' Package containing the MAgPIE-Object-Class together with relevant functions
-#' and methods.
-#' 
-#' \tabular{ll}{ Package: \tab magclass\cr Type: \tab Package\cr Version: \tab
-#' 3.93\cr Date: \tab 2016-09-08\cr License: \tab LGPL-3\cr LazyLoad: \tab
-#' yes\cr }
+#' Data class for increased interoperability working with spatial-temporal 
+#' data together with corresponding functions and methods (conversions, 
+#' basic calculations and basic data manipulation). The class distinguishes
+#' between spatial, temporal and other dimensions to facilitate the development
+#' and interoperability of tools build for it. Additional features are name-based
+#' addressing of data and internal consistency checks (e.g. checking for the 
+#' right data order in calculations).
 #' 
 #' @name magclass-package
 #' @aliases magclass-package magclass
 #' @docType package
-#' @author Jan Philipp Dietrich, Benjamin Bodirsky, Misko Stevanovic, Lavinia
-#' Baumstark, Christoph Bertram, Markus Bonsch, Anastasis Giannousakis, Florian
-#' Humpenoeder, David Klein, Ina Neher, Michaja Pehl, Anselm Schultes
-#' 
+#' @author 
 #' Maintainer: Jan Philipp Dietrich <dietrich@@pik-potsdam.de>
 NULL
 
