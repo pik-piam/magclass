@@ -100,8 +100,11 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL
-  else if (unit=="update")  warning("Update is an invalid argument for unit! Valid arguments include: copy, clear, keep, or a desired unit character")
-  else if (unit!="keep")  Mx$unit <- unit
+  else if (unit=="update"){
+    if (is.null(Mx$unit))  Mx$unit <- "1"
+    if (is.null(My$unit))  My$unit <- "1"
+    if(Mx$unit!=My$unit)  Mx$unit <- "mixed"
+  }else if (unit!="keep")  Mx$unit <- unit
   
   if (source=="copy"){
     if (!is.null(y)){

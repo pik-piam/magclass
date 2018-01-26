@@ -91,17 +91,6 @@ mbind <- function(...) {
   if(length(grep("dummydimname",getNames(output),fixed=TRUE))==ndata(output)) dimnames(output)[[3]] <- NULL 
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
   
-  if (!is.null(getMetadata(output,"unit"))){
-    for (i in 1:length(inputs)){
-      if (!is.null(getMetadata(inputs[[i]],"unit"))){
-        if (getMetadata(inputs[[1]],"unit")!=getMetadata(inputs[[i]],"unit")){
-          u <- "mixed"
-          warning("Units of the magpie objects do not all match! Metadata units field will be set to mixed")
-          break
-        }else  u <- "copy"
-      }else  u <- "mixed"
-    }
-  }else  u <- "mixed"
-  output <- updateMetadata(output, inputs, unit=u, calcHistory="update", source="copy", description="copy")
+  output <- updateMetadata(output, inputs, unit="update", calcHistory="update", source="copy", description="copy")
   return(output)
 }
