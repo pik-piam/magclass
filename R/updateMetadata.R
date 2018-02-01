@@ -22,14 +22,15 @@
 #' - "keep": maintains the unit field in x
 #' - "copy": copies the unit field of y to x
 #' - "clear": deletes the unit field from x
+#' - "update": if units of x do not match units of y, sets units to "mixed". Else, copies units of y to x.
 #' - string or vector specifying new units for x
 #' The default argument is "keep". 
 #' @param source A list indicating the source(s) of the MAgPIE data. Possible arguments are "keep", "copy",
 #' "clear", or a new source can be entered here in the form of a list. "keep" by default.
-#' @param calcHistory A tree-like Node object indicating the functions through which x has passed. Possible 
-#' arguments are "keep", "copy", "clear", and "update", which adds the function presently calling updateMetadata 
-#' (or a function further upstream if specified by n) to calcHistory and also merges if y is provided. "keep" by 
-#' default.
+#' @param calcHistory A tree-like object of class Node indicating the functions through which x has passed. 
+#' Possible arguments are "keep", "copy", "clear", and "update", which adds the function presently calling 
+#' updateMetadata (or a function further upstream if specified by n) to calcHistory and also merges if y is 
+#' provided. A node object can also be provided which will overwrite any existing value. "keep" by default.
 #' @param date A character indicating the MAgPIE object's last modified date. Possible arguments are 
 #' "keep", "copy", and "update", which sets the date of x to the current time. "update" by default.
 #' @param user A string indicating the user who last modified the MAgPIE object. Possible arguments are "keep",
@@ -52,13 +53,16 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   if(!isTRUE(getOption("magclass_metadata"))) return(x)
   
   Mx <- getMetadata(x)
-  
+  #Recursive function to merge metadata from a list of magpie objects.
   if (is.list(y)){
     for (i in 1:length(y)){
       if (is.magpie(y[[i]])){
-        if (calcHistory == "update"){
+        #Special calcHistory handling for merging a list of magpie objects.
+        if (calcHistory=="update"){
           if (i==1){
-            fn <- Node$new(as.character(sys.call(-n))[1])
+            f <- as.character(sys.call(-n))[1]
+            if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
+            fn <- Node$new(f)
             if (is(Mx$calcHistory,"Node")){
               cHx <- Clone(Mx$calcHistory)
               cHx$name <- paste(i,cHx$name)
@@ -73,6 +77,9 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
               cHy$name <- paste(i,cHy$name)
               fn$AddChildNode(cHy)
               j <- i+1
+            }else{
+              fn$AddChild(i)
+              j <- i+1
             }
             Mx$calcHistory <- fn
           }else{
@@ -82,13 +89,13 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
                 cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
                 cHy$name <- paste(j,cHy$name)
                 cHx$AddChildNode(cHy)
-              }else  cHx$AddChild(paste(j, "calcHistory missing"))
+              }else  cHx$AddChild(j)
               Mx$calcHistory <- cHx
               j <- j+1
             }
           }
-        }
-      x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description, n=n+1)
+          x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description, n=n+1)
+        }else  x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, date, description, n=n+1)
       }else  stop("All list components of y must be magpie objects!")
     }
     return(x)
@@ -101,9 +108,11 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL
   else if (unit=="update"){
-    if (is.null(Mx$unit))  Mx$unit <- "1"
-    if (is.null(My$unit))  My$unit <- "1"
-    if(Mx$unit!=My$unit)  Mx$unit <- "mixed"
+    if (!is.null(getMetadata(x))){
+      if (is.null(Mx$unit))  Mx$unit <- "1"
+      if (is.null(My$unit))  My$unit <- "1"
+      if(Mx$unit!=My$unit)  Mx$unit <- "mixed"
+    }else  Mx$unit <- My$unit
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (source=="copy"){
@@ -121,16 +130,15 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   
   if (is(calcHistory,"Node"))  Mx$calcHistory <- calcHistory
   else if (calcHistory=="update"){
-    #if (as.character(sys.call(-1))[1]=="updateMetadata" & is(Mx$calcHistory,"Node"))  fn <- Mx$calcHistory
-    #else{
-      if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
-        fn <- Node$new(as.character(sys.call(-n))[1])
-        if (is(Mx$calcHistory,"Node")){
-          cHx <- Clone(Mx$calcHistory)
-          fn$AddChildNode(cHx)
-        }
-      }else  warning("n argument is out of range! calcHistory has not been updated!")
-    #}
+    if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
+      f <- as.character(sys.call(-n))[1]
+      if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
+      fn <- Node$new(f)
+      if (is(Mx$calcHistory,"Node")){
+        cHx <- Clone(Mx$calcHistory)
+        fn$AddChildNode(cHx)
+      }
+    }else  warning("n argument is out of range! calcHistory has not been updated!")
     if (!is.null(y)){
       if (is(My$calcHistory,"Node")){
         cHy <- Clone(My$calcHistory)
