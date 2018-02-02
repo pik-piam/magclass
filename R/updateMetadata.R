@@ -62,6 +62,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
           if (i==1){
             f <- as.character(sys.call(-n))[1]
             if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
+            else if (f=="mcalc")  f <- paste(f,"(",as.character(sys.call(-n))[3],")",sep="")
             fn <- Node$new(f)
             if (is(Mx$calcHistory,"Node")){
               cHx <- Clone(Mx$calcHistory)
@@ -115,7 +116,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     }else  Mx$unit <- My$unit
   }else if (unit!="keep")  Mx$unit <- unit
   
-  if (source=="copy"){
+  if (source[[1]]=="copy"){
     if (!is.null(y)){
       if (is.list(My$source)){
         if (is.list(Mx$source)){
@@ -124,15 +125,16 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
         }else  Mx$source <- My$source
       }
     }else  warning("Source cannot be copied without a second magpie argument provided!")
-  }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
-  else if (source=="clear")  Mx$source <- NULL
-  else if (source!="keep")  Mx$source <- source
+  }else if (source[[1]]=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
+  else if (source[[1]]=="clear")  Mx$source <- NULL
+  else if (source[[1]]!="keep")  Mx$source <- source
   
   if (is(calcHistory,"Node"))  Mx$calcHistory <- calcHistory
   else if (calcHistory=="update"){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
       f <- as.character(sys.call(-n))[1]
       if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
+      else if (f=="mcalc")  f <- paste(f,"(",as.character(sys.call(-n))[3],")",sep="")
       fn <- Node$new(f)
       if (is(Mx$calcHistory,"Node")){
         cHx <- Clone(Mx$calcHistory)
