@@ -1,7 +1,7 @@
 #' getMetadata (!experimental!)
 #' 
 #' This function is currently experimental and non-functional by default! To activate it,
-#' set options(magclass_metadata=TRUE), otherwise it will not return or modify any metadata!
+#' set withMetadata(TRUE), otherwise it will not return or modify any metadata!
 #' 
 #' The function allows users to set and retrieve metadata for magclass objects 
 #' 
@@ -25,7 +25,7 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @examples
-#'  options(magclass_metadata=TRUE)
+#'  withMetadata(TRUE)
 #'  a <- as.magpie(1)
 #'  #returns NULL
 #'  getMetadata(a)
@@ -40,11 +40,11 @@
 #'  description='nonsense data')
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
-#'  options(magclass_metadata=FALSE)
+#'  withMetadata(FALSE)
 #' @export
 
 getMetadata <- function(x, type=NULL) {
-  if(!isTRUE(getOption("magclass_metadata"))) return(NULL)
+  if(!withMetadata()) return(NULL)
   M <- attr(x, "Metadata")
   if(is.null(M$unit)) M$unit <- '1'
   if(is.null(type)) {
@@ -59,7 +59,7 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 "getMetadata<-" <- function(x, type=NULL, value) {
-  if(!isTRUE(getOption("magclass_metadata"))) return(x)
+  if(!withMetadata()) return(x)
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){

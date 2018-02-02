@@ -1,7 +1,7 @@
 #' updateMetadata (!experimental!)
 #' 
 #' This function is currently experimental and non-functional by default! To activate it,
-#' set options(magclass_metadata=TRUE), otherwise it will not return or modify any metadata!
+#' set withMetadata(TRUE), otherwise it will not return or modify any metadata!
 #' 
 #' This function is to be used by other functions to update metadata for magclass objects 
 #' 
@@ -50,7 +50,7 @@
 #' @importFrom data.tree Clone
 #' 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
-  if(!isTRUE(getOption("magclass_metadata"))) return(x)
+  if(!withMetadata()) return(x)
   
   Mx <- getMetadata(x)
   #Recursive function to merge metadata from a list of magpie objects.
