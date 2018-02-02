@@ -61,8 +61,8 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
         if (calcHistory=="update"){
           if (i==1){
             f <- as.character(sys.call(-n))[1]
-            if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
-            else if (f=="mcalc")  f <- paste(f,"(",as.character(sys.call(-n))[3],")",sep="")
+            if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
+            else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
             fn <- Node$new(f)
             if (is(Mx$calcHistory,"Node")){
               cHx <- Clone(Mx$calcHistory)
@@ -109,10 +109,10 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL
   else if (unit=="update"){
-    if (!is.null(getMetadata(x))){
+    if (!is.null(getMetadata(x,"date"))){
       if (is.null(Mx$unit))  Mx$unit <- "1"
       if (is.null(My$unit))  My$unit <- "1"
-      if(Mx$unit!=My$unit)  Mx$unit <- "mixed"
+      if (Mx$unit!=My$unit)  Mx$unit <- "mixed"
     }else  Mx$unit <- My$unit
   }else if (unit!="keep")  Mx$unit <- unit
   
@@ -133,8 +133,8 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   else if (calcHistory=="update"){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
       f <- as.character(sys.call(-n))[1]
-      if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste("Ops(",f,")",sep="")
-      else if (f=="mcalc")  f <- paste(f,"(",as.character(sys.call(-n))[3],")",sep="")
+      if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
+      else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
       fn <- Node$new(f)
       if (is(Mx$calcHistory,"Node")){
         cHx <- Clone(Mx$calcHistory)
