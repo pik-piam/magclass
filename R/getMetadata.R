@@ -58,6 +58,10 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
+#' @importFrom data.tree isRoot
+#' @importFrom data.tree isLeaf
+#' @importFrom data.tree Clone
+#' @importFrom data.tree Node
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
   M <- attr(x, "Metadata")
@@ -125,20 +129,33 @@ getMetadata <- function(x, type=NULL) {
         }
       }
       if (!is.null(value$calcHistory)){
-        if (!is(value$calcHistory,"Node")){
+        if (is(value$calcHistory,"Node")){
+          if (is(M$calcHistory,"Node")){
+            if (isLeaf(value$calcHistory) & is.null(value$calcHistory$children)){
+              c <- Clone(M$calcHistory)
+              value$calcHistory$AddChildNode(c)
+            }
+          }
+        }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
+          if (is(M$calcHistory,"Node")){
+            c <- Clone(M$calcHistory)
+            value$calcHistory <- Node$new(value$calcHistory)
+            value$calcHistory$AddChildNode(c)
+          }else  value$calcHistory <- Node$new(value$calcHistory)
+        }else{
           warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a Node object.")
           value$calcHistory <- NULL
         }
       }
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
-          warning(value$user," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user")
+          warning(value$user," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
           value$user <- NULL
         }
       }
       if(!is.null(value$date)){
         if(!is.character(value$date) & length(value$date)!=1){
-          warning(value$date," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date")
+          warning(value$date," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date")
           value$date <- NULL
         }
       }
@@ -207,17 +224,34 @@ getMetadata <- function(x, type=NULL) {
       warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
     }
   }else if (type == "calcHistory"){
-    if (is(value,"Node") || is.null(value))  M[[type]] <- value
-    else  warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a Node object.")
+    if (is(value,"Node")){
+      if (is(M[[type]],"Node")){
+        if (isRoot(value))  M[[type]] <- value
+        else if (is.null(value$children)){
+          c <- Clone(M[[type]])
+          value$AddChildNode(c)
+          M[[type]] <- value
+        }
+      }else  M[[type]] <- value
+    }else if (is.character(value)){
+      if (length(value)==1){
+        if (is(M[[type]],"Node")){
+          c <- Clone(M[[type]])
+          M[[type]] <- Node$new(value)
+          M[[type]]$AddChildNode(c)
+        }else  M[[type]] <- Node$new(value)
+      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
+    }else if (is.null(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
   }else if (type=="date"){
-    if  ((is.character(value) & length(value)==1))  M[[type]] <- value
-    else  warning(value," is an invalid argument for date! Please use getMetadata.R or updateMetadata.R to provide a date.")
+    if  ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date.")
   }else if (type=="user"){
-    if ((is.character(value) & length(value)==1))  M[[type]] <- value
-    else  warning(value," is an invalid argument for user! Please use getMetadata.R or updateMetadata.R to provide a user")
+    if ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
   }else if (type=="description"){
-    if(is.null(value) || is.character(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for description! Please use getMetadata.R to provide a description")
+    if(is.null(value) | is.character(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for description! Please use getMetadata or updateMetadata to provide a description")
   }else  warning(type," is not a valid metadata field!")
   attr(x, "Metadata") <- M
   return(x)
