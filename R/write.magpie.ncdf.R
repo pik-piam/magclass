@@ -18,6 +18,7 @@
 #' @seealso \code{\link{write.magpie}}
 #' 
 write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
+  if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
 
