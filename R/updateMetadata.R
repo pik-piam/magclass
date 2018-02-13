@@ -155,7 +155,10 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
       else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
-  else if (calcHistory!="keep")  warning("Invalid argument ",calcHistory," for calcHistory!")
+  else if (calcHistory!="keep"){
+    if (is.character(calcHistory) & length(calcHistory)==1)  Mx$calcHistory <- calcHistory
+    else  warning("Invalid argument ",calcHistory," for calcHistory!")
+  }
   
   if (user=="update"){
     env <- if(.Platform$OS.type == "windows") "USERNAME" else "USER"

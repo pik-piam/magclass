@@ -93,10 +93,6 @@ getMetadata <- function(x, type=NULL) {
                 warning("No publication provided for source #",i,"!")
                 value$source[[i]]$publication <- "Not provided"
               }
-              if (is.null(value$source[[i]]$institution)){
-                warning("No institution provided for source #",i,"!")
-                value$source[[i]]$institution <- "Not provided"
-              }
             }else if (i==1){
               if (is.null(value$source$author)){
                 warning("No author provided for source!")
@@ -113,10 +109,6 @@ getMetadata <- function(x, type=NULL) {
               if (is.null(value$source$publication)){
                 warning("No publication provided for source!")
                 value$source$publication <- "Not provided"
-              }
-              if (is.null(value$source$institution)){
-                warning("No institution provided for source!")
-                value$source$institution <- "Not provided"
               }
             }else if (is.list(value$source[[i-1]])){
               warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
@@ -143,7 +135,7 @@ getMetadata <- function(x, type=NULL) {
             value$calcHistory$AddChildNode(c)
           }else  value$calcHistory <- Node$new(value$calcHistory)
         }else{
-          warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a Node object.")
+          warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
           value$calcHistory <- NULL
         }
       }
@@ -192,10 +184,6 @@ getMetadata <- function(x, type=NULL) {
             warning("No publication provided for source #",i,"!")
             value[[i]]$publication <- "Not provided"
           }
-          if (is.null(value[[i]]$institution)){
-            warning("No institution provided for source #",i,"!")
-            value[[i]]$institution <- "Not provided"
-          }
         }else if (i==1){
           if (is.null(value$author)){
             warning("No author provided for source!")
@@ -211,10 +199,6 @@ getMetadata <- function(x, type=NULL) {
           if (is.null(value$publication)){
             warning("No publication provided for source!")
             value$publication <- "Not provided"
-          }
-          if (is.null(value$institution)){
-            warning("No institution provided for source!")
-            value$institution <- "Not provided"
           }
         }else if (is.list(value[[i-1]])){
           warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
@@ -240,9 +224,9 @@ getMetadata <- function(x, type=NULL) {
           M[[type]] <- Node$new(value)
           M[[type]]$AddChildNode(c)
         }else  M[[type]] <- Node$new(value)
-      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
+      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a string or a Node object.")
     }else if (is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
+    else  warning(value," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
   }else if (type=="date"){
     if  ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date.")
