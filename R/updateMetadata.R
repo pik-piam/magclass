@@ -46,11 +46,11 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @export
-#' @importFrom data.tree Node
-#' @importFrom data.tree Clone
 #' 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
   if(!withMetadata()) return(x)
+  
+  if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   
   Mx <- getMetadata(x)
   #Recursive function to merge metadata from a list of magpie objects.
@@ -63,18 +63,18 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
             f <- as.character(sys.call(-n))[1]
             if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
             else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-            fn <- Node$new(f)
+            fn <- data.tree::Node$new(f)
             if (is(Mx$calcHistory,"Node")){
-              cHx <- Clone(Mx$calcHistory)
+              cHx <- data.tree::Clone(Mx$calcHistory)
               cHx$name <- paste(i,cHx$name)
               if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-                cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+                cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
                 cHy$name <- paste(i+1,cHy$name)
                 fn$AddChildNode(cHx)$AddSiblingNode(cHy)
                 j <- i+2
               }else  fn$AddChildNode(cHx)
             }else if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-              cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+              cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
               cHy$name <- paste(i,cHy$name)
               fn$AddChildNode(cHy)
               j <- i+1
@@ -85,9 +85,9 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
             Mx$calcHistory <- fn
           }else{
             if (is(Mx$calcHistory,"Node")){
-              cHx <- Clone(Mx$calcHistory)
+              cHx <- data.tree::Clone(Mx$calcHistory)
               if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-                cHy <- Clone(getMetadata(y[[i]],"calcHistory"))
+                cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
                 cHy$name <- paste(j,cHy$name)
                 cHx$AddChildNode(cHy)
               }else  cHx$AddChild(j)
@@ -135,15 +135,15 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
       f <- as.character(sys.call(-n))[1]
       if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
       else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-      fn <- Node$new(f)
+      fn <- data.tree::Node$new(f)
       if (is(Mx$calcHistory,"Node")){
-        cHx <- Clone(Mx$calcHistory)
+        cHx <- data.tree::Clone(Mx$calcHistory)
         fn$AddChildNode(cHx)
       }
     }else  warning("n argument is out of range! calcHistory has not been updated!")
     if (!is.null(y)){
       if (is(My$calcHistory,"Node")){
-        cHy <- Clone(My$calcHistory)
+        cHy <- data.tree::Clone(My$calcHistory)
         fn$AddChildNode(cHy)
       }
     }

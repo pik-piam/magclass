@@ -45,6 +45,7 @@
 
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
+  if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   M <- attr(x, "Metadata")
   if(is.null(M$unit)) M$unit <- '1'
   if(is.null(type)) {
@@ -58,12 +59,9 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
-#' @importFrom data.tree isRoot
-#' @importFrom data.tree isLeaf
-#' @importFrom data.tree Clone
-#' @importFrom data.tree Node
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
+  if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
   if (is.null(type)){
@@ -123,17 +121,17 @@ getMetadata <- function(x, type=NULL) {
       if (!is.null(value$calcHistory)){
         if (is(value$calcHistory,"Node")){
           if (is(M$calcHistory,"Node")){
-            if (isLeaf(value$calcHistory) & is.null(value$calcHistory$children)){
-              c <- Clone(M$calcHistory)
+            if (data.tree::isLeaf(value$calcHistory) & is.null(value$calcHistory$children)){
+              c <- data.tree::Clone(M$calcHistory)
               value$calcHistory$AddChildNode(c)
             }
           }
         }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
           if (is(M$calcHistory,"Node")){
-            c <- Clone(M$calcHistory)
-            value$calcHistory <- Node$new(value$calcHistory)
+            c <- data.tree::Clone(M$calcHistory)
+            value$calcHistory <- data.tree::Node$new(value$calcHistory)
             value$calcHistory$AddChildNode(c)
-          }else  value$calcHistory <- Node$new(value$calcHistory)
+          }else  value$calcHistory <- data.tree::Node$new(value$calcHistory)
         }else{
           warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
           value$calcHistory <- NULL
@@ -210,9 +208,9 @@ getMetadata <- function(x, type=NULL) {
   }else if (type == "calcHistory"){
     if (is(value,"Node")){
       if (is(M[[type]],"Node")){
-        if (isRoot(value))  M[[type]] <- value
+        if (data.tree::isRoot(value))  M[[type]] <- value
         else if (is.null(value$children)){
-          c <- Clone(M[[type]])
+          c <- data.tree::Clone(M[[type]])
           value$AddChildNode(c)
           M[[type]] <- value
         }
@@ -220,11 +218,11 @@ getMetadata <- function(x, type=NULL) {
     }else if (is.character(value)){
       if (length(value)==1){
         if (is(M[[type]],"Node")){
-          c <- Clone(M[[type]])
-          M[[type]] <- Node$new(value)
+          c <- data.tree::Clone(M[[type]])
+          M[[type]] <- data.tree::Node$new(value)
           M[[type]]$AddChildNode(c)
-        }else  M[[type]] <- Node$new(value)
-      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a string or a Node object.")
+        }else  M[[type]] <- data.tree::Node$new(value)
+      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
     }else if (is.null(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
   }else if (type=="date"){

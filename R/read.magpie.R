@@ -248,6 +248,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       names(read.magpie)<-paste(magclassdata$half_deg$region,1:59199,sep=".")
       read.magpie<-as.magpie(read.magpie)      
     } else if(file_type=="nc") { #netcdf
+      if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for reading NCDF4 files!")
       nc_file <- ncdf4::nc_open(file_name)
       options("magclass.verbosity" = 1)
       
