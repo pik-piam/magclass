@@ -136,7 +136,7 @@ getMetadata <- function(x, type=NULL) {
           warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
           value$calcHistory <- NULL
         }
-      }
+      }else if (is(M$calcHistory,"Node")) value$calcHistory <- M$calcHistory
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
           warning(value$user," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")

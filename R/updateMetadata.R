@@ -52,6 +52,50 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   
+  #Function buildTree constructs the calcHistory data tree 
+  buildTree <- function(x,y=NULL,n,i=0){
+    #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
+    nodeClone <- function(x,fn=NULL,j=NULL){
+      xc <- data.tree::Clone(x)
+      if (!is.null(j))  xc$name <- paste(j,xc$name)
+      if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(xc)
+      else  return(xc)
+    }
+    #Function newCall creates the appropriate call to be displayed for the new root
+    newCall <- function(n){
+      if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
+        f <- as.character(sys.call(-n))[1]
+        if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
+        else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
+        fn <- data.tree::Node$new(f)
+        return(fn)
+      }else  stop("n argument is out of range! calcHistory cannot be updated!")
+    }
+    #Non-recursive case
+    if (i==0){
+      fn <- newCall(n)
+      if (is(x,"Node"))  nodeClone(x,fn)
+      if (!is.null(y) & is(y,"Node"))  nodeClone(y,fn)
+    #First iteration of recursive loop
+    }else if (i==1){
+      fn <- newCall(n)
+      if (is(x,"Node")){
+        nodeClone(x,fn,i)
+        if (is(y,"Node"))  nodeClone(y,fn,i+1)
+      }else if (is(y,"Node"))  nodeClone(y,fn,i)
+      else  fn$AddChild(i)
+    #Subsequent iterations of recursive loop
+    }else{
+      if (is(x,"Node")){
+        fn <- nodeClone(x)
+        if (fn$count >= i)  i <- i+1
+        if (is(y,"Node"))  nodeClone(y,fn,i)
+        else  fn$AddChild(i)
+      }
+    }
+    return(fn)
+  }
+  
   Mx <- getMetadata(x)
   #Recursive function to merge metadata from a list of magpie objects.
   if (is.list(y)){
@@ -59,43 +103,8 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
       if (is.magpie(y[[i]])){
         #Special calcHistory handling for merging a list of magpie objects.
         if (calcHistory=="update"){
-          if (i==1){
-            f <- as.character(sys.call(-n))[1]
-            if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
-            else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-            fn <- data.tree::Node$new(f)
-            if (is(Mx$calcHistory,"Node")){
-              cHx <- data.tree::Clone(Mx$calcHistory)
-              cHx$name <- paste(i,cHx$name)
-              if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-                cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
-                cHy$name <- paste(i+1,cHy$name)
-                fn$AddChildNode(cHx)$AddSiblingNode(cHy)
-                j <- i+2
-              }else  fn$AddChildNode(cHx)
-            }else if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-              cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
-              cHy$name <- paste(i,cHy$name)
-              fn$AddChildNode(cHy)
-              j <- i+1
-            }else{
-              fn$AddChild(i)
-              j <- i+1
-            }
-            Mx$calcHistory <- fn
-          }else{
-            if (is(Mx$calcHistory,"Node")){
-              cHx <- data.tree::Clone(Mx$calcHistory)
-              if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
-                cHy <- data.tree::Clone(getMetadata(y[[i]],"calcHistory"))
-                cHy$name <- paste(j,cHy$name)
-                cHx$AddChildNode(cHy)
-              }else  cHx$AddChild(j)
-              Mx$calcHistory <- cHx
-              j <- j+1
-            }
-          }
-          x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description, n=n+1)
+          Mx$calcHistory <- buildTree(Mx$calcHistory,getMetadata(y[[i]],"calcHistory"),n+2,i)
+          x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description)
         }else  x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, date, description, n=n+1)
       }else  stop("All list components of y must be magpie objects!")
     }
@@ -131,34 +140,17 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   
   if (is(calcHistory,"Node"))  Mx$calcHistory <- calcHistory
   else if (calcHistory=="update"){
-    if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
-      f <- as.character(sys.call(-n))[1]
-      if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
-      else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-      fn <- data.tree::Node$new(f)
-      if (is(Mx$calcHistory,"Node")){
-        cHx <- data.tree::Clone(Mx$calcHistory)
-        fn$AddChildNode(cHx)
-      }
-    }else  warning("n argument is out of range! calcHistory has not been updated!")
-    if (!is.null(y)){
-      if (is(My$calcHistory,"Node")){
-        cHy <- data.tree::Clone(My$calcHistory)
-        fn$AddChildNode(cHy)
-      }
-    }
-    Mx$calcHistory <- fn
+    Mx$calcHistory <- buildTree(Mx$calcHistory,My$calcHistory,n+2)
   }else if (calcHistory=="copy"){
     if (!is.null(y)){
       if (is(Mx$calcHistory,"Node"))  warning("Cannot overwrite calcHistory! Use update argument to merge.")
-      else if (!is(My$calcHistory, "Node"))  warning("Attempting to copy a calcHistory which is not a Node object!")
+      else if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
       else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
-  else if (calcHistory!="keep"){
-    if (is.character(calcHistory) & length(calcHistory)==1)  Mx$calcHistory <- calcHistory
-    else  warning("Invalid argument ",calcHistory," for calcHistory!")
-  }
+  else if (calcHistory=="keep")  Mx$calcHistory <- NULL
+  else if (is.character(calcHistory) & length(calcHistory)==1)  Mx$calcHistory <- calcHistory
+  else  warning("Invalid argument ",calcHistory," for calcHistory!")
   
   if (user=="update"){
     env <- if(.Platform$OS.type == "windows") "USERNAME" else "USER"
