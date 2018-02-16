@@ -46,6 +46,7 @@
 #' \code{\link{getYears}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 #' \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 #' @export
+#' @importFrom methods getPackageName
 #' 
 updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
   if(!withMetadata()) return(x)
@@ -67,6 +68,8 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
         f <- as.character(sys.call(-n))[1]
         if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
         else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
+        else if (getPackageName(sys.frame(-n))=="madrat")  f <- deparse(sys.call(-n),width.cutoff = 500)
+        if (grepl(":::",f,fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
         fn <- data.tree::Node$new(f)
         return(fn)
       }else  stop("n argument is out of range! calcHistory cannot be updated!")
@@ -138,13 +141,14 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   else if (source[[1]]=="clear")  Mx$source <- NULL
   else if (source[[1]]!="keep")  Mx$source <- source
   
-  if (is(calcHistory,"Node"))  Mx$calcHistory <- calcHistory
-  else if (calcHistory=="update"){
+  if (is(calcHistory,"Node")){
+    getMetadata(x,"calcHistory") <- NULL
+    Mx$calcHistory <- calcHistory
+  }else if (calcHistory=="update"){
     Mx$calcHistory <- buildTree(Mx$calcHistory,My$calcHistory,n+2)
   }else if (calcHistory=="copy"){
     if (!is.null(y)){
-      if (is(Mx$calcHistory,"Node"))  warning("Cannot overwrite calcHistory! Use update argument to merge.")
-      else if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
+      if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
       else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")

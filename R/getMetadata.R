@@ -47,7 +47,7 @@ getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   M <- attr(x, "Metadata")
-  if(is.null(M$unit)) M$unit <- '1'
+  if(!is.null(M) & is.null(M$unit)) M$unit <- '1'
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
