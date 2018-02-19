@@ -24,20 +24,23 @@
 #' - "clear": deletes the unit field from x
 #' - "update": if units of x do not match units of y, sets units to "mixed". Else, copies units of y to x.
 #' - string or vector specifying new units for x
-#' The default argument is "keep". 
+#' The default argument is "keep" if no y argument is provided, or "update" if y is provided. 
 #' @param source A list indicating the source(s) of the MAgPIE data. Possible arguments are "keep", "copy",
-#' "clear", or a new source can be entered here in the form of a list. "keep" by default.
+#' "clear", or a new source can be entered here in the form of a list. By default, "keep" if no y argument,
+#' or "copy" if y is provided.
 #' @param calcHistory A tree-like object of class Node indicating the functions through which x has passed. 
 #' Possible arguments are "keep", "copy", "clear", and "update", which adds the function presently calling 
 #' updateMetadata (or a function further upstream if specified by n) to calcHistory and also merges if y is 
-#' provided. A node object can also be provided which will overwrite any existing value. "keep" by default.
+#' provided. A node object can also be provided which will overwrite any existing value. By default, "keep" 
+#' if no y argument, or "update" if y is provided.
 #' @param date A character indicating the MAgPIE object's last modified date. Possible arguments are 
 #' "keep", "copy", and "update", which sets the date of x to the current time. "update" by default.
 #' @param user A string indicating the user who last modified the MAgPIE object. Possible arguments are "keep",
 #' "copy", "update", which retrieves the username currently logged into the system, or a character string 
 #' which specifies a new user. "update" by default.
 #' @param description A character string containing a description of the dataset. Possible arguments are 
-#' "keep", "copy", "clear", or a new description can be defined here by a character string. "keep" by default.
+#' "keep", "copy", "clear", or a new description can be defined here by a character string. By default, "keep" 
+#' if no y argument, or "copy" if y is provided.
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
@@ -48,7 +51,8 @@
 #' @export
 #' @importFrom methods getPackageName
 #' 
-updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="keep", user="update", date="update", description="keep", n=1){
+updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","copy"), 
+                           calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), n=1){
   if(!withMetadata()) return(x)
   
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
@@ -57,10 +61,16 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   buildTree <- function(x,y=NULL,n,i=0){
     #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
     nodeClone <- function(x,fn=NULL,j=NULL){
-      xc <- data.tree::Clone(x)
-      if (!is.null(j))  xc$name <- paste(j,xc$name)
-      if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(xc)
-      else  return(xc)
+      if(isTRUE(getOption("CloneMetadata"))){
+        xc <- data.tree::Clone(x)
+        if (!is.null(j))  xc$name <- paste(j,xc$name)
+        if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(xc)
+        else  return(xc)
+      }else{
+        if (!is.null(j))  x$name <- paste(j,x$name)
+        if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(x)
+        else  return(x)
+      }
     }
     #Function newCall creates the appropriate call to be displayed for the new root
     newCall <- function(n){
@@ -149,6 +159,7 @@ updateMetadata <- function(x, y=NULL, unit="keep", source="keep", calcHistory="k
   }else if (calcHistory=="copy"){
     if (!is.null(y)){
       if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
+      else if (is(My$calcHistory,"Node"))  Mx$calcHistory <- data.tree::Clone(My$calcHistory)
       else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
