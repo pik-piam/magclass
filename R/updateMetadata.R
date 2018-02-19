@@ -126,6 +126,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   My <- getMetadata(y)
   
+  if (is.null(unit))  unit <- "keep"
   if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
@@ -138,6 +139,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     }else  Mx$unit <- My$unit
   }else if (unit!="keep")  Mx$unit <- unit
   
+  if (is.null(source))  source <- "keep"
   if (source[[1]]=="copy"){
     if (!is.null(y)){
       if (is.list(My$source)){
@@ -151,6 +153,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   else if (source[[1]]=="clear")  Mx$source <- NULL
   else if (source[[1]]!="keep")  Mx$source <- source
   
+  if (is.null(calcHistory))  calcHistory <- "keep"
   if (is(calcHistory,"Node")){
     getMetadata(x,"calcHistory") <- NULL
     Mx$calcHistory <- calcHistory
@@ -167,6 +170,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   else if (is.character(calcHistory) & length(calcHistory)==1)  Mx$calcHistory <- calcHistory
   else  warning("Invalid argument ",calcHistory," for calcHistory!")
   
+  if (is.null(user))  user <- "keep"
   if (user=="update"){
     env <- if(.Platform$OS.type == "windows") "USERNAME" else "USER"
     Mx$user <- Sys.getenv(env)
@@ -181,6 +185,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     else  warning("Invalid argument ",user," for user!")
   }
   
+  if (is.null(date))  date <- "update"
   if (date=="update")  Mx$date <- as.character(Sys.time())
   else if (date=="copy"){
     if (!is.null(y)){
@@ -190,6 +195,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (date=="clear")  warning("date cannot be cleared! Please specify keep, copy, or update.")
   else if (date!="keep")  warning("Invalid argument ", date," for date!")
     
+  if (is.null(description))  Mx$description <- "keep"
   if (description=="copy"){
     if (!is.null(y))  Mx$description <- My$description
     else  warning("Description cannot be copied without a second magpie argument provided!")
