@@ -31,6 +31,7 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
   if (all(isYear(interpolated_year,with_y=FALSE))) { interpolated_year<-paste("y",interpolated_year,sep="")} else 
   { if (any(isYear(interpolated_year, with_y=TRUE))==FALSE) {stop("year not in the right format")} }
   
+  Md <- getMetadata(dataset)
   if(nyears(dataset)==1) {
     tmp <- dataset
     dimnames(tmp)[[2]] <- "y0000"
@@ -92,5 +93,6 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
   }
   dataset <- as.magpie(dataset)
   dataset <- dataset[,sort(getYears(dataset)),]
+  getMetadata(dataset) <- Md
   return(dataset)
 }
