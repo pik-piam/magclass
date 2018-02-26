@@ -9,6 +9,7 @@
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
 #' @param comment Vector of comments. Comments are set as global attributes in the netcdf file. Comments have to have the format "indicator: comment" or " indicator:comment"
+#' @param verbose Boolean deciding about whether function should be verbose or not
 
 #' @return netcdf file. Writes one file per year per
 #' data column. In the case that more than one year and data column is supplied
@@ -17,7 +18,7 @@
 #' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky
 #' @seealso \code{\link{write.magpie}}
 #' 
-write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
+write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE){
   if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
@@ -56,24 +57,19 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
   time <- as.numeric(unlist(lapply(strsplit(dimnames(mag)[[2]], 
                                             "y"), function(mag) mag[2])))
   data <- dimnames(mag)[[3]]
-  cat("Converting MAgPIE Data to 720 x 360 array")
+  if(verbose) message("Converting MAgPIE Data to 720 x 360 array")
   netcdf <- array(NODATA, dim = c(720, 360, dim(mag)[2], 
                                   dim(mag)[3]), dimnames = list(lon, lat, time, 
                                                                 data))
-  pb <- txtProgressBar(min = 0, max = dim(mag)[1], 
-                       style = 3)
+  if(verbose) pb <- txtProgressBar(min = 0, max = dim(mag)[1], style = 3)
   for (i in 1:ncells(mag)) {
-    netcdf[which(coord[i, 1] == lon), which(coord[i, 
-                                                  2] == lat), , ] <- mag[i, , , drop = FALSE]
-    setTxtProgressBar(pb, i)
+    netcdf[which(coord[i, 1] == lon), which(coord[i,2] == lat), , ] <- mag[i, , , drop = FALSE]
+    if(verbose) setTxtProgressBar(pb, i)
   }
-  close(pb)
-  dim_lon <- ncdf4::ncdim_def("lon", "degrees_east", 
-                              lon)
-  dim_lat <- ncdf4::ncdim_def("lat", "degrees_north", 
-                              lat)
-  dim_time <- ncdf4::ncdim_def("time", "years", time, 
-                               calendar = "standard")
+  if(verbose) close(pb)
+  dim_lon <- ncdf4::ncdim_def("lon", "degrees_east", lon)
+  dim_lat <- ncdf4::ncdim_def("lat", "degrees_north", lat)
+  dim_time <- ncdf4::ncdim_def("time", "years", time, calendar = "standard")
   
   ncv <- list()
   for (i in dimnames(netcdf)[[4]]) ncv[[i]] <- ncdf4::ncvar_def(i, 
@@ -88,7 +84,7 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
   if (file.exists(file)) 
     file.remove(file)
   ncf <- ncdf4::nc_create(file, ncv)
-  cat("Saving to NetCDF format")
+  if(verbose) message("Saving to NetCDF format")
   
   if(metadata){
     for (i in 1:length(indicator)){
@@ -97,12 +93,11 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL){
   }
   
   
-  pb <- txtProgressBar(min = 0, max = dim(netcdf)[4], 
-                       style = 3)
+  if(verbose) pb <- txtProgressBar(min = 0, max = dim(netcdf)[4], style = 3)
   for (i in dimnames(netcdf)[[4]]) {
     ncdf4::ncvar_put(ncf, ncv[[i]], netcdf[, , , i])
-    setTxtProgressBar(pb, which(dimnames(netcdf)[[4]] ==  i))
+    if(verbose) setTxtProgressBar(pb, which(dimnames(netcdf)[[4]] ==  i))
   }
-  close(pb)
+  if(verbose) close(pb)
   ncdf4::nc_close(ncf)
 }

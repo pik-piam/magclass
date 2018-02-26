@@ -58,6 +58,7 @@
 #' compression) and 9 (most compression), the netCDF file is written in netCDF
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
+#' @param verbose Boolean deciding about whether function should be verbose or not
 #' @note
 #' 
 #' The binary MAgPIE formats .m and .mz have the following content/structure
@@ -95,7 +96,7 @@
 #' 
 #' @export write.magpie
 #' @importFrom utils setTxtProgressBar txtProgressBar write.csv write.table
-write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,comment=NULL,comment.char="*",mode=NULL,nc_compression=9) {
+write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,comment=NULL,comment.char="*",mode=NULL,nc_compression=9,verbose=TRUE) {
   if(!is.null(mode)) {
     umask <- Sys.umask()
     umask_mode <- as.character(777-as.integer(mode))
@@ -188,7 +189,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       write.magpie.ncdf(x=x,
                         file=file_path,
                         nc_compression = nc_compression,
-                        comment=comment)  
+                        comment=comment,
+                        verbose=verbose)  
     } else if(file_type=="cs3" | file_type=="cs3r") {
       if(file_type=="cs3r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
       if(dim(x)[3]!=prod(fulldim(x)[[1]][-1:-2])) stop("Input data seems to be sparse but ",file_type," does not support sparse data. Please use ",sub("3","4",file_type)," instead!")
