@@ -67,96 +67,100 @@ getMetadata <- function(x, type=NULL) {
   if (is.null(type)){
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
-      if (length(value$unit)>1){
-        warning(value$unit," is an invalid argument for unit")
-        value$unit <- "1"
-      }
+      if (!is.null(value$unit)){
+        if (length(value$unit)>1){
+          warning(value$unit," is an invalid argument for unit")
+          M$unit <- "1"
+        }else  M$unit <- value$unit
+      }else  M$unit <- "1"
       if (!is.null(value$source)){
         if (is.list(value$source)){
           for (i in 1:(length(value$source))){
             if (is.list(value$source[[i]])){
               if (is.null(value$source[[i]]$author)){
                 warning("No author provided for source #",i,"!")
-                value$source[[i]]$author <- "Not provided"
+                M$source[[i]]$author <- "Not provided"
               }
               if (is.null(value$source[[i]]$title)){
                 warning("No title provided for source #",i,"!")
-                value$source[[i]]$title <- "Not provided"
+                M$source[[i]]$title <- "Not provided"
               }
               if (is.null(value$source[[i]]$date)){
                 warning("No date provided for source #",i,"!")
-                value$source[[i]]$date <- "Not provided"
+                M$source[[i]]$date <- "Not provided"
               }
               if (is.null(value$source[[i]]$publication)){
                 warning("No publication provided for source #",i,"!")
-                value$source[[i]]$publication <- "Not provided"
+                M$source[[i]]$publication <- "Not provided"
               }
             }else if (i==1){
               if (is.null(value$source$author)){
                 warning("No author provided for source!")
-                value$source$author <- "Not provided"
+                M$source$author <- "Not provided"
               }
               if (is.null(value$source$title)){
                 warning("No title provided for source!")
-                value$source$title <- "Not provided"
+                M$source$title <- "Not provided"
               }
               if (is.null(value$source$date)){
                 warning("No date provided for source!")
-                value$source$date <- "Not provided"
+                M$source$date <- "Not provided"
               }
               if (is.null(value$source$publication)){
                 warning("No publication provided for source!")
-                value$source$publication <- "Not provided"
+                M$source$publication <- "Not provided"
               }
             }else if (is.list(value$source[[i-1]])){
               warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
-              value$source[[i]] <- NULL
+              M$source[[i]] <- NULL
             }
           }
         }else{
           warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
-          value$source <- NULL
+          M$source <- NULL
         }
       }
       if (!is.null(value$calcHistory)){
         if (is(value$calcHistory,"Node")){
           if (is(M$calcHistory,"Node")){
             if (data.tree::isLeaf(value$calcHistory) & is.null(value$calcHistory$children)){
-              c <- data.tree::Clone(M$calcHistory)
-              value$calcHistory$AddChildNode(c)
+              cM <- data.tree::Clone(M$calcHistory)
+              cV <- data.tree::Clone(value$calcHistory)
+              cV$AddChildNode(cM)
+              M$calcHistory <- cV
             }
-          }
+          }else  M$calcHistory <- data.tree::Clone(value$calcHistory)
         }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
           if (is(M$calcHistory,"Node")){
-            c <- data.tree::Clone(M$calcHistory)
-            value$calcHistory <- data.tree::Node$new(value$calcHistory)
-            value$calcHistory$AddChildNode(c)
-          }else  value$calcHistory <- data.tree::Node$new(value$calcHistory)
+            cM <- data.tree::Clone(M$calcHistory)
+            cV <- data.tree::Node$new(value$calcHistory)
+            cV$AddChildNode(cM)
+            M$calcHistory <- cV
+          }else  M$calcHistory <- data.tree::Node$new(value$calcHistory)
         }else{
           warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
-          value$calcHistory <- NULL
+          M$calcHistory <- NULL
         }
       }else if (is(M$calcHistory,"Node")) value$calcHistory <- M$calcHistory
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
           warning(value$user," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
-          value$user <- NULL
-        }
+          M$user <- NULL
+        }else  M$user <- value$user
       }
       if(!is.null(value$date)){
         if(!is.character(value$date) & length(value$date)!=1){
           warning(value$date," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date")
-          value$date <- NULL
-        }
+          M$date <- NULL
+        }else  M$date <- value$date
       }
       if(!is.null(value$description)){
         if(!is.character(value$description)){
           warning(value$description," is an invalid argument for description!")
-          value$description <- NULL
-        }
+          M$description <- NULL
+        }else  M$description <- value$description
       }
     }
-    M <- value
   }else if (type=="unit"){
     if (is.character(value) & length(value)==1)  M[[type]] <- value
     else if (is.null(value))  M$unit <- '1'

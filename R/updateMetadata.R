@@ -78,7 +78,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         f <- as.character(sys.call(-n))[1]
         if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
         else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-        else if (getPackageName(sys.frame(-n))=="madrat")  f <- deparse(sys.call(-n),width.cutoff = 500)
+        else if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput")  f <- deparse(sys.call(-n),width.cutoff = 500)
         if (grepl(":::",f,fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
         fn <- data.tree::Node$new(f)
         return(fn)
@@ -101,9 +101,8 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     }else{
       if (is(x,"Node")){
         fn <- nodeClone(x)
-        if (fn$count >= i)  i <- i+1
+        if (fn$count!=(i-1))  i <- fn$count + 1
         if (is(y,"Node"))  nodeClone(y,fn,i)
-        else  fn$AddChild(i)
       }
     }
     return(fn)

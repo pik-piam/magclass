@@ -271,6 +271,7 @@ setMethod("[<-",
                 if(getOption("magclass.verbosity")>1) cat("NOTE ([<-): Dangerous replacement! As replacement value is not an MAgPIE object name checking is deactivated!\n")
               }
               x@.Data[i,j,k] <- value
+              getMetadata(x) <- getMetadata(value)
               return(x)
             }
           }
