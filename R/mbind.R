@@ -45,6 +45,10 @@ mbind <- function(...) {
       warning("You are trying to mbind an empty magclass object. Is that really intended?")
     }
   }
+  
+  # if all inputs are NULL, return NULL
+  if (0 == length(inputs))
+    return(NULL)
 
   regio <- NULL
   cells <- NULL
