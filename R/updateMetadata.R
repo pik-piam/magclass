@@ -56,7 +56,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  if (!isTRUE(options("reducedHistory")) & calcHistory=="merge")  calcHistory <- "update"
+  if (!isTRUE(getOption("reducedHistory")) & calcHistory=="merge")  calcHistory <- "update"
   
   #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
   nodeClone <- function(x,fn=NULL){
