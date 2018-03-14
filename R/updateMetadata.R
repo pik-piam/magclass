@@ -53,77 +53,114 @@
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","copy"), 
                            calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), n=1){
+
   if(!withMetadata()) return(x)
-  
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  if (!isTRUE(options("reducedHistory")) & calcHistory=="merge")  calcHistory <- "update"
   
-  #Function buildTree constructs the calcHistory data tree 
-  buildTree <- function(x,y=NULL,n,i=0){
-    #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
-    nodeClone <- function(x,fn=NULL,j=NULL){
-      if(isTRUE(getOption("CloneMetadata"))){
-        xc <- data.tree::Clone(x)
-        if (!is.null(j))  xc$name <- paste(j,xc$name)
-        if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(xc)
-        else  return(xc)
-      }else{
-        if (!is.null(j))  x$name <- paste(j,x$name)
-        if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(x)
-        else  return(x)
-      }
-    }
-    #Function newCall creates the appropriate call to be displayed for the new root
-    newCall <- function(n){
-      if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
-        f <- as.character(sys.call(-n))[1]
-        if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
-        else if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-        else if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput")  f <- deparse(sys.call(-n),width.cutoff = 500)
-        if (grepl(":::",f,fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
-        fn <- data.tree::Node$new(f)
-        return(fn)
-      }else  stop("n argument is out of range! calcHistory cannot be updated!")
-    }
-    #Non-recursive case
-    if (i==0){
-      fn <- newCall(n)
-      if (is(x,"Node"))  nodeClone(x,fn)
-      if (!is.null(y) & is(y,"Node"))  nodeClone(y,fn)
-    #First iteration of recursive loop
-    }else if (i==1){
-      fn <- newCall(n)
-      if (is(x,"Node")){
-        nodeClone(x,fn,i)
-        if (is(y,"Node"))  nodeClone(y,fn,i+1)
-      }else if (is(y,"Node"))  nodeClone(y,fn,i)
-      else  fn$AddChild(i)
-    #Subsequent iterations of recursive loop
+  #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
+  nodeClone <- function(x,fn=NULL){
+    if (is.null(x))  return(fn)
+    if(isTRUE(getOption("CloneMetadata"))){
+      xc <- data.tree::Clone(x)
+      if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(xc)
+      else  return(xc)
     }else{
-      if (is(x,"Node")){
-        fn <- nodeClone(x)
-        if (fn$count!=(i-1))  i <- fn$count + 1
-        if (is(y,"Node"))  nodeClone(y,fn,i)
-      }
+      if (!is.null(fn) & is(fn,"Node"))  fn$AddChildNode(x)
+      else  return(x)
     }
-    return(fn)
+  }
+  #Function newCall creates the appropriate call to be displayed for the new root
+  newCall <- function(n,convert=TRUE){
+    if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
+      f <- as.character(sys.call(-n))[1]
+      #if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
+      if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
+      if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput"){
+        f <- deparse(sys.call(-n),width.cutoff = 500)
+        if (grepl("subtype,",f,fixed=TRUE))  f <- gsub("subtype,",paste0(eval.parent(expression(subtype),n),","),f,fixed=TRUE)
+        else if (grepl("type,",f,fixed=TRUE))  f <- gsub("type,",paste0(eval.parent(expression(type),n),","),f,fixed=TRUE)
+        if (grepl("subtype)",f,fixed=TRUE))  f <- gsub("subtype)",paste0(eval.parent(expression(subtype),n),")"),f,fixed=TRUE)
+        else if (grepl("type)",f,fixed=TRUE))  f <- gsub("type)",paste0(eval.parent(expression(type),n),")"),f,fixed=TRUE)
+      }
+      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
+      if (convert==TRUE)  return(data.tree::Node$new(f))
+      else  return(f)
+    }else  stop("n argument is out of range! calcHistory cannot be updated!")
   }
   
+  #Function buildTree constructs the calcHistory data tree 
+  buildTree <- function(x,y=NULL,n,cH){
+    if (!is.null(y)){
+      if (cH=="update")  rt <- newCall(n)
+      else if (cH=="merge"){
+        if (is(x,"Node")){
+          if (x$name=="ROOT")  rt <- nodeClone(x)
+          else  rt <- data.tree::Node$new("ROOT")
+        }else  rt <- data.tree::Node$new("ROOT")
+      }
+      if (!is.list(y)){
+        mY <- getMetadata(y,"calcHistory")
+        if (is(x,"Node")){
+          if (is(mY,"Node")){
+            if (x$name!="ROOT")  nodeClone(x,rt)
+            if (mY$name!="ROOT")  nodeClone(mY,rt)
+          }else  return(nodeClone(x))
+        }else if (is(mY,"Node"))  return(nodeClone(mY))
+      }else{
+        mY <- list()
+        j <- 0
+        for (i in 1:length(y)){
+          if (is(getMetadata(y[[i]],"calcHistory"),"Node")){
+            j <- j+1
+            mY[[j]] <- getMetadata(y[[i]],"calcHistory")
+          }
+        }
+        if (j==0){
+          if (is(x,"Node"))  return(nodeClone(x))
+          else  return(NULL)
+        }else if (j==1){
+          if (is(x,"Node")){
+            if (x$name!="ROOT")  nodeClone(x,rt)
+            else  nodeClone(mY[[1]],rt)
+          }else  return(mY[[1]])
+        }else{
+          if (is(x,"Node")){
+            if (x$name!="ROOT")  nodeClone(x,rt)
+          }
+          for (ii in 1:length(mY)){
+            if (mY[[ii]]$name!="ROOT")  nodeClone(mY[[ii]],rt)
+          }
+          if (rt$count==0 & rt$name=="ROOT")  return(NULL)
+          else if (rt$count==1 & rt$name=="ROOT")  return(rt$children[[1]])
+        }
+      }
+    }else{
+      if (is(x,"Node")){
+        if (x$name=="ROOT"){
+          x$name <- newCall(n,convert=FALSE)
+          return(nodeClone(x))
+        }else{
+          rt <- newCall(n)
+          nodeClone(x,rt)
+        }
+      }else  return(newCall(n))
+    }
+    return(rt)
+  }
   Mx <- getMetadata(x)
   #Recursive function to merge metadata from a list of magpie objects.
   if (is.list(y)){
+    My <- list()
     for (i in 1:length(y)){
       if (is.magpie(y[[i]])){
-        #Special calcHistory handling for merging a list of magpie objects.
-        if (calcHistory=="update"){
-          Mx$calcHistory <- buildTree(Mx$calcHistory,getMetadata(y[[i]],"calcHistory"),n+2,i)
-          x <- updateMetadata(x, y[[i]], unit, source, Mx$calcHistory, user, date, description)
-        }else  x <- updateMetadata(x, y[[i]], unit, source, calcHistory, user, date, description, n=n+1)
+        My[[i]] <- getMetadata(y[[i]])
       }else  stop("All list components of y must be magpie objects!")
     }
-    return(x)
-  }else if (!is.null(y) & !is.magpie(y))  warning("y argument must be a magpie object or a list of magpie objects!")
-  
-  My <- getMetadata(y)
+  }else if (!is.null(y) & !is.magpie(y)){
+    y <- NULL
+    warning("y argument must be a magpie object or a list of magpie objects!")
+  }else  My <- getMetadata(y)
   
   if (is.null(unit))  unit <- "keep"
   if (unit=="copy"){
@@ -131,7 +168,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear")  Mx$unit <- NULL
   else if (unit=="update"){
-    if (!is.null(getMetadata(x,"date"))){
+    if (!is.null(getMetadata(x,"unit"))){
       if (is.null(Mx$unit))  Mx$unit <- "1"
       if (is.null(My$unit))  My$unit <- "1"
       if (Mx$unit!=My$unit)  Mx$unit <- "mixed"
@@ -152,12 +189,16 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   else if (source[[1]]=="clear")  Mx$source <- NULL
   else if (source[[1]]!="keep")  Mx$source <- source
   
-  if (is.null(calcHistory))  calcHistory <- "keep"
-  if (is(calcHistory,"Node")){
+  if (is(calcHistory,"Node") | is.null(calcHistory)){
     getMetadata(x,"calcHistory") <- NULL
     Mx$calcHistory <- calcHistory
   }else if (calcHistory=="update"){
-    Mx$calcHistory <- buildTree(Mx$calcHistory,My$calcHistory,n+2)
+    Mx$calcHistory <- buildTree(Mx$calcHistory,y,n+2,calcHistory)
+    getMetadata(x,"calcHistory") <- NULL
+  }else if (calcHistory=="merge"){
+    if (!is.null(y)){
+      Mx$calcHistory <- buildTree(Mx$calcHistory,y,n+2,calcHistory)
+    }else  warning(paste(calcHistory,"is an invalid argument for calcHistory! A magpie or list of magpies must be provided for y"))
   }else if (calcHistory=="copy"){
     if (!is.null(y)){
       if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")

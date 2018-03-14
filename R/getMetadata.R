@@ -123,25 +123,28 @@ getMetadata <- function(x, type=NULL) {
       if (!is.null(value$calcHistory)){
         if (is(value$calcHistory,"Node")){
           if (is(M$calcHistory,"Node")){
-            if (data.tree::isLeaf(value$calcHistory) & is.null(value$calcHistory$children)){
+            if (value$calcHistory$count==0){
+              if (M$calcHistory$name=="ROOT")  M$calcHistory$name <- value$calcHistory$name
+              else{
+                cV <- data.tree::Clone(value$calcHistory)
+                cM <- data.tree::Clone(M$calcHistory)
+                cV$AddChildNode(cM)
+                M$calcHistory <- cV
+              }
+            }else  M$calcHistory <- value$calcHistory
+          }else  M$calcHistory <- value$calcHistory
+        }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
+          if (is(M$calcHistory,"Node")){
+            if (M$calcHistory$name=="ROOT")  M$calcHistory$name <- value$calcHistory
+            else{
+              cV <- data.tree::Node$new(value$calcHistory)
               cM <- data.tree::Clone(M$calcHistory)
-              cV <- data.tree::Clone(value$calcHistory)
               cV$AddChildNode(cM)
               M$calcHistory <- cV
             }
-          }else  M$calcHistory <- data.tree::Clone(value$calcHistory)
-        }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
-          if (is(M$calcHistory,"Node")){
-            cM <- data.tree::Clone(M$calcHistory)
-            cV <- data.tree::Node$new(value$calcHistory)
-            cV$AddChildNode(cM)
-            M$calcHistory <- cV
-          }else  M$calcHistory <- data.tree::Node$new(value$calcHistory)
-        }else{
-          warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
-          M$calcHistory <- NULL
-        }
-      }else if (is(M$calcHistory,"Node")) value$calcHistory <- M$calcHistory
+          }
+        }else  warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
+      }
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
           warning(value$user," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
@@ -214,6 +217,7 @@ getMetadata <- function(x, type=NULL) {
       if (is(M[[type]],"Node")){
         if (data.tree::isRoot(value))  M[[type]] <- value
         else if (is.null(value$children)){
+          if (M[[type]]$name=="ROOT")  M[[type]]$name <- value$name
           c <- data.tree::Clone(M[[type]])
           value$AddChildNode(c)
           M[[type]] <- value
@@ -222,9 +226,12 @@ getMetadata <- function(x, type=NULL) {
     }else if (is.character(value)){
       if (length(value)==1){
         if (is(M[[type]],"Node")){
-          c <- data.tree::Clone(M[[type]])
-          M[[type]] <- data.tree::Node$new(value)
-          M[[type]]$AddChildNode(c)
+          if (M[[type]]$name=="ROOT")  M[[type]]$name <- value
+          else{
+            c <- data.tree::Clone(M[[type]])
+            M[[type]] <- data.tree::Node$new(value)
+            M[[type]]$AddChildNode(c)
+          }
         }else  M[[type]] <- data.tree::Node$new(value)
       }else  warning(value,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
     }else if (is.null(value))  M[[type]] <- value
