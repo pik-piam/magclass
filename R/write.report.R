@@ -89,7 +89,7 @@ write.report <- function(x,file=NULL,model="MAgPIE",scenario="default",unit=NA,n
           nelem_with_brackets <- length(grep("\\(*\\)$",getNames(xtemp)))
           if(nelem_with_brackets==dim(xtemp)[3]) {
             tmp <- getNames(xtemp)
-            dimnames(xtemp)[[3]] <- sub(" ?\\(.*\\)$","", tmp)
+            dimnames(xtemp)[[3]] <- sub(" \\(([^\\(]*)\\)($|\\.)","",tmp)
             unit <- sub("\\)$","",sub(".* \\(","",tmp))
           } else {
             if(nelem_with_brackets > 0) warning("Some but not all variable entries provide information in brackets which might be a unit information. To have it detected as unit all entries must provide this information!")

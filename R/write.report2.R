@@ -117,8 +117,8 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   unitsplit <- function(x,col) {
     w <- grepl("\\(.*\\)",x[[col]])
     x[[col]][!w] <- paste0(x[[col]][!w]," (N/A)")
-    tmp <- data.frame(sub("^([^\\(]*) \\((.*)\\)$","\\1",x[[col]]),
-                      sub("^([^\\(]*) \\((.*)\\)$","\\2",x[[col]]))
+    tmp <- data.frame(sub(" \\(([^\\(]*)\\)($|\\.)","",x[[col]]),
+                      sub("\\)$","",sub(".* \\(","",x[[col]])))
     names(tmp) <- c(names(x)[col],"unit")
     x <- cbind(tmp,x[setdiff(1:ncol(x),col)])
     return(x) 
