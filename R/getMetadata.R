@@ -74,51 +74,25 @@ getMetadata <- function(x, type=NULL) {
         }else  M$unit <- value$unit
       }else  M$unit <- "1"
       if (!is.null(value$source)){
-        if (is.list(value$source)){
-          for (i in 1:(length(value$source))){
-            if (is.list(value$source[[i]])){
-              if (is.null(value$source[[i]]$author)){
-                warning("No author provided for source #",i,"!")
-                M$source[[i]]$author <- "Not provided"
+        if (!is(value$source,"bibentry")){
+          if (is.list(value$source)){
+            j <- 0
+            k <- 0
+            for (i in 1:(length(value$source))){
+              if (is(value$source[[i]],"bibentry")){
+                j <- j+1
+                M$source[[j]] <- value$source[[i]]
+              }else{
+                if (k==0)  k <- i
+                else  k <- append(k,i)
               }
-              if (is.null(value$source[[i]]$title)){
-                warning("No title provided for source #",i,"!")
-                M$source[[i]]$title <- "Not provided"
-              }
-              if (is.null(value$source[[i]]$date)){
-                warning("No date provided for source #",i,"!")
-                M$source[[i]]$date <- "Not provided"
-              }
-              if (is.null(value$source[[i]]$publication)){
-                warning("No publication provided for source #",i,"!")
-                M$source[[i]]$publication <- "Not provided"
-              }
-            }else if (i==1){
-              if (is.null(value$source$author)){
-                warning("No author provided for source!")
-                M$source$author <- "Not provided"
-              }
-              if (is.null(value$source$title)){
-                warning("No title provided for source!")
-                M$source$title <- "Not provided"
-              }
-              if (is.null(value$source$date)){
-                warning("No date provided for source!")
-                M$source$date <- "Not provided"
-              }
-              if (is.null(value$source$publication)){
-                warning("No publication provided for source!")
-                M$source$publication <- "Not provided"
-              }
-            }else if (is.list(value$source[[i-1]])){
-              warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
-              M$source[[i]] <- NULL
             }
+            if (k!=0)  warning("Source(s) ",toString(k)," are not bibentry objects!")
+          }else{
+            warning("Source must be an object of class bibentry or a list of bibentry objects!")
+            M$source <- NULL
           }
-        }else{
-          warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
-          M$source <- NULL
-        }
+        }else  M$source <- value$source
       }
       if (!is.null(value$calcHistory)){
         if (is(value$calcHistory,"Node")){
@@ -158,10 +132,20 @@ getMetadata <- function(x, type=NULL) {
         }else  M$date <- value$date
       }
       if(!is.null(value$description)){
-        if(!is.character(value$description)){
+        if(is.character(value$description))  M$description <- value$description
+        else if (is.list(value$description))  M$description <- value$description
+        else{
           warning(value$description," is an invalid argument for description!")
           M$description <- NULL
-        }else  M$description <- value$description
+        }
+      }
+      if(!is.null(value$note)){
+        if(is.character(value$note))  M$note <- value$note
+        else if (is.list(value$note))  M$note <- value$note
+        else{
+          warning(value$note," is an invalid argument for note!")
+          M$note <- NULL
+        }
       }
     }
   }else if (type=="unit"){
@@ -170,48 +154,22 @@ getMetadata <- function(x, type=NULL) {
     else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
-    else if (is.list(value)){
-      for (i in 1:(length(value))){
-        if (is.list(value[[i]])){
-          if (is.null(value[[i]]$author)){
-            warning("No author provided for source #",i,"!")
-            value[[i]]$author <- "Not provided"
+    if (!is(value,"bibentry")){
+      if (is.list(value)){
+        j <- 0
+        k <- 0
+        for (i in 1:(length(value))){
+          if (is(value[[i]],"bibentry")){
+            j <- j+1
+            M$source[[j]] <- value[[i]]
+          }else{
+            if (k==0)  k <- i
+            else  k <- append(k,i)
           }
-          if (is.null(value[[i]]$title)){
-            warning("No title provided for source #",i,"!")
-            value[[i]]$title <- "Not provided"
-          }
-          if (is.null(value[[i]]$date)){
-            warning("No date provided for source #",i,"!")
-            value[[i]]$date <- "Not provided"
-          }
-          if (is.null(value[[i]]$publication)){
-            warning("No publication provided for source #",i,"!")
-            value[[i]]$publication <- "Not provided"
-          }
-        }else if (i==1){
-          if (is.null(value$author)){
-            warning("No author provided for source!")
-            value$author <- "Not provided"
-          }
-          if (is.null(value$title)){
-            warning("No title provided for source!")
-            value$title <- "Not provided"
-          }else if (is.null(value$date)){
-            warning("No date provided for source!")
-            value$date <- "Not provided"
-          }
-          if (is.null(value$publication)){
-            warning("No publication provided for source!")
-            value$publication <- "Not provided"
-          }
-        }else if (is.list(value[[i-1]])){
-          warning("Source #",i," must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
         }
-      }
-    }else{
-      warning("Source must be a formatted as a list! Please include at least author, title, date, and journal. If possible, also DOI, ISSN, URL, etc")
-    }
+        if (k!=0)  warning("Source(s) ",toString(k)," are not bibentry objects!")
+      }else  warning("Source must be an object of class bibentry or a list of bibentry objects!")
+    }else  M$source <- value
   }else if (type == "calcHistory"){
     if (is(value,"Node")){
       if (is(M[[type]],"Node")){
@@ -238,14 +196,18 @@ getMetadata <- function(x, type=NULL) {
     else  warning(value," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
   }else if (type=="date"){
     if  ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date.")
+    else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to enter a date.")
   }else if (type=="user"){
     if ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
+    else  warning(value," is an invalid argument for user! Please use getMetadata or updateMetadata to enter a user.")
   }else if (type=="description"){
     if(is.null(value) | is.character(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for description! Please use getMetadata or updateMetadata to provide a description")
+    else  warning(value," is an invalid argument for description! Please use getMetadata or updateMetadata to enter a description.")
+  }else if (type=="note"){
+    if(is.null(value) | is.character(value))  M[[type]] <- value
+    else  warning(value," is an invalid argument for note! Please use getMetadata or updateMetadata to enter a note.")
   }else  warning(type," is not a valid metadata field!")
+  
   attr(x, "Metadata") <- M
   return(x)
 }
