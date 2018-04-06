@@ -120,6 +120,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     #look for comment/addtitional information
     if(is.null(comment) & !is.null(attr(x,"comment"))) comment <- attr(x,"comment")
     if(is.null(comment)) comment <- "" 
+    metadata <- getMetadata(x)
     
     #expand wildcards
     file_path <- paste(Sys.glob(dirname(file_path)),basename(file_path),sep="/")
@@ -134,7 +135,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     if(file_type=="m" | file_type=="mz") {
-      fformat_version <- "2"  #File format version 1 (older data has version 0)
+      fformat_version <- "3"  #File format version 2 (oldest data has version 0)
       comment <- paste(comment,collapse="\n")
       ncells <- dim(x)[1]
       nyears <- dim(x)[2]
@@ -162,6 +163,13 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       
       writeBin(as.integer(fformat_version),zz,size=2)
       writeBin(as.integer(nchar(comment)),zz,size=4)
+      writeBin(as.integer(nchar(metadata$unit)),zz)
+      writeBin(as.integer(nchar(metadata$user)),zz)
+      writeBin(as.integer(nchar(metadata$date)),zz)
+      writeBin(as.integer(nchar(metadata$description)),zz)
+      writeBin(as.integer(nchar(metadata$note)),zz)
+      writeBin(length(serialize(metadata$source,NULL,FALSE)),zz)
+      writeBin(length(serialize(metadata$calcHistory,NULL,FALSE)),zz)
       writeBin(as.integer(nchar(sets_collapsed)),zz,size=2)
       writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
       writeBin(as.integer(c(nyears,year_list,nregions,nchar(regions_collapsed))),zz,size=2)
@@ -171,7 +179,14 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       writeBin(as.numeric(as.vector(x)),zz,size=4)
       if(comment!="") writeChar(comment,zz,eos=NULL)
       if(nchar(sets_collapsed)>0) writeChar(sets_collapsed,zz,eos=NULL)
-      close(zz)     
+      if(!is.null(metadata$unit))  writeChar(metadata$unit,zz,eos=NULL)
+      if(!is.null(metadata$user))  writeChar(metadata$user,zz,eos=NULL)
+      if(!is.null(metadata$date))  writeChar(metadata$date,zz,eos=NULL)
+      if(!is.null(metadata$description ))  writeChar(metadata$description,zz,eos=NULL)
+      if(!is.null(metadata$note))  writeChar(metadata$note,zz,eos=NULL)
+      if(!is.null(metadata$source))  writeBin(serialize(metadata$source,NULL,FALSE),zz)
+      if(!is.null(metadata$calcHistory))  writeBin(serialize(metadata$calcHistory,NULL,FALSE),zz)
+      close(zz)
     } else if(file_type=="asc") {
       coord <- magclassdata$half_deg[,c("lon","lat")]
       if(dim(coord)[1]!=dim(x)[1]) stop("Wrong format! Only 0.5deg data can be written as ascii grid!")
@@ -219,6 +234,21 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       dimnames(x)[[2]] <- c(gsub("[^,]*(,|$)","dummy\\1",x[1,1]),header)
       zz <- file(file_path,open="w")
       if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
+      if(!is.null(metadata)) writeLines("\nMetadata:",zz)
+      if(!is.null(metadata$unit)) writeLines(paste("unit:",metadata$unit),zz)
+      if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
+      if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
+      if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
+      if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+      if(!is.null(metadata$source)){
+        writeLines("\nsource(s):",zz)
+        for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
+      }
+      if(!is.null(metadata$calcHistory)){
+        writeLines("\ncalcHistory:",zz)
+        write.csv(metadata$calcHistory,zz)
+      }
+      writeLines("\n",zz)
       write.csv(x,file=zz,quote=FALSE,row.names=FALSE)
       close(zz)
     } else if(file_type=="cs4" | file_type=="cs4r") {
@@ -239,6 +269,21 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       zz <- file(file_path,open="w")
       if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
+      if(!is.null(metadata)) writeLines("\nMetadata:",zz)
+      if(!is.null(metadata$unit)) writeLines(paste("unit:",metadata$unit),zz)
+      if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
+      if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
+      if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
+      if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+      if(!is.null(metadata$source)){
+        writeLines("\nsource(s):",zz)
+        for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
+      }
+      if(!is.null(metadata$calcHistory)){
+        writeLines("\ncalcHistory:",zz)
+        write.csv(metadata$calcHistory,zz)
+      }
+      writeLines("\n",zz)
       write.table(output,file=zz,quote=FALSE,row.names=FALSE,col.names=FALSE,sep=",")
       close(zz)
       
@@ -278,6 +323,21 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(header & print_regions) dimnames(output)[[2]][1] <- "dummy"
         zz <- file(file_path,open="w")
         if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
+        if(!is.null(metadata)) writeLines("\nMetadata:",zz)
+        if(!is.null(metadata$unit)) writeLines(paste("unit:",metadata$unit),zz)
+        if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
+        if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
+        if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
+        if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+        if(!is.null(metadata$source)){
+          writeLines("\nsource(s):",zz)
+          for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
+        }
+        if(!is.null(metadata$calcHistory)){
+          writeLines("\ncalcHistory:",zz)
+          write.csv(metadata$calcHistory,zz)
+        }
+        writeLines("\n",zz)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)  
         close(zz)
       } else {      
@@ -306,6 +366,21 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       	}
         zz <- file(file_path,open="w")
         if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
+        if(!is.null(metadata)) writeLines("\nMetadata:",zz)
+        if(!is.null(metadata$unit)) writeLines(paste("unit:",metadata$unit),zz)
+        if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
+        if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
+        if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
+        if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+        if(!is.null(metadata$source)){
+          writeLines("\nsource(s):",zz)
+          for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
+        }
+        if(!is.null(metadata$calcHistory)){
+          writeLines("\ncalcHistory:",zz)
+          write.csv(metadata$calcHistory,zz)
+        }
+        writeLines("\n",zz)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)
         close(zz)
       }

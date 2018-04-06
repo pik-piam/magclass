@@ -150,6 +150,15 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         fformat_version <- readBin(zz,integer(),1,size=2)
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
+        if(fformat_version > 2) {
+          nchar_unit <- readBin(zz,integer(),1)
+          nchar_user <- readBin(zz,integer(),1)
+          nchar_date <- readBin(zz,integer(),1)
+          nchar_description <- readBin(zz,integer())
+          nchar_note <- readBin(zz,integer())
+          nchar_source <- readBin(zz,integer())
+          nchar_calcHistory <- readBin(zz,integer())
+        }
         if(fformat_version > 1) {
           nchar_sets <- readBin(zz,integer(),1,size=2)
           empty <- empty - 2
@@ -190,6 +199,17 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       if(fformat_version > 1) {
         if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets),"\n")[[1]]
+      }
+      if(fformat_version > 2) {
+        metadata <- list()
+        if(nchar_unit > 0) metadata$unit <- strsplit(readChar(zz,nchar_unit),"\n")[[1]]
+        if(nchar_user > 0) metadata$user <- strsplit(readChar(zz,nchar_user),"\n")[[1]]
+        if(nchar_date > 0) metadata$date <- strsplit(readChar(zz,nchar_date),"\n")[[1]]
+        if(nchar_description > 0) metadata$description <- strsplit(readChar(zz,nchar_description),"\n")[[1]]
+        if(nchar_note > 0) metadata$note <- strsplit(readChar(zz,nchar_note),"\n")[[1]]
+        if(nchar_source > 0) metadata$source <- unserialize(readBin(zz,raw(),nchar_source))
+        if(nchar_calcHistory > 0) metadata$calcHistory <- unserialize(readBin(zz,raw(),nchar_calcHistory))
+        getMetadata(output) <- metadata
       }
       close(zz)     
       attr(output,"FileFormatVersion") <- fformat_version
