@@ -151,13 +151,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
         if(fformat_version > 2) {
-          nchar_unit <- readBin(zz,integer(),1)
-          nchar_user <- readBin(zz,integer(),1)
-          nchar_date <- readBin(zz,integer(),1)
-          nchar_description <- readBin(zz,integer())
-          nchar_note <- readBin(zz,integer())
-          nchar_source <- readBin(zz,integer())
-          nchar_calcHistory <- readBin(zz,integer())
+          nchar_unit <- readBin(zz,integer(),1,size=2)
+          nchar_user <- readBin(zz,integer(),1,size=2)
+          nchar_date <- readBin(zz,integer(),1,size=2)
+          nchar_description <- readBin(zz,integer(),size=4)
+          nchar_note <- readBin(zz,integer(),size=2)
+          nchar_source <- readBin(zz,integer(),size=4)
+          nchar_calcHistory <- readBin(zz,integer(),size=4)
         }
         if(fformat_version > 1) {
           nchar_sets <- readBin(zz,integer(),1,size=2)

@@ -254,7 +254,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (is.character(description))  Mx$description <- description
     else  warning("Invalid argument ",description," for description!")
   }
-  if (is.null(note))  Mx$note <- "keep"
+  if (is.null(note))  note <- "keep"
   if (note=="copy"){
     if (!is.null(y))  Mx$note <- My$note
     else  warning("note cannot be copied without a second magpie argument provided!")

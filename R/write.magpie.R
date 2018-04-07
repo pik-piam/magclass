@@ -163,13 +163,13 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       
       writeBin(as.integer(fformat_version),zz,size=2)
       writeBin(as.integer(nchar(comment)),zz,size=4)
-      writeBin(as.integer(nchar(metadata$unit)),zz)
-      writeBin(as.integer(nchar(metadata$user)),zz)
-      writeBin(as.integer(nchar(metadata$date)),zz)
-      writeBin(as.integer(nchar(metadata$description)),zz)
-      writeBin(as.integer(nchar(metadata$note)),zz)
-      writeBin(length(serialize(metadata$source,NULL,FALSE)),zz)
-      writeBin(length(serialize(metadata$calcHistory,NULL,FALSE)),zz)
+      writeBin(as.integer(nchar(metadata$unit)),zz,size=2)
+      writeBin(as.integer(nchar(metadata$user)),zz,size=2)
+      writeBin(as.integer(nchar(metadata$date)),zz,size=2)
+      writeBin(as.integer(nchar(metadata$description)),zz,size=4)
+      writeBin(as.integer(nchar(metadata$note)),zz,size=2)
+      writeBin(length(serialize(metadata$source,NULL,FALSE)),zz,size=4)
+      writeBin(length(serialize(metadata$calcHistory,NULL,FALSE)),zz,size=4)
       writeBin(as.integer(nchar(sets_collapsed)),zz,size=2)
       writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
       writeBin(as.integer(c(nyears,year_list,nregions,nchar(regions_collapsed))),zz,size=2)
@@ -328,7 +328,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
         if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
         if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
-        if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+        #if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
         if(!is.null(metadata$source)){
           writeLines("\nsource(s):",zz)
           for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
@@ -371,7 +371,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(!is.null(metadata$user)) writeLines(paste("user:",metadata$user),zz)
         if(!is.null(metadata$date)) writeLines(paste("date:",metadata$date),zz)
         if(!is.null(metadata$description)) writeLines(paste("description:",metadata$description),zz)
-        if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
+        #if(!is.null(metadata$note)) writeLines(paste("note:",metadata$note),zz)
         if(!is.null(metadata$source)){
           writeLines("\nsource(s):",zz)
           for(i in 1:length(metadata$source)) writeLines(paste0(i,") ",format(metadata$source[[i]])),zz)
