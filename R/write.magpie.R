@@ -97,10 +97,12 @@
 #' @export write.magpie
 #' @importFrom utils setTxtProgressBar txtProgressBar write.csv write.table
 write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,comment=NULL,comment.char="*",mode=NULL,nc_compression=9,verbose=TRUE) {
+  umask <- Sys.umask()
   if(!is.null(mode)) {
-    umask <- Sys.umask()
     umask_mode <- as.character(777-as.integer(mode))
     Sys.umask(umask_mode)
+  } else {
+    mode <- as.character(777-as.integer(as.character(umask)))
   }
   if(is.null(x)) x <- as.magpie(numeric(0))
   if(is.magpie(x)) {
@@ -171,7 +173,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       writeBin(as.numeric(as.vector(x)),zz,size=4)
       if(comment!="") writeChar(comment,zz,eos=NULL)
       if(nchar(sets_collapsed)>0) writeChar(sets_collapsed,zz,eos=NULL)
-      close(zz)     
+      close(zz)    
+      Sys.chmod(file_path, mode)
     } else if(file_type=="asc") {
       coord <- magclassdata$half_deg[,c("lon","lat")]
       if(dim(coord)[1]!=dim(x)[1]) stop("Wrong format! Only 0.5deg data can be written as ascii grid!")
@@ -221,6 +224,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
       write.csv(x,file=zz,quote=FALSE,row.names=FALSE)
       close(zz)
+      Sys.chmod(file_path, mode)
     } else if(file_type=="cs4" | file_type=="cs4r") {
       print_cells <- nregions(x)<ncells(x)
       print_regions <- getRegions(x)[1]!="GLO"
@@ -241,6 +245,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
       write.table(output,file=zz,quote=FALSE,row.names=FALSE,col.names=FALSE,sep=",")
       close(zz)
+      Sys.chmod(file_path, mode)
       
     } else {
       print_cells <- nregions(x)<ncells(x)
@@ -280,6 +285,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)  
         close(zz)
+        Sys.chmod(file_path, mode)
       } else {      
         if(file_type=="csvr" | file_type=="cs2r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
         if(file_type=="cs2" | file_type=="cs2r") print_regions <- FALSE
@@ -308,6 +314,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)
         close(zz)
+        Sys.chmod(file_path, mode)
       }
     }
   } else {
