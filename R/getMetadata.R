@@ -61,6 +61,10 @@ getMetadata <- function(x, type=NULL) {
 #' @export
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
+  if(!is.magpie(x)){
+    warning("x argument must be a magpie object!")
+    return(x)
+  }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
@@ -73,13 +77,14 @@ getMetadata <- function(x, type=NULL) {
           M$unit <- "1"
         }else  M$unit <- value$unit
       }else  M$unit <- "1"
+      
       if (!is.null(value$source)){
-        if (!is(value$source,"bibentry")){
+        if (!is(value$source,"Bibtex") & !is(value$source,"bibentry")){
           if (is.list(value$source)){
             j <- 0
             k <- 0
             for (i in 1:(length(value$source))){
-              if (is(value$source[[i]],"bibentry")){
+              if (is(value$source[[i]],"Bibtex") | is(value$source,"bibentry")){
                 j <- j+1
                 M$source[[j]] <- value$source[[i]]
               }else{
@@ -87,9 +92,9 @@ getMetadata <- function(x, type=NULL) {
                 else  k <- append(k,i)
               }
             }
-            if (k!=0)  warning("Source(s) ",toString(k)," are not bibentry objects!")
+            if (k!=0)  warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
           }else{
-            warning("Source must be an object of class bibentry or a list of bibentry objects!")
+            warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
             M$source <- NULL
           }
         }else  M$source <- value$source
@@ -154,12 +159,12 @@ getMetadata <- function(x, type=NULL) {
     else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
-    if (!is(value,"bibentry")){
+    if (!is(value,"Bibtex") & !is(value,"bibentry")){
       if (is.list(value)){
         j <- 0
         k <- 0
         for (i in 1:(length(value))){
-          if (is(value[[i]],"bibentry")){
+          if (is(value[[i]],"Bibtex") | is(value,"bibentry")){
             j <- j+1
             M$source[[j]] <- value[[i]]
           }else{
@@ -167,8 +172,8 @@ getMetadata <- function(x, type=NULL) {
             else  k <- append(k,i)
           }
         }
-        if (k!=0)  warning("Source(s) ",toString(k)," are not bibentry objects!")
-      }else  warning("Source must be an object of class bibentry or a list of bibentry objects!")
+        if (k!=0)  warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
+      }else  warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
     }else  M$source <- value
   }else if (type == "calcHistory"){
     if (is(value,"Node")){

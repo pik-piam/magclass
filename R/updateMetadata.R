@@ -25,9 +25,9 @@
 #' - "update": if units of x do not match units of y, sets units to "mixed". Else, copies units of y to x.
 #' - string or vector specifying new units for x
 #' The default argument is "keep" if no y argument is provided, or "update" if y is provided. 
-#' @param source An object of class bibentry (or a list of bibentry objects) indicating the source(s) of the 
+#' @param source An object of class Bibtex (or a list of Bibtex objects) indicating the source(s) of the 
 #' input data in BibTeX style. Possible arguments are "keep", "copy", "clear", or a new source can be entered 
-#' here as a bibentry object. By default, "keep" if no y argument, or "copy" if y is provided.
+#' here as a Bibtex object. By default, "keep" if no y argument, or "copy" if y is provided.
 #' @param calcHistory A tree-like object of class Node indicating the functions through which x has passed. 
 #' Possible arguments are "keep"; "copy"; "clear"; "merge", which combines the history trees of 2 or more 
 #' objects; and "update", which adds the function presently calling updateMetadata (or a function further 
@@ -175,15 +175,15 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
-  if (is.list(source) | is(source,"bibentry"))  Mx$source <- source
+  if (is.list(source) | is(source,"Bibtex"))  Mx$source <- source
   else if (source=="copy"){
     if (!is.null(y)){
       if (is.list(My$source)){
         if (is.list(Mx$source))  Mx$source <- append(Mx$source, My$source)
-        else if (is(Mx$source,"bibentry"))  Mx$source <- append(list(Mx$source), My$source)
+        else if (is(Mx$source,"Bibtex"))  Mx$source <- append(list(Mx$source), My$source)
         else  Mx$source <- My$source
-      }else if (is(My$source,"bibentry")){
-        if (is(Mx$source,"bibentry"))  Mx$source <- list(Mx$source, My$source)
+      }else if (is(My$source,"Bibtex")){
+        if (is(Mx$source,"Bibtex"))  Mx$source <- list(Mx$source, My$source)
         else if (is.list(Mx$source))  append(Mx$source,list(My$source))
         else  Mx$source <- My$source
       }
@@ -254,7 +254,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (is.character(description))  Mx$description <- description
     else  warning("Invalid argument ",description," for description!")
   }
-  if (is.null(note))  Mx$note <- "keep"
+  if (is.null(note))  note <- "keep"
   if (note=="copy"){
     if (!is.null(y))  Mx$note <- My$note
     else  warning("note cannot be copied without a second magpie argument provided!")
