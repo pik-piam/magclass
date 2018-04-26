@@ -59,6 +59,7 @@ getMetadata <- function(x, type=NULL) {
  
 #' @describeIn getMetadata set and modify Metadata
 #' @export
+#' @importFrom utils toBibtex
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
   if(!is.magpie(x)){
@@ -81,12 +82,16 @@ getMetadata <- function(x, type=NULL) {
       if (!is.null(value$source)){
         if (!is(value$source,"Bibtex") & !is(value$source,"bibentry")){
           if (is.list(value$source)){
+            M$source <- list()
             j <- 0
             k <- 0
             for (i in 1:(length(value$source))){
-              if (is(value$source[[i]],"Bibtex") | is(value$source,"bibentry")){
+              if (is(value$source[[i]],"Bibtex")){
                 j <- j+1
                 M$source[[j]] <- value$source[[i]]
+              }else if (is(value$source,"bibentry")){
+                j <- j+1
+                M$source[[j]] <- toBibtex(value$source[[i]])
               }else{
                 if (k==0)  k <- i
                 else  k <- append(k,i)
@@ -97,7 +102,8 @@ getMetadata <- function(x, type=NULL) {
             warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
             M$source <- NULL
           }
-        }else  M$source <- value$source
+        }else if (is(value$source,"bibentry"))  M$source <- toBibtex(value$source)
+        else  M$source <- value$source
       }
       if (!is.null(value$calcHistory)){
         if (is(value$calcHistory,"Node")){
@@ -161,12 +167,16 @@ getMetadata <- function(x, type=NULL) {
     if (is.null(value))  M[[type]] <- value
     if (!is(value,"Bibtex") & !is(value,"bibentry")){
       if (is.list(value)){
+        M$source <- list()
         j <- 0
         k <- 0
         for (i in 1:(length(value))){
-          if (is(value[[i]],"Bibtex") | is(value,"bibentry")){
+          if (is(value[[i]],"Bibtex")){
             j <- j+1
             M$source[[j]] <- value[[i]]
+          }else if (is(value,"bibentry")){
+            j <- j+1
+            M$source[[j]] <- toBibtex(value[[i]])
           }else{
             if (k==0)  k <- i
             else  k <- append(k,i)
@@ -174,7 +184,8 @@ getMetadata <- function(x, type=NULL) {
         }
         if (k!=0)  warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
       }else  warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
-    }else  M$source <- value
+    }else if (is(value,"bibentry"))  M$source <- toBibtex(value)
+    else  M$source <- value
   }else if (type == "calcHistory"){
     if (is(value,"Node")){
       if (is(M[[type]],"Node")){

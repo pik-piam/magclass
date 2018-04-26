@@ -213,6 +213,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 if(grepl("@",tmp,fixed=TRUE)) {
                   k <- k+1
                   if(!is.list(metadata[[i]]))  metadata[[i]] <- list(metadata[[i]])
+                  class(metadata[[i]][[k-1]]) <- "Bibtex"
                   tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                   metadata[[i]][[k]] <- tmp
                   tmp <- readLines(zz,1)
@@ -222,7 +223,8 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                   tmp <- readLines(zz,1)
                 }
               }
-              class(metadata[[i]]) <- "Bibtex"
+              if (is.list(metadata[[i]]))  class(metadata[[i]][[k]]) <- "Bibtex"
+              else  class(metadata[[i]]) <- "Bibtex"
             }else{
               metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
               tmp <- readLines(zz,1)

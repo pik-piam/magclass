@@ -175,15 +175,15 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
-  if (is.list(source) | is(source,"Bibtex"))  Mx$source <- source
+  if (is.list(source) | is(source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- source
   else if (source=="copy"){
     if (!is.null(y)){
       if (is.list(My$source)){
         if (is.list(Mx$source))  Mx$source <- append(Mx$source, My$source)
-        else if (is(Mx$source,"Bibtex"))  Mx$source <- append(list(Mx$source), My$source)
+        else if (is(Mx$source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- append(list(Mx$source), My$source)
         else  Mx$source <- My$source
-      }else if (is(My$source,"Bibtex")){
-        if (is(Mx$source,"Bibtex"))  Mx$source <- list(Mx$source, My$source)
+      }else if (is(My$source,"Bibtex") | is(Mx$source,"bibentry")){
+        if (is(Mx$source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- list(Mx$source, My$source)
         else if (is.list(Mx$source))  append(Mx$source,list(My$source))
         else  Mx$source <- My$source
       }
@@ -255,7 +255,10 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     else  warning("Invalid argument ",description," for description!")
   }
   if (is.null(note))  note <- "keep"
-  if (note=="copy"){
+  if (length(note)>1){
+    if (is.character(note) | is.list(note))  Mx$note <- note
+    else  warning("Invalid argument for note!")
+  }else if (note=="copy"){
     if (!is.null(y))  Mx$note <- My$note
     else  warning("note cannot be copied without a second magpie argument provided!")
   }else if (note=="clear")  Mx$note <- NULL
