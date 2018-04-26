@@ -307,12 +307,14 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets),"\n")[[1]]
       }
       if(fformat_version > 2) {
-        if(nchar_metadata > 0) metadata <- unserialize(readBin(zz,raw(),nchar_metadata))
-        getMetadata(output) <- metadata
+        if(nchar_metadata > 0)  metadata <- unserialize(readBin(zz,raw(),nchar_metadata))
       }
       close(zz)     
       attr(output,"FileFormatVersion") <- fformat_version
       read.magpie <- new("magpie",output)
+      if(fformat_version > 2){
+        if(nchar_metadata > 0)  getMetadata(read.magpie) <- metadata
+      }
       
     } else if(file_type=="cs3" | file_type=="cs3r") {
       x <- read.csv(file_name,comment.char=comment.char, check.names=check.names)
@@ -651,11 +653,15 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(as.array){
     read.magpie <- as.magpie(read.magpie)
-    getMetadata(read.magpie) <- .readMetadata(file_name)
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+      getMetadata(read.magpie) <- .readMetadata(file_name)
+    }
     read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
-    getMetadata(read.magpie) <- .readMetadata(file_name)
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+      getMetadata(read.magpie) <- .readMetadata(file_name)
+    }
   }
   return(read.magpie)
 }
