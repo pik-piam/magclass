@@ -217,7 +217,8 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                   metadata[[i]][[k]] <- tmp
                   tmp <- readLines(zz,1)
                 }else {
-                  metadata[[i]][[k]] <- c(metadata[[i]][[k]], tmp)
+                  if (is.list(metadata[[i]]))  metadata[[i]][[k]] <- c(metadata[[i]][[k]], tmp)
+                  else  metadata[[i]] <- c(metadata[[i]], tmp)
                   tmp <- readLines(zz,1)
                 }
               }
