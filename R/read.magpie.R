@@ -80,6 +80,7 @@
 #' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
 #' to 3!).
 #' @author Jan Philipp Dietrich
+#' @author Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @examples
 #' 
@@ -91,6 +92,7 @@
 #' @export read.magpie
 #' @importFrom methods is new
 #' @importFrom utils read.csv
+#' @importFrom utils toBibtex
 #' 
 read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,old_format=FALSE,comment.char="*",check.names=FALSE) {
   
@@ -137,6 +139,113 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     return(substring(comment,2))
   }
   
+  .readMetadata <- function(file_name,comment.char="*",meta.char="#") {
+    metadata <- list()
+    field <- vector()
+    
+    greplength <- function(pattern,text) {
+      return(length(grep(pattern,unlist(strsplit(text,"")))))
+    }
+    
+    addNode <- function(string,a) {
+      spaces <- greplength(" ",string)
+      if(greplength("\u00A6",string)>1){
+        spaces <- spaces + greplength("\u00A6",string) - 1
+      }else if(grepl("\u00B0",string,fixed=TRUE) & grepl("\u00A6",string,fixed=TRUE)){
+        spaces <- spaces + greplength("\u00A6",string)
+      }
+      lvl <- (spaces+6)/4
+      for(b in 1:(a-1)) {
+        if(node[[a-b]]$level==lvl){
+          node[[a-b]]$AddSiblingNode(node[[a]])
+          break
+        }else if(node[[a-b]]$level==(lvl-1)){
+          node[[a-b]]$AddChildNode(node[[a]])
+          break
+        }
+      }
+    }
+    if(!is.null(comment.char) & !is.null(meta.char)) {
+      if(comment.char!="" & meta.char!="") {
+        zz <- file(file_name)
+        open(zz)
+        tmp <- readLines(zz,1)
+        i <- 1
+        while(grepl(comment.char,tmp,fixed=TRUE)) {
+          if(grepl(meta.char,tmp,fixed=TRUE)) {
+            tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
+            field[i] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[1]
+            if(field[i]=="calcHistory"){
+              tmp <- readLines(zz,1)
+              node <- list()
+              j <- 1
+              while(grepl(comment.char,tmp,fixed=TRUE)) {
+                if(j==1){
+                  tmpsplit <- unlist(strsplit(tmp," ",fixed=TRUE))
+                  node[[1]] <- data.tree::Node$new(tmpsplit[2])
+                }else{
+                  tmpsplit <- unlist(strsplit(tmp,"--"))
+                  node[[j]] <- data.tree::Node$new(tmpsplit[2])
+                  if(grepl("\u00B0",tmp,fixed=TRUE)){
+                    if(!grepl("\u00A6",tmp)){
+                      if(greplength(" ",tmpsplit[1])==2){
+                        node[[1]]$AddChildNode(node[[j]])
+                      }else  addNode(tmpsplit[1],j)
+                    }else  addNode(tmpsplit[1],j)
+                  }else if(greplength("\u00A6",tmpsplit[1])==1){
+                    if(greplength(" ",tmpsplit[1])==2){
+                      node[[1]]$AddChildNode(node[[j]])
+                    }else  addNode(tmpsplit[1],j)
+                  }else if(greplength("\u00A6",tmpsplit[1])>1)  addNode(tmpsplit[1],j)
+                }
+                tmp <- readLines(zz,1)
+                j <- j+1
+              }
+              metadata[[i]] <- node[[1]]
+            }else if(field[[i]]=="source") {
+              tmp <- readLines(zz,1)
+              tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+              metadata[[i]] <- tmp
+              tmp <- readLines(zz,1)
+              k <- 1
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE)) {
+                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                if(grepl("@",tmp,fixed=TRUE)) {
+                  k <- k+1
+                  if(!is.list(metadata[[i]]))  metadata[[i]] <- list(metadata[[i]])
+                  tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                  metadata[[i]][[k]] <- tmp
+                  tmp <- readLines(zz,1)
+                }else {
+                  metadata[[i]][[k]] <- c(metadata[[i]][[k]], tmp)
+                  tmp <- readLines(zz,1)
+                }
+              }
+              class(metadata[[i]]) <- "Bibtex"
+            }else{
+              metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
+              tmp <- readLines(zz,1)
+              if(is.na(metadata[[i]])){
+                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                metadata[[i]] <- tmp
+                tmp <- readLines(zz,1)
+              }
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE)) {
+                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                metadata[[i]] <- c(metadata[[i]], tmp)
+                tmp <- readLines(zz,1)
+              }
+            }
+          }else  tmp <- readLines(zz,1)
+          i <- i+1
+        }
+        close(zz)
+      }
+    }
+    names(metadata) <- field
+    return(metadata)
+  }
+  
   if(file.exists(file_name)) {
     if(file_type=="m" | file_type=="mz") {
       
@@ -151,13 +260,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
         if(fformat_version > 2) {
-          nchar_unit <- readBin(zz,integer(),1,size=2)
-          nchar_user <- readBin(zz,integer(),1,size=2)
-          nchar_date <- readBin(zz,integer(),1,size=2)
-          nchar_description <- readBin(zz,integer(),size=4)
-          nchar_note <- readBin(zz,integer(),size=2)
-          nchar_source <- readBin(zz,integer(),size=4)
-          nchar_calcHistory <- readBin(zz,integer(),size=4)
+          nchar_metadata <- readBin(zz,integer(),1,size=8)
         }
         if(fformat_version > 1) {
           nchar_sets <- readBin(zz,integer(),1,size=2)
@@ -201,14 +304,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets),"\n")[[1]]
       }
       if(fformat_version > 2) {
-        metadata <- list()
-        if(nchar_unit > 0) metadata$unit <- strsplit(readChar(zz,nchar_unit),"\n")[[1]]
-        if(nchar_user > 0) metadata$user <- strsplit(readChar(zz,nchar_user),"\n")[[1]]
-        if(nchar_date > 0) metadata$date <- strsplit(readChar(zz,nchar_date),"\n")[[1]]
-        if(nchar_description > 0) metadata$description <- strsplit(readChar(zz,nchar_description),"\n")[[1]]
-        if(nchar_note > 0) metadata$note <- strsplit(readChar(zz,nchar_note),"\n")[[1]]
-        if(nchar_source > 0) metadata$source <- unserialize(readBin(zz,raw(),nchar_source))
-        if(nchar_calcHistory > 0) metadata$calcHistory <- unserialize(readBin(zz,raw(),nchar_calcHistory))
+        if(nchar_metadata > 0) metadata <- unserialize(readBin(zz,raw(),nchar_metadata))
         getMetadata(output) <- metadata
       }
       close(zz)     
@@ -230,10 +326,12 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       read.magpie <- as.magpie(tmparr)   
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
+      getMetadata(read.magpie) <- .readMetadata(file_name)
     } else if(file_type=="cs4" | file_type=="cs4r") {
       x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names)
       read.magpie <- as.magpie(x,tidy=TRUE)
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
+      getMetadata(read.magpie) <- .readMetadata(file_name)
     } else if(file_type=="asc"){
       grid<-suppressWarnings(try(maptools::readAsciiGrid(file_name,dec="."),silent=T))
       if(is(grid,"try-error")){
@@ -549,9 +647,12 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     read.magpie <- NULL
   }
   if(as.array){
-    read.magpie <- as.array(as.magpie(read.magpie))[,,]
+    read.magpie <- as.magpie(read.magpie)
+    getMetadata(read.magpie) <- .readMetadata(file_name)
+    read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
+    getMetadata(read.magpie) <- .readMetadata(file_name)
   }
   return(read.magpie)
 }

@@ -24,7 +24,8 @@ setMethod("as.magpie",
             dimnames(x) <- list(paste(magclassdata$half_deg$region,1:59199,sep='.'),
                                 xdimnames[[2]],
                                 paste(rep(xdimnames[[3]],xdim[4]),rep(xdimnames[[4]],each=xdim[3]),sep="."))
-            return(updateMetadata(new("magpie",x), unit=unit))
+            out <- new("magpie",x)
+            return(updateMetadata(out,unit=unit))
           }
 )
 
@@ -148,7 +149,8 @@ setMethod("as.magpie",
 
       #Now temporal and regiospatial dimension should both exist
       #Return MAgPIE object
-      return(updateMetadata(copy.attributes(store_attributes,new("magpie",wrap(x,list(d$regiospatial,d$temporal,NA)))), unit=unit))
+      out <- copy.attributes(store_attributes,new("magpie",wrap(x,list(d$regiospatial,d$temporal,NA))))
+      return(updateMetadata(out, unit=unit))
     }
 )
 
@@ -156,7 +158,8 @@ setMethod("as.magpie",
     signature(x = "numeric"),
     function(x, unit="1", ...)
     {
-      return(updateMetadata(copy.attributes(x,as.magpie(as.array(x),...)), unit=unit))
+      out <- copy.attributes(x,as.magpie(as.array(x),...))
+      return(updateMetadata(out, unit=unit))
     }
 )
 
@@ -193,7 +196,8 @@ setMethod("as.magpie",
               if(datacol==dim(x)[2]) return(tidy2magpie(x,...))
               x[[datacol-1]] <- as.factor(x[[datacol-1]])
             }
-            return(updateMetadata(copy.attributes(x,tidy2magpie(suppressMessages(reshape2::melt(x)),...)), unit=unit))
+            out <- copy.attributes(x,tidy2magpie(suppressMessages(reshape2::melt(x)),...))
+            return(updateMetadata(out, unit=unit))
           }
 )
 
@@ -262,7 +266,8 @@ setMethod("as.magpie",
 
             #put value column as last column
             x <- x[c(which(names(x)!="value"),which(names(x)=="value"))]
-            return(updateMetadata(tidy2magpie(x,spatial="region",temporal="period")))
+            out <- tidy2magpie(x,spatial="region",temporal="period")
+            return(updateMetadata(out))
           }
 )
 
@@ -272,10 +277,12 @@ setMethod("as.magpie",
           {
             if("quitte" %in% class(x)) {
               class(x) <- c("quitte","data.frame")
-              return(updateMetadata(as.magpie(x,...)))
+              out <- as.magpie(x,...)
+              return(updateMetadata(out))
             } else {
               class(x) <- "data.frame"
-              return(updateMetadata(as.magpie(x,...), unit=unit))
+              out <- as.magpie(x,...)
+              return(updateMetadata(out, unit=unit))
             }
           }
 )
