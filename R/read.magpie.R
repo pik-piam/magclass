@@ -57,8 +57,9 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 2) | integer | 2 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 3) | integer | 2 Byte ] \cr 
 #' [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
+#' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
 #' [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
@@ -73,6 +74,7 @@
 #' [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
+#' [ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr 
 #' 
 #' Please note that if your data in the spatial dimension is not ordered by
 #' region name each new appearance of a region which already appeared before
@@ -263,7 +265,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
         if(fformat_version > 2) {
-          nchar_metadata <- readBin(zz,integer(),1,size=8)
+          nbyte_metadata <- readBin(zz,integer(),1,size=4)
         }
         if(fformat_version > 1) {
           nchar_sets <- readBin(zz,integer(),1,size=2)
@@ -307,13 +309,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets),"\n")[[1]]
       }
       if(fformat_version > 2) {
-        if(nchar_metadata > 0)  metadata <- unserialize(readBin(zz,raw(),nchar_metadata))
+        metadata <- unserialize(readBin(zz,raw(),nbyte_metadata))
       }
       close(zz)     
       attr(output,"FileFormatVersion") <- fformat_version
       read.magpie <- new("magpie",output)
       if(fformat_version > 2){
-        if(nchar_metadata > 0)  getMetadata(read.magpie) <- metadata
+        getMetadata(read.magpie) <- metadata
       }
       
     } else if(file_type=="cs3" | file_type=="cs3r") {

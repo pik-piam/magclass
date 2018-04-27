@@ -64,8 +64,9 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 2) | integer | 2 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 3) | integer | 2 Byte ] \cr 
 #' [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
+#' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
 #' [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
@@ -80,6 +81,7 @@
 #' [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
+#' [ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr 
 #' 
 #' Please note that if your data in the spatial dimension is not ordered by
 #' region name each new appearance of a region which already appeared before
@@ -162,7 +164,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     if(file_type=="m" | file_type=="mz") {
-      fformat_version <- "2"  #File format version 1 (oldest data has version 0)
+      fformat_version <- "3"  #File format version (oldest data has version 0)
       comment <- paste(comment,collapse="\n")
       ncells <- dim(x)[1]
       nyears <- dim(x)[2]
@@ -175,7 +177,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       datanames <- dimnames(x)[[3]]
       datanames_collapsed <- paste(datanames,collapse='\n')    
       sets_collapsed <- paste(getSets(x,fulldim = FALSE), collapse = '\n')
-      if(is.null(metadata)) metadata <- ""
+      metadata <- serialize(metadata,NULL,FALSE)
       
       if(years) {
         year_list <- as.integer(substr(dimnames(x)[[2]],2,5))
@@ -191,7 +193,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       
       writeBin(as.integer(fformat_version),zz,size=2)
       writeBin(as.integer(nchar(comment)),zz,size=4)
-      writeBin(as.integer(length(serialize(metadata,NULL,FALSE))),zz,size=8)
+      writeBin(as.integer(length(metadata)),zz,size=4)
       writeBin(as.integer(nchar(sets_collapsed)),zz,size=2)
       writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
       writeBin(as.integer(c(nyears,year_list,nregions,nchar(regions_collapsed))),zz,size=2)
@@ -201,7 +203,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       writeBin(as.numeric(as.vector(x)),zz,size=4)
       if(comment!="") writeChar(comment,zz,eos=NULL)
       if(nchar(sets_collapsed)>0) writeChar(sets_collapsed,zz,eos=NULL)
-      if(is.list(metadata))  writeBin(serialize(metadata,NULL,FALSE),zz)
+      if(!is.null(metadata)) writeBin(metadata,zz)
       close(zz)    
       Sys.chmod(file_path, mode)
     } else if(file_type=="asc") {
