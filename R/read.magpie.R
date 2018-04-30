@@ -120,7 +120,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(!(file_type %in% c('m','mz','csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
   
-  .readComment <- function(file_name,comment.char="*") {
+  .readComment <- function(file_name,comment.char="*",meta.char="#") {
     comment <- NULL
     if(!is.null(comment.char)) {
       if(comment.char!="") {
@@ -129,7 +129,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         read_repeat <- TRUE
         while(read_repeat){
           tmp <- readLines(zz,1)
-          if(length(grep(paste("^",escapeRegex(comment.char),sep=""),tmp))) {
+          if(length(grep(paste("^",escapeRegex(comment.char),sep=""),tmp)) & !grepl(meta.char,tmp,fixed=TRUE)) {
             comment <- c(comment,tmp)
           } else {
             read_repeat <- FALSE
@@ -181,7 +181,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               tmp <- readLines(zz,1)
               node <- list()
               j <- 1
-              while(grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
                 if(j==1){
                   tmpsplit <- unlist(strsplit(tmp," ",fixed=TRUE))
                   node[[1]] <- data.tree::Node$new(tmpsplit[2])
@@ -210,7 +210,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               metadata[[i]] <- tmp
               tmp <- readLines(zz,1)
               k <- 1
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                 if(grepl("@",tmp,fixed=TRUE)) {
                   k <- k+1
@@ -235,7 +235,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                 metadata[[i]] <- c(metadata[[i]], tmp)
                 tmp <- readLines(zz,1)
