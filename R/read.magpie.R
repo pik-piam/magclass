@@ -141,32 +141,33 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     return(substring(comment,2))
   }
   
+  greplength <- function(pattern,text) {
+    return(length(grep(pattern,unlist(strsplit(text,"")))))
+  }
+  
+  addNode <- function(string,a,n=6) {
+    spaces <- greplength(" ",string)
+    if(greplength("\u00A6",string)>1){
+      spaces <- spaces + greplength("\u00A6",string) - 1
+    }else if(grepl("\u00B0",string,fixed=TRUE) & grepl("\u00A6",string,fixed=TRUE)){
+      spaces <- spaces + greplength("\u00A6",string)
+    }
+    lvl <- (spaces+n)/4
+    for(b in 1:(a-1)) {
+      if(node[[a-b]]$level==lvl){
+        node[[a-b]]$AddSiblingNode(node[[a]])
+        break
+      }else if(node[[a-b]]$level==(lvl-1)){
+        node[[a-b]]$AddChildNode(node[[a]])
+        break
+      }
+    }
+  }
+  
   .readMetadata <- function(file_name,comment.char="*",meta.char="#") {
     metadata <- list()
     field <- vector()
     
-    greplength <- function(pattern,text) {
-      return(length(grep(pattern,unlist(strsplit(text,"")))))
-    }
-    
-    addNode <- function(string,a) {
-      spaces <- greplength(" ",string)
-      if(greplength("\u00A6",string)>1){
-        spaces <- spaces + greplength("\u00A6",string) - 1
-      }else if(grepl("\u00B0",string,fixed=TRUE) & grepl("\u00A6",string,fixed=TRUE)){
-        spaces <- spaces + greplength("\u00A6",string)
-      }
-      lvl <- (spaces+6)/4
-      for(b in 1:(a-1)) {
-        if(node[[a-b]]$level==lvl){
-          node[[a-b]]$AddSiblingNode(node[[a]])
-          break
-        }else if(node[[a-b]]$level==(lvl-1)){
-          node[[a-b]]$AddChildNode(node[[a]])
-          break
-        }
-      }
-    }
     if(!is.null(comment.char) & !is.null(meta.char)) {
       if(comment.char!="" & meta.char!="") {
         zz <- file(file_name)
@@ -401,8 +402,54 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         mag[i,,] <- nc_data[which(coord[i, 1]==lon), which(coord[i,2]==lat),,]
       }
       
+      metadata <- list()
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[1]])  metadata$unit <- ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[1]])  metadata$user <- ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[1]])  metadata$date <- ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[1]])  metadata$description <- ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="note")[[1]])  metadata$note <- ncdf4::ncatt_get(nc_file,varid=0,attname="note")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="source")[[1]]) {
+        metadata$source <- ncdf4::ncatt_get(nc_file,varid=0,attname="source")[[2]]
+        class(metadata$source) <- "Bibtex"
+      }else if(ncdf4::ncatt_get(nc_file,varid=0,attname="source 1")[[1]]) {
+        metadata$source <- list()
+        i <- 1
+        while(ncdf4::ncatt_get(nc_file,varid=0,attname=paste("source",i))[[1]]) {
+          metadata$source[[i]] <- ncdf4::ncatt_get(nc_file,varid=0,attname=paste("source",i))[[2]]
+          class(metadata$source[[i]]) <- "Bibtex"
+          i <- i+1
+        }
+      }
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="calcHistory")[[1]]) {
+        ch <- ncdf4::ncatt_get(nc_file,varid=0,attname="calcHistory")[[2]]
+        chlines <- unlist(strsplit(ncdf4::ncatt_get(nc_file,0,"calcHistory")[[2]],"\n"))
+        if(chlines[1]=="")  chlines <- chlines[2:length(chlines)]
+        node <- list()
+        for(i in 1:length(chlines)) {
+          if(!grepl("--",chlines[i]))  node[[1]] <- data.tree::Node$new(trimws(chlines[i]))
+          else {
+            chsplit <- unlist(strsplit(trimws(chlines[i],"right"),"--"))
+            node[[i]] <- data.tree::Node$new(chsplit[2])
+            if(grepl("\u00B0",chlines[i])){
+              if(!grepl("\u00A6",chlines[i])){
+                if(greplength(" ",chsplit[1])==1) {
+                  node[[1]]$AddChildNode(node[[i]])
+                }else  addNode(chsplit[1],i,n=7)
+              }else  addNode(chsplit[1],i,n=7)
+            }else if(greplength("\u00A6",chsplit[1])==1){
+              if(greplength(" ",chsplit[1])==1){
+                node[[1]]$AddChildNode(node[[i]])
+              }else  addNode(chsplit[1],i,n=7)
+            }else if(greplength("\u00A6",chsplit[1])>1)  addNode(chsplit[1],i,n=7)
+          }
+        }
+      }
+      metadata$calcHistory <- node[[1]]
+      
       #convert array to magpie object
       read.magpie <- as.magpie(mag)
+      getMetadata(read.magpie) <- metadata
+      
     } else {
       #check for header
       if(file_type=="put") {

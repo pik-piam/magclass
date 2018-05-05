@@ -24,7 +24,24 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
     stop("Year and Data name are necessary for saving to NetCDF format")
 
   # metadata
-  if(!is.null(comment)){
+  if(!is.null(getMetadata(x))) {
+    metadata <- TRUE
+    commentary <- getMetadata(x)
+    indicator <- names(commentary)
+    if(is.list(commentary$source)) {
+      for(i in 1:length(commentary$source)) {
+        indicator[[length(indicator)+1]] <- paste("source",i)
+        commentary[[length(commentary)+1]] <- commentary$source[[i]]
+      }
+      commentary$source <- NULL
+      indicator <- indicator[-match("source",indicator)]
+    }
+    if(!any(indicator=="unit")) {
+      units <- "not specified"
+    }else {
+      units <- commentary$unit
+    }
+  }else if(!is.null(comment)) {
     metadata=TRUE
     indicator = substring(text = comment,first = 1, last=regexpr(pattern = ": ",text = comment)-1)
     commentary = substring(text = comment,first = (regexpr(pattern = ": ",text = comment)+2))
@@ -88,7 +105,14 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
   
   if(metadata){
     for (i in 1:length(indicator)){
-      ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[i],prec="text")  
+      if(grepl("source",indicator[[i]])) {
+        char <- as.character(commentary[[i]])
+        commentary[[i]] <- paste(char,sep="",collapse="\n")
+      }else if(indicator[[i]]=="calcHistory") {
+        char <- as.character(as.data.frame(commentary$calcHistory)[[1]])
+        commentary[[i]] <- paste("\n",char,sep="",collapse="")
+      }
+      ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[[i]],prec="text")  
     }
   }
   

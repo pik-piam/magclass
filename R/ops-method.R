@@ -10,6 +10,7 @@ setMethod(Ops, signature(e1='magpie', e2='magpie'),
             if(any(unlist(dimnames(e1))!=unlist(dimnames(e2)))) stop("MAgPIE objects after MAgPIE object expansion do not agree in dimnames! magpie_expand seems to be bugged!\n e1:",
                                                                       paste(unlist(dimnames(e1))[unlist(dimnames(e1))!=unlist(dimnames(e2))],collapse=" "),"\n e2:",paste(unlist(dimnames(e2))[unlist(dimnames(e1))!=unlist(dimnames(e2))],collapse=" "))
             
-            return(updateMetadata(new("magpie",callGeneric(e1@.Data,e2@.Data)),list(e1,e2),calcHistory="merge"))
+            out <- new("magpie",callGeneric(e1@.Data,e2@.Data))
+            return(updateMetadata(out,list(e1,e2),calcHistory="merge"))
           }
 )  
