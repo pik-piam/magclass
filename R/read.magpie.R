@@ -81,8 +81,7 @@
 #' will be treated and counted as a new region (e.g.
 #' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
 #' to 3!).
-#' @author Jan Philipp Dietrich
-#' @author Stephen Bi
+#' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @examples
 #' 
@@ -141,18 +140,22 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     return(substring(comment,2))
   }
   
+  #function to count how many times a pattern is found within a string
   greplength <- function(pattern,text) {
     return(length(grep(pattern,unlist(strsplit(text,"")))))
   }
-  
+  #function helps reconstruct calcHistory into a Node object 
   addNode <- function(string,a,n=6) {
+    #node position determined by number of whitespaces and formatting characters
     spaces <- greplength(" ",string)
     if(greplength("\u00A6",string)>1){
       spaces <- spaces + greplength("\u00A6",string) - 1
     }else if(grepl("\u00B0",string,fixed=TRUE) & grepl("\u00A6",string,fixed=TRUE)){
       spaces <- spaces + greplength("\u00A6",string)
     }
+    #algorithm to determine node's level in the data tree is dependent on whitespaces
     lvl <- (spaces+n)/4
+    #algorithm to determine where to attach each node
     for(b in 1:(a-1)) {
       if(node[[a-b]]$level==lvl){
         node[[a-b]]$AddSiblingNode(node[[a]])
@@ -167,7 +170,6 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   .readMetadata <- function(file_name,comment.char="*",meta.char="#") {
     metadata <- list()
     field <- vector()
-    
     if(!is.null(comment.char) & !is.null(meta.char)) {
       if(comment.char!="" & meta.char!="") {
         zz <- file(file_name)
@@ -176,19 +178,23 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         i <- 1
         while(grepl(comment.char,tmp,fixed=TRUE)) {
           if(grepl(meta.char,tmp,fixed=TRUE)) {
+            #isolate the metadata field names
             tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
             field[i] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[1]
+            #calcHistory must be reconstructed from a character to a Node object
             if(field[i]=="calcHistory"){
               tmp <- readLines(zz,1)
               node <- list()
               j <- 1
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
                 if(j==1){
+                  #isolate the node name from whitespace and formatting characters
                   tmpsplit <- unlist(strsplit(tmp," ",fixed=TRUE))
                   node[[1]] <- data.tree::Node$new(tmpsplit[2])
                 }else{
                   tmpsplit <- unlist(strsplit(tmp,"--"))
                   node[[j]] <- data.tree::Node$new(tmpsplit[2])
+                  #special algorithm for adding to the root node
                   if(grepl("\u00B0",tmp,fixed=TRUE)){
                     if(!grepl("\u00A6",tmp)){
                       if(greplength(" ",tmpsplit[1])==2){
@@ -211,8 +217,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               metadata[[i]] <- tmp
               tmp <- readLines(zz,1)
               k <- 1
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                #Create a list if there are multiple sources (Bibtex class uses @ to indicate entry type for each entry)
                 if(grepl("@",tmp,fixed=TRUE)) {
                   k <- k+1
                   if(!is.list(metadata[[i]]))  metadata[[i]] <- list(metadata[[i]])
@@ -226,6 +233,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                   tmp <- readLines(zz,1)
                 }
               }
+              #convert to Bibtex class for storage
               if (is.list(metadata[[i]]))  class(metadata[[i]][[k]]) <- "Bibtex"
               else  class(metadata[[i]]) <- "Bibtex"
             }else{
@@ -236,7 +244,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("^\\S",tmp,perl=TRUE) & grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                 metadata[[i]] <- c(metadata[[i]], tmp)
                 tmp <- readLines(zz,1)
@@ -420,16 +428,20 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
           i <- i+1
         }
       }
+      #reconstruct calcHistory into a Node object 
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="calcHistory")[[1]]) {
         ch <- ncdf4::ncatt_get(nc_file,varid=0,attname="calcHistory")[[2]]
+        #count number of lines of calcHistory
         chlines <- unlist(strsplit(ncdf4::ncatt_get(nc_file,0,"calcHistory")[[2]],"\n"))
         if(chlines[1]=="")  chlines <- chlines[2:length(chlines)]
         node <- list()
         for(i in 1:length(chlines)) {
+          #isolate the node name from whitespace and formatting characters
           if(!grepl("--",chlines[i]))  node[[1]] <- data.tree::Node$new(trimws(chlines[i]))
           else {
             chsplit <- unlist(strsplit(trimws(chlines[i],"right"),"--"))
             node[[i]] <- data.tree::Node$new(chsplit[2])
+            #special algorithm for adding to the root node
             if(grepl("\u00B0",chlines[i])){
               if(!grepl("\u00A6",chlines[i])){
                 if(greplength(" ",chsplit[1])==1) {

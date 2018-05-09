@@ -15,7 +15,7 @@
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc. In the case several data dimensions exist, they are saved as subcategories.
 #' 
-#' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky
+#' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky, Stephen Bi
 #' @seealso \code{\link{write.magpie}}
 #' 
 write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE){
@@ -23,7 +23,7 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
 
-  # metadata
+  # metadata new implementation
   if(!is.null(getMetadata(x))) {
     metadata <- TRUE
     commentary <- getMetadata(x)
@@ -41,6 +41,7 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
     }else {
       units <- commentary$unit
     }
+    #metadata old implementation
   }else if(!is.null(comment)) {
     metadata=TRUE
     indicator = substring(text = comment,first = 1, last=regexpr(pattern = ": ",text = comment)-1)
