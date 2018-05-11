@@ -111,23 +111,27 @@ getMetadata <- function(x, type=NULL) {
       k <- 1
       for (i in 2:length(new)) {
         for (k in 1:(i-1)) {
-          if (!is.null(new[[i]]["doi"]) & !is.null(new[[i-k]]["doi"])) {
+          if (!is.na(new[[i]]["doi"]) & !is.na(new[[i-k]]["doi"])) {
             if (new[[i]]["doi"]==new[[i-k]]["doi"]) {
               j <- c(j,i)
             }
-          }else if (!is.null(new[[i]]["url"]) & !is.null(new[[i-k]]["url"])) {
+          }else if (!is.na(new[[i]]["url"]) & !is.na(new[[i-k]]["url"])) {
             if (new[[i]]["url"]==new[[i-k]]["url"]) {
-              if (length(agrep(new[[i]]["title"],new[[i-k]]["title"],ignore.case=TRUE,max.distance=0.15))) {
-                j <- c(j,i)
+              if (!is.na(new[[i]]["title"]) & !is.na(new[[i-k]]["title"])) {
+                if (length(agrep(new[[i]]["title"],new[[i-k]]["title"],ignore.case=TRUE,max.distance=0.15))) {
+                  j <- c(j,i)
+                }
               }
             }
-          }else if (new[[i]][[1]]==new[[i-k]][[1]]) {
+          }else if (!is.na(new[[i]]["title"]) & !is.na(new[[i-k]]["title"])) {
             if (length(agrep(new[[i]]["title"],new[[i-k]]["title"],ignore.case=TRUE,max.distance=0.15))) {
-              if (length(agrep(new[[i]]["author"],new[[i-k]]["author"],ignore.case=TRUE,max.distance=0.15))) {
-                j <- c(j,i)
-              }
+              if (!is.na(new[[i]]["author"]) & !is.na(new[[i-k]]["author"])) {
+                if (length(agrep(new[[i]]["author"],new[[i-k]]["author"],ignore.case=TRUE,max.distance=0.15))) {
+                  j <- c(j,i)
+                }
+              }else  warning(paste0("Please provide author(s) for source[[",i,"]]"))
             }
-          }
+          }else  warning(paste0("Please provide a title for source[[",i,"]]"))
         }
       }
       #remove any redundant sources

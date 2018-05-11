@@ -145,7 +145,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     return(length(grep(pattern,unlist(strsplit(text,"")))))
   }
   #function helps reconstruct calcHistory into a Node object 
-  addNode <- function(string,a,n=6) {
+  addNode <- function(node,string,a,n=6) {
     #node position determined by number of whitespaces and formatting characters
     spaces <- greplength(" ",string)
     if(greplength("\u00A6",string)>1){
@@ -199,13 +199,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                     if(!grepl("\u00A6",tmp)){
                       if(greplength(" ",tmpsplit[1])==2){
                         node[[1]]$AddChildNode(node[[j]])
-                      }else  addNode(tmpsplit[1],j)
-                    }else  addNode(tmpsplit[1],j)
+                      }else  addNode(node,tmpsplit[1],j)
+                    }else  addNode(node,tmpsplit[1],j)
                   }else if(greplength("\u00A6",tmpsplit[1])==1){
                     if(greplength(" ",tmpsplit[1])==2){
                       node[[1]]$AddChildNode(node[[j]])
-                    }else  addNode(tmpsplit[1],j)
-                  }else if(greplength("\u00A6",tmpsplit[1])>1)  addNode(tmpsplit[1],j)
+                    }else  addNode(node,tmpsplit[1],j)
+                  }else if(greplength("\u00A6",tmpsplit[1])>1)  addNode(node,tmpsplit[1],j)
                 }
                 tmp <- readLines(zz,1)
                 j <- j+1
@@ -325,6 +325,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       read.magpie <- new("magpie",output)
       if(fformat_version > 2){
         getMetadata(read.magpie) <- metadata
+        if(is.null(metadata$user))  user <- "update"
+        if(is.null(metadata$date))  date <- "update"
+        read.magpie <- updateMetadata(read.magpie,user=metadata$user,date=metadata$date)
       }
       
     } else if(file_type=="cs3" | file_type=="cs3r") {
@@ -446,13 +449,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               if(!grepl("\u00A6",chlines[i])){
                 if(greplength(" ",chsplit[1])==1) {
                   node[[1]]$AddChildNode(node[[i]])
-                }else  addNode(chsplit[1],i,n=7)
-              }else  addNode(chsplit[1],i,n=7)
+                }else  addNode(node,chsplit[1],i,n=7)
+              }else  addNode(node,chsplit[1],i,n=7)
             }else if(greplength("\u00A6",chsplit[1])==1){
               if(greplength(" ",chsplit[1])==1){
                 node[[1]]$AddChildNode(node[[i]])
-              }else  addNode(chsplit[1],i,n=7)
-            }else if(greplength("\u00A6",chsplit[1])>1)  addNode(chsplit[1],i,n=7)
+              }else  addNode(node,chsplit[1],i,n=7)
+            }else if(greplength("\u00A6",chsplit[1])>1)  addNode(node,chsplit[1],i,n=7)
           }
         }
         metadata$calcHistory <- node[[1]]
