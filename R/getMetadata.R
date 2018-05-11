@@ -6,16 +6,24 @@
 #' The function allows users to set and retrieve metadata for magclass objects 
 #' 
 #' Metadata is an attribute of a magclass object, and it includes the default 
-#' fields of "unit", "source", "date", "user", "calcHistory" and "description", 
-#' all contained in a list.
+#' fields of "unit", "source", "date", "user", "calcHistory", "description" 
+#' and "note", all contained in a list.
 #' 
-#' The "source" element should include all information about the source(s)
-#' where the data was originally reported. Specifically, the authors,
-#' publication date, article title, journal name and volume, page numbers, DOI, ISSN
+#' The "source" element is stored as a Bibtex class object (or a list thereof), but the value argument 
+#' here can be either a Bibtex or bibentry object (or a list of any combination). Include all relevant 
+#' information regarding where the data was originally reported. Specifically, the type of publication,
+#' author(s), article title, journal/publication name, volume, page numbers, URL and DOI.
+#' 
+#' The "calcHistory" field is stored as a Node class object. The value argument can be either a single
+#' node, a character of length 1 (to be converted to a node), or a full data tree. In the first two cases, 
+#' the provided value will become the root node (read as the most recent function applied to the object).
+#' In the case of a full tree input, this will replace any existing calcHistory. Use updateMetadata() to 
+#' merge the calcHistory of two magpie objects.
 #' 
 #' @aliases getMetadata getMetadata<-
 #' @param x MAgPIE object
-#' @param type A vector containing the Metadata field.
+#' @param type A vector containing the Metadata field. If NULL, getMetadata() will return all 
+#' non-NULL fields, and 'getMetadata<-' will update all fields specified in value.
 #' @param value An object containing the Metadata entry.
 #' @return getMetadata returns the metadata attached to a MAgPIE-object, NULL if
 #' no metadata attribute is present. getMetadata<- returns the magpie object with the
@@ -67,81 +75,136 @@ getMetadata <- function(x, type=NULL) {
     return(x)
   }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+
+  .setSource <- function(old,new) {
+    #first remove any sources which are not of bibentry or Bibtex class
+    if (is(new,"bibentry"))  new <- toBibtex(new)
+    else if (is.list(new)) {
+      k <- NULL
+      for (i in 1:(length(new))) {
+        if (is(new[[i]],"bibentry")) {
+          new[[i]] <- toBibtex(new[[i]])
+        }else if (!is(new[[i]],"Bibtex")) {
+          k <- c(k,i)
+        }
+      }
+      if (!is.null(k)){
+        new[k] <- NULL
+        warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
+      }
+    }else if (!is(new,"Bibtex")) {
+      warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
+      return(old)
+    }
+    #merge new source(s) with existing source list (if any)
+    if (is.null(old))  return(new)
+    else if (is.list(old)) {
+      if (is.list(new))  new <- append(old,new)
+      else  new <- append(old,list(new))
+    }else {
+      if(is.list(new))  new <- append(list(old),new)
+      else  new <- list(old,new)
+    }
+    #check if all sources are unique
+    if (is.list(new)) {
+      j <- NULL
+      k <- 1
+      for (i in 2:length(new)) {
+        for (k in 1:(i-1)) {
+          if (!is.null(new[[i]]["doi"]) & !is.null(new[[i-k]]["doi"])) {
+            if (new[[i]]["doi"]==new[[i-k]]["doi"]) {
+              j <- c(j,i)
+            }
+          }else if (!is.null(new[[i]]["url"]) & !is.null(new[[i-k]]["url"])) {
+            if (new[[i]]["url"]==new[[i-k]]["url"]) {
+              if (length(agrep(new[[i]]["title"],new[[i-k]]["title"],ignore.case=TRUE,max.distance=0.15))) {
+                j <- c(j,i)
+              }
+            }
+          }else if (new[[i]][[1]]==new[[i-k]][[1]]) {
+            if (length(agrep(new[[i]]["title"],new[[i-k]]["title"],ignore.case=TRUE,max.distance=0.15))) {
+              if (length(agrep(new[[i]]["author"],new[[i-k]]["author"],ignore.case=TRUE,max.distance=0.15))) {
+                j <- c(j,i)
+              }
+            }
+          }
+        }
+      }
+      #remove any redundant sources
+      if (!is.null(j))  new[j] <- NULL
+    }
+    return(new)
+  }
+  
+  .setCalcHistory <- function(old,new) {
+    if (is.null(new))  return(old)
+    if (is(new,"Node")){
+      if (is.null(old))  return(new)
+      #if new entry is a single childless node, it gets set as the root node of the existing history
+      else if (data.tree::isLeaf(new) & is.null(new$children)) {
+        if (is(old,"Node")){
+          #root node is set to ROOT when calcHistory is merged in updateMetadata, so it shall be replaced by value
+          if (old$name=="ROOT")  old$name <- new$name
+          else {
+            c <- data.tree::Clone(old)
+            new$AddChildNode(c)
+          }
+        }#if new entry is a full tree, it replaces the existing history
+      }
+      #new entry can also be a character of length 1, converted here to a node
+    }else if (is.character(new)){
+      if (length(new)==1){
+        if (is.null(old))  return(data.tree::Node$new(new))
+        if (is(old,"Node")){
+          if (old$name=="ROOT")  old$name <- new
+          else{
+            c <- data.tree::Clone(old)
+            new <- data.tree::Node$new(new)
+            new$AddChildNode(c)
+          }
+        }else  new <- data.tree::Node$new(new)
+      }else  warning(new,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
+    }else  warning(new," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
+    return(new)
+  }
+  
+  #initialize existing metadata
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
+  
+  #handle all metadata fields if no type specified
   if (is.null(type)){
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
+      #unit
       if (!is.null(value$unit)){
         if (length(value$unit)>1){
           warning(value$unit," is an invalid argument for unit")
+          #Default unit 1 indicates unitless or "no units specified"
           M$unit <- "1"
         }else  M$unit <- value$unit
       }else  M$unit <- "1"
-      
+      #source
       if (!is.null(value$source)){
-        if (!is(value$source,"Bibtex") & !is(value$source,"bibentry")){
-          if (is.list(value$source)){
-            M$source <- list()
-            j <- 0
-            k <- 0
-            for (i in 1:(length(value$source))){
-              if (is(value$source[[i]],"Bibtex")){
-                j <- j+1
-                M$source[[j]] <- value$source[[i]]
-              }else if (is(value$source,"bibentry")){
-                j <- j+1
-                M$source[[j]] <- toBibtex(value$source[[i]])
-              }else{
-                if (k==0)  k <- i
-                else  k <- append(k,i)
-              }
-            }
-            if (k!=0)  warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
-          }else{
-            warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
-            M$source <- NULL
-          }
-        }else if (is(value$source,"bibentry"))  M$source <- toBibtex(value$source)
-        else  M$source <- value$source
+        M$source <- .setSource(M$source,value$source)
       }
-      if (!is.null(value$calcHistory)){
-        if (is(value$calcHistory,"Node")){
-          if (is(M$calcHistory,"Node")){
-            if (value$calcHistory$count==0){
-              if (M$calcHistory$name=="ROOT")  M$calcHistory$name <- value$calcHistory$name
-              else{
-                cV <- data.tree::Clone(value$calcHistory)
-                cM <- data.tree::Clone(M$calcHistory)
-                cV$AddChildNode(cM)
-                M$calcHistory <- cV
-              }
-            }else  M$calcHistory <- value$calcHistory
-          }else  M$calcHistory <- value$calcHistory
-        }else if (is.character(value$calcHistory) & length(value$calcHistory)==1){
-          if (is(M$calcHistory,"Node")){
-            if (M$calcHistory$name=="ROOT")  M$calcHistory$name <- value$calcHistory
-            else{
-              cV <- data.tree::Node$new(value$calcHistory)
-              cM <- data.tree::Clone(M$calcHistory)
-              cV$AddChildNode(cM)
-              M$calcHistory <- cV
-            }
-          }
-        }else  warning(value$calcHistory," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
-      }
+      #calcHistory
+      M$calcHistory <- .setCalcHistory(M$calcHistory,value$calcHistory)
+      #user
       if (!is.null(value$user)){
         if (!is.character(value$user) & length(value$user)!=1){
           warning(value$user," is an invalid argument for user! Please use getMetadata or updateMetadata to provide a user")
           M$user <- NULL
         }else  M$user <- value$user
       }
+      #date
       if(!is.null(value$date)){
         if(!is.character(value$date) & length(value$date)!=1){
           warning(value$date," is an invalid argument for date! Please use getMetadata or updateMetadata to provide a date")
           M$date <- NULL
         }else  M$date <- value$date
       }
+      #description
       if(!is.null(value$description)){
         if(is.character(value$description))  M$description <- value$description
         else if (is.list(value$description))  M$description <- value$description
@@ -150,6 +213,7 @@ getMetadata <- function(x, type=NULL) {
           M$description <- NULL
         }
       }
+      #note
       if(!is.null(value$note)){
         if(is.character(value$note))  M$note <- value$note
         else if (is.list(value$note))  M$note <- value$note
@@ -159,57 +223,16 @@ getMetadata <- function(x, type=NULL) {
         }
       }
     }
+    #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
     if (is.character(value) & length(value)==1)  M[[type]] <- value
     else if (is.null(value))  M$unit <- '1'
     else  warning(value," is an invalid argument for unit!")
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
-    if (!is(value,"Bibtex") & !is(value,"bibentry")){
-      if (is.list(value)){
-        M$source <- list()
-        j <- 0
-        k <- 0
-        for (i in 1:(length(value))){
-          if (is(value[[i]],"Bibtex")){
-            j <- j+1
-            M$source[[j]] <- value[[i]]
-          }else if (is(value,"bibentry")){
-            j <- j+1
-            M$source[[j]] <- toBibtex(value[[i]])
-          }else{
-            if (k==0)  k <- i
-            else  k <- append(k,i)
-          }
-        }
-        if (k!=0)  warning("Source(s) ",toString(k)," are not Bibtex/bibentry objects!")
-      }else  warning("Source must be an object of class Bibtex/bibentry or a list of Bibtex/bibentry objects!")
-    }else if (is(value,"bibentry"))  M$source <- toBibtex(value)
-    else  M$source <- value
+    else  M[[type]] <- .setSource(M$source,value)
   }else if (type == "calcHistory"){
-    if (is(value,"Node")){
-      if (is(M[[type]],"Node")){
-        if (data.tree::isRoot(value))  M[[type]] <- value
-        else if (is.null(value$children)){
-          if (M[[type]]$name=="ROOT")  M[[type]]$name <- value$name
-          c <- data.tree::Clone(M[[type]])
-          value$AddChildNode(c)
-          M[[type]] <- value
-        }
-      }else  M[[type]] <- value
-    }else if (is.character(value)){
-      if (length(value)==1){
-        if (is(M[[type]],"Node")){
-          if (M[[type]]$name=="ROOT")  M[[type]]$name <- value
-          else{
-            c <- data.tree::Clone(M[[type]])
-            M[[type]] <- data.tree::Node$new(value)
-            M[[type]]$AddChildNode(c)
-          }
-        }else  M[[type]] <- data.tree::Node$new(value)
-      }else  warning(value,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
-    }else if (is.null(value))  M[[type]] <- value
-    else  warning(value," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
+    M[[type]] <- .setCalcHistory(M$calcHistory,value)
   }else if (type=="date"){
     if  ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to enter a date.")

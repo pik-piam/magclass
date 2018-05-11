@@ -26,25 +26,25 @@
 #' - string or vector specifying new units for x
 #' The default argument is "keep" if no y argument is provided, or "update" if y is provided. 
 #' @param source An object of class Bibtex (or a list of Bibtex objects) indicating the source(s) of the 
-#' input data in BibTeX style. Possible arguments are "keep", "copy", "clear", or a new source can be entered 
-#' here as a Bibtex object. By default, "keep" if no y argument, or "copy" if y is provided.
+#' input data in BibTeX style. Possible arguments are "keep", "clear", "copy" (which overwrites the source(s) 
+#' of x with the source(s) of y), "merge" (which combines the sources of x and y in a list), or a new source 
+#' can be entered here as a Bibtex object. By default, "keep" if no y argument, or "merge" if y is provided.
 #' @param calcHistory A tree-like object of class Node indicating the functions through which x has passed. 
-#' Possible arguments are "keep"; "copy"; "clear"; "merge", which combines the history trees of 2 or more 
-#' objects; and "update", which adds the function presently calling updateMetadata (or a function further 
-#' upstream if specified by n) to calcHistory and also merges if y is provided. A node object can also be 
-#' provided which will overwrite any existing value. By default, "keep" if no y argument, or "update" if y 
+#' Possible arguments are "keep", "copy", "clear", "merge" (which combines the history trees of 2 or more 
+#' objects), and "update" (which adds the function presently calling updateMetadata (or a function further 
+#' upstream if specified by n) to calcHistory and also merges if y is provided). A node object can also be 
+#' provided which will overwrite any existing value. By default, "keep" if no y argument, or "merge" if y 
 #' is provided.
 #' @param date A character indicating the MAgPIE object's last modified date. Possible arguments are 
-#' "keep", "copy", and "update", which sets the date of x to the current time. "update" by default.
+#' "keep", "copy", and "update" (which sets the date of x to the current time). "update" by default.
 #' @param user A string indicating the user who last modified the MAgPIE object. Possible arguments are "keep",
-#' "copy", "update", which retrieves the username currently logged into the system, or a character string 
+#' "copy", "update" (which retrieves the username currently logged into the system), or a character string 
 #' which specifies a new user. "update" by default.
 #' @param description A string or list of strings containing a description of the dataset. Possible arguments are 
-#' "keep"; "copy", which replaces x's description with y's; "clear"; "merge", which combines mutiple descriptions 
-#' in a list, or a new description can be defined here by a character string. By default, "keep" if no y argument, 
-#' or "copy" if y is provided.
+#' "keep", "copy", "merge", "clear", or a new description can be defined here by a character string. By default, 
+#' "keep" if no y argument, or "copy" if y is provided.
 #' @param note A string or list of strings for attaching notes (e.g. instructions, warnings, etc.) to the data.
-#' Possible arguments are "keep", "copy", "clear", or a new note can be entered here as a character string. 
+#' Possible arguments are "keep", "copy", "merge", clear", or a new note can be entered here as a character string. 
 #' By default, "keep" if no y argument, or "copy" if y is provided.
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
@@ -56,12 +56,13 @@
 #' @export
 #' @importFrom methods getPackageName
 #' 
-updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","copy"), 
-                           calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), 
+updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
+                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), 
                            note=ifelse(is.null(y),"keep","copy"), n=1){
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
   #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
@@ -175,22 +176,23 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
-  if (is.list(source) | is(source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- source
-  else if (source=="copy"){
+  if (is.list(source) | is(source,"Bibtex") | is(source,"bibentry"))  Mx$source <- source
+  else if (source=="merge"){
     if (!is.null(y)){
-      if (is.list(My$source)){
-        if (is.list(Mx$source))  Mx$source <- append(Mx$source, My$source)
-        else if (is(Mx$source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- append(list(Mx$source), My$source)
-        else  Mx$source <- My$source
-      }else if (is(My$source,"Bibtex") | is(Mx$source,"bibentry")){
-        if (is(Mx$source,"Bibtex") | is(Mx$source,"bibentry"))  Mx$source <- list(Mx$source, My$source)
-        else if (is.list(Mx$source))  append(Mx$source,list(My$source))
-        else  Mx$source <- My$source
+      if (!is.null(My$source)){
+        Mx$source <- My$source
+      }
+    }else  warning("Source cannot be merged without a second magpie argument provided!")
+  }else if (source=="copy"){
+    if (!is.null(y)){
+      if (!is.null(My$source)){
+        getMetadata(x,"source") <- NULL
+        Mx$source <- My$source
       }
     }else  warning("Source cannot be copied without a second magpie argument provided!")
-  }else if (source[[1]]=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
-  else if (source[[1]]=="clear")  Mx$source <- NULL
-  else if (source[[1]]!="keep")  Mx$source <- source
+  }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
+  else if (source=="clear")  Mx$source <- NULL
+  else if (source!="keep")  Mx$source <- source
   
   if (is(calcHistory,"Node") | is.null(calcHistory)){
     getMetadata(x,"calcHistory") <- NULL

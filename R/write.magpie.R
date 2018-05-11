@@ -88,7 +88,7 @@
 #' will be treated and counted as a new region (e.g.
 #' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
 #' to 3!).
-#' @author Jan Philipp Dietrich
+#' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"},
 #' \code{\link{read.magpie}},\code{\link{mbind}},\code{\link{write.magpie.ncdf}}
 #' @examples
