@@ -455,8 +455,8 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
             }else if(greplength("\u00A6",chsplit[1])>1)  addNode(chsplit[1],i,n=7)
           }
         }
+        metadata$calcHistory <- node[[1]]
       }
-      metadata$calcHistory <- node[[1]]
       
       #convert array to magpie object
       read.magpie <- as.magpie(mag)
