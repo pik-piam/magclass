@@ -143,8 +143,14 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       if(!is.null(metadata$unit)) writeLines(paste(char,"#unit:",metadata$unit),file)
       if(!is.null(metadata$user)) writeLines(paste(char,"#user:",metadata$user),file)
       if(!is.null(metadata$date)) writeLines(paste(char,"#date:",metadata$date),file)
-      if(!is.null(metadata$description)) writeLines(paste(char,"#description:",metadata$description),file)
-      if(!is.null(metadata$note)) writeLines(paste(char,"#note:",metadata$note),file)
+      if(!is.null(metadata$description)) {
+        writeLines(paste(char,"#description:",metadata$description[1]),file)
+        if (length(metadata$description)>1)  writeLines(paste(char,"\t",metadata$description[-1]),file)
+      }
+      if(!is.null(metadata$note)) {
+        writeLines(paste(char,"#note:",metadata$note[1]),file)
+        if (length(metadata$note)>1)  writeLines(paste(char,"\t",metadata$note[-1]),file)
+      }
       if(!is.null(metadata$source)){
         writeLines(paste0(char," #source: "),file)
         if(is.list(metadata$source)) {
