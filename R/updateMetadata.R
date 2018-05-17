@@ -148,6 +148,19 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     }
     return(rootNode)
   }
+  
+  #Function for merging metadata from 2 or more objects
+  mergeFields <- function(x,y) {
+    if (is.character(x)){
+      if (is.character(y))  x <- list(x,y)
+      else if (is.list(y))  x <- append(list(x),y)
+    }else if (is.list(x)){
+      if (is.character(y))  x <- append(x,list(y))
+      else if (is.list(y))  x <- append(x,y)
+    }else if (is.character(y) | is.list(y))  x <- y
+    return(x)
+  }
+  
   Mx <- getMetadata(x)
   #Recursive function to merge metadata from a list of magpie objects.
   if (is.list(y)){
@@ -188,7 +201,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (!is.null(My$source)){
         getMetadata(x,"source") <- NULL
         Mx$source <- My$source
-      }
+      }else warning("Source of y is NULL and will not be copied to x.")
     }else  warning("Source cannot be copied without a second magpie argument provided!")
   }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
   else if (source=="clear")  Mx$source <- NULL
@@ -243,15 +256,8 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (description=="clear")  Mx$description <- NULL
   else if (description=="update")  warning("Update is an invalid argument for description! Please specify keep, copy, merge, or clear.")
   else if (description=="merge"){
-    if (!is.null(y)){
-      if (is.character(Mx$description)){
-        if (is.character(My$description))  Mx$description <- list(Mx$description,My$description)
-        else if (is.list(My$description))  Mx$description <- append(list(Mx$description),My$description)
-      }else if (is.list(Mx$description)){
-        if (is.character(My$description))  Mx$description <- append(Mx$description,list(My$description))
-        else if (is.list(My$description))  Mx$description <- append(Mx$description,My$description)
-      }else if (is.character(My$description) | is.list(My$description))  Mx$description <- My$description
-    }else  warning("description cannot be merged without a second magpie argument provided!")
+    if (!is.null(y))  mergeFields(Mx$description,My$description)
+    else  warning("description cannot be merged without a second magpie argument provided!")
   }else if (description!="keep"){
     if (is.character(description))  Mx$description <- description
     else  warning("Invalid argument ",description," for description!")
@@ -265,15 +271,8 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     else  warning("note cannot be copied without a second magpie argument provided!")
   }else if (note=="clear")  Mx$note <- NULL
   else if (note=="merge"){
-    if (!is.null(y)){
-      if (is.character(Mx$note)){
-        if (is.character(My$note))  Mx$note <- list(Mx$note,My$note)
-        else if (is.list(My$note))  Mx$note <- append(list(Mx$note),My$note)
-      }else if (is.list(Mx$note)){
-        if (is.character(My$note))  Mx$note <- append(Mx$note,list(My$note))
-        else if (is.list(My$note))  Mx$note <- append(Mx$note,My$note)
-      }else if (is.character(My$note) | is.list(My$note))  Mx$note <- My$note
-    }else  warning("note cannot be merged without a second magpie argument provided!")
+    if (!is.null(y))  mergeFields(Mx$note,My$note)
+    else  warning("note cannot be merged without a second magpie argument provided!")
   }else if (note=="update")  warning("Update is an invalid argument for note! Please specify keep, copy, merge, or clear.")
   else if (note!="keep"){
     if (is.character(note))  Mx$note <- note

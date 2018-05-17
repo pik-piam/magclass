@@ -175,9 +175,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         zz <- file(file_name)
         open(zz)
         tmp <- readLines(zz,1)
-        i <- 1
-        while(grepl(comment.char,tmp,fixed=TRUE)) {
-          if(grepl(meta.char,tmp,fixed=TRUE)) {
+        i <- 0
+        while(grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+          if(grepl(meta.char,substr(tmp,1,3),fixed=TRUE)) {
+            i <- i+1
             #isolate the metadata field names
             tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
             field[i] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[1]
@@ -186,7 +187,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               tmp <- readLines(zz,1)
               node <- list()
               j <- 1
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 if(j==1){
                   #isolate the node name from whitespace and formatting characters
                   tmpsplit <- unlist(strsplit(tmp," ",fixed=TRUE))
@@ -217,10 +218,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               metadata[[i]] <- tmp
               tmp <- readLines(zz,1)
               k <- 1
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                 #Create a list if there are multiple sources (Bibtex class uses @ to indicate entry type for each entry)
-                if(grepl("@",tmp,fixed=TRUE)) {
+                if(grepl("@",substr(tmp,1,3),fixed=TRUE)) {
                   k <- k+1
                   if(!is.list(metadata[[i]]))  metadata[[i]] <- list(metadata[[i]])
                   class(metadata[[i]][[k-1]]) <- "Bibtex"
@@ -234,24 +235,40 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 }
               }
               #convert to Bibtex class for storage
-              if (is.list(metadata[[i]]))  class(metadata[[i]][[k]]) <- "Bibtex"
-              else  class(metadata[[i]]) <- "Bibtex"
+              if (is.list(metadata[[i]])) {
+                class(metadata[[i]][[k]]) <- "Bibtex"
+                name <- list()
+                for (j in 1:length(metadata[[i]])) {
+                  for (n in 1:length(metadata[[i]][[j]])) {
+                    if(n==1) name[[j]] <- trimws(unlist(strsplit(metadata[[i]][[j]][[n]]," = ",fixed=TRUE))[1],"left")
+                    else  name[[j]][n] <- trimws(unlist(strsplit(metadata[[i]][[j]][[n]]," = ",fixed=TRUE))[1],"left")
+                  }
+                  names(metadata[[i]][[j]]) <- name[[j]]
+                }
+              }
+              else {
+                class(metadata[[i]]) <- "Bibtex"
+                name <- vector()
+                for (j in 1:length(metadata[[i]])) {
+                  name[j] <- trimws(unlist(strsplit(metadata[[i]][[j]]," = ",fixed=TRUE))[1],"left")
+                }
+                names(metadata[[i]]) <- name
+              }
             }else{
               metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
               tmp <- readLines(zz,1)
               if(is.na(metadata[[i]])){
-                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+                tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,tmp,fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,tmp,fixed=TRUE)) {
-                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+                tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
                 metadata[[i]] <- c(metadata[[i]], tmp)
                 tmp <- readLines(zz,1)
               }
             }
           }else  tmp <- readLines(zz,1)
-          i <- i+1
         }
         close(zz)
       }
@@ -326,8 +343,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(fformat_version > 2){
         getMetadata(read.magpie) <- metadata
         if(is.null(metadata$user))  user <- "update"
+        else  user <- "keep"
         if(is.null(metadata$date))  date <- "update"
-        read.magpie <- updateMetadata(read.magpie,user=metadata$user,date=metadata$date)
+        else  date <- "keep"
+        read.magpie <- updateMetadata(read.magpie,user=user,date=date)
       }
       
     } else if(file_type=="cs3" | file_type=="cs3r") {
@@ -345,12 +364,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       read.magpie <- as.magpie(tmparr)   
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
-      getMetadata(read.magpie) <- .readMetadata(file_name)
     } else if(file_type=="cs4" | file_type=="cs4r") {
       x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names)
       read.magpie <- as.magpie(x,tidy=TRUE)
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
-      getMetadata(read.magpie) <- .readMetadata(file_name)
     } else if(file_type=="asc"){
       grid<-suppressWarnings(try(maptools::readAsciiGrid(file_name,dec="."),silent=T))
       if(is(grid,"try-error")){
@@ -383,7 +400,8 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       read.magpie[goodcells]<-grid@data[[1]][mp_rows[goodcells]]
       read.magpie[is.na(mp_rows)]<-NA
       names(read.magpie)<-paste(magclassdata$half_deg$region,1:59199,sep=".")
-      read.magpie<-as.magpie(read.magpie)      
+      read.magpie<-as.magpie(read.magpie)
+      
     } else if(file_type=="nc") { #netcdf
       if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for reading NCDF4 files!")
       nc_file <- ncdf4::nc_open(file_name)
@@ -436,7 +454,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         ch <- ncdf4::ncatt_get(nc_file,varid=0,attname="calcHistory")[[2]]
         #count number of lines of calcHistory
         chlines <- unlist(strsplit(ncdf4::ncatt_get(nc_file,0,"calcHistory")[[2]],"\n"))
-        if(chlines[1]=="")  chlines <- chlines[2:length(chlines)]
+        if(chlines[1]=="")  chlines <- chlines[-1]
         node <- list()
         for(i in 1:length(chlines)) {
           #isolate the node name from whitespace and formatting characters
