@@ -201,7 +201,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (!is.null(My$source)){
         getMetadata(x,"source") <- NULL
         Mx$source <- My$source
-      }else warning("Source of y is NULL and will not be copied to x.")
+      }
     }else  warning("Source cannot be copied without a second magpie argument provided!")
   }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
   else if (source=="clear")  Mx$source <- NULL
@@ -250,7 +250,10 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   else if (date!="keep")  warning("Invalid argument ", date," for date!")
     
   if (is.null(description))  Mx$description <- "keep"
-  if (description=="copy"){
+  if (length(description)>1){
+    if (is.character(description) | is.list(description))  Mx$description <- description
+    else  warning("Invalid argument for description!")
+  }else if (description=="copy"){
     if (!is.null(y))  Mx$description <- My$description
     else  warning("Description cannot be copied without a second magpie argument provided!")
   }else if (description=="clear")  Mx$description <- NULL

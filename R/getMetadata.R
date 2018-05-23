@@ -244,10 +244,10 @@ getMetadata <- function(x, type=NULL) {
     if ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for user! Please use getMetadata or updateMetadata to enter a user.")
   }else if (type=="description"){
-    if(is.null(value) | is.character(value))  M[[type]] <- value
+    if(is.null(value) | is.character(value) | is.list(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for description! Please use getMetadata or updateMetadata to enter a description.")
   }else if (type=="note"){
-    if(is.null(value) | is.character(value))  M[[type]] <- value
+    if(is.null(value) | is.character(value) | is.list(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for note! Please use getMetadata or updateMetadata to enter a note.")
   }else  warning(type," is not a valid metadata field!")
   
