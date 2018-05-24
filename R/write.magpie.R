@@ -165,16 +165,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       if(is(metadata$calcHistory,"Node")){
         calcHistory <- as.character(as.data.frame(metadata$calcHistory)[[1]])
-        for(i in 1:length(calcHistory)) {
-          if(grepl("<U+00A6>",calcHistory[i],fixed=TRUE)) {
-            calcHistory[i] <- gsub("<U+00A6>","|",calcHistory[i],fixed=TRUE)
-          }
-          if(grepl("<U+00B0>",calcHistory[i],fixed=TRUE)) {
-            calcHistory[i] <- gsub("<U+00B0>","o",calcHistory[i],fixed=TRUE)
-          }
-        }
         writeLines(paste0(char," #calcHistory: "),file)
-        writeLines(paste(char,calcHistory),file)
+        writeLines(paste(char,calcHistory),file,useBytes=TRUE)
       }
     }
     
