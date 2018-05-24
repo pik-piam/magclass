@@ -21,6 +21,7 @@ withMetadata <- function(set=NULL) {
     if(is.null(status)) status <- FALSE
     return(status)
   } else if(is.logical(set) & length(set)==1) {
+    if(isTRUE(set))  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
     options(magclass_metadata=set)
     return(set)
   } else {
