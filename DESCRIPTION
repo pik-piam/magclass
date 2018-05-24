@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.85.5
-Date: 2018-05-23
+Version: 4.85.6
+Date: 2018-05-24
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -44,5 +44,5 @@ License: LGPL-3 | file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
-ValidationKey: 85807270
+ValidationKey: 85829800
 
