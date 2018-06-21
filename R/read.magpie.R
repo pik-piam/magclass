@@ -148,10 +148,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   addNode <- function(node,string,a,n=6) {
     #node position determined by number of whitespaces and formatting characters
     spaces <- greplength(" ",string)
-    if(greplength("\u00A6",string)>1){
-      spaces <- spaces + greplength("\u00A6",string) - 1
-    }else if(grepl("\u00B0",string,fixed=TRUE) & grepl("\u00A6",string,fixed=TRUE)){
+    if(grepl("\u00B0",string) & grepl("\u00A6",string)){
       spaces <- spaces + greplength("\u00A6",string)
+    }else if(greplength("\u00A6",string)>1){
+      spaces <- spaces + greplength("\u00A6",string) - 1
     }
     #algorithm to determine node's level in the data tree is dependent on whitespaces
     lvl <- (spaces+n)/4
@@ -190,11 +190,12 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 if(j==1){
                   #isolate the node name from whitespace and formatting characters
-                  tmpsplit <- unlist(strsplit(tmp," ",fixed=TRUE))
+                  tmpsplit <- unlist(strsplit(tmp,"  ",fixed=TRUE))
                   node[[1]] <- data.tree::Node$new(tmpsplit[2])
                 }else{
                   tmpsplit <- unlist(strsplit(tmp,"--"))
-                  node[[j]] <- data.tree::Node$new(tmpsplit[2])
+                  tmpsplit <- unlist(strsplit(tmpsplit[2],"  ",fixed=TRUE))
+                  node[[j]] <- data.tree::Node$new(tmpsplit[1])
                   #special algorithm for adding to the root node
                   if(grepl("\u00B0",tmp,fixed=TRUE)){
                     if(!grepl("\u00A6",tmp)){
