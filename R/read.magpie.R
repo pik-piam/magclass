@@ -191,6 +191,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 if(j==1){
                   #isolate the node name from whitespace and formatting characters
                   tmpsplit <- unlist(strsplit(tmp,"  ",fixed=TRUE))
+                  tmpsplit <- unlist(strsplit(tmpsplit[1],"* ",fixed=TRUE))
                   node[[1]] <- data.tree::Node$new(tmpsplit[2])
                 }else{
                   tmpsplit <- unlist(strsplit(tmp,"--"))
