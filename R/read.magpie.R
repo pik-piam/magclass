@@ -191,12 +191,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 if(j==1){
                   #isolate the node name from whitespace and formatting characters
                   tmpsplit <- unlist(strsplit(tmp,"  ",fixed=TRUE))
-                  tmpsplit <- unlist(strsplit(tmpsplit[1],"* ",fixed=TRUE))
-                  node[[1]] <- data.tree::Node$new(tmpsplit[2])
+                  node[[1]] <- data.tree::Node$new(unlist(strsplit(tmpsplit[1],"* ",fixed=TRUE))[2])
                 }else{
                   tmpsplit <- unlist(strsplit(tmp,"--"))
-                  tmpsplit <- unlist(strsplit(tmpsplit[2],"  ",fixed=TRUE))
-                  node[[j]] <- data.tree::Node$new(tmpsplit[1])
+                  node[[j]] <- data.tree::Node$new(unlist(strsplit(tmpsplit[2],"  "))[1])
                   #special algorithm for adding to the root node
                   if(grepl("\u00B0",tmp,fixed=TRUE)){
                     if(!grepl("\u00A6",tmp)){
