@@ -352,13 +352,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     } else if(file_type=="cs3" | file_type=="cs3r") {
       x <- read.csv(file_name,comment.char=comment.char, check.names=check.names)
       datacols <- grep("^dummy\\.?[0-9]*$",colnames(x))
-      xdimnames <- apply(x[datacols],2,unique)
+      xdimnames <- lapply(lapply(x[datacols],unique),as.character)
       if(!is.list(xdimnames)) xdimnames <- list(xdimnames)
       xdimnames[[length(xdimnames)+1]] <- colnames(x)[-datacols]
       names(xdimnames) <- NULL
       tmparr <- array(NA,dim=sapply(xdimnames,length),dimnames=xdimnames)
       for(i in xdimnames[[length(xdimnames)]]) {
-        j <- as.matrix(cbind(x[datacols],i))
+        j <- sapply(cbind(x[datacols],i),as.character)
         .duplicates_check(j)
         tmparr[j] <- x[,i]
       }
