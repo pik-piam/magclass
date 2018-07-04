@@ -48,6 +48,8 @@
 #' @param comment.char character: a character vector of length one containing a
 #' single character or an empty string. Use "" to turn off the interpretation
 #' of comments altogether.
+#' @param metadata.char character: a character vector of length one containing a
+#' single character or an empty string. 
 #' @param mode File permissions the file should be written with as 3-digit
 #' number (e.g. "777" means full access for user, group and all, "750" means
 #' full access for user, read access for group and no acess for anybody else).
@@ -98,7 +100,7 @@
 #' 
 #' @export write.magpie
 #' @importFrom utils setTxtProgressBar txtProgressBar write.csv write.table
-write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,comment=NULL,comment.char="*",mode=NULL,nc_compression=9,verbose=TRUE) {
+write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,comment=NULL,comment.char="*",metadata.char="~",mode=NULL,nc_compression=9,verbose=TRUE) {
   umask <- Sys.umask()
   if(!is.null(mode)) {
     umask_mode <- as.character(777-as.integer(mode))
@@ -139,20 +141,20 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     #function to write metadata to cs* filetypes
-    .writeMetadata <- function(file,metadata,char) {
-      if(!is.null(metadata$unit)) writeLines(paste(char,"#unit:",metadata$unit),file)
-      if(!is.null(metadata$user)) writeLines(paste(char,"#user:",metadata$user),file)
-      if(!is.null(metadata$date)) writeLines(paste(char,"#date:",metadata$date),file)
+    .writeMetadata <- function(file,metadata,char,mchar) {
+      if(!is.null(metadata$unit)) writeLines(paste0(char," ",mchar,"unit:",metadata$unit),file)
+      if(!is.null(metadata$user)) writeLines(paste0(char,"\n",char," ",mchar,"user:",metadata$user),file)
+      if(!is.null(metadata$date)) writeLines(paste0(char,"\n",char," ",mchar,"date:",metadata$date),file)
       if(!is.null(metadata$description)) {
-        writeLines(paste(char,"#description:",metadata$description[1]),file)
-        if (length(metadata$description)>1)  writeLines(paste(char,"\t",metadata$description[-1]),file)
+        writeLines(paste0(char,"\n",char," ",mchar,"description:",metadata$description[1]),file)
+        if (length(metadata$description)>1)  writeLines(paste(char,"\t",paste(metadata$description[-1],collapse="\n\t")),file)
       }
       if(!is.null(metadata$note)) {
-        writeLines(paste(char,"#note:",metadata$note[1]),file)
-        if (length(metadata$note)>1)  writeLines(paste(char,"\t",metadata$note[-1]),file)
+        writeLines(paste0(char,"\n",char," ",mchar,"note:",metadata$note[1]),file)
+        if (length(metadata$note)>1)  writeLines(paste(char,"\t",paste(metadata$note[-1],collapse="\n\t")),file)
       }
       if(!is.null(metadata$source)){
-        writeLines(paste0(char," #source: "),file)
+        writeLines(paste0(char,"\n",char," ",mchar,"source: "),file)
         if(is.list(metadata$source)) {
           for(i in 1:length(metadata$source)){
             if(is(metadata$source[[i]],"bibentry"))  writeLines(paste(char,toBibtex(metadata$source[[i]])),file)
@@ -165,8 +167,9 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       if(is(metadata$calcHistory,"Node")){
         calcHistory <- as.character(as.data.frame(metadata$calcHistory)[[1]])
-        writeLines(paste0(char," #calcHistory: "),file)
+        writeLines(paste0(char,"\n",char," ",mchar,"calcHistory: ","\n",char),file)
         writeLines(paste(char,calcHistory),file,useBytes=TRUE)
+        writeLines(char,file)
       }
     }
     
@@ -260,7 +263,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       dimnames(x)[[2]] <- c(gsub("[^,]*(,|$)","dummy\\1",x[1,1]),header)
       zz <- file(file_path,open="w")
       if(any(comment!=""))  writeLines(paste(comment.char,comment,sep=""),zz)
-      if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char)
+      if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char,metadata.char)
       write.csv(x,file=zz,quote=FALSE,row.names=FALSE)
       close(zz)
       Sys.chmod(file_path, mode)
@@ -282,7 +285,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       zz <- file(file_path,open="w")
       if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
-      if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char)
+      if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char,metadata.char)
       write.table(output,file=zz,quote=FALSE,row.names=FALSE,col.names=FALSE,sep=",")
       close(zz)
       Sys.chmod(file_path, mode)
@@ -323,7 +326,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         if(header & print_regions) dimnames(output)[[2]][1] <- "dummy"
         zz <- file(file_path,open="w")
         if(any(comment!="")) writeLines(paste(comment.char,comment,sep=""),zz)
-        if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char)
+        if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char,metadata.char)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)  
         close(zz)
         Sys.chmod(file_path, mode)
@@ -353,7 +356,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       	}
         zz <- file(file_path,open="w")
         if(any(comment!="")) writeLines(paste0(comment.char,comment,sep=""),zz)
-        if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char)
+        if(!is.null(metadata))  .writeMetadata(zz,metadata,comment.char,metadata.char)
         write.table(output,zz,sep=",",col.names=header,row.names=FALSE,quote=FALSE)
         close(zz)
         Sys.chmod(file_path, mode)
