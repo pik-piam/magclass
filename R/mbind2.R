@@ -41,7 +41,6 @@ mbind2 <- function(...) {
       names(dimnames(output)) <- names(dimnames(list(...)[ismagpie][[1]]))
       for(i in 1:length(list(...)[ismagpie])) output[,,getNames(list(...)[ismagpie][[i]])] <- list(...)[ismagpie][[i]]      
     }
-    output <- updateMetadata(output, list(...), unit="update", calcHistory="update", source="copy", description="copy")
-    return(output)
+    return(updateMetadata(output,list(...),calcHistory="merge"))
   }
 }  
