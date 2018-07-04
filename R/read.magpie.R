@@ -128,7 +128,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         read_repeat <- TRUE
         while(read_repeat){
           tmp <- readLines(zz,1)
-          if(length(grep(paste("^",escapeRegex(comment.char),sep=""),tmp)) & !grepl(meta.char,substr(tmp,3,3),fixed=TRUE)) {
+          if(length(grep(paste("^",escapeRegex(comment.char),sep=""),tmp)) & !grepl(meta.char,tmp,fixed=TRUE)) {
             comment <- c(comment,tmp)
           } else {
             read_repeat <- FALSE
@@ -167,7 +167,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     }
   }
   
-  .readMetadata <- function(file_name,comment.char="*",meta.char="~") {
+  .readMetadata <- function(file_name,comment.char="*",meta.char="#") {
     metadata <- list()
     field <- vector()
     if(!is.null(comment.char) & !is.null(meta.char)) {
@@ -177,7 +177,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         tmp <- readLines(zz,1)
         i <- 0
         while(grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
-          if(grepl(meta.char,substr(tmp,3,3),fixed=TRUE)) {
+          if(grepl(meta.char,substr(tmp,1,3),fixed=TRUE)) {
             i <- i+1
             #isolate the metadata field names
             tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
@@ -187,7 +187,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               tmp <- readLines(zz,1)
               node <- list()
               j <- 1
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 if(j==1){
                   #isolate the node name from whitespace and formatting characters
                   tmpsplit <- unlist(strsplit(tmp,"  ",fixed=TRUE))
@@ -218,7 +218,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               metadata[[i]] <- tmp
               tmp <- readLines(zz,1)
               k <- 1
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
                 #Create a list if there are multiple sources (Bibtex class uses @ to indicate entry type for each entry)
                 if(grepl("@",substr(tmp,1,3),fixed=TRUE)) {
@@ -262,7 +262,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,1,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
                 metadata[[i]] <- c(metadata[[i]], tmp)
                 tmp <- readLines(zz,1)
