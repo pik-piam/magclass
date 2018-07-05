@@ -85,10 +85,38 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
       if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput"){
         f <- deparse(sys.call(-n),width.cutoff = 500)
-        if (grepl("subtype,",f,fixed=TRUE))  f <- gsub("subtype,",paste0(eval.parent(expression(subtype),n),","),f,fixed=TRUE)
-        else if (grepl("type,",f,fixed=TRUE))  f <- gsub("type,",paste0(eval.parent(expression(type),n),","),f,fixed=TRUE)
-        if (grepl("subtype)",f,fixed=TRUE))  f <- gsub("subtype)",paste0(eval.parent(expression(subtype),n),")"),f,fixed=TRUE)
-        else if (grepl("type)",f,fixed=TRUE))  f <- gsub("type)",paste0(eval.parent(expression(type),n),")"),f,fixed=TRUE)
+        
+        tmp <- unlist(strsplit(f,"(",fixed=TRUE))
+        fname <- tmp[1]
+        tmp <- unlist(strsplit(tmp[2],")",fixed=TRUE))[1]
+        args <- unlist(strsplit(tmp,",",fixed=TRUE))
+        fchanged <- FALSE
+        for(i in 1:length(args)){
+          if(grepl("=",args[i],fixed=TRUE)) {
+            tmp <- trimws(unlist(strsplit(args[i],"=",fixed=TRUE)))
+            if(tmp[1]==tmp[2]) {
+              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+              args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+              fchanged <- TRUE
+            }else if(!grepl("\u0022",tmp[2])) {
+              if(grepl("[:alpha:]",tmp[2])) {
+                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+                if(length(tmp[2])>1)  tmp <- paste(tmp[2],collapse=", ")
+                args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+                fchanged <- TRUE
+              }
+            }
+          }else if(!grepl("\u0022",args[i])) {
+            if(grepl("[:alpha:]",args[i])) {
+              tmp <- get(args[i],envir=parent.frame(n+1))
+              if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
+              args[i] <- paste0("\"",tmp,"\"")
+              fchanged <- TRUE
+            }
+          }
+        }
+        if(fchanged==TRUE)  f <- paste0(fname,"(",paste(args,collapse=", "),")")
+        
       }
       if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
       if (convert==TRUE)  return(data.tree::Node$new(f))
