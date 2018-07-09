@@ -245,8 +245,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                   }
                   names(metadata[[i]][[j]]) <- name[[j]]
                 }
-              }
-              else {
+              }else {
                 class(metadata[[i]]) <- "Bibtex"
                 name <- vector()
                 for (j in 1:length(metadata[[i]])) {
@@ -254,17 +253,19 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 }
                 names(metadata[[i]]) <- name
               }
-            }else{
+            }else {
               metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
               tmp <- readLines(zz,1)
-              if(is.na(metadata[[i]])){
+              if(is.na(metadata[[i]])) {
                 tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
-                metadata[[i]] <- c(metadata[[i]], tmp)
+                if (grepl("[^[:space:]]",tmp)) {
+                  metadata[[i]] <- c(metadata[[i]], tmp)
+                }
                 tmp <- readLines(zz,1)
               }
             }

@@ -112,6 +112,8 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
       }else if(indicator[[i]]=="calcHistory") {
         char <- as.character(as.data.frame(commentary$calcHistory)[[1]])
         commentary[[i]] <- paste("\n",char,sep="",collapse="")
+      }else if(indicator[[i]]=="version") {
+        commentary[[i]] <- paste("\n",names(commentary[[i]]),commentary[[i]],collapse = "; ")
       }
       ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[[i]],prec="text")  
     }

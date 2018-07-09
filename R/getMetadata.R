@@ -172,6 +172,44 @@ getMetadata <- function(x, type=NULL) {
     return(new)
   }
   
+  .setVersion <- function(pre,ver) {
+    if (is.character(ver)) {
+      tmp <- vector()
+      for (i in 1:length(ver)) {
+        if (grepl("[[:digit:]]",ver[i]) & grepl("[[:alpha:]]",ver[i])) {
+          tmp[i] <- trimws(gsub("[[:alpha:]]","",ver[i]))
+          names(tmp)[i] <- trimws(gsub("[[:digit:]]","",gsub("[[:punct:]]","",ver[i])))
+        }else if(grepl("[[:alpha:]]",names(ver[i]))) {
+          if (grepl("[[:digit:]]",ver[i])) {
+            tmp[i] <- ver[i]
+            names(tmp)[i] <- names(ver[i])
+          }else  warning(ver[i]," is an invalid entry for version! Please provide the version number.")
+        }else  warning(ver[i]," is an invalid entry for version! Please provide both the package name and version number.")
+      }
+      if (!is.null(pre)) {
+        dbl <- vector()
+        k <- 1
+        for (i in 1:length(tmp)) {
+          for (j in 1:length(pre)) {
+            if (as.character(names(pre)[j])==as.character(names(tmp)[i])) {
+              dbl[k] <- i
+              k <- k+1
+              if (as.package_version(tmp[i]) > as.package_version(pre[j])) {
+                pre[j] <- tmp[i]
+              }else if (as.package_version(tmp[i]) < as.package_version(pre[j])) {
+                warning(paste("The provided version",tmp[i],"for the",names(tmp[i]),"package is behind the previously used version (",pre[j],")"))
+              }
+            }
+          }
+        }
+        if (length(dbl>0)) {
+          tmp <- tmp[-dbl]
+        }
+      }
+    }else  warning(ver,"is an invalid entry for version! Please use getMetadata or updateMetadata to enter a version number.")
+    return(c(pre,tmp))
+  }
+  
   #initialize existing metadata
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
@@ -226,6 +264,10 @@ getMetadata <- function(x, type=NULL) {
           M$note <- NULL
         }
       }
+      #version
+      if (!is.null(value$version)) {
+        M$version <- .setVersion(M$version,value$version)
+      }else  M$version <- NULL
     }
     #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
@@ -249,6 +291,12 @@ getMetadata <- function(x, type=NULL) {
   }else if (type=="note"){
     if(is.null(value) | is.character(value) | is.list(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for note! Please use getMetadata or updateMetadata to enter a note.")
+  }else if (type=="version") {
+    if (is.null(value)) {
+      M$version <- NULL
+    }else {
+      M$version <- .setVersion(M$version,value)
+    }
   }else  warning(type," is not a valid metadata field!")
   
   attr(x, "Metadata") <- M
