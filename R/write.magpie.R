@@ -142,19 +142,35 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     
     #function to write metadata to cs* filetypes
     .writeMetadata <- function(file,metadata,char,mchar) {
-      if(!is.null(metadata$unit)) writeLines(paste0(char," ",mchar,"unit:",metadata$unit),file)
-      if(!is.null(metadata$user)) writeLines(paste0(char,"\n",char," ",mchar,"user:",metadata$user),file)
-      if(!is.null(metadata$date)) writeLines(paste0(char,"\n",char," ",mchar,"date:",metadata$date),file)
+      if(!is.null(metadata$unit)) {
+        writeLines(paste(mchar,"unit:",metadata$unit),file)
+        writeLines(paste("\n",char),file)
+      }
+      if(!is.null(metadata$user)) {
+        writeLines(paste(char,mchar,"user:",metadata$user),file)
+        writeLines(paste("\n",char),file)
+      }
+      if(!is.null(metadata$date)) {
+        writeLines(paste(char,mchar,"date:",metadata$date),file)
+        writeLines(paste("\n",char),file)
+      }
+      if(!is.null(metadata$version)) {
+        writeLines(paste(char,mchar,"version:",paste(names(metadata$version),metadata$version,collapse = "; ")),file)
+        writeLines(paste("\n",char),file)
+      }
       if(!is.null(metadata$description)) {
-        writeLines(paste0(char,"\n",char," ",mchar,"description:",metadata$description[1]),file)
+        writeLines(paste(char,mchar,"description: ",metadata$description[1]),file)
         if (length(metadata$description)>1)  writeLines(paste(char,"\t",paste(metadata$description[-1],collapse="\n\t")),file)
+        writeLines(paste("\n",char),file)
       }
       if(!is.null(metadata$note)) {
-        writeLines(paste0(char,"\n",char," ",mchar,"note:",metadata$note[1]),file)
+        writeLines(paste(char,mchar,"note:",metadata$note[1]),file)
+        writeLines(paste("\n",char),file)
         if (length(metadata$note)>1)  writeLines(paste(char,"\t",paste(metadata$note[-1],collapse="\n\t")),file)
       }
       if(!is.null(metadata$source)){
-        writeLines(paste0(char,"\n",char," ",mchar,"source: "),file)
+        writeLines(paste(char,mchar,"source:"),file)
+        writeLines(paste("\n",char),file)
         if(is.list(metadata$source)) {
           for(i in 1:length(metadata$source)){
             if(is(metadata$source[[i]],"bibentry"))  writeLines(paste(char,toBibtex(metadata$source[[i]])),file)
