@@ -175,6 +175,9 @@ getMetadata <- function(x, type=NULL) {
   .setVersion <- function(pre,ver) {
     if (is.character(ver)) {
       tmp <- vector()
+      if (grepl(";",ver,fixed=TRUE)) {
+        ver <- unlist(strsplit(ver,";",fixed=TRUE))
+      }
       for (i in 1:length(ver)) {
         if (grepl("[[:digit:]]",ver[i]) & grepl("[[:alpha:]]",ver[i])) {
           tmp[i] <- trimws(gsub("[[:alpha:]]","",ver[i]))
