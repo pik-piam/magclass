@@ -165,14 +165,13 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       if(!is.null(metadata$note)) {
         writeLines(paste(char,paste0(mchar,"note:"),metadata$note[1]),file)
+        if (length(metadata$note)>1)  writeLines(paste(char,"\t",paste(metadata$note[-1])),file)
         writeLines(char,file)
-        if (length(metadata$note)>1)  writeLines(paste(char,"\t",paste(metadata$note[-1],collapse="\n\t")),file)
       }
-      if(!is.null(metadata$source)){
+      if(!is.null(metadata$source)) {
         writeLines(paste0(char," ",mchar,"source:"),file)
-        writeLines(char,file)
         if(is.list(metadata$source)) {
-          for(i in 1:length(metadata$source)){
+          for(i in 1:length(metadata$source)) {
             if(is(metadata$source[[i]],"bibentry"))  writeLines(paste(char,toBibtex(metadata$source[[i]])),file)
             else if(is(metadata$source[[i]],"Bibtex"))  writeLines(paste(char,metadata$source[[i]]),file)
           }
@@ -182,9 +181,9 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         }
         writeLines(char,file)
       }
-      if(is(metadata$calcHistory,"Node")){
+      if(is(metadata$calcHistory,"Node")) {
         calcHistory <- as.character(as.data.frame(metadata$calcHistory)[[1]])
-        writeLines(paste0(char," ",mchar,"calcHistory:","\n",char),file)
+        writeLines(paste0(char," ",mchar,"calcHistory:"),file)
         writeLines(paste(char,calcHistory),file,useBytes=TRUE)
         writeLines(char,file)
       }

@@ -175,8 +175,10 @@ getMetadata <- function(x, type=NULL) {
   .setVersion <- function(pre,ver) {
     if (is.character(ver)) {
       tmp <- vector()
-      if (grepl(";",ver,fixed=TRUE)) {
-        ver <- unlist(strsplit(ver,";",fixed=TRUE))
+      if (length(ver)==1) {
+        if (grepl(";",ver,fixed=TRUE)) {
+          ver <- unlist(strsplit(ver,";",fixed=TRUE))
+        }
       }
       for (i in 1:length(ver)) {
         if (grepl("[[:digit:]]",ver[i]) & grepl("[[:alpha:]]",ver[i])) {
@@ -197,11 +199,10 @@ getMetadata <- function(x, type=NULL) {
             if (as.character(names(pre)[j])==as.character(names(tmp)[i])) {
               dbl[k] <- i
               k <- k+1
-              if (as.package_version(tmp[i]) > as.package_version(pre[j])) {
-                pre[j] <- tmp[i]
-              }else if (as.package_version(tmp[i]) < as.package_version(pre[j])) {
+              if (as.package_version(tmp[i]) < as.package_version(pre[j])) {
                 warning(paste("The provided version",tmp[i],"for the",names(tmp[i]),"package is behind the previously used version (",pre[j],")"))
               }
+              pre[j] <- tmp[i]
             }
           }
         }
