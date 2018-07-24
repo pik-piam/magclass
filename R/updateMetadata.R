@@ -130,7 +130,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   #Function buildTree constructs the calcHistory data tree 
   buildTree <- function(x,y=NULL,n,cH){
-    if (length(sys.calls()) < n)  return(NULL)
+    if (length(sys.calls()) < n)  cH <- "merge"
     if (cH=="update"){
       rootNode <- newCall(n)
       if (is.null(y)){
@@ -198,7 +198,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     return(x)
   }
   
-  #Function runs recursively for each magpie object in y
+  #Run updateMetadata recursively for each magpie object in y
   if (is.list(y)){
     for (i in 1:(length(y)-1)){
       if (is.magpie(y[[i]])){

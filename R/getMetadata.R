@@ -147,8 +147,10 @@ getMetadata <- function(x, type=NULL) {
       else if (data.tree::isLeaf(new) & is.null(new$children)) {
         if (is(old,"Node")){
           #root node is set to ROOT when calcHistory is merged in updateMetadata, so it shall be replaced by value
-          if (old$name=="ROOT")  old$name <- new$name
-          else {
+          if (old$name=="ROOT") {
+            old$name <- new$name
+            return(old)
+          }else {
             c <- data.tree::Clone(old)
             new$AddChildNode(c)
           }
@@ -159,8 +161,10 @@ getMetadata <- function(x, type=NULL) {
       if (length(new)==1){
         if (is.null(old))  return(data.tree::Node$new(new))
         if (is(old,"Node")){
-          if (old$name=="ROOT")  old$name <- new
-          else{
+          if (old$name=="ROOT") {
+            old$name <- new
+            return(old)
+          }else {
             c <- data.tree::Clone(old)
             new <- data.tree::Node$new(new)
             new$AddChildNode(c)
