@@ -47,9 +47,9 @@
 #' Possible arguments are "keep", "copy", "merge", clear", or a new note can be entered here as a character string. 
 #' By default, "keep" if no y argument, or "copy" if y is provided.
 #' @param version A named vector containing the name(s) and version number(s) of the software used. Possible 
-#' arguments are "keep" (default), "copy", "update", "clear", or a character vector (package names and numbers 
-#' can be provided as a named vector, in concatenated strings with a space separator, or in a single string with 
-#' a ';' between each package).
+#' arguments are "keep" (default), "copy", "merge", "clear", or a character vector (package names and numbers 
+#' can be provided as a named vector, in concatenated strings with a space separating name & number, or in a 
+#' single string with a ';' separating each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
@@ -87,12 +87,17 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       f <- as.character(sys.call(-n))[1]
       if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
       if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
+      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
+      if (grepl("::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,"::",fixed=TRUE))[2]
+      
       if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput"){
-        f <- deparse(sys.call(-n),width.cutoff = 500)
-        
+        f <- trimws(deparse(sys.call(-n),width.cutoff = 500))
         tmp <- unlist(strsplit(f,"(",fixed=TRUE))
         fname <- tmp[1]
-        tmp <- unlist(strsplit(tmp[2],")",fixed=TRUE))[1]
+        if (length(tmp[-1])>1) {
+          tmp[2] <- paste(tmp[-1],collapse="(")
+        }
+        tmp <- gsub(".{1}$","",tmp[2])
         args <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
         for(i in 1:length(args)){
@@ -102,27 +107,21 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
               tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
               args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
               fchanged <- TRUE
-            }else if(!grepl("\u0022",tmp[2])) {
-              if(grepl("[:alpha:]",tmp[2])) {
-                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-                if(length(tmp[2])>1)  tmp <- paste(tmp[2],collapse=", ")
-                args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
-                fchanged <- TRUE
-              }
-            }
-          }else if(!grepl("\u0022",args[i])) {
-            if(grepl("[:alpha:]",args[i])) {
-              tmp <- get(args[i],envir=parent.frame(n+1))
-              if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
-              args[i] <- paste0("\"",tmp,"\"")
+            }else if(!grepl("\u0022",tmp[2]) & grepl("[:alpha:]",tmp[2])) {
+              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+              if(length(tmp[2])>1)  tmp[2] <- paste(tmp[2],collapse=", ")
+              args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
               fchanged <- TRUE
             }
+          }else if(!grepl("\u0022",args[i]) & grepl("[:alpha:]",args[i])) {
+            tmp <- get(args[i],envir=parent.frame(n+1))
+            if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
+            args[i] <- paste0("\"",tmp,"\"")
+            fchanged <- TRUE
           }
         }
         if(fchanged==TRUE)  f <- paste0(fname,"(",paste(args,collapse=", "),")")
-        
       }
-      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
       if (convert==TRUE)  return(data.tree::Node$new(f))
       else  return(f)
     }else  stop("n argument is out of range! calcHistory cannot be updated!")
@@ -199,10 +198,12 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }
   
   #Run updateMetadata recursively for each magpie object in y
-  if (is.list(y)){
-    for (i in 1:(length(y)-1)){
-      if (is.magpie(y[[i]])){
-        x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1)
+  if (is.list(y)) {
+    if (length(y) > 1) {
+      for (i in 1:(length(y)-1)) {
+        if (is.magpie(y[[i]])) {
+          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1)
+        }
       }
     }
     My <- getMetadata(y[[length(y)]])
