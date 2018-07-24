@@ -46,9 +46,10 @@
 #' @param note A string or list of strings for attaching notes (e.g. instructions, warnings, etc.) to the data.
 #' Possible arguments are "keep", "copy", "merge", clear", or a new note can be entered here as a character string. 
 #' By default, "keep" if no y argument, or "copy" if y is provided.
-#' @param version A named vector containing the version number(s) of the software used. Each element should 
-#' indicate the full version number (e.g. 1.49.0) and the name should indicate the software package (e.g. madrat). 
-#' Possible arguments are "keep" (default), "copy", "update", and "clear".
+#' @param version A named vector containing the name(s) and version number(s) of the software used. Possible 
+#' arguments are "keep" (default), "copy", "update", "clear", or a character vector (package names and numbers 
+#' can be provided as a named vector, in concatenated strings with a space separator, or in a single string with 
+#' a ';' between each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
@@ -60,8 +61,8 @@
 #' @importFrom methods getPackageName
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
-                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), 
-                           note=ifelse(is.null(y),"keep","copy"), version="keep", n=1) {
+                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
+                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1) {
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
@@ -129,6 +130,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   #Function buildTree constructs the calcHistory data tree 
   buildTree <- function(x,y=NULL,n,cH){
+    if (length(sys.calls()) < n)  cH <- "merge"
     if (cH=="update"){
       rootNode <- newCall(n)
       if (is.null(y)){
@@ -182,29 +184,35 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   #Function for merging metadata from 2 or more objects
   mergeFields <- function(x,y) {
-    if (is.character(x)){
-      if (is.character(y))  x <- list(x,y)
-      else if (is.list(y))  x <- append(list(x),y)
-    }else if (is.list(x)){
-      if (is.character(y))  x <- append(x,list(y))
-      else if (is.list(y))  x <- append(x,y)
-    }else if (is.character(y) | is.list(y))  x <- y
+    if (!is.null(x)) {
+      if (!is.null(y)) {
+        if(!is.list(x)) {
+          if (is.list(y))  x <- append(list(x),y)
+          else  x <- list(x,y)
+        }else {
+          if (is.list(y))  x <- append(x,y)
+          else  x <- append(x,list(y))
+        }
+      }
+    }else if (!is.null(y))  return(y)
     return(x)
   }
   
-  Mx <- getMetadata(x)
-  #Recursive function to merge metadata from a list of magpie objects.
+  #Run updateMetadata recursively for each magpie object in y
   if (is.list(y)){
-    My <- list()
-    for (i in 1:length(y)){
+    for (i in 1:(length(y)-1)){
       if (is.magpie(y[[i]])){
-        My[[i]] <- getMetadata(y[[i]])
-      }else  stop("All list components of y must be magpie objects!")
+        x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1)
+      }
     }
-  }else if (!is.null(y) & !is.magpie(y)){
+    My <- getMetadata(y[[length(y)]])
+  }else if (is.magpie(y)) {
+    My <- getMetadata(y)
+  }else if (!is.null(y)){
     y <- NULL
     warning("y argument must be a magpie object or a list of magpie objects!")
-  }else  My <- getMetadata(y)
+  }
+  Mx <- getMetadata(x)
   
   if (is.null(unit))  unit <- "keep"
   if (unit=="copy"){
@@ -225,9 +233,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     Mx$source <- source
   }else if (source=="merge"){
     if (!is.null(y)){
-      if (!is.null(My$source)){
-        Mx$source <- My$source
-      }
+      Mx$source <- mergeFields(Mx$source,My$source)
     }else  warning("Source cannot be merged without a second magpie argument provided!")
   }else if (source=="copy"){
     if (!is.null(y)){
@@ -302,7 +308,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (description=="update") {
     warning("Update is an invalid argument for description! Please specify keep, copy, merge, or clear.")
   }else if (description=="merge"){
-    if (!is.null(y))  mergeFields(Mx$description,My$description)
+    if (!is.null(y))  Mx$description <- mergeFields(Mx$description,My$description)
     else  warning("description cannot be merged without a second magpie argument provided!")
   }else if (description!="keep"){
     if (is.character(description))  Mx$description <- description
@@ -318,7 +324,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (note=="clear") {
     Mx$note <- NULL
   }else if (note=="merge"){
-    if (!is.null(y))  mergeFields(Mx$note,My$note)
+    if (!is.null(y))  Mx$note <- mergeFields(Mx$note,My$note)
     else  warning("note cannot be merged without a second magpie argument provided!")
   }else if (note=="update") {
     warning("Update is an invalid argument for note! Please specify keep, copy, merge, or clear.")
@@ -337,7 +343,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (version=="clear") {
     Mx$version <- NULL
   }else if (version=="merge") {
-    warning("merge is an invalid argument for version!")
+    Mx$version <- My$version
   }else if (version=="update") {
     warning("update is an invalid argument for version!")
   }else if (version!="keep") {

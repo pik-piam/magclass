@@ -181,7 +181,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
             i <- i+1
             #isolate the metadata field names
             tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
-            field[i] <- trimws(unlist(strsplit(tmp2,": ",fixed=TRUE))[1])
+            field[i] <- trimws(unlist(strsplit(tmp2,":",fixed=TRUE))[1])
             #calcHistory must be reconstructed from a character to a Node object
             if(field[i]=="calcHistory"){
               tmp <- readLines(zz,1)
