@@ -229,12 +229,20 @@ getMetadata <- function(x, type=NULL) {
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
       #unit
-      if (!is.null(value$unit)){
-        if (length(value$unit)>1){
-          warning(value$unit," is an invalid argument for unit")
-          #Default unit 1 indicates unitless or "no units specified"
-          M$unit <- "1"
-        }else  M$unit <- value$unit
+      if (!is.null(value$unit)) {
+        if (length(value$unit)>1) {
+          if (length(unique(value$unit))==1) {
+            M$unit <- unique(value$unit)
+          }else {
+            M$unit <- "mixed"
+          }
+        }else if (is.character(value$unit) | is(value$unit,"units")) {
+          M$unit <- value$unit
+        }else {
+          warning(value$unit,"is an invalid entry for unit")
+          M$unit <- '1'
+        }
+      #Default unit '1' indicates unitless or "no units specified"
       }else  M$unit <- "1"
       #source
       if (!is.null(value$source)){
@@ -285,9 +293,20 @@ getMetadata <- function(x, type=NULL) {
     }
     #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
-    if ((is.character(value) & length(value)==1) | is(value,"units"))  M[[type]] <- value
-    else if (is.null(value))  M$unit <- '1'
-    else  warning(value," is an invalid argument for unit!")
+    if (is.null(value)) {
+      M$unit <- '1'
+    }else if (length(value)>1) {
+      if (length(unique(value))==1) {
+        M$unit <- unique(value)
+      }else {
+        M$unit <- "mixed"
+      }
+    }else if (is.character(value) | is(value,"units")) {
+      M[[type]] <- value
+    }else {
+      warning(value," is an invalid argument for unit!")
+      M[[type]] <- '1'
+    }
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
     else  M[[type]] <- .setSource(M$source,value)

@@ -222,11 +222,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit=="clear") {
     Mx$unit <- NULL
   }else if (unit=="update"){
-    if (!is.null(getMetadata(x,"unit"))){
-      if (is.null(Mx$unit))  Mx$unit <- "1"
-      if (is.null(My$unit))  My$unit <- "1"
-      if (Mx$unit!=My$unit)  Mx$unit <- "mixed"
-    }else  Mx$unit <- My$unit
+    Mx$unit <- c(Mx$unit,My$unit)
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
