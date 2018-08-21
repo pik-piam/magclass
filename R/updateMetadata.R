@@ -216,7 +216,9 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   Mx <- getMetadata(x)
   
   if (is.null(unit))  unit <- "keep"
-  if (unit=="copy"){
+  if (is(unit,"units")) {
+    Mx$unit <- unit
+  }else if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear") {
