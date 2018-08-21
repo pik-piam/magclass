@@ -67,6 +67,8 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 #' @importFrom utils toBibtex
+#' @importFrom units as_units install_symbolic_unit
+#' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
   if(!is.magpie(x)){
@@ -220,6 +222,25 @@ getMetadata <- function(x, type=NULL) {
     }
   }
   
+  conv2unit <- function(x) {
+    if (is.null(x)) {
+      return(as_units(1))
+    }else if (length(x)>1) {
+      if (length(unique(x)==1)) {
+        x <- unique(x)
+      } else {
+        x <- "mixed" #mixed_units()
+      }
+    }
+    if (is(x,"units") | as.character(x)=="mixed") {
+      return(x)
+    }else if (!ud.is.parseable(x)) {
+      x <- gsub(" ","_",as.character(x))
+      install_symbolic_unit(x) #,dimensionless=FALSE)
+    }
+    return(as_units(x))
+  }
+  
   #initialize existing metadata
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
@@ -229,13 +250,7 @@ getMetadata <- function(x, type=NULL) {
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
       #unit
-      if (!is.null(value$unit)){
-        if (length(value$unit)>1){
-          warning(value$unit," is an invalid argument for unit")
-          #Default unit 1 indicates unitless or "no units specified"
-          M$unit <- "1"
-        }else  M$unit <- value$unit
-      }else  M$unit <- "1"
+      M$unit <- conv2unit(value$unit)
       #source
       if (!is.null(value$source)){
         M$source <- .setSource(M$source,value$source)
@@ -285,9 +300,7 @@ getMetadata <- function(x, type=NULL) {
     }
     #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
-    if ((is.character(value) & length(value)==1) | is(value,"units"))  M[[type]] <- value
-    else if (is.null(value))  M$unit <- '1'
-    else  warning(value," is an invalid argument for unit!")
+    M$unit <- conv2unit(value)
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
     else  M[[type]] <- .setSource(M$source,value)

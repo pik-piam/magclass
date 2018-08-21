@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.87.5
-Date: 2018-07-24
+Version: 4.88.0
+Date: 2018-08-21
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -32,7 +32,9 @@ Imports:
     maptools,
     abind,
     ncdf4,
-    reshape2
+    reshape2,
+    units,
+    udunits2
 Suggests: 
     testthat,
     knitr,
@@ -42,7 +44,7 @@ URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.115858
 BugReports: https://github.com/pik-piam/magclass/issues
 License: LGPL-3 | file LICENSE
 LazyData: true
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.0
 VignetteBuilder: knitr
-ValidationKey: 86463000
-
+ValidationKey: 86688320
