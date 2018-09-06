@@ -234,11 +234,19 @@ getMetadata <- function(x, type=NULL) {
     }
     if (is(x,"units") | as.character(x)=="mixed") {
       return(x)
-    }else if (!ud.is.parseable(x)) {
+    }else if (!is(try(as_units(x),silent=TRUE),"units")) {
       x <- gsub(" ","_",as.character(x))
-      install_symbolic_unit(x) #,dimensionless=FALSE)
+      if (grepl("/",x)) {
+        x <- unlist(strsplit(x,"/"))
+        out <- as_units(install_magpie_units(x[1]))
+        units(out)$denominator <- units(install_magpie_units(x[2]))$numerator
+        return(out)
+      }else {
+        return(install_magpie_units(x))
+      }
+    }else {
+      return(as_units(x))
     }
-    return(as_units(x))
   }
   
   #initialize existing metadata

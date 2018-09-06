@@ -14,7 +14,6 @@
 #' where the data was originally reported. Specifically, the authors,
 #' publication date, article title, journal 
 #' 
-#' @aliases updateMetadata
 #' @param x MAgPIE object to be updated
 #' @param y MAgPIE object to copy Metadata from (optional)
 #' @param unit An object of type units indicating the units of measure of the MAgPIE data. 
