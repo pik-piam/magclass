@@ -114,7 +114,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
                   }
                 }
               }
-              if (j==length(args))  break
+              if (j>=length(args))  break
               else  j <- j+1
               args[i] <- paste0(args[i],",",args[j])
               args <- args[-j]
