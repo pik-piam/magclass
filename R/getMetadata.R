@@ -229,10 +229,10 @@ getMetadata <- function(x, type=NULL) {
       if (length(unique(x)==1)) {
         x <- unique(x)
       } else {
-        x <- "mixed" #mixed_units()
+        x <- "mixed" #mixed_units(1,x)
       }
     }
-    if (is(x,"units") | as.character(x)=="mixed") {
+    if (is(x,"units") | is(x,"mixed_units") | as.character(x)=="mixed") {
       return(x)
     }else if (!is(try(as_units(x),silent=TRUE),"units")) {
       x <- gsub(" ","_",as.character(x))

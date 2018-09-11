@@ -3,6 +3,9 @@
 #' This function is currently experimental and non-functional by default! To activate it,
 #' set withMetadata(TRUE).
 #' 
+#' Please install the development version of the R-units package. The remotes package is 
+#' a prerequisite for this - remotes::install_github("r-quantities/units")
+#' 
 #' The purpose of this function is to define common units used in MAgPIE and REMIND data
 #' for recognizability by the udunits2 and units packages which handle unit conversions 
 #' and compatibility checks for magpie objects.
@@ -24,7 +27,7 @@
 #' @seealso \code{\link{units.magpie}}, \code{\link[units]{install_symbolic_unit}}, 
 #' \code{\link[units]{install_conversion_constant}}
 #' @export
-#' @importFrom units install_symbolic_unit install_conversion_constant as_units
+#' @importFrom units install_symbolic_unit install_conversion_constant as_units mixed_units
 #' 
 install_magpie_units <- function(x=NULL) {
   if (!withMetadata()) return(x)
@@ -49,25 +52,51 @@ install_magpie_units <- function(x=NULL) {
         a <- paste0("_",a)
       }
     }
+    if (grepl("mio",a,ignore.case=TRUE)) {
+      a <- gsub("mio","M",a,ignore.case=TRUE)
+    }
+    if (grepl("million",a,ignore.case=TRUE)) {
+      a <- gsub("million","M",a,ignore.case=TRUE)
+    }
+    if (grepl("thousand",a,ignore.case=TRUE)) {
+      a <- gsub("thousand","k",a,ignore.case=TRUE)
+    }
+    if (grepl(" per ",a,ignore.case=TRUE)) {
+      a <- gsub(" per ","/",a,ignore.case=TRUE,fixed=TRUE)
+    }
+    if (grepl("capita",a,ignore.case=TRUE)) {
+      a <- gsub("capita","person",a,ignore.case=TRUE)
+    }
+    if (grepl(" dry matter",a,ignore.case=TRUE)) {
+      a <- gsub(" dry matter","DM",a,ignore.case=TRUE)
+    }
+    if (a=="-" | a=="ratio" | a=="" | a==" ") {
+      a <- 1
+    }
+    if (grepl(",",a,fixed=TRUE)) {
+      a <- trimws(unlist(strsplit(a,",")))
+      return(mixed_units(1,a))
+    }
     a <- gsub("_"," ",a)
     a <- gsub("[[:punct:]]","",a)
     a <- gsub(" ","_",a)
     if (!is.installed(a)) {
-      install_symbolic_unit(a) #,dimensionless=FALSE)
+      install_symbolic_unit(a,dimensionless=FALSE)
     }
     return(as_units(a))
   }
-  
-  if (is.null(x)) {
-    if (!(is.installed("tDM") & is.installed("tCO2eq") & is.installed("million_people"))) {
-      install_symbolic_unit("tDM",dimensionless = FALSE)                #tonnes of dry matter
-      install_symbolic_unit("people")                                   
-      install_conversion_constant("people","million_people",1e6)        #population metric, million people
-      install_conversion_constant("tC","tonne",1)                       #tonnes of carbon
-      install_conversion_constant("tC","tCO2eq",3.67)                   #tonnes of CO2 equivalent
-      install_symbolic_unit("USD")                                      #US Dollars
-    }
-  }else if (is.magpie(x)) {
+
+  if (!(is.installed("tDM") & is.installed("tCO2e") & is.installed("million_people"))) {
+    install_symbolic_unit("tDM",dimensionless = FALSE)                #tonnes of dry matter
+    install_symbolic_unit("people",dimensionless=FALSE)                                   
+    install_conversion_constant("people","million_people",1e6)        #population metric, million people
+    install_symbolic_unit("tC",dimensionless=FALSE)                   #tonnes of carbon
+    install_conversion_constant("tC","tCO2e",3.67)                    #tonnes of CO2 equivalent
+    install_symbolic_unit("USD",dimensionless=FALSE)                  #US Dollars
+    install_symbolic_unit("share",dimensionless=FALSE)                #Share
+    
+  }
+  if (is.magpie(x)) {
     u <- units(x)
     if (is.null(u)) {
       getMetadata(x,"unit") <- as_units(1)
