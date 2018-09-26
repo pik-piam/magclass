@@ -119,9 +119,14 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
               args[i] <- paste0(args[i],",",args[j])
               args <- args[-j]
             }
-            args[i] <- gsub("\"","\\\"",args[i])
-            args[i] <- eval(parse(text=args[i]),envir=parent.frame(n+1))
-            args[i] <- paste0("\"",args[i],"\"")
+            if (grepl("=",args[i],fixed=TRUE)) {
+              tmp <- unlist(strsplit(args[i],"=",fixed=TRUE))
+              tmp[2] <- eval.parent(parse(text=tmp[2]),n=n+1)
+              args[i] <- paste0(tmp[1],"= \"",tmp[2],"\"")
+            }else {
+              args[i] <- eval.parent(parse(text=args[i]),n=n+1)
+              args[i] <- paste0("\"",args[i],"\"")
+            }
             fchanged <- TRUE
           }
           if(grepl("=",args[i],fixed=TRUE)) {
