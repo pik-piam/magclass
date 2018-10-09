@@ -3,3 +3,7 @@
 language: R
 sudo: false
 cache: packages
+
+before_install:
+   - sudo apt-get install netcdf-bin
+   - sudo apt-get install libnetcdf-dev
