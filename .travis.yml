@@ -7,3 +7,6 @@ cache: packages
 before_install:
    - sudo apt-get install netcdf-bin
    - sudo apt-get install libnetcdf-dev
+   
+r_build_args: --no-build-vignettes --no-manual
+r_check_args: --no-build-vignettes --no-manual
