@@ -65,6 +65,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(allow_mixed=TRUE)
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
@@ -100,23 +101,55 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         args <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
         for(i in 1:length(args)){
+          if (grepl("(",args[i],fixed=TRUE)) {
+            j <- i
+            while (!grepl(")",args[j],fixed=TRUE)) {
+              if (grepl("(",args[j],fixed=TRUE)) {
+                if (j>i | length(regmatches(args[j],gregexpr("(",args[j],fixed=TRUE)))>1) {
+                  while (!grepl(")",args[j],fixed=TRUE)) {
+                    args[i] <- paste0(args[i],",",args[j])
+                    args <- args[-j]
+                    if (j==length(args))  break
+                    else  j <- j+1
+                  }
+                }
+              }
+              if (j>=length(args))  break
+              else  j <- j+1
+              args[i] <- paste0(args[i],",",args[j])
+              args <- args[-j]
+            }
+            if (grepl("=",args[i],fixed=TRUE)) {
+              tmp <- unlist(strsplit(args[i],"=",fixed=TRUE))
+              tmp[2] <- eval.parent(parse(text=tmp[2]),n=n+1)
+              args[i] <- paste0(tmp[1],"= \"",tmp[2],"\"")
+            }else {
+              args[i] <- eval.parent(parse(text=args[i]),n=n+1)
+              args[i] <- paste0("\"",args[i],"\"")
+            }
+            fchanged <- TRUE
+          }
           if(grepl("=",args[i],fixed=TRUE)) {
             tmp <- trimws(unlist(strsplit(args[i],"=",fixed=TRUE)))
             if(tmp[1]==tmp[2]) {
               tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
               args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
               fchanged <- TRUE
-            }else if(!grepl("\u0022",tmp[2]) & grepl("[:alpha:]",tmp[2])) {
-              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-              if(length(tmp[2])>1)  tmp[2] <- paste(tmp[2],collapse=", ")
-              args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+            }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
+              if (!any(tmp[2]==c("T","F","TRUE","FALSE"))) {
+                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+                if(length(tmp[2])>1)  tmp[2] <- paste(tmp[2],collapse=", ")
+                args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+                fchanged <- TRUE
+              }
+            }
+          }else if(!grepl("\u0022",args[i]) & grepl("[[:alpha:]]",args[i])) {
+            if (!any(args[i]==c("T","F","TRUE","FALSE"))) {
+              tmp <- get(args[i],envir=parent.frame(n+1))
+              if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
+              args[i] <- paste0("\"",tmp,"\"")
               fchanged <- TRUE
             }
-          }else if(!grepl("\u0022",args[i]) & grepl("[:alpha:]",args[i])) {
-            tmp <- get(args[i],envir=parent.frame(n+1))
-            if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
-            args[i] <- paste0("\"",tmp,"\"")
-            fchanged <- TRUE
           }
         }
         if(fchanged==TRUE)  f <- paste0(fname,"(",paste(args,collapse=", "),")")
@@ -215,7 +248,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   Mx <- getMetadata(x)
   
   if (is.null(unit))  unit <- "keep"
-  if (is(unit,"units")) {
+  if (is(unit,"units") | is(unit,"mixed_units")) {
     Mx$unit <- unit
   }else if (unit=="copy"){
     if (!is.null(y))  Mx$unit <- My$unit
@@ -223,11 +256,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit=="clear") {
     Mx$unit <- NULL
   }else if (unit=="update"){
-    if (!is.null(getMetadata(x,"unit"))){
-      if (is.null(Mx$unit))  Mx$unit <- "1"
-      if (is.null(My$unit))  My$unit <- "1"
-      if (Mx$unit!=My$unit)  Mx$unit <- "mixed"
-    }else  Mx$unit <- My$unit
+    Mx$unit <- c(Mx$unit,My$unit)
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"

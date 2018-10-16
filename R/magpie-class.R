@@ -13,7 +13,7 @@
 #' as.magpie,numeric-method as.magpie,NULL-method as.magpie,quitte-method
 #' as.magpie,tbl_df-method
 #' is.magpie [,magpie-method [,magpie,ANY,ANY-method [<-,magpie,ANY,ANY-method
-#' [<-,magpie-method Ops,magpie,magpie-method
+#' [<-,magpie-method Ops,magpie,magpie-method Ops,magpie,numeric-method
 #' @docType class
 #' @param x An object that should be either tested or transformed as/to an
 #' MAgPIE-object.

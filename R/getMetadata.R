@@ -54,6 +54,7 @@
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(allow_mixed=TRUE)
   M <- attr(x, "Metadata")
   if(is.null(type)) {
     return(M)
@@ -67,7 +68,7 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 #' @importFrom utils toBibtex
-#' @importFrom units as_units install_symbolic_unit
+#' @importFrom units as_units
 #' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
@@ -226,27 +227,22 @@ getMetadata <- function(x, type=NULL) {
     if (is.null(x)) {
       return(as_units(1))
     }else if (length(x)>1) {
-      if (length(unique(x)==1)) {
+      if (length(unique(x))==1) {
         x <- unique(x)
       } else {
-        x <- "mixed" #mixed_units(1,x)
+        if (is(x,"mixed_units")) {
+          return(x)
+        }else {
+          for (i in 1:length(x)) {
+            x[i] <- install_magpie_units(x[i])
+          }
+          x <- mixed_units(1,x)
+        }
       }
+    }else if (!is(x,"units") & !is(x,"mixed_units")) {
+      x <- install_magpie_units(x)
     }
-    if (is(x,"units") | is(x,"mixed_units") | as.character(x)=="mixed") {
-      return(x)
-    }else if (!is(try(as_units(x),silent=TRUE),"units")) {
-      x <- gsub(" ","_",as.character(x))
-      if (grepl("/",x)) {
-        x <- unlist(strsplit(x,"/"))
-        out <- as_units(install_magpie_units(x[1]))
-        units(out)$denominator <- units(install_magpie_units(x[2]))$numerator
-        return(out)
-      }else {
-        return(install_magpie_units(x))
-      }
-    }else {
-      return(as_units(x))
-    }
+    return(x)
   }
   
   #initialize existing metadata
