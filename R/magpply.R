@@ -19,6 +19,7 @@
 #' magpply(fourdim,FUN=function(x){return(x+1)},MARGIN=c(1,3.1),integrate=TRUE)
 #' }
 #' 
+#' @export magpply
 
 magpply<-function(X,FUN,MARGIN,...,integrate=FALSE){
   if(any(MARGIN>3)){
