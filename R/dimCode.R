@@ -15,7 +15,7 @@
 #' represents the main dimensions (1=spatial, 2=temporal, 3=data) or a numeric,
 #' representing the subdimensions of a dimension (e.g. 3.2 for the second data
 #' dimension).
-#' @author Jan Philipp Dietrich
+#' @author Jan Philipp Dietrich, Kristine Karstens
 #' @seealso \code{\link{mselect}}, \code{\link{getDim}}
 #' @examples
 #' 
