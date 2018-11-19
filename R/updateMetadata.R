@@ -65,7 +65,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units_options(allow_mixed=TRUE)
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
@@ -81,7 +81,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       }else  fn$AddChildNode(xc)
     }else  return(xc)
   }
-  #Function newCall creates the appropriate call to be displayed for the new root
+  #Function newCall creates the appropriate function call to be displayed for the new root
   newCall <- function(n,convert=TRUE){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
       f <- as.character(sys.call(-n))[1]

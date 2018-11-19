@@ -5,7 +5,7 @@
 setMethod(Ops, signature(e1='magpie',e2='magpie'),
           function(e1, e2){
             if (withMetadata()) {
-              units_options(allow_mixed=TRUE)
+              units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
               e1 <- install_magpie_units(e1)
               u1 <- units(e1)
               e2 <- install_magpie_units(e2)
