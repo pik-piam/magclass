@@ -53,7 +53,8 @@
 #' @export
 
 getMetadata <- function(x, type=NULL) {
-  if(!withMetadata()) return(NULL)
+  if(!withMetadata())  return(NULL)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   M <- attr(x, "Metadata")
@@ -73,6 +74,7 @@ getMetadata <- function(x, type=NULL) {
 #' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if(!is.magpie(x)){
     warning("x argument must be a magpie object!")
     return(x)

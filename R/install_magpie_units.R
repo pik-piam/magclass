@@ -46,104 +46,111 @@ install_magpie_units <- function(x=NULL) {
       z <- gsub("bn._","billion_",z,ignore.case=TRUE)
       z <- gsub("bn_","billion_",z,ignore.case=TRUE)
     }
-      if (grepl("_",z,fixed=TRUE)) {
-        prefix <- unlist(strsplit(z,"_"))[1]
-        prefix <- paste0(prefix,"_")
+    if (grepl("_",z,fixed=TRUE)) {
+      prefix <- unlist(strsplit(z,"_"))[1]
+      prefix <- paste0(prefix,"_")
+    }else {
+      prefix <- ""
+    }
+    if (grepl("million_",prefix,ignore.case=TRUE) | grepl("billion_",prefix,ignore.case=TRUE) |
+        grepl("trillion_",prefix,ignore.case=TRUE) | grepl("quadrillion_",prefix,ignore.case=TRUE) |
+        grepl("thousand_",prefix,ignore.case=TRUE) | grepl("hundred_",prefix,ignore.case=TRUE)) {
+      z <- gsub(prefix,"",z)
+    }else {
+      prefix <- ""
+    }
+    suffix <- ""
+    if (grepl("US$",z,fixed=TRUE) | grepl("$",z,fixed=TRUE) | grepl("dollar",z,ignore.case=TRUE)) {
+      z <- gsub("US_","",z,fixed=TRUE)
+      z <- gsub("U.S._","",z,fixed=TRUE)
+      z <- gsub("U.S.","",z,fixed=TRUE)
+      z <- gsub("US","",z,fixed=TRUE)
+      if (grepl("\\d",z)) {
+        z <- gsub("$","",z,fixed=TRUE)
+        z <- gsub("dollars","",z,ignore.case=TRUE)
+        z <- gsub("dollar","",z,ignore.case=TRUE)
+        if (length(grep("\\d",unlist(strsplit(z,""))))==4) {
+          z <- paste0("USD",substr(gsub("\\D","",z),3,4),"_")
+        }else if (length(grep("\\d",unlist(strsplit(z,""))))==2) {
+          z <- paste0("USD",gsub("\\D","",z),"_")
+        }
       }else {
-        prefix <- ""
+        z <- gsub("$","USD",z,fixed=TRUE)
+        z <- gsub("dollars","USD",z,ignore.case=TRUE)
+        z <- gsub("dollar","USD",z,ignore.case=TRUE)
       }
-      if (grepl("million_",prefix,ignore.case=TRUE) | grepl("billion_",prefix,ignore.case=TRUE) |
-          grepl("trillion_",prefix,ignore.case=TRUE) | grepl("quadrillion_",prefix,ignore.case=TRUE) |
-          grepl("thousand_",prefix,ignore.case=TRUE) | grepl("hundred_",prefix,ignore.case=TRUE)) {
-        z <- gsub(prefix,"",z)
+    }
+    if (grepl("\\d$",z)) {
+      if (grepl("^",z,fixed=TRUE)) {
+        z <- unlist(strsplit(z,"^",fixed=TRUE))
+        suffix <- paste0("^",z[2])
+        z <- z[1]
+      }else if (is.installed(gsub("\\d*$","",z))) {
+        suffix <- unlist(regmatches(z,gregexpr("\\d*$",z)))
+        z <- gsub("\\d*$","",z)
       }else {
-        prefix <- ""
+        z <- paste0(z,"_")
       }
-      suffix <- ""
-      if (grepl("US$",z,fixed=TRUE) | grepl("$",z,fixed=TRUE) | grepl("dollar",z,ignore.case=TRUE)) {
-        z <- gsub("US_","",z,fixed=TRUE)
-        z <- gsub("U.S._","",z,fixed=TRUE)
-        z <- gsub("U.S.","",z,fixed=TRUE)
-        z <- gsub("US","",z,fixed=TRUE)
-        if (grepl("\\d",z)) {
-          z <- gsub("$","",z,fixed=TRUE)
-          z <- gsub("dollars","",z,ignore.case=TRUE)
-          z <- gsub("dollar","",z,ignore.case=TRUE)
-          z <- paste0(gsub("\\d","",z),"y",gsub("\\D","",z),"_USD")
-        }else {
-          z <- gsub("$","USD",z,fixed=TRUE)
-          z <- gsub("dollars","USD",z,ignore.case=TRUE)
-          z <- gsub("dollar","USD",z,ignore.case=TRUE)        
-        }
+    }
+    if (grepl("1e",substr(z,1,2),ignore.case=TRUE)) {
+      if (grepl("*",z,fixed=TRUE)) {
+        z <- unlist(strsplit(z,"*",fixed=TRUE))
+        prefix <- z[1]
+        z <- z[2]
+      }else {
+        z <- gsub("1e","",z,ignore.case=TRUE)
+        prefix <- paste0("1e",unlist(strsplit(z,"\\D"))[1])
+        z <- gsub("^\\d*","",z)
       }
-      if (grepl("\\d$",z)) {
-        if (grepl("^",z,fixed=TRUE)) {
-          z <- unlist(strsplit(z,"^",fixed=TRUE))
-          suffix <- paste0("^",z[2])
-          z <- z[1]
-        }else if (is.installed(gsub("\\d*$","",z))) {
-          suffix <- unlist(regmatches(z,gregexpr("\\d*$",z)))
-          z <- gsub("\\d*$","",z)
-        }else {
-          z <- paste0(z,"_")
-        }
+    }else if (grepl("^\\d",z)) {
+      if (is.installed(gsub("^\\d*","",z))) {
+        prefix <- unlist(regmatches(z,gregexpr("^\\d*",z)))
+        z <- gsub("^\\d*","",z)
+      }else {
+        z <- paste0("_",z)
       }
-      if (grepl("1e",substr(z,1,2),ignore.case=TRUE)) {
-        if (grepl("*",z,fixed=TRUE)) {
-          z <- unlist(strsplit(z,"*",fixed=TRUE))
-          prefix <- z[1]
-          z <- paste0(z[-1],collapse="*")
-        }else {
-          z <- gsub("1e","",z,ignore.case=TRUE)
-          prefix <- paste0("1e",unlist(strsplit(z,"\\D"))[1])
-          z <- gsub("^\\d*","",z)
-        }
-      }else if (grepl("^\\d",z)) {
-        if (is.installed(gsub("^\\d*","",z))) {
-          prefix <- unlist(regmatches(z,gregexpr("^\\d*",z)))
-          z <- gsub("^\\d*","",z)
-        }else {
-          z <- paste0("_",z)
-        }
-      }
-      if (grepl("dry_matter",z,ignore.case=TRUE)) {
-        if (grepl("DM",z,ignore.case=TRUE)) {
-          z <- gsub("dry_matter","",z,ignore.case=TRUE)
-        }else {
-          z <- gsub("dry_matter","DM",z,ignore.case=TRUE)
-        }
-      }
-      if (z=="-" | z=="ratio" | z=="" | z==" " | z=="factor" | z=="dimensionless" | z=="unitless" | z=="none" | z=="unit") {
-        z <- 1
-      }
-      if (grepl("%",z,fixed=TRUE)) {
-        z <- gsub("_%_","_percent_",z,fixed=TRUE)
-        z <- gsub("%_","percent_",z,fixed=TRUE)
-        z <- gsub("_%","_percent",z,fixed=TRUE)
-        z <- gsub("%","percent_",z,fixed=TRUE)
-      }
+    }
+    if (agrepl("ton_DM",z,ignore.case=TRUE) | agrepl("tons_of_dry_matter",z,max.distance=0.12,ignore.case=TRUE) | agrepl("tonne_DM",z,ignore.case=TRUE) 
+        | agrepl("tons_of_DM",z,ignore.case=TRUE) | agrepl("tonnes_of_DM",z,ignore.case=TRUE)) {
+      z <- "tDM"
+    }
+    if (agrepl("ton_WM",z,ignore.case=TRUE) | agrepl("tons_of_wet_matter",z,max.distance=0.12,ignore.case=TRUE) | agrepl("tonne_WM",z,ignore.case=TRUE) 
+        | agrepl("tons_of_WM",z,ignore.case=TRUE) | agrepl("tonnes_of_WM",z,ignore.case=TRUE)) {
+      z <- "tDM"
+    }
+    if (z=="-" | z=="ratio" | z=="" | z==" " | z=="factor" | z=="dimensionless" | z=="unitless" | z=="none" | z=="unit") {
+      z <- 1
+    }
+    if (grepl("%",z,fixed=TRUE)) {
+      z <- gsub("_%_","_percent_",z,fixed=TRUE)
+      z <- gsub("%_","percent_",z,fixed=TRUE)
+      z <- gsub("_%","_percent",z,fixed=TRUE)
+      z <- gsub("%","percent_",z,fixed=TRUE)
+    }
+    if (grepl("([.|()\\{}+$?:]|\\[|\\])",z)) {
       z <- gsub("([.|()\\{}+$?:]|\\[|\\])","",z)
-
-      if (prefix!="") {
-        if (!is.installed(z)) {
-          if (!is.installed(remove_spaces(z))) {
-            install_symbolic_unit(z,dimensionless=FALSE)
-          }else {
-            z <- remove_spaces(z)
-          }
-        }
-        if (!is.installed(paste0(prefix,z))) {
-          if (grepl("million_",prefix,ignore.case=TRUE))  prefix <- "1e6"
-          if (grepl("billion_",prefix,ignore.case=TRUE))  prefix <- "1e9"
-          if (grepl("trillion_",prefix,ignore.case=TRUE))  prefix <- "1e12"
-          if (grepl("quadrillion_",prefix,ignore.case=TRUE))  prefix <- "1e15"
-          if (grepl("quintillion_",prefix,ignore.case=TRUE))  prefix <- "1e18"
-          if (grepl("thousand_",prefix,ignore.case=TRUE))  prefix <- "1e3"
-          if (grepl("hundred_",prefix,ignore.case=TRUE))  prefix <- "1e2"
+      warning(paste("unit entry",z,"contained invalid characters which have been removed"))
+    }
+    if (prefix!="") {
+      if (!is.installed(z)) {
+        if (!is.installed(remove_spaces(z))) {
+          install_symbolic_unit(z,dimensionless=FALSE)
+        }else {
+          z <- remove_spaces(z)
         }
       }
-      z <- paste0(prefix,z,suffix)
-      return(z)
+      if (!is.installed(paste0(prefix,z))) {
+        if (grepl("million_",prefix,ignore.case=TRUE))  prefix <- "1e6"
+        if (grepl("billion_",prefix,ignore.case=TRUE))  prefix <- "1e9"
+        if (grepl("trillion_",prefix,ignore.case=TRUE))  prefix <- "1e12"
+        if (grepl("quadrillion_",prefix,ignore.case=TRUE))  prefix <- "1e15"
+        if (grepl("quintillion_",prefix,ignore.case=TRUE))  prefix <- "1e18"
+        if (grepl("thousand_",prefix,ignore.case=TRUE))  prefix <- "1e3"
+        if (grepl("hundred_",prefix,ignore.case=TRUE))  prefix <- "1e2"
+      }
+    }
+    z <- paste0(prefix,z,suffix)
+    return(z)
   }
   
   remove_spaces <- function(v) {
@@ -190,7 +197,9 @@ install_magpie_units <- function(x=NULL) {
           w[ii] <- paste0(w[ii],w[ii+1])
           w <- w[-(ii+1)]
         }
-        if (!is.installed(w[ii])) {
+        if (is.na(w[ii])) {
+          w <- w[-(ii)]
+        }else if (!is.installed(w[ii])) {
           if (is.installed(remove_spaces(w[ii]))) {
             w[ii] <- remove_spaces(w[ii])
           }else {
@@ -204,6 +213,7 @@ install_magpie_units <- function(x=NULL) {
             }
           }
         }
+        
       }
       return(paste0(w,collapse="*"))
     }else {
@@ -270,8 +280,7 @@ install_magpie_units <- function(x=NULL) {
   #Initialize some commonly used units in MAGPIE and REMIND
   if (!is.installed("tDM") & !is.installed("tCO2eq") & !is.installed("people")) {
     install_symbolic_unit("tDM",dimensionless = FALSE)                #tonnes of dry matter
-    install_conversion_constant("tDM","ton_dm",1)
-    install_conversion_constant("tDM","tons_dm",1)
+    install_symbolic_unit("tWM",dimensionless = FALSE)                #tonnes of wet matter
     install_symbolic_unit("people",dimensionless=FALSE)               
     install_conversion_constant("people","person",1)
     install_conversion_constant("people","capita",1)
@@ -285,10 +294,8 @@ install_magpie_units <- function(x=NULL) {
     install_conversion_constant("tN","tNH3_",17/14)                   #tonnes of NH3
     install_conversion_constant("tCH4_","tCO2eq",36)                  #tonnes of methane
     install_symbolic_unit("USD",dimensionless=FALSE)                  #US Dollars in 2018
-    install_conversion_constant("y1995_USD","USD",1.6564)
-    install_conversion_constant("y2005_USD","USD",1.2926)
-    install_conversion_constant("y2005_USD","y05_USD",1)
-    install_conversion_constant("y1995_USD","y95_USD",1)
+    install_conversion_constant("USD95_","USD",1.6564)
+    install_conversion_constant("USD05_","USD",1.2926)
     install_symbolic_unit("share",dimensionless=TRUE)                 #Share
     install_symbolic_unit("passengers",dimensionless=FALSE)           #passengers
     install_conversion_constant("pkm","passengers*km",1)              #passenger-kilometer pkm
