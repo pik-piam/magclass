@@ -53,6 +53,7 @@
 
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   M <- attr(x, "Metadata")
   if(is.null(type)) {
@@ -69,6 +70,7 @@ getMetadata <- function(x, type=NULL) {
 #' @importFrom utils toBibtex
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if(!is.magpie(x)){
     warning("x argument must be a magpie object!")
     return(x)
