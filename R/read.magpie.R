@@ -81,7 +81,7 @@
 #' will be treated and counted as a new region (e.g.
 #' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
 #' to 3!).
-#' @author Jan Philipp Dietrich, Stephen Bi
+#' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @examples
 #' 
@@ -412,6 +412,19 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(is.null(nc_file$dim$time$len)) nc_file$dim$time$len <- 1
       if(is.null(nc_file$dim$time$vals)) nc_file$dim$time$vals <- 1995
       
+      if(length(nc_file$groups) == 1) {
+        var_names <- names(nc_file$var)
+      } else {
+        var_names <- NULL
+        for (i in 1:nc_file$nvars) {
+          var_name <- nc_file$var[[i]]$longname
+          group_index <- nc_file$var[[i]]$group_index
+          group_name <- nc_file$groups[[group_index]]$fqgn
+          var_names <- c(var_names,paste(group_name,var_name,sep="/"))
+          var_names <- gsub("/",".",var_names)
+        }
+      }
+      
       #create a single array of all ncdf variables
       nc_data <- array(NA,dim=c(nc_file$dim$lon$len,nc_file$dim$lat$len,nc_file$dim$time$len,nc_file$nvars))
       for (i in 1:nc_file$nvars) {
@@ -426,7 +439,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       
       #reorder ncdf array into magpie cellular format (still as array)
       #create emtpy array in magpie cellular format
-      mag <- array(NA,dim=c(59199,nc_file$dim$time$len,nc_file$nvars),dimnames=list(paste(magclassdata$half_deg$region,1:59199,sep="."),paste("y",nc_file$dim$time$vals,sep=""),names(nc_file$var)))
+      mag <- array(NA,dim=c(59199,nc_file$dim$time$len,nc_file$nvars),dimnames=list(paste("GLO",1:59199,sep="."),paste("y",nc_file$dim$time$vals,sep=""),var_names))
       #Loop over cells to give mag values taken from nc_data. For each cell in mag, we know the exact coordinates (coord). Hence, we can use coord to map coordinates in nc_data to cells in mag.
       for (i in 1:ncells(mag)) {
         mag[i,,] <- nc_data[which(coord[i, 1]==lon), which(coord[i,2]==lat),,]
@@ -481,7 +494,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       #convert array to magpie object
-      read.magpie <- as.magpie(mag)
+      read.magpie <- clean_magpie(as.magpie(mag))
       getMetadata(read.magpie) <- metadata
       
     } else {

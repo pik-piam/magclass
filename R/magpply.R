@@ -28,6 +28,7 @@ magpply<-function(X,FUN,MARGIN,...,integrate=FALSE){
     }
     X<-unwrap(X)
   }
+  
   out<-apply(X = X,FUN = FUN,MARGIN=MARGIN)
   if(integrate==TRUE){
     X[,,]<-out

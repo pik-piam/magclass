@@ -8,7 +8,7 @@
 #' compression) and 9 (most compression), the netCDF file is written in netCDF
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
-#' @param comment Vector of comments. Comments are set as global attributes in the netcdf file. Comments have to have the format "indicator: comment" or " indicator:comment"
+#' @param comment Vector of comments (also used for setting the unit). Comments are set as global attributes in the netcdf file. Format of comments: "indicator: comment" (e.g. "unit: Share of land area per grid cell")
 #' @param verbose Boolean deciding about whether function should be verbose or not
 
 #' @return netcdf file. Writes one file per year per
