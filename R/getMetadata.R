@@ -231,18 +231,20 @@ getMetadata <- function(x, type=NULL) {
     if (is.null(x)) {
       return(as_units(1))
     }else if (length(x)>1) {
-      if (length(unique(x))==1) {
-        x <- unique(x)
-      } else {
-        if (is(x,"mixed_units")) {
-          return(x)
-        }else {
-          for (i in 1:length(x)) {
-            x[i] <- install_magpie_units(x[i])
-          }
-          x <- mixed_units(1,x)
-        }
-      }
+      x <- install_magpie_units("unknown")
+    #*****Mixed units handling in development*****  
+    #  if (length(unique(x))==1) {
+    #    x <- unique(x)
+    #  } else {
+    #    if (is(x,"mixed_units")) {
+    #      return(x)
+    #    }else {
+    #      for (i in 1:length(x)) {
+    #        x[i] <- install_magpie_units(x[i])
+    #      }
+    #      x <- mixed_units(1,x)
+    #    }
+    #  }
     }else if (!is(x,"units") & !is(x,"mixed_units")) {
       x <- install_magpie_units(x)
     }
