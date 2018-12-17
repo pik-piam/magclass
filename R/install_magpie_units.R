@@ -47,13 +47,21 @@ install_magpie_units <- function(x=NULL) {
       z <- gsub("bn_","billion_",z,ignore.case=TRUE)
     }
     if (grepl("1e",substr(z,1,2),ignore.case=TRUE)) {
+      if (grepl("+",z,fixed=TRUE)) {
+        z <- gsub("+","",z,fixed=TRUE)
+      }
       if (grepl("*",z,fixed=TRUE)) {
         z <- unlist(strsplit(z,"*",fixed=TRUE))
         prefix <- z[1]
         z <- z[2]
       }else {
         z <- gsub("1e","",z,ignore.case=TRUE)
-        prefix <- paste0("1e",unlist(strsplit(z,"\\D"))[1])
+        if (grepl("^-",z)) {
+          z <- gsub("^-","",z)
+          prefix <- paste0("1e-",unlist(strsplit(z,"\\D"))[1])
+        }else {
+          prefix <- paste0("1e",unlist(strsplit(z,"\\D"))[1])
+        }
         z <- gsub("^\\d*","",z)
       }
     }else {
@@ -115,7 +123,7 @@ install_magpie_units <- function(x=NULL) {
       }else if (tmp!="")  z <- tmp
     }
     if (grepl("^\\d",z)) {
-      if (is.installed(gsub("^\\d*","",z))) {
+      if (is.installed(gsub("^\\d*","",remove_spaces(z)))) {
         prefix[length(prefix)+1] <- unlist(regmatches(z,gregexpr("^\\d*",z)))
         z <- gsub("^\\d*","",z)
       }else {
@@ -180,10 +188,11 @@ install_magpie_units <- function(x=NULL) {
       z <- gsub("_%","_percent",z,fixed=TRUE)
       z <- gsub("%","percent_",z,fixed=TRUE)
     }
-    if (grepl("([.|()\\{}+$?:]|\\[|\\])",z)) {
-      z <- gsub("([.|()\\{}+$?:]|\\[|\\])","",z)
+    if (grepl("([.|#!@&~()\\{}+$?:]|\\[|\\])",z)) {
       warning("Unit entry \"",z,"\" contained invalid special characters which have now been removed. Please revise.")
+      z <- gsub("([.|#!@&~()\\{}+$?:]|\\[|\\])","",z)
     }
+    if (any(paste0(prefix,z)==c("","_","__","-")))  z <- "unknown"
     z <- prefix_check(prefix,paste0(z,suffix))
     return(z)
   }
@@ -304,7 +313,6 @@ install_magpie_units <- function(x=NULL) {
   
   input_unit <- function(a) {
     a <- gsub(" ","_",a)
-    a <- gsub("-","_",a)
     if (grepl("_or_",a,fixed=TRUE)) {
       a <- gsub("_or_",",",a,fixed=TRUE)
     }
