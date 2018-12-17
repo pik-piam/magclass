@@ -193,12 +193,11 @@ install_magpie_units <- function(x=NULL) {
       z <- gsub("([.|#!@&~()\\{}+$?:]|\\[|\\])","",z)
     }
     if (any(paste0(prefix,z)==c("","_","__","-")))  z <- "unknown"
-    z <- prefix_check(prefix,paste0(z,suffix))
+    z <- prefix_check(prefix,z,suffix)
     return(z)
   }
   
-  prefix_check <- function(pre,base) {
-    suff <- ""
+  prefix_check <- function(pre,base,suff) {
     SI_prefix <- ""
     multiplier <- 1
     for (jj in 1:length(pre)) {
@@ -216,9 +215,17 @@ install_magpie_units <- function(x=NULL) {
         base <- gsub("of_","",base)
         install_conversion_constant(base,"tonne",1)
       }else if (grepl("square",pre[jj],ignore.case=TRUE)) {
-        suff <- "^2"
+        if (suff=="") {
+          suff <- "^2"
+        }else {
+          suff <- paste0("^",as.numeric(gsub("^","",suff))*2)
+        }
       }else if (grepl("cubic",pre[jj],ignore.case=TRUE)) {
-        suff <- "^3"
+        if (suff=="") {
+          suff <- "^3"
+        }else {
+          suff <- paste0("^",as.numeric(gsub("^","",suff))*3)
+        }
       }else if (any(pre[jj]==c("k","M","G","T","P","E"))) {
         SI_prefix <- pre[jj]
       }
@@ -391,8 +398,8 @@ install_magpie_units <- function(x=NULL) {
     install_conversion_constant("EUR05_","EUR",1.24)                  #Euros in 2005 currency value (InflationTool.com)
     install_conversion_constant("EUR95_","EUR05_",1.22)               #Euros in 1995 currency value (InflationTool.com)
     install_symbolic_unit("share",dimensionless=TRUE)                 #Share (dimension)
-    install_symbolic_unit("passengers",dimensionless=FALSE)           #passengers
-    install_conversion_constant("pkm","passengers*km",1)              #passenger-kilometer pkm
+    install_symbolic_unit("passenger",dimensionless=FALSE)            #passengers
+    install_conversion_constant("pkm","passenger*km",1)               #passenger-kilometer pkm
     install_conversion_constant("Wh","W*h",1)                         #Watt-hours
     install_conversion_constant("annum","year",1)                     #annum
     install_conversion_constant("Wa","watt*annum",1)                  #Watts-annum
