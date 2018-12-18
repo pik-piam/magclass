@@ -426,7 +426,7 @@ install_magpie_units <- function(x=NULL) {
     }else {
       x <- input_unit(x)
     }
-  }else if (!is(x,"units") & !is(u,"mixed_units")) {
+  }else if (!is(x,"units") & !is(x,"mixed_units")) {
     warning("Invalid argument of class ",class(x))
   }
   return(x)
