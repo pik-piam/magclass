@@ -60,7 +60,7 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
               }
               units_out <- callGeneric(u1,u2)
               if (as.character(units(units_out))=="1") {
-                if (as.numeric(units_out)<1e5) {
+                if (as.numeric(units_out)<1e3) {
                   e2 <- e2*as.numeric(units_out)
                   units_out <- units_out/as.numeric(units_out)
                 }
@@ -78,10 +78,18 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
             if(any(unlist(dimnames(e1))!=unlist(dimnames(e2)))) stop("MAgPIE objects after MAgPIE object expansion do not agree in dimnames! magpie_expand seems to be bugged!\n e1:",
                                                                      paste(unlist(dimnames(e1))[unlist(dimnames(e1))!=unlist(dimnames(e2))],collapse=" "),"\n e2:",paste(unlist(dimnames(e2))[unlist(dimnames(e1))!=unlist(dimnames(e2))],collapse=" "))
             out <- new("magpie",callGeneric(e1@.Data,e2@.Data))
-            if (max(out)>=1e5) {
-              out <- out/1e4
-              if (!is.character(units_out)) {
-                units_out <- units_out*1e4
+            if (!is.character(units_out)) {
+              if (as.numeric(units_out) > 1e3) {
+                exponent <- log(as.numeric(units_out),10)
+                if (exponent %% 3 != 0) {
+                  adj <- exponent %% 3
+                  units_out <- units_out*(10^(-adj))
+                  out <- out*(10^adj)
+                }
+              }
+              if (max(out)>=1e6) {
+                out <- out/1e3
+                units_out <- units_out*1e3
               }
             }
             return(updateMetadata(out,list(e1,e2),unit=units_out))
