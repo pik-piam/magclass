@@ -14,7 +14,6 @@
 #' where the data was originally reported. Specifically, the authors,
 #' publication date, article title, journal 
 #' 
-#' @aliases updateMetadata
 #' @param x MAgPIE object to be updated
 #' @param y MAgPIE object to copy Metadata from (optional)
 #' @param unit An object of type units indicating the units of measure of the MAgPIE data. 
@@ -66,6 +65,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
@@ -81,7 +81,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       }else  fn$AddChildNode(xc)
     }else  return(xc)
   }
-  #Function newCall creates the appropriate call to be displayed for the new root
+  #Function newCall creates the appropriate function call to be displayed for the new root
   newCall <- function(n,convert=TRUE){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
       f <- as.character(sys.call(-n))[1]
@@ -240,12 +240,14 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   Mx <- getMetadata(x)
   
   if (is.null(unit))  unit <- "keep"
-  if (unit=="copy"){
+  if (is(unit,"units")) { #| is(unit,"mixed_units")
+    Mx$unit <- unit
+  }else if (unit=="copy") {
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
   }else if (unit=="clear") {
     Mx$unit <- NULL
-  }else if (unit=="update"){
+  }else if (unit=="update") {
     Mx$unit <- c(Mx$unit,My$unit)
   }else if (unit!="keep")  Mx$unit <- unit
   

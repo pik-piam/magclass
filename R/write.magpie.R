@@ -143,7 +143,21 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     #function to write metadata to cs* filetypes
     .writeMetadata <- function(file,metadata,char,mchar) {
       if(!is.null(metadata$unit)) {
-        writeLines(paste(char,paste0(mchar,"unit:"),metadata$unit),file)
+        if (is(metadata$unit,"units")) {
+          if (as.numeric(metadata$unit)==1) {
+            unit <- as.character(units(metadata$unit))
+          }else {
+            unit <- paste(as.character(metadata$unit),as.character(units(metadata$unit)))
+          }
+        }else if (is.character(metadata$unit)) {
+          unit <- metadata$unit
+        #Mixed units handling in development  
+        #}else if (is(metadata$unit,"units")) {
+          #unit <- paste(as.character(metadata$unit),as.character(units(metadata$unit)),collapse=", ")
+        }else {
+          unit <- "unknown"
+        }
+        writeLines(paste(char,paste0(mchar,"unit:"),paste(unit,collapse=", ")),file)
         writeLines(char,file)
       }
       if(!is.null(metadata$user)) {

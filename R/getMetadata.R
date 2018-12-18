@@ -49,12 +49,14 @@
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
 #'  withMetadata(FALSE)
+#' @importFrom units units_options
 #' @export
 
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
   if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   M <- attr(x, "Metadata")
   if(is.null(type)) {
     return(M)
@@ -68,6 +70,8 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 #' @importFrom utils toBibtex
+#' @importFrom units as_units units_options
+#' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
   if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
@@ -76,7 +80,8 @@ getMetadata <- function(x, type=NULL) {
     return(x)
   }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  
   .setSource <- function(old,new) {
     #first remove any sources which are not of bibentry or Bibtex class
     if (is(new,"bibentry"))  new <- toBibtex(new)
@@ -222,6 +227,30 @@ getMetadata <- function(x, type=NULL) {
     }
   }
   
+  conv2unit <- function(x) {
+    if (is.null(x)) {
+      return(as_units(1))
+    }else if (length(x)>1) {
+      x <- install_magpie_units("unknown")
+    #*****Mixed units handling in development*****  
+    #  if (length(unique(x))==1) {
+    #    x <- unique(x)
+    #  } else {
+    #    if (is(x,"mixed_units")) {
+    #      return(x)
+    #    }else {
+    #      for (i in 1:length(x)) {
+    #        x[i] <- install_magpie_units(x[i])
+    #      }
+    #      x <- mixed_units(1,x)
+    #    }
+    #  }
+    }else if (!is(x,"units") & !is(x,"mixed_units")) {
+      x <- install_magpie_units(x)
+    }
+    return(x)
+  }
+  
   #initialize existing metadata
   M <- attr(x, "Metadata")
   if (!is.list(M))  M <- list()
@@ -231,21 +260,7 @@ getMetadata <- function(x, type=NULL) {
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
       #unit
-      if (!is.null(value$unit)) {
-        if (length(value$unit)>1) {
-          if (length(unique(value$unit))==1) {
-            M$unit <- unique(value$unit)
-          }else {
-            M$unit <- "mixed"
-          }
-        }else if (is.character(value$unit) | is(value$unit,"units")) {
-          M$unit <- value$unit
-        }else {
-          warning(value$unit,"is an invalid entry for unit")
-          M$unit <- '1'
-        }
-      #Default unit '1' indicates unitless or "no units specified"
-      }else  M$unit <- "1"
+      M$unit <- conv2unit(value$unit)
       #source
       if (!is.null(value$source)){
         M$source <- .setSource(M$source,value$source)
@@ -295,20 +310,7 @@ getMetadata <- function(x, type=NULL) {
     }
     #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
-    if (is.null(value)) {
-      M$unit <- '1'
-    }else if (length(value)>1) {
-      if (length(unique(value))==1) {
-        M$unit <- unique(value)
-      }else {
-        M$unit <- "mixed"
-      }
-    }else if (is.character(value) | is(value,"units")) {
-      M[[type]] <- value
-    }else {
-      warning(value," is an invalid argument for unit!")
-      M[[type]] <- '1'
-    }
+    M$unit <- conv2unit(value)
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
     else  M[[type]] <- .setSource(M$source,value)
