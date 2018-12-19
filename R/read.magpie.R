@@ -253,6 +253,20 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 }
                 names(metadata[[i]]) <- name
               }
+            }else if (field[i]=="unit") {
+              metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
+              if (grepl(",",metadata[[i]])) {
+                metadata[[i]] <- install_magpie_units("unknown")
+                #Mixed Units handling in development
+                
+              }else if (grepl("^\\d",metadata[[i]])) {
+                unitChar <- unlist(strsplit(metadata[[i]]," "))
+                unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
+                metadata[[i]] <- as_units(as.numeric(unitChar[1]),unitChar[2])
+              }else {
+                metadata[[i]] <- install_magpie_units(metadata[[i]])
+              }
+              tmp <- readLines(zz,1)
             }else {
               metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
               tmp <- readLines(zz,1)
@@ -446,7 +460,17 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       metadata <- list()
-      if(ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[1]])  metadata$unit <- ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[1]]) {
+        unitChar <- ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[2]]
+        #Mixed units handling in development
+        if (grepl("^\\d",unitChar)) {
+          unitChar <- unlist(strsplit(unitChar," "))
+          unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
+          metadata$unit <- as_units(as.numeric(unitChar[1]),unitChar[2])
+        }else {
+          metadata$unit <- install_magpie_units(unitChar)
+        }
+      } 
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[1]])  metadata$user <- ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[2]]
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[1]])  metadata$date <- ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[2]]
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[1]])  metadata$description <- ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[2]]

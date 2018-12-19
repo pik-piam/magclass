@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 4.89.1
-Date: 2018-11-28
+Version: 4.90.1
+Date: 2018-12-18
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -33,7 +33,9 @@ Imports:
     maptools,
     abind,
     ncdf4,
-    reshape2
+    reshape2,
+    units,
+    udunits2
 Suggests: 
     testthat,
     knitr,
@@ -46,4 +48,4 @@ LazyData: true
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-ValidationKey: 87367933
+ValidationKey: 87644583

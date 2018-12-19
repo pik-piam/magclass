@@ -37,10 +37,22 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
       indicator <- indicator[-match("source",indicator)]
     }
     if(!any(indicator=="unit")) {
-      units <- "not specified"
-    }else {
+      units <- "unknown"
+    }else if (is.character(commentary$unit)) {
       units <- commentary$unit
+    }else if (is(commentary$unit,"units")) {
+      if (as.numeric(commentary$unit)==1) {
+        units <- as.character(units(commentary$unit))
+      }else {
+        units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)))
+      }
+    #Mixed units handling in development  
+    #}else if is(commentary$unit,"mixed_units") {
+      #units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)),collapse=", ")
+    }else {
+      units <- "unknown"
     }
+    commentary$unit <- units
     #metadata old implementation
   }else if(!is.null(comment)) {
     metadata=TRUE
