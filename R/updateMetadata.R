@@ -90,7 +90,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
       if (grepl("::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,"::",fixed=TRUE))[2]
       
-      if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput"){
+      if (all(getPackageName(sys.frame(-n))!=c("madrat","moinput"))) {
         f <- trimws(deparse(sys.call(-n),width.cutoff = 500))
         tmp <- unlist(strsplit(f,"(",fixed=TRUE))
         fname <- tmp[1]
@@ -248,7 +248,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit=="clear") {
     Mx$unit <- NULL
   }else if (unit=="update") {
-    Mx$unit <- c(Mx$unit,My$unit)
+    Mx$unit <- list(Mx$unit,My$unit)
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"

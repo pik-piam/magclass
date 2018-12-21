@@ -26,7 +26,7 @@
 #' 
 #' @export new.magpie
 #' @importFrom methods new
-new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit="1") {
+new.magpie <- function(cells_and_regions="GLO",years=NULL,names=NULL,fill=NA,sort=FALSE,sets=NULL,unit="unknown") {
   ncells <- length(cells_and_regions)
   nyears <- ifelse(is.null(years),1,length(years))
   ndata  <- ifelse(is.null(names),1,length(names))

@@ -229,7 +229,7 @@ getMetadata <- function(x, type=NULL) {
   
   conv2unit <- function(x) {
     if (is.null(x)) {
-      return(as_units(1))
+      x <- install_magpie_units("unknown")
     }else if (length(x)>1) {
       x <- install_magpie_units("unknown")
     #*****Mixed units handling in development*****  
