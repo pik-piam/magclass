@@ -67,14 +67,18 @@ install_magpie_units <- function(x=NULL) {
     }else {
       prefix <- ""
     }
-    tmp <- unlist(strsplit(z,"_"))
-    for (k in 1:length(tmp)) {
-      if (grepl("illion",tmp[k],ignore.case=TRUE) | grepl("thousand",tmp[k],ignore.case=TRUE) | grepl("hundred",tmp[k],ignore.case=TRUE)) {
-        prefix[length(prefix)+1] <- tmp[k]
-        z <- gsub(paste0(tmp[k],"_"),"",z)
+    z <- unlist(strsplit(z,"_"))
+    for (k in 1:length(z)) {
+      if (grepl("illion",z[k],ignore.case=TRUE) | grepl("thousand",z[k],ignore.case=TRUE) | grepl("hundred",z[k],ignore.case=TRUE)) {
+        if (prefix=="") {
+          prefix <- z[k] 
+        }else {
+          prefix[length(prefix)+1] <- z[k]
+        }
+        z <- z[-k]
       }
     }
-    tmp <- ""
+    z <- paste0(z,collapse="_")
     suffix <- ""
     if (grepl("US$",z,fixed=TRUE) | grepl("$",z,fixed=TRUE) | grepl("dollar",z,ignore.case=TRUE) | grepl("USD",z,ignore.case=TRUE)) {
       if (!grepl("USD",z,fixed=TRUE)) {
@@ -97,7 +101,7 @@ install_magpie_units <- function(x=NULL) {
       }
       if (grepl("[[:alpha:]]",gsub("y","",gsub("USD","",z)))) {
         warning(z," is an invalid unit entry! USD units can only include the currency year!")
-      }else if (tmp!="")  z <- tmp
+      }else if (tmp!="")  z <- remove_spaces(tmp)
     }
     if (grepl("\u20AC",z) | grepl("Euro",z,ignore.case=TRUE) | grepl("EUR",z,ignore.case=TRUE)) {
       if (!grepl("EUR",z,fixed=TRUE)) {
@@ -120,7 +124,7 @@ install_magpie_units <- function(x=NULL) {
       }
       if (grepl("[[:alpha:]]",gsub("y","",gsub("EUR","",z)))) {
         warning(z," is an invalid unit entry! EUR units can only include the currency year!")
-      }else if (tmp!="")  z <- tmp
+      }else if (tmp!="")  z <- remove_spaces(tmp)
     }
     if (grepl("^\\d",z)) {
       if (is.installed(gsub("^\\d*","",remove_spaces(z)))) {
@@ -170,10 +174,10 @@ install_magpie_units <- function(x=NULL) {
       if (!is.installed(z) & grepl("_",z,fixed=TRUE)) {
         if (prefix=="") {
           prefix <- unlist(strsplit(z,"_",fixed=TRUE))[1]
-          z <- gsub(paste0(prefix,"_"),"",z)
+          z <- paste(unlist(strsplit(z,"_",fixed=TRUE))[-1],collapse="_")
         }else {
-          prefix[2] <- unlist(strsplit(z,"_",fixed=TRUE))[1]
-          z <- gsub(paste0(prefix[2],"_"),"",z)
+          prefix[length(prefix)+1] <- unlist(strsplit(z,"_",fixed=TRUE))[1]
+          z <- paste(unlist(strsplit(z,"_",fixed=TRUE))[-1],collapse="_")
         }
       }
     }
@@ -211,9 +215,13 @@ install_magpie_units <- function(x=NULL) {
       else if (grepl("\\d",pre[jj])) {
         multiplier <- as.numeric(pre[jj])*multiplier
       }else if (grepl("ton",pre[jj],ignore.case=TRUE) | pre[jj]=="t") {
-        base <- paste0("t_",base)
-        base <- gsub("of_","",base)
-        install_conversion_constant(base,"tonne",1)
+        if (base=="") {
+          base <- "tonnes"
+        }else {
+          base <- paste0("t_",base)
+          base <- gsub("of_","",base)
+          install_conversion_constant(base,"tonne",1)
+        }
       }else if (grepl("square",pre[jj],ignore.case=TRUE)) {
         if (suff=="") {
           suff <- "^2"
@@ -230,6 +238,13 @@ install_magpie_units <- function(x=NULL) {
         SI_prefix <- pre[jj]
       }
     }
+    if (base=="") {
+      if (multiplier!=1) {
+        base <- "1"
+      }else {
+        base <- "unknown"
+      }
+    }
     if (!is.installed(base)) {
       if (is.installed(remove_spaces(base))) {
         base <- remove_spaces(base)
@@ -243,10 +258,10 @@ install_magpie_units <- function(x=NULL) {
   
   remove_spaces <- function(v) {
     v <- trimws(v)
-    if (is.installed(gsub("_","",v,fixed=TRUE))) {
-      return(gsub("_","",v,fixed=TRUE))
-    }else if (is.installed(paste0(gsub("_","",v,fixed=TRUE),"_"))) {
+    if (is.installed(paste0(gsub("_","",v,fixed=TRUE),"_"))) {
       return(paste0(gsub("_","",v,fixed=TRUE),"_"))
+    }else if (is.installed(gsub("_","",v,fixed=TRUE))) {
+      return(gsub("_","",v,fixed=TRUE))
     }
   }
   
@@ -406,13 +421,15 @@ install_magpie_units <- function(x=NULL) {
     install_symbolic_unit("unknown")                                  #unknown units; placeholder for mixed units
   }
   
-  if (is.magpie(x)) {
+  if (is.null(x)) {
+    x <- as_units("unknown")
+  }else if (is.magpie(x)) {
     u <- units(x)
     if (is.null(u)) {
-      getMetadata(x,"unit") <- as_units(1)
+      getMetadata(x,"unit") <- as_units("unknown")
     }else if (is.character(u)) {
       if (any(u==c("-",""," ","none","unit"))) {
-        u <- input_unit("unknown")
+        u <- as_units("unknown")
       }else {
         u <- input_unit(u)
       }
@@ -422,7 +439,7 @@ install_magpie_units <- function(x=NULL) {
     }
   }else if (is.character(x)) {
     if (any(x==c("-",""," ","none","unit"))) {
-      x <- input_unit("unknown")
+      x <- as_units("unknown")
     }else {
       x <- input_unit(x)
     }
