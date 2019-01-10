@@ -48,7 +48,9 @@ read.report <- function(file,as.list=TRUE) {
 
     mag[coord] <- suppressWarnings(as.numeric(as.vector(as.matrix(tmp[,yearelems]))))
     names(dimnames(mag)) <- c("region","year","variable")
-return(as.magpie(mag,spatial=1,temporal=2))  
+    mag <- as.magpie(mag,spatial=1,temporal=2)
+    if (withMetadata())  getMetadata(mag,"unit") <- install_magpie_units(units)
+return(mag)  
   }
 
   .readmif <- function(file) {

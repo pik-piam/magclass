@@ -100,7 +100,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         tmp <- gsub(".{1}$","",tmp[2])
         arg <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
-        for(i in 1:length(arg)){
+        for(i in 1:length(arg)) {
           if (grepl("(",arg[i],fixed=TRUE)) {
             j <- i
             while (!grepl(")",arg[j],fixed=TRUE)) {
@@ -121,7 +121,13 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
             }
           }
           if(grepl("=",arg[i],fixed=TRUE)) {
-            tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
+            if (grepl("(",arg[i],fixed=TRUE)) {
+              tmp <- unlist(strsplit(arg[i],"(",fixed=TRUE))[2]
+              tmp <- gsub("(","",gsub(")","",tmp,fixed=TRUE),fixed=TRUE)
+              if (grepl(",",tmp,fixed=TRUE)) {
+                tmp <- tmp[which(grepl("=",unlist(strsplit(tmp,",",fixed=TRUE)),fixed=TRUE))]
+              }
+            }else  tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
             if (length(tmp)>2) {
               tmp[2] <- paste(tmp[-1],collapse=", ")
             }
@@ -238,6 +244,21 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     warning("y argument must be a magpie object or a list of magpie objects!")
   }
   Mx <- getMetadata(x)
+  if (!is.null(y)) {
+    if (is.null(Mx)) {
+      unit <- "copy"
+      source <- "copy"
+      calcHistory <- "copy"
+      description <- "copy"
+      version <- "copy"
+    }else if (is.null(My)) {
+      unit <- "keep"
+      source <- "keep"
+      calcHistory <- "keep"
+      description <- "keep"
+      version <- "keep"
+    }
+  }
   
   if (is.null(unit))  unit <- "keep"
   if (is(unit,"units")) { #| is(unit,"mixed_units")
@@ -248,7 +269,11 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (unit=="clear") {
     Mx$unit <- NULL
   }else if (unit=="update") {
-    Mx$unit <- list(Mx$unit,My$unit)
+    if (is.null(Mx$unit)) {
+      Mx$unit <- My$unit
+    }else if (!is.null(My$unit)) {
+      Mx$unit <- list(Mx$unit,My$unit)
+    }
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
