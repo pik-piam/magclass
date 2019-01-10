@@ -146,17 +146,17 @@ install_magpie_units <- function(x=NULL) {
         z <- paste0(z,"_")
       }
     }
-    if (any(substr(z,1,3)==c("kWh","MWh","GWh","TWh","EWh","PWh"))) {
+    if (any(substr(z,1,3)==c("kWh","MWh","GWh","TWh","EWh","PWh","ZWh"))) {
       z <- substr(z,1,3)
-    }else if (any(substr(z,1,2)==c("kW","MW","GW","TW","EW","PW"))) {
+    }else if (any(substr(z,1,2)==c("kW","MW","GW","TW","EW","PW","ZW"))) {
       z <- substr(z,1,2)
-    }else if (any(substr(z,1,2)==c("kJ","MJ","GJ","TJ","PJ","EJ"))) {
+    }else if (any(substr(z,1,2)==c("kJ","MJ","GJ","TJ","PJ","EJ","ZJ"))) {
       z <- substr(z,1,2)
-    }else if (any(substr(z,nchar(z)-2,nchar(z))==c("kWh","MWh","GWh","TWh","EWh","PWh"))) {
+    }else if (any(substr(z,nchar(z)-2,nchar(z))==c("kWh","MWh","GWh","TWh","EWh","PWh","ZWh"))) {
       z <- substr(z,nchar(z)-2,nchar(z))
-    }else if (any(substr(z,(nchar(z)-1),nchar(z))==c("kJ","MJ","GJ","TJ","PJ","EJ","kW","MW","GW","TW","EW","PW"))) {
+    }else if (any(substr(z,(nchar(z)-1),nchar(z))==c("kJ","MJ","GJ","TJ","PJ","EJ","ZJ","kW","MW","GW","TW","EW","PW","ZW"))) {
       z <- substr(z,(nchar(z)-1),nchar(z))
-    }else if (any(substr(z,1,2)==c("kt","Mt","Gt"))) {
+    }else if (any(substr(z,1,2)==c("kt","Mt","Gt","Tt","Pt","Zt"))) {
       prefix[length(prefix)+1] <- substr(z,1,1)
       z <- substr(z,2,nchar(z))
     }
@@ -167,6 +167,13 @@ install_magpie_units <- function(x=NULL) {
     }else if (grepl("Wet_matter",z,ignore.case=TRUE) | grepl("WM",z,fixed=TRUE) | grepl("Fresh_matter",z,ignore.case=TRUE)) {
       if (grepl("^t",z) | grepl("^_t",z)) {
         z <- "tWM"
+      }
+    }else if (grepl("oil_eq",z)) {
+      if (grepl("^t",z) | grepl("^_t",z)) {
+        z <- "toe"
+      }else if (grepl("ton",z)) {
+        prefix <- unlist(strsplit(z,"ton"))[1]
+        z <- "toe"
       }
     }
     if (grepl("^ton",z,ignore.case=TRUE) | grepl("^t_",z) |
@@ -234,7 +241,7 @@ install_magpie_units <- function(x=NULL) {
         }else {
           suff <- paste0("^",as.numeric(gsub("^","",suff))*3)
         }
-      }else if (any(pre[jj]==c("k","M","G","T","P","E"))) {
+      }else if (any(pre[jj]==c("k","M","G","T","P","E","Z"))) {
         SI_prefix <- pre[jj]
       }
     }
@@ -393,6 +400,7 @@ install_magpie_units <- function(x=NULL) {
   if (!is.installed("tDM") & !is.installed("pkm") & !is.installed("unknown")) {
     install_conversion_constant("tDM","tonne",1)                      #tonnes of dry matter
     install_conversion_constant("tWM","tonne",1)                      #tonnes of wet matter
+    install_conversion_constant("BTU","toe",2.5e-8)                   #tonnes of oil equivalent
     install_symbolic_unit("people",dimensionless=FALSE)               #people
     install_conversion_constant("people","person",1)                  #people interchangeable with person
     install_conversion_constant("people","capita",1)                  #capita interchangeable with people
@@ -428,7 +436,14 @@ install_magpie_units <- function(x=NULL) {
     if (is.null(u)) {
       getMetadata(x,"unit") <- as_units("unknown")
     }else if (is.character(u)) {
-      if (any(u==c("-",""," ","none","unit"))) {
+      if (length(u)>1) {
+        if (length(unique(u))==1) {
+          u <- input_unit(u[1])
+          #Mixed units handling under development
+        }else {
+          u <- as_units("unknown")
+        }
+      }else if (any(u==c("-",""," ","none","unit"))) {
         u <- as_units("unknown")
       }else {
         u <- input_unit(u)
@@ -438,7 +453,14 @@ install_magpie_units <- function(x=NULL) {
       warning("Argument has invalid unit field of class ",class(u))
     }
   }else if (is.character(x)) {
-    if (any(x==c("-",""," ","none","unit"))) {
+    if (length(x)>1) {
+      if (length(unique(x))==1) {
+        x <- input_unit(x[1])
+      #Mixed units handling under development
+      }else {
+        x <- as_units("unknown")
+      }
+    }else if (any(x==c("-",""," ","none","unit"))) {
       x <- as_units("unknown")
     }else {
       x <- input_unit(x)
