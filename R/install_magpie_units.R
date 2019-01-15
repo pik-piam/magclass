@@ -46,6 +46,9 @@ install_magpie_units <- function(x=NULL) {
       z <- gsub("bn._","billion_",z,ignore.case=TRUE)
       z <- gsub("bn_","billion_",z,ignore.case=TRUE)
     }
+    if (grepl("bio.",z,ignore.case=TRUE)) {
+      z <- gsub("bio.","billion",z,ignore.case=TRUE)
+    }
     if (grepl("1e",substr(z,1,2),ignore.case=TRUE)) {
       if (grepl("+",z,fixed=TRUE)) {
         z <- gsub("+","",z,fixed=TRUE)
