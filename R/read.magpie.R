@@ -773,13 +773,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(as.array){
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
     read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
   }
