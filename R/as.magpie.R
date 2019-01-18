@@ -16,7 +16,7 @@ tmpfilter <- function(x, sep="\\.", replacement="_") {
 
 setMethod("as.magpie",
           signature(x = "lpj"),
-          function (x, unit="1", ...)
+          function (x, unit="unknown", ...)
           {
             xdimnames <- dimnames(x)
             xdim <- dim(x)
@@ -31,7 +31,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
     signature(x = "array"),
-    function (x, spatial=NULL, temporal=NULL, unit="1", ...)
+    function (x, spatial=NULL, temporal=NULL, unit="unknown", ...)
     {
       store_attributes <- copy.attributes(x,0)
 
@@ -156,7 +156,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
     signature(x = "numeric"),
-    function(x, unit="1", ...)
+    function(x, unit="unknown", ...)
     {
       out <- copy.attributes(x,as.magpie(as.array(x),...))
       return(updateMetadata(out, unit=unit))
@@ -173,7 +173,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "data.frame"),
-          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="1", ...)
+          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", ...)
           {
             # filter illegal characters
             for(i in 1:dim(x)[2]) {
@@ -273,7 +273,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "tbl_df"),
-          function(x, unit="1", ...)
+          function(x, unit="unknown", ...)
           {
             if("quitte" %in% class(x)) {
               class(x) <- c("quitte","data.frame")

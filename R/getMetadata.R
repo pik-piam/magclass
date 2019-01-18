@@ -49,13 +49,15 @@
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
 #'  withMetadata(FALSE)
+#' @importFrom units units_options
 #' @export
 
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   M <- attr(x, "Metadata")
-  if(!is.null(M) & is.null(M$unit)) M$unit <- '1'
   if(is.null(type)) {
     return(M)
   } else if(length(type)>1){
@@ -68,14 +70,18 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 #' @importFrom utils toBibtex
+#' @importFrom units as_units units_options
+#' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
+  if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if(!is.magpie(x)){
     warning("x argument must be a magpie object!")
     return(x)
   }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  
   .setSource <- function(old,new) {
     #first remove any sources which are not of bibentry or Bibtex class
     if (is(new,"bibentry"))  new <- toBibtex(new)
@@ -148,8 +154,10 @@ getMetadata <- function(x, type=NULL) {
       else if (data.tree::isLeaf(new) & is.null(new$children)) {
         if (is(old,"Node")){
           #root node is set to ROOT when calcHistory is merged in updateMetadata, so it shall be replaced by value
-          if (old$name=="ROOT")  old$name <- new$name
-          else {
+          if (old$name=="ROOT") {
+            old$name <- new$name
+            return(old)
+          }else {
             c <- data.tree::Clone(old)
             new$AddChildNode(c)
           }
@@ -160,8 +168,10 @@ getMetadata <- function(x, type=NULL) {
       if (length(new)==1){
         if (is.null(old))  return(data.tree::Node$new(new))
         if (is(old,"Node")){
-          if (old$name=="ROOT")  old$name <- new
-          else{
+          if (old$name=="ROOT") {
+            old$name <- new
+            return(old)
+          }else {
             c <- data.tree::Clone(old)
             new <- data.tree::Node$new(new)
             new$AddChildNode(c)
@@ -170,6 +180,75 @@ getMetadata <- function(x, type=NULL) {
       }else  warning(new,"is an invalid argument for calcHistory! The argument must be a character of length 1 or a Node object.")
     }else  warning(new," is an invalid argument for calcHistory! The argument must be a string or a Node object.")
     return(new)
+  }
+  
+  .setVersion <- function(pre,ver) {
+    if (is.character(ver)) {
+      new <- vector()
+      if (length(ver)==1) {
+        if (grepl(";",ver,fixed=TRUE)) {
+          ver <- unlist(strsplit(ver,";",fixed=TRUE))
+        }
+      }
+      for (i in 1:length(ver)) {
+        if (grepl("[[:digit:]]",ver[i]) & grepl("[[:alpha:]]",ver[i])) {
+          new[i] <- trimws(gsub("[[:alpha:]]","",ver[i]))
+          names(new)[i] <- trimws(gsub("[[:digit:]]","",gsub("[[:punct:]]","",ver[i])))
+        }else if(grepl("[[:alpha:]]",names(ver[i]))) {
+          if (grepl("[[:digit:]]",ver[i])) {
+            new[i] <- ver[i]
+            names(new)[i] <- names(ver[i])
+          }else  warning(ver[i]," is an invalid entry for version! Please provide the version number.")
+        }else  warning(ver[i]," is an invalid entry for version! Please provide both the package name and version number.")
+      }
+      if (!is.null(pre)) {
+        dbl <- vector()
+        k <- 1
+        for (i in 1:length(new)) {
+          for (j in 1:length(pre)) {
+            if (as.character(names(pre)[j])==as.character(names(new)[i])) {
+              dbl[k] <- i
+              k <- k+1
+              if (as.package_version(new[i]) < as.package_version(pre[j])) {
+                warning(paste("The provided version",new[i],"for the",names(new[i]),"package is behind the previously used version",paste0("(",pre[j],")")))
+              }
+              pre[j] <- new[i]
+            }
+          }
+        }
+        if (length(dbl>0)) {
+          new <- new[-dbl]
+        }
+        return(c(pre,new))
+      }else  return(new)
+    }else {
+      warning(ver,"is an invalid entry for version! Please use getMetadata or updateMetadata to enter a version number.")
+      return(pre)
+    }
+  }
+  
+  conv2unit <- function(x) {
+    if (is.null(x)) {
+      x <- install_magpie_units("unknown")
+    }else if (length(x)>1) {
+      x <- install_magpie_units("unknown")
+    #*****Mixed units handling in development*****  
+    #  if (length(unique(x))==1) {
+    #    x <- unique(x)
+    #  } else {
+    #    if (is(x,"mixed_units")) {
+    #      return(x)
+    #    }else {
+    #      for (i in 1:length(x)) {
+    #        x[i] <- install_magpie_units(x[i])
+    #      }
+    #      x <- mixed_units(1,x)
+    #    }
+    #  }
+    }else if (!is(x,"units") & !is(x,"mixed_units")) {
+      x <- install_magpie_units(x)
+    }
+    return(x)
   }
   
   #initialize existing metadata
@@ -181,13 +260,7 @@ getMetadata <- function(x, type=NULL) {
     if (!is.list(value) & !is.null(value))  stop("Metadata must be provided as a list if no type is specified")
     else{
       #unit
-      if (!is.null(value$unit)){
-        if (length(value$unit)>1){
-          warning(value$unit," is an invalid argument for unit")
-          #Default unit 1 indicates unitless or "no units specified"
-          M$unit <- "1"
-        }else  M$unit <- value$unit
-      }else  M$unit <- "1"
+      M$unit <- conv2unit(value$unit)
       #source
       if (!is.null(value$source)){
         M$source <- .setSource(M$source,value$source)
@@ -210,28 +283,34 @@ getMetadata <- function(x, type=NULL) {
       }
       #description
       if(!is.null(value$description)){
-        if(is.character(value$description))  M$description <- value$description
-        else if (is.list(value$description))  M$description <- value$description
+        if(is.character(value$description) | is.list(value$description)) {
+          M$description <- unique(value$description)
+          if (length(M$description)==1)  M$description <- unlist(M$description)
+        }
         else{
           warning(value$description," is an invalid argument for description!")
           M$description <- NULL
         }
       }
       #note
-      if(!is.null(value$note)){
-        if(is.character(value$note))  M$note <- value$note
-        else if (is.list(value$note))  M$note <- value$note
+      if(!is.null(value$note)) {
+        if(is.character(value$note) | is.list(value$note)) {
+          M$note <- unique(value$note)
+          if (length(M$note)==1)  M$note <- unlist(M$note)
+        }
         else{
           warning(value$note," is an invalid argument for note!")
           M$note <- NULL
         }
       }
+      #version
+      if (!is.null(value$version)) {
+        M$version <- .setVersion(M$version,value$version)
+      }else  M$version <- NULL
     }
     #if a type argument is given, only handle that particular field
   }else if (type=="unit"){
-    if (is.character(value) & length(value)==1)  M[[type]] <- value
-    else if (is.null(value))  M$unit <- '1'
-    else  warning(value," is an invalid argument for unit!")
+    M$unit <- conv2unit(value)
   }else if (type=="source"){
     if (is.null(value))  M[[type]] <- value
     else  M[[type]] <- .setSource(M$source,value)
@@ -241,14 +320,26 @@ getMetadata <- function(x, type=NULL) {
     if  ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for date! Please use getMetadata or updateMetadata to enter a date.")
   }else if (type=="user"){
-    if ((is.character(value) & length(value)==1) | is.null(value))  M[[type]] <- value
+    if ((is.character(value) & length(value)==1) | is.null(value)) {
+      if (length(unique(value))==1)  M[[type]] <- unlist(unique(value))
+      else  M[[type]] <- unique(value)
+    }
     else  warning(value," is an invalid argument for user! Please use getMetadata or updateMetadata to enter a user.")
   }else if (type=="description"){
-    if(is.null(value) | is.character(value) | is.list(value))  M[[type]] <- value
+    if(is.null(value) | is.character(value) | is.list(value)) {
+      if (length(unique(value))==1)  M[[type]] <- unlist(unique(value))
+      else  M[[type]] <- unique(value)
+    }
     else  warning(value," is an invalid argument for description! Please use getMetadata or updateMetadata to enter a description.")
   }else if (type=="note"){
     if(is.null(value) | is.character(value) | is.list(value))  M[[type]] <- value
     else  warning(value," is an invalid argument for note! Please use getMetadata or updateMetadata to enter a note.")
+  }else if (type=="version") {
+    if (is.null(value)) {
+      M$version <- NULL
+    }else {
+      M$version <- .setVersion(M$version,value)
+    }
   }else  warning(type," is not a valid metadata field!")
   
   attr(x, "Metadata") <- M

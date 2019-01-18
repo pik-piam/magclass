@@ -81,7 +81,7 @@
 #' will be treated and counted as a new region (e.g.
 #' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
 #' to 3!).
-#' @author Jan Philipp Dietrich, Stephen Bi
+#' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @examples
 #' 
@@ -181,7 +181,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
             i <- i+1
             #isolate the metadata field names
             tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
-            field[i] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[1]
+            field[i] <- trimws(unlist(strsplit(tmp2,":",fixed=TRUE))[1])
             #calcHistory must be reconstructed from a character to a Node object
             if(field[i]=="calcHistory"){
               tmp <- readLines(zz,1)
@@ -245,8 +245,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                   }
                   names(metadata[[i]][[j]]) <- name[[j]]
                 }
-              }
-              else {
+              }else {
                 class(metadata[[i]]) <- "Bibtex"
                 name <- vector()
                 for (j in 1:length(metadata[[i]])) {
@@ -254,17 +253,33 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
                 }
                 names(metadata[[i]]) <- name
               }
-            }else{
+            }else if (field[i]=="unit") {
+              metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
+              if (grepl(",",metadata[[i]])) {
+                metadata[[i]] <- install_magpie_units("unknown")
+                #Mixed Units handling in development
+                
+              }else if (grepl("^\\d",metadata[[i]])) {
+                unitChar <- unlist(strsplit(metadata[[i]]," "))
+                unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
+                metadata[[i]] <- as_units(as.numeric(unitChar[1]),unitChar[2])
+              }else {
+                metadata[[i]] <- install_magpie_units(metadata[[i]])
+              }
+              tmp <- readLines(zz,1)
+            }else {
               metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
               tmp <- readLines(zz,1)
-              if(is.na(metadata[[i]])){
+              if(is.na(metadata[[i]])) {
                 tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
                 metadata[[i]] <- tmp
                 tmp <- readLines(zz,1)
               }
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
+              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
                 tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
-                metadata[[i]] <- c(metadata[[i]], tmp)
+                if (grepl("[^[:space:]]",tmp)) {
+                  metadata[[i]] <- c(metadata[[i]], tmp)
+                }
                 tmp <- readLines(zz,1)
               }
             }
@@ -411,6 +426,19 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(is.null(nc_file$dim$time$len)) nc_file$dim$time$len <- 1
       if(is.null(nc_file$dim$time$vals)) nc_file$dim$time$vals <- 1995
       
+      if(length(nc_file$groups) == 1) {
+        var_names <- names(nc_file$var)
+      } else {
+        var_names <- NULL
+        for (i in 1:nc_file$nvars) {
+          var_name <- nc_file$var[[i]]$longname
+          group_index <- nc_file$var[[i]]$group_index
+          group_name <- nc_file$groups[[group_index]]$fqgn
+          var_names <- c(var_names,paste(group_name,var_name,sep="/"))
+          var_names <- gsub("/",".",var_names)
+        }
+      }
+      
       #create a single array of all ncdf variables
       nc_data <- array(NA,dim=c(nc_file$dim$lon$len,nc_file$dim$lat$len,nc_file$dim$time$len,nc_file$nvars))
       for (i in 1:nc_file$nvars) {
@@ -425,14 +453,24 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       
       #reorder ncdf array into magpie cellular format (still as array)
       #create emtpy array in magpie cellular format
-      mag <- array(NA,dim=c(59199,nc_file$dim$time$len,nc_file$nvars),dimnames=list(paste(magclassdata$half_deg$region,1:59199,sep="."),paste("y",nc_file$dim$time$vals,sep=""),names(nc_file$var)))
+      mag <- array(NA,dim=c(59199,nc_file$dim$time$len,nc_file$nvars),dimnames=list(paste("GLO",1:59199,sep="."),paste("y",nc_file$dim$time$vals,sep=""),var_names))
       #Loop over cells to give mag values taken from nc_data. For each cell in mag, we know the exact coordinates (coord). Hence, we can use coord to map coordinates in nc_data to cells in mag.
       for (i in 1:ncells(mag)) {
         mag[i,,] <- nc_data[which(coord[i, 1]==lon), which(coord[i,2]==lat),,]
       }
       
       metadata <- list()
-      if(ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[1]])  metadata$unit <- ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[2]]
+      if(ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[1]]) {
+        unitChar <- ncdf4::ncatt_get(nc_file,varid=0,attname="unit")[[2]]
+        #Mixed units handling in development
+        if (grepl("^\\d",unitChar)) {
+          unitChar <- unlist(strsplit(unitChar," "))
+          unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
+          metadata$unit <- as_units(as.numeric(unitChar[1]),unitChar[2])
+        }else {
+          metadata$unit <- install_magpie_units(unitChar)
+        }
+      } 
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[1]])  metadata$user <- ncdf4::ncatt_get(nc_file,varid=0,attname="user")[[2]]
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[1]])  metadata$date <- ncdf4::ncatt_get(nc_file,varid=0,attname="date")[[2]]
       if(ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[1]])  metadata$description <- ncdf4::ncatt_get(nc_file,varid=0,attname="description")[[2]]
@@ -480,7 +518,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       #convert array to magpie object
-      read.magpie <- as.magpie(mag)
+      read.magpie <- clean_magpie(as.magpie(mag))
       getMetadata(read.magpie) <- metadata
       
     } else {
@@ -735,13 +773,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(as.array){
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
     read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r')){
+    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
   }

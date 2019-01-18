@@ -8,7 +8,7 @@
 #' compression) and 9 (most compression), the netCDF file is written in netCDF
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
-#' @param comment Vector of comments. Comments are set as global attributes in the netcdf file. Comments have to have the format "indicator: comment" or " indicator:comment"
+#' @param comment Vector of comments (also used for setting the unit). Comments are set as global attributes in the netcdf file. Format of comments: "indicator: comment" (e.g. "unit: Share of land area per grid cell")
 #' @param verbose Boolean deciding about whether function should be verbose or not
 
 #' @return netcdf file. Writes one file per year per
@@ -37,10 +37,22 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
       indicator <- indicator[-match("source",indicator)]
     }
     if(!any(indicator=="unit")) {
-      units <- "not specified"
-    }else {
+      units <- "unknown"
+    }else if (is.character(commentary$unit)) {
       units <- commentary$unit
+    }else if (is(commentary$unit,"units")) {
+      if (as.numeric(commentary$unit)==1) {
+        units <- as.character(units(commentary$unit))
+      }else {
+        units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)))
+      }
+    #Mixed units handling in development  
+    #}else if is(commentary$unit,"mixed_units") {
+      #units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)),collapse=", ")
+    }else {
+      units <- "unknown"
     }
+    commentary$unit <- units
     #metadata old implementation
   }else if(!is.null(comment)) {
     metadata=TRUE
@@ -112,6 +124,8 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
       }else if(indicator[[i]]=="calcHistory") {
         char <- as.character(as.data.frame(commentary$calcHistory)[[1]])
         commentary[[i]] <- paste("\n",char,sep="",collapse="")
+      }else if(indicator[[i]]=="version") {
+        commentary[[i]] <- paste("\n",names(commentary[[i]]),commentary[[i]],collapse = "; ")
       }
       ncdf4::ncatt_put( nc=ncf, varid=0, attname=indicator[[i]], attval=commentary[[i]],prec="text")  
     }

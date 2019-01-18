@@ -14,7 +14,6 @@
 #' where the data was originally reported. Specifically, the authors,
 #' publication date, article title, journal 
 #' 
-#' @aliases updateMetadata
 #' @param x MAgPIE object to be updated
 #' @param y MAgPIE object to copy Metadata from (optional)
 #' @param unit An object of type units indicating the units of measure of the MAgPIE data. 
@@ -46,6 +45,10 @@
 #' @param note A string or list of strings for attaching notes (e.g. instructions, warnings, etc.) to the data.
 #' Possible arguments are "keep", "copy", "merge", clear", or a new note can be entered here as a character string. 
 #' By default, "keep" if no y argument, or "copy" if y is provided.
+#' @param version A named vector containing the name(s) and version number(s) of the software used. Possible 
+#' arguments are "keep" (default), "copy", "merge", "clear", or a character vector (package names and numbers 
+#' can be provided as a named vector, in concatenated strings with a space separating name & number, or in a 
+#' single string with a ';' separating each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
@@ -57,11 +60,12 @@
 #' @importFrom methods getPackageName
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
-                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","copy"), 
-                           note=ifelse(is.null(y),"keep","copy"), n=1){
+                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
+                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1) {
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
+  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
@@ -77,48 +81,77 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       }else  fn$AddChildNode(xc)
     }else  return(xc)
   }
-  #Function newCall creates the appropriate call to be displayed for the new root
+  #Function newCall creates the appropriate function call to be displayed for the new root
   newCall <- function(n,convert=TRUE){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
       f <- as.character(sys.call(-n))[1]
       if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
       if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-      if (getPackageName(sys.frame(-n))=="madrat" | getPackageName(sys.frame(-n))=="moinput"){
-        f <- deparse(sys.call(-n),width.cutoff = 500)
-        
+      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
+      if (grepl("::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,"::",fixed=TRUE))[2]
+      
+      if (all(getPackageName(sys.frame(-n))!=c("madrat","moinput"))) {
+        f <- trimws(deparse(sys.call(-n),width.cutoff = 500))
         tmp <- unlist(strsplit(f,"(",fixed=TRUE))
         fname <- tmp[1]
-        tmp <- unlist(strsplit(tmp[2],")",fixed=TRUE))[1]
-        args <- unlist(strsplit(tmp,",",fixed=TRUE))
+        if (length(tmp[-1])>1) {
+          tmp[2] <- paste(tmp[-1],collapse="(")
+        }
+        tmp <- gsub(".{1}$","",tmp[2])
+        arg <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
-        for(i in 1:length(args)){
-          if(grepl("=",args[i],fixed=TRUE)) {
-            tmp <- trimws(unlist(strsplit(args[i],"=",fixed=TRUE)))
-            if(tmp[1]==tmp[2]) {
-              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-              args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
-              fchanged <- TRUE
-            }else if(!grepl("\u0022",tmp[2])) {
-              if(grepl("[:alpha:]",tmp[2])) {
-                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-                if(length(tmp[2])>1)  tmp <- paste(tmp[2],collapse=", ")
-                args[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
-                fchanged <- TRUE
+        for(i in 1:length(arg)) {
+          if (grepl("(",arg[i],fixed=TRUE)) {
+            j <- i
+            while (!grepl(")",arg[j],fixed=TRUE)) {
+              if (grepl("(",arg[j],fixed=TRUE)) {
+                if (j>i | length(regmatches(arg[j],gregexpr("(",arg[j],fixed=TRUE)))>1) {
+                  while (!grepl(")",arg[j],fixed=TRUE)) {
+                    arg[i] <- paste0(arg[i],",",arg[j])
+                    arg <- arg[-j]
+                    if (j>=length(arg))  break
+                    else  j <- j+1
+                  }
+                }
               }
+              if (j>=length(arg))  break
+              else  j <- j+1
+              arg[i] <- paste0(arg[i],",",arg[j])
+              arg <- arg[-j]
             }
-          }else if(!grepl("\u0022",args[i])) {
-            if(grepl("[:alpha:]",args[i])) {
-              tmp <- get(args[i],envir=parent.frame(n+1))
-              if(length(tmp)>1)  tmp <- paste(tmp,collapse=", ")
-              args[i] <- paste0("\"",tmp,"\"")
+          }
+          if(grepl("=",arg[i],fixed=TRUE)) {
+            if (grepl("(",arg[i],fixed=TRUE)) {
+              tmp <- unlist(strsplit(arg[i],"(",fixed=TRUE))[2]
+              tmp <- gsub("(","",gsub(")","",tmp,fixed=TRUE),fixed=TRUE)
+              if (grepl(",",tmp,fixed=TRUE)) {
+                tmp <- tmp[which(grepl("=",unlist(strsplit(tmp,",",fixed=TRUE)),fixed=TRUE))]
+              }
+            }else  tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
+            if (length(tmp)>2) {
+              tmp[2] <- paste(tmp[-1],collapse=", ")
+            }
+          }else {
+            tmp <- c(NA,arg[i])
+          }
+          if (grepl("(",tmp[2],fixed=TRUE) & !grepl("c(",substr(tmp[2],1,2),fixed=TRUE) & !grepl("list(",tmp[2],fixed=TRUE)) {
+            tmp[2] <- eval.parent(parse(text=tmp[2]),n=n+1)
+            fchanged <- TRUE
+          }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
+            if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL"))) {
+              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+              if(length(tmp[2])>1) { tmp[2] <- paste(tmp[2],collapse=", ") }
               fchanged <- TRUE
             }
           }
+          if (!is.na(tmp[1])) {
+            arg[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+          }else {
+            arg[i] <- tmp[2]
+          }
         }
-        if(fchanged==TRUE)  f <- paste0(fname,"(",paste(args,collapse=", "),")")
-        
+        if(fchanged==TRUE)  f <- paste0(fname,"(",paste(arg,collapse=", "),")")
       }
-      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
       if (convert==TRUE)  return(data.tree::Node$new(f))
       else  return(f)
     }else  stop("n argument is out of range! calcHistory cannot be updated!")
@@ -126,6 +159,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   #Function buildTree constructs the calcHistory data tree 
   buildTree <- function(x,y=NULL,n,cH){
+    if (length(sys.calls()) < n)  cH <- "merge"
     if (cH=="update"){
       rootNode <- newCall(n)
       if (is.null(y)){
@@ -179,50 +213,75 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   
   #Function for merging metadata from 2 or more objects
   mergeFields <- function(x,y) {
-    if (is.character(x)){
-      if (is.character(y))  x <- list(x,y)
-      else if (is.list(y))  x <- append(list(x),y)
-    }else if (is.list(x)){
-      if (is.character(y))  x <- append(x,list(y))
-      else if (is.list(y))  x <- append(x,y)
-    }else if (is.character(y) | is.list(y))  x <- y
+    if (!is.null(x)) {
+      if (!is.null(y)) {
+        if(!is.list(x)) {
+          if (is.list(y))  x <- append(list(x),y)
+          else  x <- list(x,y)
+        }else {
+          if (is.list(y))  x <- append(x,y)
+          else  x <- append(x,list(y))
+        }
+      }
+    }else if (!is.null(y))  return(y)
     return(x)
   }
   
-  Mx <- getMetadata(x)
-  #Recursive function to merge metadata from a list of magpie objects.
-  if (is.list(y)){
-    My <- list()
-    for (i in 1:length(y)){
-      if (is.magpie(y[[i]])){
-        My[[i]] <- getMetadata(y[[i]])
-      }else  stop("All list components of y must be magpie objects!")
+  #Run updateMetadata recursively for each magpie object in y
+  if (is.list(y)) {
+    if (length(y) > 1) {
+      for (i in 1:(length(y)-1)) {
+        if (is.magpie(y[[i]])) {
+          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1)
+        }
+      }
     }
-  }else if (!is.null(y) & !is.magpie(y)){
+    My <- getMetadata(y[[length(y)]])
+  }else if (is.magpie(y)) {
+    My <- getMetadata(y)
+  }else if (!is.null(y)){
     y <- NULL
     warning("y argument must be a magpie object or a list of magpie objects!")
-  }else  My <- getMetadata(y)
+  }
+  Mx <- getMetadata(x)
+  if (!is.null(y)) {
+    if (is.null(Mx)) {
+      unit <- "copy"
+      source <- "copy"
+      calcHistory <- "copy"
+      description <- "copy"
+      version <- "copy"
+    }else if (is.null(My)) {
+      unit <- "keep"
+      source <- "keep"
+      calcHistory <- "keep"
+      description <- "keep"
+      version <- "keep"
+    }
+  }
   
   if (is.null(unit))  unit <- "keep"
-  if (unit=="copy"){
+  if (is(unit,"units")) { #| is(unit,"mixed_units")
+    Mx$unit <- unit
+  }else if (unit=="copy") {
     if (!is.null(y))  Mx$unit <- My$unit
     else  warning("Units cannot be copied without a second magpie argument provided!")
-  }else if (unit=="clear")  Mx$unit <- NULL
-  else if (unit=="update"){
-    if (!is.null(getMetadata(x,"unit"))){
-      if (is.null(Mx$unit))  Mx$unit <- "1"
-      if (is.null(My$unit))  My$unit <- "1"
-      if (Mx$unit!=My$unit)  Mx$unit <- "mixed"
-    }else  Mx$unit <- My$unit
+  }else if (unit=="clear") {
+    Mx$unit <- NULL
+  }else if (unit=="update") {
+    if (is.null(Mx$unit)) {
+      Mx$unit <- My$unit
+    }else if (!is.null(My$unit)) {
+      Mx$unit <- list(Mx$unit,My$unit)
+    }
   }else if (unit!="keep")  Mx$unit <- unit
   
   if (is.null(source))  source <- "keep"
-  if (is.list(source) | is(source,"Bibtex") | is(source,"bibentry"))  Mx$source <- source
-  else if (source=="merge"){
+  if (is.list(source) | is(source,"Bibtex") | is(source,"bibentry")) {
+    Mx$source <- source
+  }else if (source=="merge"){
     if (!is.null(y)){
-      if (!is.null(My$source)){
-        Mx$source <- My$source
-      }
+      Mx$source <- mergeFields(Mx$source,My$source)
     }else  warning("Source cannot be merged without a second magpie argument provided!")
   }else if (source=="copy"){
     if (!is.null(y)){
@@ -231,9 +290,11 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         Mx$source <- My$source
       }
     }else  warning("Source cannot be copied without a second magpie argument provided!")
-  }else if (source=="update")  warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
-  else if (source=="clear")  Mx$source <- NULL
-  else if (source!="keep")  Mx$source <- source
+  }else if (source=="update") {
+    warning("Update is an invalid argument for source! Please specify keep, copy, or clear.")
+  }else if (source=="clear") {
+    Mx$source <- NULL
+  }else if (source!="keep")  Mx$source <- source
   
   if (is(calcHistory,"Node") | is.null(calcHistory)){
     getMetadata(x,"calcHistory") <- NULL
@@ -247,10 +308,13 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       else if (is(My$calcHistory,"Node"))  Mx$calcHistory <- data.tree::Clone(My$calcHistory)
       else  Mx$calcHistory <- My$calcHistory
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
-  }else if (calcHistory=="clear")  warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
-  else if (calcHistory=="keep")  Mx$calcHistory <- NULL
-  else if (is.character(calcHistory) & length(calcHistory)==1)  Mx$calcHistory <- calcHistory
-  else  warning("Invalid argument ",calcHistory," for calcHistory!")
+  }else if (calcHistory=="clear") {
+    warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
+  }else if (calcHistory=="keep") {
+    Mx$calcHistory <- NULL
+  }else if (is.character(calcHistory) & length(calcHistory)==1) {
+    Mx$calcHistory <- calcHistory
+  }else  warning("Invalid argument ",calcHistory," for calcHistory!")
   
   if (is.null(user))  user <- "keep"
   if (user=="update"){
@@ -261,21 +325,24 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (!is.null(My$user))  Mx$user <- My$user
       else  warning("Attempting to copy a NULL user!")
     }else  warning("User cannot be copied without a second magpie argument provided!")
-  }else if (user=="clear")  Mx$user <- NULL
-  else if (user!="keep"){
+  }else if (user=="clear") {
+    Mx$user <- NULL
+  }else if (user!="keep"){
     if (is.character(user) & length(user)==1)  Mx$user <- user
     else  warning("Invalid argument ",user," for user!")
   }
   
   if (is.null(date))  date <- "update"
-  if (date=="update")  Mx$date <- as.character(Sys.time())
-  else if (date=="copy"){
+  if (date=="update") {
+    Mx$date <- as.character(Sys.time())
+  }else if (date=="copy"){
     if (!is.null(y)){
       if (!is.null(My$date))  Mx$date <- My$date
       else  warning("Attempting to copy a NULL date!")
     }else  warning("date cannot be copied without a second magpie argument provided!")
-  }else if (date=="clear")  warning("date cannot be cleared! Please specify keep, copy, or update.")
-  else if (date!="keep")  warning("Invalid argument ", date," for date!")
+  }else if (date=="clear") {
+    warning("date cannot be cleared! Please specify keep, copy, or update.")
+  }else if (date!="keep")  warning("Invalid argument ", date," for date!")
     
   if (is.null(description))  Mx$description <- "keep"
   if (length(description)>1){
@@ -284,10 +351,12 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (description=="copy"){
     if (!is.null(y))  Mx$description <- My$description
     else  warning("Description cannot be copied without a second magpie argument provided!")
-  }else if (description=="clear")  Mx$description <- NULL
-  else if (description=="update")  warning("Update is an invalid argument for description! Please specify keep, copy, merge, or clear.")
-  else if (description=="merge"){
-    if (!is.null(y))  mergeFields(Mx$description,My$description)
+  }else if (description=="clear") {
+    Mx$description <- NULL
+  }else if (description=="update") {
+    warning("Update is an invalid argument for description! Please specify keep, copy, merge, or clear.")
+  }else if (description=="merge"){
+    if (!is.null(y))  Mx$description <- mergeFields(Mx$description,My$description)
     else  warning("description cannot be merged without a second magpie argument provided!")
   }else if (description!="keep"){
     if (is.character(description))  Mx$description <- description
@@ -300,14 +369,33 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   }else if (note=="copy"){
     if (!is.null(y))  Mx$note <- My$note
     else  warning("note cannot be copied without a second magpie argument provided!")
-  }else if (note=="clear")  Mx$note <- NULL
-  else if (note=="merge"){
-    if (!is.null(y))  mergeFields(Mx$note,My$note)
+  }else if (note=="clear") {
+    Mx$note <- NULL
+  }else if (note=="merge"){
+    if (!is.null(y))  Mx$note <- mergeFields(Mx$note,My$note)
     else  warning("note cannot be merged without a second magpie argument provided!")
-  }else if (note=="update")  warning("Update is an invalid argument for note! Please specify keep, copy, merge, or clear.")
-  else if (note!="keep"){
+  }else if (note=="update") {
+    warning("Update is an invalid argument for note! Please specify keep, copy, merge, or clear.")
+  }else if (note!="keep"){
     if (is.character(note))  Mx$note <- note
     else  warning("Invalid argument ",note," for note!")
+  }
+  if (is.null(version))  version <- "clear"
+  if (length(version)>1) {
+    Mx$version <- version
+  }else if (version=="copy") {
+    if (!is.null(y)) {
+      getMetadata(x,"version") <- NULL
+      Mx$version <- My$version
+    }else  warning("version cannot be copied without a second magpie argument provided!")
+  }else if (version=="clear") {
+    Mx$version <- NULL
+  }else if (version=="merge") {
+    Mx$version <- My$version
+  }else if (version=="update") {
+    warning("update is an invalid argument for version!")
+  }else if (version!="keep") {
+    Mx$version <- version
   }
   
   getMetadata(x) <- Mx
