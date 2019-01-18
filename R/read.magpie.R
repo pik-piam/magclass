@@ -262,7 +262,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
               }else if (grepl("^\\d",metadata[[i]])) {
                 unitChar <- unlist(strsplit(metadata[[i]]," "))
                 unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
-                metadata[[i]] <- as_units(as.numeric(unitChar[1]),unitChar[2])
+                metadata[[i]] <- units::as_units(as.numeric(unitChar[1]),unitChar[2])
               }else {
                 metadata[[i]] <- install_magpie_units(metadata[[i]])
               }
@@ -466,7 +466,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         if (grepl("^\\d",unitChar)) {
           unitChar <- unlist(strsplit(unitChar," "))
           unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
-          metadata$unit <- as_units(as.numeric(unitChar[1]),unitChar[2])
+          metadata$unit <- units::as_units(as.numeric(unitChar[1]),unitChar[2])
         }else {
           metadata$unit <- install_magpie_units(unitChar)
         }
