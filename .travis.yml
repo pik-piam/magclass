@@ -6,6 +6,7 @@ cache: false
 latex: false
 pandoc: false
 install:
-  - Rscript -e "install.packages(c('lucode','testthat'))"
+  - Rscript -e "install.packages(c('devtools','testthat'))"
+  - Rscript -e "devtools::install_github('pik-piam/lucode')"
 script:
   - Rscript test-travisCI.R
