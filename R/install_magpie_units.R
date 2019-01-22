@@ -423,6 +423,8 @@ install_magpie_units <- function(x=NULL) {
     install_symbolic_unit("share",dimensionless=TRUE)                 #Share (dimension)
     install_symbolic_unit("passenger",dimensionless=FALSE)            #passengers
     install_conversion_constant("pkm","passenger*km",1)               #passenger-kilometer pkm
+    install_symbolic_unit("vehicle",dimensionless=FALSE)              #vehicles
+    install_conversion_constant("vkm","vehicle*km",1)                 #vehicle-kilometer vkm
     install_conversion_constant("Wh","W*h",1)                         #Watt-hours
     install_conversion_constant("annum","year",1)                     #annum
     install_conversion_constant("Wa","watt*annum",1)                  #Watts-annum
