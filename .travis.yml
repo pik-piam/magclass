@@ -2,9 +2,11 @@
 
 language: R
 sudo: false
-cache: false
+cache: packages
 latex: false
 pandoc: false
+before_install:
+  - sudo apt-get install r-cran-ncdf4
 install:
   - Rscript -e "install.packages(c('devtools','testthat'))"
   - Rscript -e "devtools::install_github('pik-piam/lucode')"
