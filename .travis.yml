@@ -6,6 +6,6 @@ cache: false
 latex: false
 pandoc: false
 install:
-  - Rscript -e "install.packages('lucode')"
+  - Rscript -e "install.packages(c('lucode','testthat'))"
 script:
   - Rscript test-travisCI.R
