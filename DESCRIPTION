@@ -48,4 +48,4 @@ LazyData: true
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-ValidationKey: 87887790
+ValidationKey: 87887791
