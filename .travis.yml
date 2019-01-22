@@ -8,4 +8,4 @@ pandoc: false
 install:
   - Rscript -e "install.packages('lucode')"
 script:
-  - Rscript ./tests/test-travisCI.R
+  - Rscript test-travisCI.R
