@@ -10,8 +10,13 @@ latex: false
 pandoc: false
 before_install:
   - sudo apt-get install r-cran-ncdf4
+  - sudo dpkg -L r-cran-ncdf4
+  - sudo dpkg -L libhdf5-7
+  - sudo dpkg -L libnetcdfc7
+  - sudo dpkg -L libpaper-utils
+  - sudo dpkg -L libpaper1
 install:
   - Rscript -e "install.packages(c('devtools','testthat'))"
   - Rscript -e "devtools::install_github('pik-piam/lucode')"
 script:
-  - Rscript test-travisCI.R
+  - Rscript ./tests/testthat/test-travisCI.R
