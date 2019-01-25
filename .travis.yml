@@ -4,8 +4,9 @@ language: R
 sudo: false
 cache: 
   - packages
-  - /usr/share/doc/r-cran-ncdf4
-  - /usr/lib/R/site-library/ncdf4
+  directories:
+    - /usr/share/doc/r-cran-ncdf4
+    - /usr/lib/R/site-library/ncdf4
 latex: false
 pandoc: false
 before_install:
