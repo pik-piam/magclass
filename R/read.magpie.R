@@ -422,7 +422,17 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       nc_file <- ncdf4::nc_open(file_name)
       options("magclass.verbosity" = 1)
       
-      if (nc_file$dim$lat$len != 360) stop(paste0("Only netcdf files with 0.5 degree resolution (720x360) are supported. Your file has a dimension of ",nc_file$dim$lon$len, "x", nc_file$dim$lat$len,"."))
+      coord <- magclassdata$half_deg[, c("lon", "lat")]
+      
+      if(!(max(nc_file$dim$lat$vals) >= max(coord$lat)) | !(min(nc_file$dim$lat$vals) <= min(coord$lat)) |
+         !(max(nc_file$dim$lon$vals) >= max(coord$lon)) | !(min(nc_file$dim$lon$vals) <= min(coord$lon)) ){
+    
+        stop(paste("Only netcdf files with 0.5 degree resolution with extend from", min(coord$lon),max(coord$lon),min(coord$lat),max(coord$lat),"are supported.",
+                   "Your file has a extend of",min(nc_file$dim$lon$vals), max(nc_file$dim$lon$vals),min(nc_file$dim$lat$vals),max(nc_file$dim$lat$vals),"."))
+      }
+      
+      #if(!(nc_file$dim$lat$len%in%c(360,280))) stop(paste0("Only netcdf files with 0.5 degree resolution (720x360) and (720x280) are supported. Your file has a dimension of ",nc_file$dim$lon$len, "x", nc_file$dim$lat$len,"."))
+      
       if(is.null(nc_file$dim$time$len)) nc_file$dim$time$len <- 1
       if(is.null(nc_file$dim$time$vals)) nc_file$dim$time$vals <- 1995
       
