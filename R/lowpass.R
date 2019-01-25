@@ -10,6 +10,9 @@
 #' \code{NULL} which doesn't fix any point. Available options are:
 #' \code{"start"} for fixing the starting point, \code{"end"} for fixing the
 #' ending point and \code{"both"} for fixing both ends of the data.
+#' @param altFilter set special filter rule to indexes defined in this
+#' parameter. The special filter has the structure
+#' x'(n) = (2*x(n)+x(n+1))/3
 #' @return The filtered data vector or MAgPIE object
 #' @author Jan Philipp Dietrich, Misko Stevanovic
 #' @examples
@@ -19,7 +22,7 @@
 #' lowpass(c(0,9,1,5,14,20,6,11,0), i=2, fix="start")
 #' 
 #' @export lowpass
-lowpass <- function(x,i=1, fix=NULL) {
+lowpass <- function(x,i=1, fix=NULL, altFilter=NULL) {
   
   if(!is.null(fix)) warning("Fixing start or end does might modify the total sum of values! Use fix=NULL to let the total sum unchanged!")
   
@@ -28,14 +31,16 @@ lowpass <- function(x,i=1, fix=NULL) {
   if(is.magpie(x)) {
     for(k in 1:dim(x)[1]) {
       for(j in if(is.null(getNames(x))) 1 else getNames(x)) {
-        x[k,,j] <- lowpass(as.vector(x[k,,j]),i=i,fix=fix)
+        x[k,,j] <- lowpass(as.vector(x[k,,j]),i=i,fix=fix,altFilter=altFilter)
       }
     }  
   } else {
     l <- length(x)
     for(j in 1:i) {
       y <- x
-      x[2:(l-1)] <- (y[1:(l-2)] + 2*y[2:(l-1)] + y[3:l])/4  
+      x[2:(l-1)] <- (y[1:(l-2)] + 2*y[2:(l-1)] + y[3:l])/4
+	  if(!is.null(altFilter))
+        x[altFilter] <- (2*y[altFilter] + y[altFilter+1])/3  
       if(is.null(fix)){
         x[1] <- (3*y[1]+y[2])/4
         x[l] <- (3*y[l]+y[l-1])/4

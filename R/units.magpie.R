@@ -13,11 +13,10 @@
 #' @seealso \code{\link[units]{set_units}}
 #' 
 #' @export 
-#' @importFrom udunits2 ud.convert
 #' 
 "units<-.magpie" <- function (x, value) {
   unit <- getMetadata(x,"unit")
-  multiplier <- as.numeric(ud.convert(unit,units(unit),value)/unit)
+  multiplier <- as.numeric(udunits2::ud.convert(unit,units(unit),value)/unit)
   getMetadata(x,"unit") <- value
   return(x*multiplier)
 }

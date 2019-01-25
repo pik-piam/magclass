@@ -1,11 +1,9 @@
 #' @importFrom methods Ops callGeneric new
-#' @importFrom udunits2 ud.are.convertible ud.convert
-#' @importFrom units units_options mixed_units set_units
 #' @exportMethod Ops
 setMethod(Ops, signature(e1='magpie',e2='magpie'),
           function(e1, e2){
             if (withMetadata()) {
-              units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE,set_units_mode="standard")
+              units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE,set_units_mode="standard")
               e1 <- install_magpie_units(e1)
               u1 <- units(e1)
               e2 <- install_magpie_units(e2)
@@ -32,15 +30,15 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
               #    }
               #  }
               #  if (length(unique(units_out)) > 1) {
-              #    units_out <- mixed_units(1,unique(units_out))
+              #    units_out <- units::mixed_units(1,unique(units_out))
               #  }else {
               #    units_out <- unique(units_out)
               #  }
               #  conv_factor <- 1
               #}else {
               if (units(u2)!=units(u1)) {
-                if (ud.are.convertible(as.character(units(u1)),as.character(units(u2)))) {
-                  u2 <- set_units(u2,units(u1))
+                if (udunits2::ud.are.convertible(as.character(units(u1)),as.character(units(u2)))) {
+                  u2 <- units::set_units(u2,units(u1))
                 }else if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-")) {
                   stop(.Generic," operation cannot be performed because units ",as.character(units(u1)),"and ",as.character(units(u2))," are not inter-convertible!")
                 }else if (as.character(units(u2))!="1") {
@@ -99,7 +97,7 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
 setMethod(Ops, signature(e1='magpie',e2='numeric'),
           function(e1, e2){
             if (withMetadata() & !is.null(units(e1))) {
-              units_options(allow_mixed=FALSE)
+              units::units_options(allow_mixed=FALSE)
               e1 <- install_magpie_units(e1)
               u1 <- units(e1)
               if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-", "%%")) {
@@ -146,7 +144,7 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
 setMethod(Ops, signature(e1='numeric',e2='magpie'),
           function(e1, e2){
             if (withMetadata() & !is.null(units(e2))) {
-              units_options(allow_mixed=FALSE)
+              units::units_options(allow_mixed=FALSE)
               e2 <- install_magpie_units(e2)
               u2 <- units(e2)
               if (.Generic %in% c("<", ">", "==", "!=", "<", ">", "<=", ">=", "+", "-")) {

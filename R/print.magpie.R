@@ -17,7 +17,6 @@
 #'   print(population_magpie[,1,], drop=FALSE)
 #'   print(population_magpie[,1,])
 #' 
-#' @importFrom units deparse_unit
 #' @export
 print.magpie <- function(x, drop=TRUE, ...) {
     p <- print(as.array(x)[,,,drop=drop], ...)

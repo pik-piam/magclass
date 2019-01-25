@@ -49,14 +49,13 @@
 #'  getMetadata(a) <- M
 #'  getMetadata(a)
 #'  withMetadata(FALSE)
-#' @importFrom units units_options
 #' @export
 
 getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
   if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   M <- attr(x, "Metadata")
   if(is.null(type)) {
     return(M)
@@ -70,8 +69,6 @@ getMetadata <- function(x, type=NULL) {
 #' @describeIn getMetadata set and modify Metadata
 #' @export
 #' @importFrom utils toBibtex
-#' @importFrom units as_units units_options
-#' @importFrom udunits2 ud.is.parseable
 "getMetadata<-" <- function(x, type=NULL, value) {
   if(!withMetadata()) return(x)
   if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
@@ -80,7 +77,7 @@ getMetadata <- function(x, type=NULL) {
     return(x)
   }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   
   .setSource <- function(old,new) {
     #first remove any sources which are not of bibentry or Bibtex class
