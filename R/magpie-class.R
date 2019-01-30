@@ -88,7 +88,7 @@
 
 setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
-.dimextract <- function(x,i,dim,pmatch=FALSE,invert=FALSE) {
+.dimextract <- function(x,i,dim,subdim=FALSE,pmatch=FALSE,invert=FALSE) {
   if(length(i)==0) return(NULL)
   .countdots <- function(i) {
     return(nchar(gsub("[^\\.]","",i)))
@@ -112,11 +112,18 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   
   pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
-  tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(i),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
-  if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(i[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
+  if(is.numeric(subdim) & pmatch==FALSE & length(i) == length(subdim)){
+    # add possibility of vector type of search by dimensions
+    tmp <- lapply(1:length(i), function(q) unlist(lapply(1:length(strsplit(dimnames(x)[[dim]], "\\.")), function(j) if(i[q] %in% strsplit(dimnames(x)[[dim]],"\\.")[[j]][subdim[q]]) return(j))))
+    tmp[sapply(tmp, is.null)] <- NULL
+    tmp <- Reduce(intersect, tmp)
+  } else {
+    tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(i),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
+  }
+  if(any(vapply(tmp,length,length(tmp))==0)|length(tmp)==0) stop("Data element(s) \"",paste(i[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
   tmp <- unlist(tmp)
   if(invert) {
-    tmp <- setdiff(1:dim(x)[dim],tmp)    
+    tmp <- setdiff(1:dim(x)[dim],tmp)
   }
   return(tmp)
 }
@@ -162,7 +169,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     if(any(length==0) & nrow(df)>0) {
       row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
       if(!is.null(dfmissing)) {
-       row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
+        row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
       }
       tmp <- new.magpie(getCells(x),getYears(x),row_extensions,0,sets=getSets(x))
       if(ndata(x)==0) {
@@ -179,7 +186,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 #' @exportMethod [
 setMethod("[",
           signature(x = "magpie"),
-          function (x, i, j, k, drop=FALSE,pmatch=FALSE,invert=FALSE) 
+          function (x, i, j, k,subdim=FALSE,drop=FALSE,pmatch=FALSE,invert=FALSE) 
           {
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
@@ -202,7 +209,7 @@ setMethod("[",
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
-              if(is.character(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
+              if(is.character(k)) k <- .dimextract(x,k,3,subdim=subdim,pmatch=pmatch,invert=invert)
             }
             if(ifelse(missing(i),FALSE,is.array(i) | any(abs(i)>dim(x)[1]))) {
               #indices are supplied as array, return data as numeric
@@ -229,7 +236,7 @@ setMethod("[",
               if(drop) x <- collapseNames(x)
               return(x)
             }
-    }
+          }
 )
 
 #' @exportMethod [<-
