@@ -88,7 +88,7 @@
 
 setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
-.dimextract <- function(x,i,dim,subdim=FALSE,pmatch=FALSE,invert=FALSE) {
+.dimextract <- function(x,i,dim,subdim=FALSE,query=FALSE,pmatch=FALSE,invert=FALSE) {
   if(length(i)==0) return(NULL)
   .countdots <- function(i) {
     return(nchar(gsub("[^\\.]","",i)))
@@ -113,10 +113,16 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
   if(is.numeric(subdim) & pmatch==FALSE & length(i) == length(subdim)){
-    # add possibility of vector type of search by dimensions
+    if(query==FALSE){
+      query = "AND"
+    }
     tmp <- lapply(1:length(i), function(q) unlist(lapply(1:length(strsplit(dimnames(x)[[dim]], "\\.")), function(j) if(i[q] %in% strsplit(dimnames(x)[[dim]],"\\.")[[j]][subdim[q]]) return(j))))
     tmp[sapply(tmp, is.null)] <- NULL
-    tmp <- Reduce(intersect, tmp)
+    if(query == "OR"){
+      tmp <- Reduce(union, tmp)
+    } else{
+      tmp <- Reduce(intersect, tmp)
+    }
   } else {
     tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(i),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
   }
@@ -186,7 +192,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 #' @exportMethod [
 setMethod("[",
           signature(x = "magpie"),
-          function (x, i, j, k,subdim=FALSE,drop=FALSE,pmatch=FALSE,invert=FALSE) 
+          function (x, i, j, k,subdim=FALSE,query=FALSE,drop=FALSE,pmatch=FALSE,invert=FALSE) 
           {
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
@@ -209,7 +215,7 @@ setMethod("[",
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
-              if(is.character(k)) k <- .dimextract(x,k,3,subdim=subdim,pmatch=pmatch,invert=invert)
+              if(is.character(k)) k <- .dimextract(x,k,3,subdim=subdim,query=query,pmatch=pmatch,invert=invert)
             }
             if(ifelse(missing(i),FALSE,is.array(i) | any(abs(i)>dim(x)[1]))) {
               #indices are supplied as array, return data as numeric
