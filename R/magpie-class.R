@@ -109,7 +109,6 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       warning("Your dimnames in dim=",dim," contain duplicates! This might lead to erronous results and bad code performance. Please try to avoid duplicates in dimnames under all circumstances!")
     }
   }
-  
   pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
   if(is.numeric(subdim) & pmatch==FALSE & length(i) == length(subdim)){
@@ -192,7 +191,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 #' @exportMethod [
 setMethod("[",
           signature(x = "magpie"),
-          function (x, i, j, k,subdim=FALSE,query=FALSE,drop=FALSE,pmatch=FALSE,invert=FALSE) 
+          function (x, i, j, k,dim=FALSE,query=FALSE,drop=FALSE,pmatch=FALSE,invert=FALSE) 
           {
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
@@ -215,7 +214,7 @@ setMethod("[",
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
-              if(is.character(k)) k <- .dimextract(x,k,3,subdim=subdim,query=query,pmatch=pmatch,invert=invert)
+              if(is.character(k)) k <- .dimextract(x,k,3,subdim=dim,query=query,pmatch=pmatch,invert=invert)
             }
             if(ifelse(missing(i),FALSE,is.array(i) | any(abs(i)>dim(x)[1]))) {
               #indices are supplied as array, return data as numeric
