@@ -4,7 +4,6 @@ language: R
 sudo: false
 cache: 
   directories:
-    - /usr/share/doc/r-cran-ncdf4
     - /usr/lib/R/site-library/ncdf4
   packages: true
 latex: false
