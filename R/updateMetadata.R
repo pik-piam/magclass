@@ -65,7 +65,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
