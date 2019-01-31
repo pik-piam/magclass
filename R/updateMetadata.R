@@ -65,7 +65,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
   #reducedHistory option specific to calcOutput runs 
   if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
   
@@ -244,19 +244,20 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     warning("y argument must be a magpie object or a list of magpie objects!")
   }
   Mx <- getMetadata(x)
+  #Change default arguments in case either x or y is NULL
   if (!is.null(y)) {
     if (is.null(Mx)) {
-      unit <- "copy"
-      source <- "copy"
-      calcHistory <- "copy"
-      description <- "copy"
-      version <- "copy"
+      if (is.character(unit))  unit <- "copy"
+      if (is.character(source))  source <- "copy"
+      if (is.character(calcHistory))  if (calcHistory=="merge")  calcHistory <- "copy"
+      if (description=="merge")  description <- "copy"
+      if (version=="merge")  version <- "copy"
     }else if (is.null(My)) {
-      unit <- "keep"
-      source <- "keep"
-      calcHistory <- "keep"
-      description <- "keep"
-      version <- "keep"
+      if (is.character(unit))  unit <- "keep"
+      if (is.character(source))  source <- "keep"
+      if (is.character(calcHistory))  if (calcHistory=="merge")  calcHistory <- "keep"
+      if (description=="merge")  description <- "keep"
+      if (version=="merge")  version <- "keep"
     }
   }
   

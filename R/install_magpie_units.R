@@ -30,7 +30,7 @@
 #' 
 install_magpie_units <- function(x=NULL) {
   if (!withMetadata()) return(x)
-  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE,set_units_mode="standard")
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
   
   unit_syntax <- function(z) {
     if (grepl("mio",z,ignore.case=TRUE)) {

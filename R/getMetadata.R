@@ -55,7 +55,7 @@ getMetadata <- function(x, type=NULL) {
   if(!withMetadata()) return(NULL)
   if (Sys.getlocale("LC_CTYPE")!="en_US.UTF-8")  tmp <- suppressWarnings(Sys.setlocale("LC_ALL","en_US.UTF-8"))
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
   M <- attr(x, "Metadata")
   if(is.null(type)) {
     return(M)
@@ -77,7 +77,7 @@ getMetadata <- function(x, type=NULL) {
     return(x)
   }
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
-  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=TRUE)
+  units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
   
   .setSource <- function(old,new) {
     #first remove any sources which are not of bibentry or Bibtex class

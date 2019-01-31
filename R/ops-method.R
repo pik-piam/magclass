@@ -3,7 +3,7 @@
 setMethod(Ops, signature(e1='magpie',e2='magpie'),
           function(e1, e2){
             if (withMetadata()) {
-              units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE,set_units_mode="standard")
+              units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
               e1 <- install_magpie_units(e1)
               u1 <- units(e1)
               e2 <- install_magpie_units(e2)
@@ -97,7 +97,7 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
 setMethod(Ops, signature(e1='magpie',e2='numeric'),
           function(e1, e2){
             if (withMetadata() & !is.null(units(e1))) {
-              units::units_options(allow_mixed=FALSE)
+              units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
               e1 <- install_magpie_units(e1)
               u1 <- units(e1)
               if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-", "%%")) {
@@ -144,7 +144,7 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
 setMethod(Ops, signature(e1='numeric',e2='magpie'),
           function(e1, e2){
             if (withMetadata() & !is.null(units(e2))) {
-              units::units_options(allow_mixed=FALSE)
+              units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
               e2 <- install_magpie_units(e2)
               u2 <- units(e2)
               if (.Generic %in% c("<", ">", "==", "!=", "<", ">", "<=", ">=", "+", "-")) {
