@@ -3,6 +3,9 @@
 language: R
 sudo: false
 cache: 
+  directories:
+    - /home/travis/usr/share/doc/r-cran-ncdf4
+    - /home/travis/usr/lib/R/site-library/ncdf4
   packages: true
 latex: false
 pandoc: false
