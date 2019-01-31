@@ -3,8 +3,6 @@
 language: R
 sudo: false
 cache: 
-  directories:
-    - /usr/lib/R/site-library/ncdf4
   packages: true
 latex: false
 pandoc: false
