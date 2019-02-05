@@ -19,6 +19,7 @@
 #' "Nutrition|+|Calorie Supply (kcal/capita/day)";"CALO";"AGR";"kcal/capita/day";"NULL";1
 #' @param file name of the project specipic report, default=NULL means that the names of the header of the reporting is used
 #' @param max_file_size maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files
+#' @param format available reporting formats: "default", "IAMC" and "AgMIP". "default" and "IAMC" are very similar (wide format for year) and differ only in the use of semi-colon (default) and comma (IAMC) as seperator. "AgMIP" is in long format. 
 #' @param ... arguments passed to write.report and write.report2
 #' @author Christoph Bertram, Lavinia Baumstark, Anastasis Giannousakis, Florian Humpenoeder
 #' @seealso \code{\link{write.report}}
@@ -31,7 +32,7 @@
 #' @export write.reportProject
 #' @importFrom utils read.csv2
 #' 
-write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
+write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format="default",...){
   if(is.character(mif)){
     data <- read.report(mif,as.list=TRUE)
   } else if (is.list(mif)){
@@ -162,7 +163,16 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
   }  
   
   # save project reporting
-  write.report2(new_data,file=file,...)
+  if(format == "default") {
+    write.report2(new_data,file=file,...)
+  } else if (format == "IAMC") {
+    a <- write.report2(new_data,file=NULL,...)
+    write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
+  } else if (format == "AgMIP") {
+    a <- write.report2(new_data,file=NULL,extracols = "Item")
+    b<-melt(a[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+    write.csv(b,file=file,row.names = FALSE,quote = FALSE)
+  }
   
   if (!is.null(max_file_size)) {
     file_size <- file.size(file)/10^6 #file size in MB
@@ -190,7 +200,16 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,...){
         file_name <- unlist(strsplit(file,"\\."))
         last <- length(file_name)
         #write report
-        write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
+        if(format == "default") {
+          write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
+        } else if (format == "IAMC") {
+          a <- write.report2(tmp,file=NULL,...)
+          write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
+        } else if (format == "AgMIP") {
+          a <- write.report2(tmp,file=NULL,extracols = "Item")
+          b<-melt(tmp[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+          write.csv(b,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),row.names = FALSE,quote = FALSE)
+        }
         #set counter for next loop
         first_scen <- first_scen+scen_per_file
       }
