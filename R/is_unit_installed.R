@@ -7,7 +7,6 @@
 #' @return Returns a boolean. TRUE if char is recognized by the units package and FALSE otherwise.
 #' If FALSE, char can be installed as a compatible unit via install_magpie_units.
 #' @author Stephen Bi
-#' @export
 #' 
 is_unit_installed <- function(char) {
   return(suppressWarnings(is(try(units::as_units(char),silent=TRUE),"units")))

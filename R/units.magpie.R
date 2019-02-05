@@ -6,7 +6,6 @@
 #' @aliases units<-.magpie units.magpie
 #' @param x MAgPIE object
 #' @param value object of class units or character of length one coercible to class units via as_units
-#' @param ... ignored
 #' @return MAgPIE object converted to given unit (if possible)
 #' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{\link[units]{units}}

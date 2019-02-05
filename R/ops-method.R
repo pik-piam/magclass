@@ -37,8 +37,8 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
               #  conv_factor <- 1
               #}else {
               if (units(u2)!=units(u1)) {
-                if (udunits2::ud.are.convertible(as.character(units(u1)),as.character(units(u2)))) {
-                  u2 <- units::set_units(u2,units(u1))
+                if (are_units_convertible(u1,u2)) {
+                  e2 <- set_magpie_units(e2,u1)
                 }else if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-")) {
                   stop(.Generic," operation cannot be performed because units ",as.character(units(u1)),"and ",as.character(units(u2))," are not inter-convertible!")
                 }else if (as.character(units(u2))!="1") {

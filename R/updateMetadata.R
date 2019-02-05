@@ -84,15 +84,21 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   #Function newCall creates the appropriate function call to be displayed for the new root
   newCall <- function(n,convert=TRUE){
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
-      f <- as.character(sys.call(-n))[1]
-      if (f=="/"|f=="*"|f=="+"|f=="-"|f=="^"|f=="%%"|f=="%/%")  f <- paste0("Ops(",f,")")
-      if (f=="mcalc")  f <- paste0(f,"(",as.character(sys.call(-n))[3],")")
-      if (grepl(":::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,":::",fixed=TRUE))[2]
-      if (grepl("::",f[1],fixed=TRUE))  f <- unlist(strsplit(f,"::",fixed=TRUE))[2]
+      func <- as.character(sys.call(-n))[1]
+      if (func=="/"|func=="*"|func=="+"|func=="-"|func=="^"|func=="%%"|func=="%/%") {
+        if (convert==TRUE)  return(data.tree::Node$new(paste0("Ops(",func,")")))
+        else  return(paste0("Ops(",func,")"))
+      } 
+      if (func=="mcalc") {
+        if (convert==TRUE)  return(data.tree::Node$new(paste0(func,"(",as.character(sys.call(-n))[3],")")))
+        else  return(paste0(func,"(",as.character(sys.call(-n))[3],")"))
+      }
+      if (grepl(":::",func[1],fixed=TRUE))  func <- unlist(strsplit(func,":::",fixed=TRUE))[2]
+      if (grepl("::",func[1],fixed=TRUE))  func <- unlist(strsplit(func,"::",fixed=TRUE))[2]
       
       if (all(getPackageName(sys.frame(-n))!=c("madrat","moinput"))) {
-        f <- trimws(deparse(sys.call(-n),width.cutoff = 500))
-        tmp <- unlist(strsplit(f,"(",fixed=TRUE))
+        func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
+        tmp <- unlist(strsplit(func,"(",fixed=TRUE))
         fname <- tmp[1]
         if (length(tmp[-1])>1) {
           tmp[2] <- paste(tmp[-1],collapse="(")
@@ -150,10 +156,10 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
             arg[i] <- tmp[2]
           }
         }
-        if(fchanged==TRUE)  f <- paste0(fname,"(",paste(arg,collapse=", "),")")
+        if(fchanged==TRUE)  func <- paste0(fname,"(",paste(arg,collapse=", "),")")
       }
-      if (convert==TRUE)  return(data.tree::Node$new(f))
-      else  return(f)
+      if (convert==TRUE)  return(data.tree::Node$new(func))
+      else  return(func)
     }else  stop("n argument is out of range! calcHistory cannot be updated!")
   }
   
