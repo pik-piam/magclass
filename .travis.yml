@@ -1,0 +1,18 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+sudo: false
+cache: 
+  directories:
+    - /home/travis/usr/share/doc/r-cran-ncdf4
+    - /home/travis/usr/lib/R/site-library/ncdf4
+  packages: true
+latex: false
+pandoc: false
+before_install:
+  - sudo apt-get install r-cran-ncdf4
+install:
+  - Rscript -e "install.packages(c('devtools','testthat'))"
+  - Rscript -e "devtools::install_github('pik-piam/lucode')"
+script:
+  - Rscript ./tests/testthat/test-travisCI.R
