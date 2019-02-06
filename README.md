@@ -41,7 +41,8 @@ vignette("magclass")
 ```
 
 
-##Travis CI Integration
+## Travis CI Integration
+
 [![Travis build status](https://travis-ci.org/stephenbi/magclass.svg?branch=master)](https://travis-ci.org/stephenbi/magclass)
 
 
