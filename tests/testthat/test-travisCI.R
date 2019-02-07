@@ -1,5 +1,4 @@
 library(testthat)
-library(lucode)
 skip_if_not(identical(Sys.getenv("TRAVIS"), "true"))
 context("Travis CI integration")
 
