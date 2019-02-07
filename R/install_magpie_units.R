@@ -429,8 +429,6 @@ install_magpie_units <- function(x=NULL) {
   
   if (is.null(x)) {
     return(NULL)
-  }else if (is.nan(x) | is.na(x)) {
-    x <- units::as_units("unknown")
   }else if (is.magpie(x)) {
     u <- units(x)
     if (is.null(u) | is.na(u) | is.nan(u)) {
@@ -469,6 +467,8 @@ install_magpie_units <- function(x=NULL) {
     }else {
       x <- input_unit(x)
     }
+  }else if (is.nan(x) | is.na(x)) {
+    x <- units::as_units("unknown")
   }else if (!is(x,"units") & !is(x,"mixed_units")) {
     warning("Invalid argument of class ",class(x))
   }
