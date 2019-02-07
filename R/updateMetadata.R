@@ -88,8 +88,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (func=="/"|func=="*"|func=="+"|func=="-"|func=="^"|func=="%%"|func=="%/%") {
         if (convert==TRUE)  return(data.tree::Node$new(paste0("Ops(",func,")")))
         else  return(paste0("Ops(",func,")"))
-      } 
-      if (func=="mcalc") {
+      }else if (func=="mcalc") {
         if (convert==TRUE)  return(data.tree::Node$new(paste0(func,"(",as.character(sys.call(-n))[3],")")))
         else  return(paste0(func,"(",as.character(sys.call(-n))[3],")"))
       }
@@ -100,15 +99,20 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
         tmp <- unlist(strsplit(func,"(",fixed=TRUE))
         fname <- tmp[1]
+        if (fname=="mbind") {
+          if (convert==TRUE)  return(data.tree::Node$new(func))
+          else  return(func)
+        }
         if (length(tmp[-1])>1) {
           tmp[2] <- paste(tmp[-1],collapse="(")
         }
-        tmp <- gsub(".{1}$","",tmp[2])
+        tmp <- trimws(gsub(".{1}$","",tmp[2]))
         arg <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
         for(i in 1:length(arg)) {
           if (grepl("(",arg[i],fixed=TRUE)) {
             j <- i
+            arg[i] <- trimws(arg[i])
             while (!grepl(")",arg[j],fixed=TRUE)) {
               if (grepl("(",arg[j],fixed=TRUE)) {
                 if (j>i | length(regmatches(arg[j],gregexpr("(",arg[j],fixed=TRUE)))>1) {
@@ -131,7 +135,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
               tmp <- unlist(strsplit(arg[i],"(",fixed=TRUE))[2]
               tmp <- gsub("(","",gsub(")","",tmp,fixed=TRUE),fixed=TRUE)
               if (grepl(",",tmp,fixed=TRUE)) {
-                tmp <- tmp[which(grepl("=",unlist(strsplit(tmp,",",fixed=TRUE)),fixed=TRUE))]
+                tmp <- trimws(tmp[which(grepl("=",unlist(strsplit(tmp,",",fixed=TRUE)),fixed=TRUE))])
               }
             }else  tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
             if (length(tmp)>2) {
@@ -145,8 +149,11 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
             fchanged <- TRUE
           }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
             if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL"))) {
-              tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-              if(length(tmp[2])>1) { tmp[2] <- paste(tmp[2],collapse=", ") }
+              if (length(get(tmp[2],envir=parent.frame(n+1))==1)) {
+                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
+              }else if (length(get(tmp[2],envir=parent.frame(n+1))) < 10) {
+                tmp[2] <- paste(get(tmp[2],envir=parent.frame(n+1)),collapse=", ")
+              }
               fchanged <- TRUE
             }
           }
