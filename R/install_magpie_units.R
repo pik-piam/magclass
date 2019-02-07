@@ -429,9 +429,11 @@ install_magpie_units <- function(x=NULL) {
   
   if (is.null(x)) {
     return(NULL)
+  }else if (is.nan(x) | is.na(x)) {
+    x <- units::as_units("unknown")
   }else if (is.magpie(x)) {
     u <- units(x)
-    if (is.null(u)) {
+    if (is.null(u) | is.na(u) | is.nan(u)) {
       getMetadata(x,"unit") <- units::as_units("unknown")
     }else if (is.character(u)) {
       if (length(u)>1) {
@@ -441,6 +443,8 @@ install_magpie_units <- function(x=NULL) {
         }else {
           u <- units::as_units("unknown")
         }
+      }else if (length(u)==0) {
+        u <- units::as_units("unknown")
       }else if (any(u==c("-",""," ","none","unit"))) {
         u <- units::as_units("unknown")
       }else {
@@ -458,6 +462,8 @@ install_magpie_units <- function(x=NULL) {
       }else {
         x <- units::as_units("unknown")
       }
+    }else if (length(x)==0) {
+      x <- units::as_units("unknown")
     }else if (any(x==c("-",""," ","none","unit"))) {
       x <- units::as_units("unknown")
     }else {
