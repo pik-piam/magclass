@@ -8,6 +8,7 @@
 #' compression) and 9 (most compression), the netCDF file is written in netCDF
 #' version 4 format. If set to NA, the netCDF file is written in netCDF version
 #' 3 format.
+#' @param var_style change between variable naming in nc-file; "fullname" for ungrouped name, "grouped" for variable names divided into sub-groups
 #' @param comment Vector of comments (also used for setting the unit). Comments are set as global attributes in the netcdf file. Format of comments: "indicator: comment" (e.g. "unit: Share of land area per grid cell")
 #' @param verbose Boolean deciding about whether function should be verbose or not
 
@@ -15,10 +16,10 @@
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc. In the case several data dimensions exist, they are saved as subcategories.
 #' 
-#' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky, Stephen Bi
+#' @author Jan Philipp Dietrich, Florian Humpenoeder, Benjamin Leon Bodirsky, Stephen Bi, Kristine Karstens
 #' @seealso \code{\link{write.magpie}}
 #' 
-write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE){
+write.magpie.ncdf<-function(x,file,nc_compression = 9, var_style="fullname", comment=NULL, verbose=TRUE){
   if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
@@ -77,8 +78,9 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9,comment=NULL, verbose=TRUE
     }
   }  
   
-  getNames(x)<-gsub(pattern = "\\.",replacement = "/",getNames(x))
-  
+ if(var_style == "grouped") getNames(x) <- gsub(pattern = "\\.",replacement = "/",getNames(x)) # '/' will be recognized as group-seperator
+ #  var_style == "fullname" do not alter '.'-seperators, which lead to fullname variable in nc-file 
+ 
   mag <- as.array(x)
   coord <- magclassdata$half_deg[, c("lon", "lat")]
   NODATA <- NA
