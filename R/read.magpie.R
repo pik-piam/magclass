@@ -377,7 +377,8 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         .duplicates_check(j)
         tmparr[j] <- x[,i]
       }
-      read.magpie <- as.magpie(tmparr)   
+      read.magpie <- as.magpie(tmparr)  
+      if(length(grep("^[A-Z]+_[0-9]+$",getCells(read.magpie)))==ncells(read.magpie)) getCells(read.magpie) <- sub("_",".",getCells(read.magpie))
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
     } else if(file_type=="cs4" | file_type=="cs4r") {
       x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names)
