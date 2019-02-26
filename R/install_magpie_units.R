@@ -431,7 +431,7 @@ install_magpie_units <- function(x=NULL) {
     return(NULL)
   }else if (is.magpie(x)) {
     u <- units(x)
-    if (is.null(u) | is.na(u) | is.nan(u)) {
+    if (is.null(u) || is.na(u) || is.nan(u)) {
       getMetadata(x,"unit") <- units::as_units("unknown")
     }else if (is.character(u)) {
       if (length(u)>1) {

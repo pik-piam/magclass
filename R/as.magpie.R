@@ -96,7 +96,7 @@ setMethod("as.magpie",
         for(i in d$regiospatial) {
           ntmp <- names(dimnames(x))[1]
           if(!is.null(ntmp)) if(!is.na(ntmp)) if(names(dimnames(x))[1] == "j") names(dimnames(x))[1] <- "i.j"
-          dimnames(x)[[i]] <- sub("_","\\.",dimnames(x)[[i]])
+          #dimnames(x)[[i]] <- sub("_","\\.",dimnames(x)[[i]])
         }
       }
 
