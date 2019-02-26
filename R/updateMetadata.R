@@ -97,7 +97,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       
 
       if(is.null(getOption("magclass_extendedMetadata"))) options(magclass_extendedMetadata=c("madrat","moinput","mrvalidation"))
-      if (all(getPackageName(sys.frame(-n))!=getOption("magclass_extendedMetadata"))) {
+      if (getPackageName(sys.frame(-n)) %in% getOption("magclass_extendedMetadata")) {
         func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
         tmp <- unlist(strsplit(func,"(",fixed=TRUE))
         fname <- tmp[1]
