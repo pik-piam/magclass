@@ -112,9 +112,9 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         arg <- unlist(strsplit(tmp,",",fixed=TRUE))
         fchanged <- FALSE
         for(i in 1:length(arg)) {
+          arg[i] <- trimws(arg[i])
           if (grepl("(",arg[i],fixed=TRUE)) {
             j <- i
-            arg[i] <- trimws(arg[i])
             while (!grepl(")",arg[j],fixed=TRUE)) {
               if (grepl("(",arg[j],fixed=TRUE)) {
                 if (j>i | length(regmatches(arg[j],gregexpr("(",arg[j],fixed=TRUE)))>1) {
@@ -132,6 +132,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
               arg <- arg[-j]
             }
           }
+          #!!!!FIX BUG: from=from becomes from=""!!!!
           if(grepl("=",arg[i],fixed=TRUE)) {
             if (grepl("(",arg[i],fixed=TRUE)) {
               tmp <- unlist(strsplit(arg[i],"(",fixed=TRUE))[2]
@@ -151,15 +152,19 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
             fchanged <- TRUE
           }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
             if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL"))) {
-              if (length(get(tmp[2],envir=parent.frame(n+1)))==1) {
-                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-              }else if (length(get(tmp[2],envir=parent.frame(n+1))) < 10) {
-                tmp[2] <- paste(get(tmp[2],envir=parent.frame(n+1)),collapse=", ")
+              if (exists(tmp[2],envir=parent.frame(n+1)))  pretmp <- get(tmp[2],envir=parent.frame(n+1))
+              else  warning(tmp[2]," could not be found in ",sys.call(-n-1)," for calcHistory tree printing!")
+              if (is.character(pretmp) || is.numeric(pretmp) || is.list(pretmp) || is.logical(pretmp)) {
+                if (length(pretmp) == 1) {
+                  tmp[2] <- pretmp
+                }else  tmp[2] <- paste0("c(",paste(get(tmp[2],envir=parent.frame(n+1)),collapse=", "),")")
               }
               fchanged <- TRUE
             }
           }
-          if (!is.na(tmp[1])) {
+          if (!is.na(tmp[1]) & grepl("\u0022",tmp[2])) {
+            arg[i] <- paste(tmp[1],"=",tmp[2])
+          }else if (!is.na(tmp[1])) {
             arg[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
           }else {
             arg[i] <- tmp[2]
