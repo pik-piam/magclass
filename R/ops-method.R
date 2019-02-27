@@ -68,10 +68,8 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                     units_out <- units_out/as.numeric(units_out)
                   }
                 }
-              }
-            }else {
-              units_out <- "keep"
-            }
+              }else if (is.logical(units_out))  units_out <- "keep"
+            }else  units_out <- "keep"
             if(is.null(dim(e1)) & is.null(dim(e2))) {
               return(callGeneric(e1@.Data,e2@.Data))
             }

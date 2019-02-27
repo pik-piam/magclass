@@ -151,7 +151,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
             fchanged <- TRUE
           }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
             if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL"))) {
-              if (length(get(tmp[2],envir=parent.frame(n+1))==1)) {
+              if (length(get(tmp[2],envir=parent.frame(n+1)))==1) {
                 tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
               }else if (length(get(tmp[2],envir=parent.frame(n+1))) < 10) {
                 tmp[2] <- paste(get(tmp[2],envir=parent.frame(n+1)),collapse=", ")
