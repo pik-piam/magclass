@@ -43,7 +43,7 @@ vignette("magclass")
 
 ## Travis CI Integration
 
-[![Travis build status](https://travis-ci.org/stephenbi/magclass.svg?branch=master)](https://travis-ci.org/stephenbi/magclass)
+[![Travis build status](https://travis-ci.com/pik-piam/magclass.svg?branch=master)](https://travis-ci.com/pik-piam/magclass)
 
 
 ## Questions / Problems
