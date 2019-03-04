@@ -163,6 +163,7 @@ getMetadata <- function(x, type=NULL) {
       #new entry can also be a character of length 1, converted here to a node
     }else if (is.character(new)){
       if (length(new)==1){
+        if (new=="delete")  return(NULL)
         if (is.null(old))  return(data.tree::Node$new(new))
         if (is(old,"Node")){
           if (old$name=="ROOT") {

@@ -271,7 +271,7 @@ setMethod("[<-",
                 if(getOption("magclass.verbosity")>1) cat("NOTE ([<-): Dangerous replacement! As replacement value is not an MAgPIE object name checking is deactivated!\n")
               }
               x@.Data[i,j,k] <- value
-              if (!is.null(getMetadata(value,"calcHistory"))) x <- updateMetadata(x,value,n=2,calcHistory="merge")
+              if (!is.null(getMetadata(value,"calcHistory"))) x <- updateMetadata(x,value,n=2,calcHistory="copy")
               return(x)
             }
           }

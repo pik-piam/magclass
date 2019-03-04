@@ -88,7 +88,10 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                 }
               }
             }
-            return(updateMetadata(out,list(e1,e2),unit=units_out))
+            if (.Generic %in% c("==",">","<","<=",">=")) {
+              calcHistory <- "copy"
+            }else  calcHistory <- "update"
+            return(updateMetadata(out,list(e1,e2),unit=units_out,calcHistory=calcHistory))
           }
 )  
 

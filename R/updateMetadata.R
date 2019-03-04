@@ -32,8 +32,9 @@
 #' Possible arguments are "keep", "copy", "clear", "merge" (which combines the history trees of 2 or more 
 #' objects), and "update" (which adds the function presently calling updateMetadata (or a function further 
 #' upstream if specified by n) to calcHistory and also merges if y is provided). A node object can also be 
-#' provided which will overwrite any existing value. By default, "keep" if no y argument, or "merge" if y 
-#' is provided.
+#' provided which will overwrite any existing value. Finally, if a character of length one is provided, the
+#' behavior will be like "update" using the string as the new root node. By default, "keep" if no y argument,
+#' or "merge" if y is provided.
 #' @param date A character indicating the MAgPIE object's last modified date. Possible arguments are 
 #' "keep", "copy", and "update" (which sets the date of x to the current time). "update" by default.
 #' @param user A string indicating the user who last modified the MAgPIE object. Possible arguments are "keep",
@@ -51,6 +52,7 @@
 #' single string with a ';' separating each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
+#' @param verbosity Determines the verbosity of calcHistory tracking. User can set the level via withMetadata().
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
@@ -60,14 +62,15 @@
 #' @importFrom methods getPackageName
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
-                           calcHistory=ifelse(is.null(y),"keep","merge"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
-                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1) {
+                           calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
+                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1, verbosity=getOption("metadata_verbosity")) {
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
-  #reducedHistory option specific to calcOutput runs 
-  if (!isTRUE(getOption("reducedHistory")) & is.character(calcHistory)) if(calcHistory=="merge")  calcHistory <- "update"
+  if (is.null(verbosity))  verbosity <- 2
+  if (verbosity==2)  if(is.character(calcHistory) && calcHistory=="merge")  calcHistory <- "update"
+  else if (verbosity!=1)  options(metadata_verbosity=2)
   
   #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
   nodeClone <- function(x,fn=NULL){
@@ -80,93 +83,111 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         }
       }else  fn$AddChildNode(xc)
     }else  return(xc)
+    return(fn)
   }
   #Function newCall creates the appropriate function call to be displayed for the new root
-  newCall <- function(n,convert=TRUE){
-    if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))){
-      func <- as.character(sys.call(-n))[1]
-      if (func=="/"|func=="*"|func=="+"|func=="-"|func=="^"|func=="%%"|func=="%/%") {
-        if (convert==TRUE)  return(data.tree::Node$new(paste0("Ops(",func,")")))
-        else  return(paste0("Ops(",func,")"))
-      }else if (func=="mcalc") {
-        if (convert==TRUE)  return(data.tree::Node$new(paste0(func,"(",as.character(sys.call(-n))[3],")")))
-        else  return(paste0(func,"(",as.character(sys.call(-n))[3],")"))
+  newCall <- function(n,convert=TRUE) {
+    if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))) {
+      fname <- as.character(sys.call(-n))[1]
+      if (verbosity==1 && !(fname %in% c("calcOutput","readSource","downloadSource")) && !(getPackageName(sys.frame(-n)) %in% c("moinput"))) {
+        return(NULL)
       }
-      if (grepl(":::",func[1],fixed=TRUE))  func <- unlist(strsplit(func,":::",fixed=TRUE))[2]
-      if (grepl("::",func[1],fixed=TRUE))  func <- unlist(strsplit(func,"::",fixed=TRUE))[2]
-      
+      if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
+      if (fname %in% c("/","*","+","-","^","%%","%/%")) {
+        #if (as.character(sys.call(-n-1))[1] %in% c("/","*","+","-","^","%%","%/%"))  return(NULL)
+        if (convert==TRUE)  return(data.tree::Node$new(trimws(deparse(sys.call(-n),width.cutoff=500))))
+        else  return(trimws(deparse(sys.call(-n),width.cutoff=500)))
+      }else if (fname %in% c("[<-")) {
+        if (convert==TRUE)  return(data.tree::Node$new(fname))
+        else  return(fname)
+      }else if (fname=="mcalc") {
+        if (convert==TRUE)  return(data.tree::Node$new(paste0(fname,"(",as.character(sys.call(-n))[3],")")))
+        else  return(paste0(fname,"(",as.character(sys.call(-n))[3],")"))
+      }
 
-      if(is.null(getOption("magclass_extendedMetadata"))) options(magclass_extendedMetadata=c("madrat","moinput","mrvalidation"))
-      if (getPackageName(sys.frame(-n)) %in% getOption("magclass_extendedMetadata")) {
-        func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
-        tmp <- unlist(strsplit(func,"(",fixed=TRUE))
-        fname <- tmp[1]
-        if (fname=="mbind") {
-          if (convert==TRUE)  return(data.tree::Node$new(func))
-          else  return(func)
-        }
-        if (length(tmp[-1])>1) {
-          tmp[2] <- paste(tmp[-1],collapse="(")
-        }
-        tmp <- trimws(gsub(".{1}$","",tmp[2]))
-        arg <- unlist(strsplit(tmp,",",fixed=TRUE))
-        fchanged <- FALSE
-        for(i in 1:length(arg)) {
-          if (grepl("(",arg[i],fixed=TRUE)) {
-            j <- i
-            arg[i] <- trimws(arg[i])
-            while (!grepl(")",arg[j],fixed=TRUE)) {
-              if (grepl("(",arg[j],fixed=TRUE)) {
-                if (j>i | length(regmatches(arg[j],gregexpr("(",arg[j],fixed=TRUE)))>1) {
-                  while (!grepl(")",arg[j],fixed=TRUE)) {
-                    arg[i] <- paste0(arg[i],",",arg[j])
-                    arg <- arg[-j]
-                    if (j>=length(arg))  break
-                    else  j <- j+1
-                  }
+      func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
+      if (length(func)>1)  func <- func[1]
+      if (grepl(":::",func,fixed=TRUE))  func <- unlist(strsplit(func,":::",fixed=TRUE))[2]
+      if (grepl("::",func,fixed=TRUE))  func <- unlist(strsplit(func,"::",fixed=TRUE))[2]
+      tmp <- unlist(strsplit(func,"(",fixed=TRUE))
+      if (length(tmp[-1])>1) {
+        tmp[2] <- paste(tmp[-1],collapse="(")
+      }
+      tmp <- gsub(".{1}$","",tmp[2])
+      arg <- trimws(unlist(strsplit(tmp,",",fixed=TRUE)))
+      fchanged <- NULL
+      for(i in 1:length(arg)) {
+        fchanged[i] <- FALSE
+        if (grepl("(",arg[i],fixed=TRUE)) {
+          j <- i
+          while (!grepl(")",arg[j],fixed=TRUE)) {
+            if (grepl("(",arg[j],fixed=TRUE)) {
+              if (j>i | length(regmatches(arg[j],gregexpr("(",arg[j],fixed=TRUE)))>1) {
+                while (!grepl(")",arg[j],fixed=TRUE)) {
+                  arg[i] <- paste0(arg[i],",",arg[j])
+                  arg <- arg[-j]
+                  if (j>=length(arg))  break
+                  else  j <- j+1
                 }
               }
-              if (j>=length(arg))  break
-              else  j <- j+1
-              arg[i] <- paste0(arg[i],",",arg[j])
-              arg <- arg[-j]
             }
+            if (j>=length(arg))  break
+            else  j <- j+1
+            arg[i] <- paste0(arg[i],",",arg[j])
+            arg <- arg[-j]
           }
-          if(grepl("=",arg[i],fixed=TRUE)) {
+        }
+        if(grepl("=",arg[i],fixed=TRUE)) {
+          tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
+          if (length(tmp)>2) {
+            #INSPECT THIS PART!!!!
+            #if (grepl("(",substr(arg[i],1,1),fixed=TRUE)) {
+            #  if (grepl(")",substr(arg[i],nchar(arg[i]),nchar(arg[i])),fixed=TRUE)) {
+            #    tmp <- gsub("(","",gsub(")","",tmp,fixed=TRUE),fixed=TRUE)
+            #    if (grepl(",",tmp,fixed=TRUE)) {
+            #      tmp <- tmp[which(grepl("=",trimws(unlist(strsplit(tmp,",",fixed=TRUE))),fixed=TRUE))]
+            #    }
+            #  }
+            #}else 
             if (grepl("(",arg[i],fixed=TRUE)) {
-              tmp <- unlist(strsplit(arg[i],"(",fixed=TRUE))[2]
-              tmp <- gsub("(","",gsub(")","",tmp,fixed=TRUE),fixed=TRUE)
-              if (grepl(",",tmp,fixed=TRUE)) {
-                tmp <- trimws(tmp[which(grepl("=",unlist(strsplit(tmp,",",fixed=TRUE)),fixed=TRUE))])
-              }
-            }else  tmp <- trimws(unlist(strsplit(arg[i],"=",fixed=TRUE)))
-            if (length(tmp)>2) {
-              tmp[2] <- paste(tmp[-1],collapse=", ")
-            }
-          }else {
-            tmp <- c(NA,arg[i])
-          }
-          if (grepl("(",tmp[2],fixed=TRUE) & !grepl("c(",substr(tmp[2],1,2),fixed=TRUE) & !grepl("list(",tmp[2],fixed=TRUE)) {
-            tmp[2] <- eval.parent(parse(text=tmp[2]),n=n+1)
-            fchanged <- TRUE
-          }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
-            if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL"))) {
-              if (length(get(tmp[2],envir=parent.frame(n+1)))==1) {
-                tmp[2] <- get(tmp[2],envir=parent.frame(n+1))
-              }else if (length(get(tmp[2],envir=parent.frame(n+1))) < 10) {
-                tmp[2] <- paste(get(tmp[2],envir=parent.frame(n+1)),collapse=", ")
-              }
-              fchanged <- TRUE
+              #tmp[2] <- paste(tmp[-1],collapse=", ")
+              tmp[2] <- newCall(n+1,convert=FALSE)
             }
           }
-          if (!is.na(tmp[1])) {
-            arg[i] <- paste0(tmp[1]," = \"",tmp[2],"\"")
+        }else {
+          tmp <- c(NA,arg[i])
+        }
+        pretmp <- NULL
+        if (grepl("(",tmp[2],fixed=TRUE) & !grepl("c(",substr(tmp[2],1,2),fixed=TRUE) & !grepl("list(",tmp[2],fixed=TRUE)) {
+          pretmp <- eval.parent(parse(text=tmp[2]),n=n+1)
+        }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
+          if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL")) || grepl("[[:punct:]]",tmp[2])) {
+            if (exists(tmp[2],envir=parent.frame(n+1))) {
+              pretmp <- get(tmp[2],envir=parent.frame(n+1))
+            }else  warning(tmp[2]," could not be found in ",trimws(deparse(sys.call(-n),width.cutoff=500))," for calcHistory tree printing!")
+          }
+        }
+        if (!is.null(pretmp) && !(class(pretmp) %in% c("matrix","magpie","array","data.frame"))) {
+          if (length(pretmp)>1)  tmp[2] <- paste0("c(",paste(pretmp,collapse=", "),")")
+          else if (is.null(pretmp))  tmp[2] <- "NULL"
+          else  tmp[2] <- pretmp
+          fchanged[i] <- TRUE
+        }
+        if (is.null(tmp[2]))  tmp[2] <- "NULL"
+        else if (is.na(tmp[2]))  tmp[2] <- "NA"
+        else if (is.nan(tmp[2]))  tmp[2] <- "NaN"
+        if (isTRUE(fchanged[i])) {
+          if ((!is.na(tmp[1]) & grepl("\u0022",tmp[2])) || is.numeric(tmp[2]) || !grepl("[[:alpha:]]",tmp[2]) || tmp[2] %in% c("NULL","NA","NaN","FALSE","TRUE","T","F")) {
+            arg[i] <- paste0(tmp[1],"=",tmp[2])
+          }else if (!is.na(tmp[1])) {
+            arg[i] <- paste0(tmp[1],"=\"",tmp[2],"\"")
           }else {
             arg[i] <- tmp[2]
           }
         }
-        if(fchanged==TRUE)  func <- paste0(fname,"(",paste(arg,collapse=", "),")")
       }
+      if(any(fchanged==TRUE))  func <- paste0(fname,"(",paste(arg,collapse=", "),")")
+      
       if (convert==TRUE)  return(data.tree::Node$new(func))
       else  return(func)
     }else  stop("n argument is out of range! calcHistory cannot be updated!")
@@ -177,15 +198,18 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (length(sys.calls()) < n)  cH <- "merge"
     if (cH=="update"){
       rootNode <- newCall(n)
-      if (is.null(y)){
+      if (is.null(rootNode)) {
+        cH <- "merge"
+      }else if (is.null(y)) {
         if (is(x,"Node")){
           if (x$name=="ROOT"){
             x$name <- newCall(n,convert=FALSE)
             return(nodeClone(x))
-          }else  nodeClone(x,rootNode)
-        }else  return(newCall(n))
+          }else  return(nodeClone(x,rootNode))
+        }else  return(rootNode)
       }
-    }else if (cH=="merge"){
+    }
+    if (cH=="merge"){
       rootNode <- data.tree::Node$new("ROOT")
       if (is.null(y)){
         if (is(x,"Node"))  return(nodeClone(x))
@@ -203,7 +227,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       }
       if (j==0){
         if (is(x,"Node"))  return(nodeClone(x))
-        else  return(NULL)
+        else if (is.null(rootNode) || rootNode$name=="ROOT")  return(NULL)
       }else if (j==1){
         if (is(x,"Node")){
           nodeClone(x,rootNode)
@@ -216,12 +240,12 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     }else if (is.magpie(y)){
       mY <- getMetadata(y,"calcHistory")
       if (is(x,"Node")){
-        if (is(mY,"Node")){
+        if (is(mY,"Node")) {
           nodeClone(x,rootNode)
           nodeClone(mY,rootNode)
-        }else  return(nodeClone(x))
-      }else if (is(mY,"Node"))  return(nodeClone(mY))
-      else  return(NULL)
+        }else  return(nodeClone(x,rootNode))
+      }else if (is(mY,"Node"))  return(nodeClone(mY,rootNode))
+      else if (is.null(rootNode) || rootNode$name=="ROOT")  return(NULL)
     }
     return(rootNode)
   }
@@ -312,17 +336,22 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     Mx$source <- NULL
   }else if (source!="keep")  Mx$source <- source
   
-  if (is(calcHistory,"Node") | is.null(calcHistory)){
-    getMetadata(x,"calcHistory") <- NULL
+  if (is.null(calcHistory) || is(calcHistory,"Node")) {
+    getMetadata(x,"calcHistory") <- "delete"
     Mx$calcHistory <- calcHistory
-  }else if (calcHistory=="update" | calcHistory=="merge"){
+  }else if (calcHistory=="update" | calcHistory=="merge") {
     Mx$calcHistory <- buildTree(Mx$calcHistory,y,n+2,calcHistory)
-    getMetadata(x,"calcHistory") <- NULL
-  }else if (calcHistory=="copy"){
+    getMetadata(x,"calcHistory") <- "delete"
+  }else if (calcHistory=="copy") {
     if (!is.null(y)){
-      if (!is.null(My$calcHistory) & (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
-      else if (is(My$calcHistory,"Node"))  Mx$calcHistory <- data.tree::Clone(My$calcHistory)
-      else  Mx$calcHistory <- My$calcHistory
+      if (!is.null(My$calcHistory) && (!is(My$calcHistory, "Node")))  warning("Attempting to copy a calcHistory which is not a Node object!")
+      else if (is(My$calcHistory,"Node")) {
+        Mx$calcHistory <- data.tree::Clone(My$calcHistory)
+        getMetadata(x,"calcHistory") <- "delete"
+      }else {
+        getMetadata(x,"calcHistory") <- "delete"
+        Mx$calcHistory <- My$calcHistory
+      }
     }else  warning("calcHistory cannot be copied without a second magpie argument provided!")
   }else if (calcHistory=="clear") {
     warning("calcHistory cannot be cleared! Please specify keep, update, or copy.")
