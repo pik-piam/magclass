@@ -92,7 +92,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (verbosity==1 && !(fname %in% c("calcOutput","readSource","downloadSource")) && !(getPackageName(sys.frame(-n)) %in% c("moinput"))) {
         return(NULL)
       }
-      if (as.character(sys.call(-n-1))[1]==fname)  return(NULL)
+      if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
       if (fname %in% c("/","*","+","-","^","%%","%/%")) {
         #if (as.character(sys.call(-n-1))[1] %in% c("/","*","+","-","^","%%","%/%"))  return(NULL)
         if (convert==TRUE)  return(data.tree::Node$new(trimws(deparse(sys.call(-n),width.cutoff=500))))
