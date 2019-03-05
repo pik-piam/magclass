@@ -88,7 +88,7 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                 }
               }
             }
-            if (.Generic %in% c("==",">","<","<=",">=")) {
+            if (.Generic %in% c("==",">","<","<=",">=", "!=", "+", "-", "%%")) {
               calcHistory <- "copy"
             }else  calcHistory <- "update"
             return(updateMetadata(out,list(e1,e2),unit=units_out,calcHistory=calcHistory))
@@ -103,8 +103,10 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
               u1 <- units(e1)
               if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-", "%%")) {
                 units_out <- "keep"
+                calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u1,e2)
+                calcHistory <- "update"
               }
               if (.Generic=="*") {
                 if (e2!=0) {
@@ -136,9 +138,10 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
                 return(callGeneric(e1@.Data,e2))
               }
               out <- new("magpie",callGeneric(e1@.Data,e2))
-              units_out <- 'keep'
+              units_out <- "keep"
+              calcHistory <- "keep"
             }
-            return(updateMetadata(out,e1,unit=units_out))
+            return(updateMetadata(out,e1,unit=units_out,calcHistory=calcHistory))
           }
 )
 
@@ -150,8 +153,10 @@ setMethod(Ops, signature(e1='numeric',e2='magpie'),
               u2 <- units(e2)
               if (.Generic %in% c("<", ">", "==", "!=", "<", ">", "<=", ">=", "+", "-")) {
                 units_out <- "keep"
+                calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u2,e1)
+                calcHistory <- "update"
               }              
               if (.Generic=="*") {
                 if (e1!=0) {
@@ -178,9 +183,10 @@ setMethod(Ops, signature(e1='numeric',e2='magpie'),
               if(is.null(dim(e2))) {
                 return(callGeneric(e1,e2@.Data))
               }
-              units_out <- 'keep'
+              units_out <- "keep"
+              calcHistory <- "keep"
               out <- new("magpie",callGeneric(e1,e2@.Data))
             }
-            return(updateMetadata(out,e2,unit=units_out))
+            return(updateMetadata(out,e2,unit=units_out,calcHistory=calcHistory))
           }
 )
