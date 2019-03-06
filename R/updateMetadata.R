@@ -95,15 +95,15 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       if (verbosity==1 && !(fname %in% c("calcOutput","readSource","downloadSource")) && !(getPackageName(sys.frame(-n)) %in% c("moinput"))) {
         return(NULL)
       }
-      if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
       if (fname %in% c("/","*","+","-","^","%%","%/%")) {
         if (convert==TRUE)  return(data.tree::Node$new(trimws(deparse(sys.call(-n),width.cutoff=500))))
         else  return(trimws(deparse(sys.call(-n),width.cutoff=500)))
-      }else if (fname=="mcalc") {
+      }else if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
+      else if (fname=="mcalc") {
         if (convert==TRUE)  return(data.tree::Node$new(paste0(fname,"(",as.character(sys.call(-n))[3],")")))
         else  return(paste0(fname,"(",as.character(sys.call(-n))[3],")"))
       }
-
+      
       func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
       if (length(func)>1)  func <- func[1]
       if (grepl(":::",func,fixed=TRUE))  func <- unlist(strsplit(func,":::",fixed=TRUE))[2]
