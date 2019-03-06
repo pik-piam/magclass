@@ -47,9 +47,7 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                   }
                 }
               }else if (as.character(units(u1))=="unknown") {
-                if (!isTRUE(getOption("reducedHistory"))) {
-                  warning("Units for both operands are unknown! Are you sure they are compatible?")
-                }
+                if (length(sys.calls())<3)  warning("Units for both operands are unknown! Are you sure they are compatible?")
               }
               if (any(.Generic == c("-","+"))) {
                 if (as.numeric(u1)>as.numeric(u2)) {
@@ -67,6 +65,8 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                     e2 <- e2*as.numeric(units_out)
                     units_out <- units_out/as.numeric(units_out)
                   }
+                }else if (gsub("\\d","",gsub("[[:punct:]]","",as.character(units(units_out))))=="unknown") {
+                  units_out <- units::as_units(as.numeric(units_out),"unknown")
                 }
               }else if (is.logical(units_out))  units_out <- "keep"
             }else  units_out <- "keep"
@@ -88,9 +88,9 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                 }
               }
             }
-            if (.Generic %in% c("==",">","<","<=",">=")) {
-              calcHistory <- "copy"
-            }else  calcHistory <- "update"
+            if (.Generic %in% c("==",">","<","<=",">=","!=","+","-","%%"))  calcHistory <- "copy"
+            else if (length(sys.calls())>1 && as.character(sys.call(-1))[1] %in% c("/","*","+","-","^","%%","%/%","==","<",">","<=","=>","!="))  calcHistory <- "copy"
+            else  calcHistory <- "update"
             return(updateMetadata(out,list(e1,e2),unit=units_out,calcHistory=calcHistory))
           }
 )  
@@ -103,9 +103,12 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
               u1 <- units(e1)
               if (.Generic %in% c("<", ">", "==", "!=", "<=", ">=", "+", "-", "%%")) {
                 units_out <- "keep"
+                calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u1,e2)
+                calcHistory <- "update"
               }
+              if (grepl("unknown",as.character(units(units_out))))  units_out <- units::as_units(as.numeric(units_out),"unknown")
               if (.Generic=="*") {
                 if (e2!=0) {
                   units_out <- units_out/e2
@@ -136,9 +139,10 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
                 return(callGeneric(e1@.Data,e2))
               }
               out <- new("magpie",callGeneric(e1@.Data,e2))
-              units_out <- 'keep'
+              units_out <- "keep"
+              calcHistory <- "keep"
             }
-            return(updateMetadata(out,e1,unit=units_out))
+            return(updateMetadata(out,e1,unit=units_out,calcHistory=calcHistory))
           }
 )
 
@@ -150,9 +154,12 @@ setMethod(Ops, signature(e1='numeric',e2='magpie'),
               u2 <- units(e2)
               if (.Generic %in% c("<", ">", "==", "!=", "<", ">", "<=", ">=", "+", "-")) {
                 units_out <- "keep"
+                calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u2,e1)
-              }              
+                calcHistory <- "update"
+              }
+              if (grepl("unknown",as.character(units(units_out))))  units_out <- units::as_units(as.numeric(units_out),"unknown")
               if (.Generic=="*") {
                 if (e1!=0) {
                   units_out <- units_out/e1
@@ -178,9 +185,10 @@ setMethod(Ops, signature(e1='numeric',e2='magpie'),
               if(is.null(dim(e2))) {
                 return(callGeneric(e1,e2@.Data))
               }
-              units_out <- 'keep'
+              units_out <- "keep"
+              calcHistory <- "keep"
               out <- new("magpie",callGeneric(e1,e2@.Data))
             }
-            return(updateMetadata(out,e2,unit=units_out))
+            return(updateMetadata(out,e2,unit=units_out,calcHistory=calcHistory))
           }
 )
