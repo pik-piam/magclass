@@ -97,7 +97,6 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       }
       if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
       if (fname %in% c("/","*","+","-","^","%%","%/%")) {
-        #if (as.character(sys.call(-n-1))[1] %in% c("/","*","+","-","^","%%","%/%"))  return(NULL)
         if (convert==TRUE)  return(data.tree::Node$new(trimws(deparse(sys.call(-n),width.cutoff=500))))
         else  return(trimws(deparse(sys.call(-n),width.cutoff=500)))
       }else if (fname=="mcalc") {
@@ -118,6 +117,15 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
       fchanged <- NULL
       for(i in 1:length(arg)) {
         fchanged[i] <- FALSE
+        if (grepl("[",arg[i],fixed=TRUE)) {
+          k <- i
+          while (!grepl("]",arg[k],fixed=TRUE)) {
+            arg[i] <- paste0(arg[i],",",arg[k])
+            arg <- arg[-k]
+            if (k>=length(arg))  break
+            else  k <- k+1
+          }
+        }
         if (grepl("(",arg[i],fixed=TRUE)) {
           j <- i
           while (!grepl(")",arg[j],fixed=TRUE)) {
@@ -160,11 +168,10 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
         pretmp <- NULL
         if (grepl("(",tmp[2],fixed=TRUE) & !grepl("c(",substr(tmp[2],1,2),fixed=TRUE) & !grepl("list(",tmp[2],fixed=TRUE)) {
           pretmp <- try(eval.parent(parse(text=tmp[2]),n=n+1),silent=TRUE)
+          if (is(pretmp,"try-error"))  pretmp <- NULL
         }else if(!grepl("\u0022",tmp[2]) & grepl("[[:alpha:]]",tmp[2])) {
           if (!any(tmp[2]==c("T","F","TRUE","FALSE","NULL")) || grepl("[[:punct:]]",tmp[2])) {
-            if (exists(tmp[2],envir=parent.frame(n+1))) {
-              pretmp <- get(tmp[2],envir=parent.frame(n+1))
-            }else  warning(tmp[2]," could not be found in ",trimws(deparse(sys.call(-n),width.cutoff=500))," for calcHistory tree printing!")
+            pretmp <- get0(tmp[2],envir=parent.frame(n+1))
           }
         }
         if (!is.null(pretmp) && !(class(pretmp) %in% c("matrix","magpie","array","data.frame"))) {
