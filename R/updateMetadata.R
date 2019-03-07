@@ -278,7 +278,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (length(y) > 1) {
       for (i in 1:(length(y)-1)) {
         if (is.magpie(y[[i]])) {
-          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1, cH_priority)
+          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, note, version, n=n+1, cH_priority)
         }
       }
     }
