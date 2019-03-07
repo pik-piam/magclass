@@ -4,7 +4,7 @@
 #' to return current setting
 #' 
 #' @param set boolean to switch metadata on/off or NULL to leave the option as is.
-#' @param verbosity Integer to set the verbosity of the calcHistory tree. 2 = all relevant functions are tracked.
+#' @param verbosity Integer to set the verbosity level of calcHistory tracking. 0 =  = all relevant functions are tracked.
 #' 1 = only the core functions are tracked (e.g. calcOutput, readSource).
 #' @return boolean indicating the current metadata setting (switched on or off)
 #' @author Jan Philipp Dietrich
@@ -17,10 +17,17 @@
 #'  withMetadata(FALSE)
 #' @export
 
-withMetadata <- function(set=NULL,verbosity=getOption("metadata_verbosity")) {
-  if (is.null(verbosity))  verbosity <- 2
-  if (verbosity %in% c(1,2))  options(metadata_verbosity=verbosity)
-  else  warning("Currently only verbosity levels 1 and 2 are supported! Verbosity level set to 2.")
+withMetadata <- function(set=NULL,verbosity=NULL) {
+  if (is.null(verbosity)) {
+    if (is.null(getOption("calcHistory_verbosity")))  verbosity <- 2
+    else  verbosity <- getOption("calcHistory_verbosity")
+  }
+  if (verbosity>=0)  options(calcHistory_verbosity=verbosity)
+  else {
+    verbosity <- 2
+    options(calcHistory_verbosity=verbosity)
+    warning("verbosity must be a non-negative integer! Setting verbosity to default setting ",verbosity)
+  }
   if(is.null(set)) {
     status <- getOption("magclass_metadata")
     if(is.null(status)) status <- FALSE

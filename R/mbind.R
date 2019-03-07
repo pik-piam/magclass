@@ -95,5 +95,5 @@ mbind <- function(...) {
   if(length(grep("dummydimname",getNames(output),fixed=TRUE))==ndata(output)) dimnames(output)[[3]] <- NULL 
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
   
-  return(updateMetadata(output, inputs, calcHistory="merge"))
+  return(updateMetadata(output, inputs, calcHistory="update",cH_level=3))
 }
