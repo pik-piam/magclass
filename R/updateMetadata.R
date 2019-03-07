@@ -52,7 +52,7 @@
 #' single string with a ';' separating each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
-#' @param cH_level Integer to set the significance of the function call with respect to calcHistory tracking 
+#' @param cH_priority Integer to set the significance of the function call with respect to calcHistory tracking 
 #' (lower = more significant). To be compared against the "calcHistory_verbosity" global option (user can set this 
 #' via withMetadata).
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
@@ -65,13 +65,13 @@
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
                            calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
-                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1, cH_level=2) {
+                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1, cH_priority=2) {
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
-  if (is.null(cH_level))  cH_level <- 2
-  if (cH_level > getOption("calcHistory_verbosity")) {
+  if (is.null(cH_priority))  cH_priority <- 2
+  if (cH_priority > getOption("calcHistory_verbosity")) {
     if(is.character(calcHistory) && calcHistory=="update")  calcHistory <- "merge"
   }
 
@@ -278,7 +278,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (length(y) > 1) {
       for (i in 1:(length(y)-1)) {
         if (is.magpie(y[[i]])) {
-          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1, cH_level)
+          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1, cH_priority)
         }
       }
     }

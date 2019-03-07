@@ -4,8 +4,9 @@
 #' to return current setting
 #' 
 #' @param set boolean to switch metadata on/off or NULL to leave the option as is.
-#' @param verbosity Integer to set the verbosity level of calcHistory tracking. 0 =  = all relevant functions are tracked.
-#' 1 = only the core functions are tracked (e.g. calcOutput, readSource).
+#' @param verbosity Integer to set the verbosity level of calcHistory tracking. 0 = no calcHistory tracking, 
+#' 1 = only the core functions are tracked (e.g. calcOutput, readSource), 2 (default) = most magclass functions 
+#' and toolAggregate are also tracked, 3 = virtually all functions are tracked.
 #' @return boolean indicating the current metadata setting (switched on or off)
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{getMetadata}}
