@@ -88,8 +88,8 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
                 }
               }
             }
-            if (.Generic %in% c("==",">","<","<=",">=","!=","+","-","%%"))  calcHistory <- "copy"
-            else if (length(sys.calls())>1 && as.character(sys.call(-1))[1] %in% c("/","*","+","-","^","%%","%/%","==","<",">","<=","=>","!="))  calcHistory <- "copy"
+            if (.Generic %in% c("==",">","<","<=",">=","!="))  calcHistory <- "copy"
+            else if (length(sys.calls())>2 && as.character(sys.call(-2))[1] %in% c("/","*","+","-","^","%%","%/%","==","<",">","<=","=>","!="))  calcHistory <- "copy"
             else  calcHistory <- "update"
             return(updateMetadata(out,list(e1,e2),unit=units_out,calcHistory=calcHistory))
           }
@@ -106,9 +106,13 @@ setMethod(Ops, signature(e1='magpie',e2='numeric'),
                 calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u1,e2)
-                calcHistory <- "update"
+                if (length(sys.calls())>2 && as.character(sys.call(-2))[1] %in% c("/","*","+","-","^","%%","%/%","==","<",">","<=","=>","!=")) {
+                  calcHistory <- "copy"
+                }else  calcHistory <- "update"
               }
-              if (grepl("unknown",as.character(units(units_out))))  units_out <- units::as_units(as.numeric(units_out),"unknown")
+              if (is(units_out,"units") && grepl("unknown",as.character(units(units_out)))) {
+                units_out <- units::as_units(as.numeric(units_out),"unknown")
+              }
               if (.Generic=="*") {
                 if (e2!=0) {
                   units_out <- units_out/e2
@@ -157,9 +161,13 @@ setMethod(Ops, signature(e1='numeric',e2='magpie'),
                 calcHistory <- "copy"
               }else {
                 units_out <- callGeneric(u2,e1)
-                calcHistory <- "update"
+                if (length(sys.calls())>2 && as.character(sys.call(-2))[1] %in% c("/","*","+","-","^","%%","%/%","==","<",">","<=","=>","!=")) {
+                  calcHistory <- "copy"
+                }else  calcHistory <- "update"
               }
-              if (grepl("unknown",as.character(units(units_out))))  units_out <- units::as_units(as.numeric(units_out),"unknown")
+              if (is(units_out,"units") && grepl("unknown",as.character(units(units_out)))) {
+                units_out <- units::as_units(as.numeric(units_out),"unknown")
+              }
               if (.Generic=="*") {
                 if (e1!=0) {
                   units_out <- units_out/e1

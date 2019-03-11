@@ -52,7 +52,9 @@
 #' single string with a ';' separating each package).
 #' @param n If calcHistory is to be updated, this integer indicates how many frames ahead in the stack to 
 #' find the function to append to the the object's calcHistory. n=1 by default.
-#' @param verbosity Determines the verbosity of calcHistory tracking. User can set the level via withMetadata().
+#' @param cH_priority Integer to set the significance of the function call with respect to calcHistory tracking 
+#' (lower = more significant). To be compared against the "calcHistory_verbosity" global option (user can set this 
+#' via withMetadata).
 #' @return updateMetadata returns the magpie object x with metadata modified as desired.
 #' @author Stephen Bi
 #' @seealso \code{\link{getComment}}, \code{\link{getMetadata}}, \code{\link{getNames}},
@@ -63,15 +65,16 @@
 #' 
 updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), source=ifelse(is.null(y),"keep","merge"), 
                            calcHistory=ifelse(is.null(y),"keep","update"), user="update", date="update", description=ifelse(is.null(y),"keep","merge"), 
-                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1, verbosity=getOption("metadata_verbosity")) {
+                           note=ifelse(is.null(y),"keep","merge"), version=ifelse(is.null(y),"keep","merge"), n=1, cH_priority=2) {
 
   if(!withMetadata()) return(x)
   if (!requireNamespace("data.tree", quietly = TRUE)) stop("The package data.tree is required for metadata handling!")
   units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
-  if (is.null(verbosity))  verbosity <- 2
-  if (verbosity==2)  if(is.character(calcHistory) && calcHistory=="merge" && as.character(sys.call(-n))[1]!="[<-")  calcHistory <- "update"
-  else if (verbosity!=1)  options(metadata_verbosity=2)
-  
+  if (is.null(cH_priority))  cH_priority <- 2
+  if (cH_priority > getOption("calcHistory_verbosity")) {
+    if(is.character(calcHistory) && calcHistory=="update")  calcHistory <- "merge"
+  }
+
   #Function nodeClone clones a node object and, if necessary, prepares it for merging and attaches it to the new root
   nodeClone <- function(x,fn=NULL){
     if (is.null(x))  return(fn)
@@ -92,18 +95,15 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
   newCall <- function(n,convert=TRUE) {
     if (!is.na(as.character(sys.call(-n))[1]) & !is.null(sys.call(-n))) {
       fname <- as.character(sys.call(-n))[1]
-      if (verbosity==1 && !(fname %in% c("calcOutput","readSource","downloadSource")) && !(getPackageName(sys.frame(-n)) %in% c("moinput"))) {
-        return(NULL)
-      }
-      if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
       if (fname %in% c("/","*","+","-","^","%%","%/%")) {
         if (convert==TRUE)  return(data.tree::Node$new(trimws(deparse(sys.call(-n),width.cutoff=500))))
         else  return(trimws(deparse(sys.call(-n),width.cutoff=500)))
-      }else if (fname=="mcalc") {
+      }else if (length(sys.calls())>(n+1) && as.character(sys.call(-n-1))[1]==fname)  return(NULL)
+      else if (fname=="mcalc") {
         if (convert==TRUE)  return(data.tree::Node$new(paste0(fname,"(",as.character(sys.call(-n))[3],")")))
         else  return(paste0(fname,"(",as.character(sys.call(-n))[3],")"))
       }
-
+      
       func <- trimws(deparse(sys.call(-n),width.cutoff = 500))
       if (length(func)>1)  func <- func[1]
       if (grepl(":::",func,fixed=TRUE))  func <- unlist(strsplit(func,":::",fixed=TRUE))[2]
@@ -278,7 +278,7 @@ updateMetadata <- function(x, y=NULL, unit=ifelse(is.null(y),"keep","update"), s
     if (length(y) > 1) {
       for (i in 1:(length(y)-1)) {
         if (is.magpie(y[[i]])) {
-          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, version, n=n+1)
+          x <- updateMetadata(x, y[[i]], unit, source, calcHistory="keep", user, date, description, note, version, n=n+1, cH_priority)
         }
       }
     }
