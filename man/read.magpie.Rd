@@ -17,7 +17,8 @@ to file\_name and file\_folder)}
 specify the full path in file\_name - wildcards are supported)}
 
 \item{file_type}{format the data is stored in. Currently 12 formats are
-available: "cs2" (cellular standard MAgPIE format), "csv" (regional standard
+available: "rds" (recommended compressed format), 
+"cs2" (cellular standard MAgPIE format), "csv" (regional standard
 MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 (alternative multidimensional format compatible to GAMS, in contrast to cs3
 it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
@@ -54,12 +55,13 @@ Reads a MAgPIE-file and converts it to a 3D array of the structure
 (cells,years,datacolumn)
 }
 \details{
-This function reads from 10 different MAgPIE file\_types. "cs2" is the new
-standard format for cellular data with or without header and the first
-columns (year,regiospatial) or only (regiospatial), "csv" is the standard
-format for regional data with or without header and the first columns
-(year,region,cellnumber) or only (region,cellnumber). "cs3" is a format
-similar to csv and cs2, but with the difference that it supports
+This function reads from 12 different MAgPIE file\_types. "rds" is
+a R-default format for storing R objects and recommended for compressed 
+storage."cs2" is the new standard format for cellular data with or without 
+header and the first columns (year,regiospatial) or only (regiospatial), 
+"csv" is the standard format for regional data with or without header 
+and the first columns (year,region,cellnumber) or only (region,cellnumber). 
+"cs3" is a format similar to csv and cs2, but with the difference that it supports
 multidimensional data in a format which can be read by GAMS, "put" is a
 newly supported format which is mosty used for the REMIND-MAgPIE coupling.
 This format is only partly supported at the moment.  "asc" is the AsciiGrid

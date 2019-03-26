@@ -3,12 +3,13 @@
 #' Reads a MAgPIE-file and converts it to a 3D array of the structure
 #' (cells,years,datacolumn)
 #' 
-#' This function reads from 10 different MAgPIE file\_types. "cs2" is the new
-#' standard format for cellular data with or without header and the first
-#' columns (year,regiospatial) or only (regiospatial), "csv" is the standard
-#' format for regional data with or without header and the first columns
-#' (year,region,cellnumber) or only (region,cellnumber). "cs3" is a format
-#' similar to csv and cs2, but with the difference that it supports
+#' This function reads from 12 different MAgPIE file\_types. "rds" is
+#' a R-default format for storing R objects and recommended for compressed 
+#' storage."cs2" is the new standard format for cellular data with or without 
+#' header and the first columns (year,regiospatial) or only (regiospatial), 
+#' "csv" is the standard format for regional data with or without header 
+#' and the first columns (year,region,cellnumber) or only (region,cellnumber). 
+#' "cs3" is a format similar to csv and cs2, but with the difference that it supports
 #' multidimensional data in a format which can be read by GAMS, "put" is a
 #' newly supported format which is mosty used for the REMIND-MAgPIE coupling.
 #' This format is only partly supported at the moment.  "asc" is the AsciiGrid
@@ -27,7 +28,8 @@
 #' @param file_folder folder the file is located in (alternatively you can also
 #' specify the full path in file\_name - wildcards are supported)
 #' @param file_type format the data is stored in. Currently 12 formats are
-#' available: "cs2" (cellular standard MAgPIE format), "csv" (regional standard
+#' available: "rds" (recommended compressed format), 
+#' "cs2" (cellular standard MAgPIE format), "csv" (regional standard
 #' MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 #' (alternative multidimensional format compatible to GAMS, in contrast to cs3
 #' it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
@@ -117,7 +119,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   if(is.null(file_type)) {
     file_type <- tail(strsplit(file_name,'\\.')[[1]],1)
   }
-  if(!(file_type %in% c('m','mz','csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
+  if(!(file_type %in% c('rds','m','mz','csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
   
   .readComment <- function(file_name,comment.char="*",meta.char="#") {
     comment <- NULL
@@ -364,6 +366,12 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
         read.magpie <- updateMetadata(read.magpie,user=user,date=date)
       }
       
+    } else if(file_type=="rds") {
+      read.magpie <- readRDS(file_name)
+      if(!is.magpie(read.magpie)) stop("File does not contain a magpie object!")
+      user <- ifelse(is.null(getMetadata(read.magpie,"user")),"update","keep")
+      date <- ifelse(is.null(getMetadata(read.magpie,"date")),"update","keep")
+      read.magpie <- updateMetadata(read.magpie,user=user,date=date)
     } else if(file_type=="cs3" | file_type=="cs3r") {
       x <- read.csv(file_name,comment.char=comment.char, check.names=check.names)
       datacols <- grep("^dummy\\.?[0-9]*$",colnames(x))

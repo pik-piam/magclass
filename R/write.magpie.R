@@ -3,13 +3,14 @@
 #' Writes a MAgPIE-3D-array (cells,years,datacolumn) to a file in one of three
 #' MAgPIE formats (standard, "magpie", "magpie zipped")
 #' 
-#' This function can write 9 different MAgPIE file\_types. "cs2" is the new
+#' This function can write 12 different MAgPIE file\_types. "cs2" is the new
 #' standard format for cellular data with or without header and the first
 #' columns (year,regiospatial) or only (regiospatial), "csv" is the standard
 #' format for regional data with or without header and the first columns
 #' (year,region,cellnumber) or only (region,cellnumber), "cs3" is another csv
 #' format which is specifically designed for multidimensional data for usage in
-#' GAMS.  All these variants are written without further specification.
+#' GAMS.  All these variants are written without further specification. "rds" is
+#' a R-default format for storing R objects and recommended for compressed storage.
 #' "magpie" (.m) and "magpie zipped" (.mz) are new formats developed to allow a
 #' less storage intensive management of MAgPIE-data. The only difference
 #' between both formats is that .mz is gzipped whereas .m is not compressed. So
@@ -25,9 +26,10 @@
 #' to file\_name and file\_folder)
 #' @param file_folder folder the file should be written to (alternatively you
 #' can also specify the full path in file\_name - wildcards are supported)
-#' @param file_type Format the data should be stored as. Currently 11 formats
-#' are available: "cs2" (cellular standard MAgPIE format), "csv" (regional
-#' standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE data,
+#' @param file_type Format the data should be stored as. Currently 12 formats
+#' are available: "rds" (recommended compressed format), 
+#' cs2" (cellular standard MAgPIE format), "csv" (regional standard MAgPIE 
+#' format), "cs3" (Format for multidimensional MAgPIE data,
 #' compatible to GAMS), "cs4" (alternative multidimensional format compatible
 #' to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
 #' "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
@@ -260,6 +262,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
           sp::write.asciigrid(grid,tmp2_file)          
         }
       }
+    } else if(file_type=="rds") {
+      saveRDS(object=x, file=file_path, ...)
     } else if(file_type=="nc") {
       write.magpie.ncdf(x=x,
                         file=file_path,
