@@ -10,7 +10,7 @@
 #' (year,region,cellnumber) or only (region,cellnumber), "cs3" is another csv
 #' format which is specifically designed for multidimensional data for usage in
 #' GAMS.  All these variants are written without further specification. "rds" is
-#' a R-default format for storing R objects and recommended for compressed storage.
+#' a R-default format for storing R objects.
 #' "magpie" (.m) and "magpie zipped" (.mz) are new formats developed to allow a
 #' less storage intensive management of MAgPIE-data. The only difference
 #' between both formats is that .mz is gzipped whereas .m is not compressed. So
@@ -27,7 +27,7 @@
 #' @param file_folder folder the file should be written to (alternatively you
 #' can also specify the full path in file\_name - wildcards are supported)
 #' @param file_type Format the data should be stored as. Currently 12 formats
-#' are available: "rds" (recommended compressed format), 
+#' are available: "rds" (default R-data format), 
 #' cs2" (cellular standard MAgPIE format), "csv" (regional standard MAgPIE 
 #' format), "cs3" (Format for multidimensional MAgPIE data,
 #' compatible to GAMS), "cs4" (alternative multidimensional format compatible
@@ -69,7 +69,7 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 3) | integer | 2 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 4) | integer | 2 Byte ] \cr 
 #' [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
 #' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
 #' [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
@@ -77,7 +77,7 @@
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
 #' [ nregions | Number of regions | integer | 2 Byte ] \cr 
-#' [ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 2 Byte ] \cr 
+#' [ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 #' [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
 #' [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
@@ -207,12 +207,12 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     if(file_type=="m" | file_type=="mz") {
-      fformat_version <- "3"  #File format version (oldest data has version 0)
+      fformat_version <- "4"  #File format version (oldest data has version 0)
       comment <- paste(comment,collapse="\n")
       ncells <- dim(x)[1]
       nyears <- dim(x)[2]
       ndata  <- dim(x)[3]    
-      rle <- rle(gsub("\\..*$","",dimnames(x)[[1]]))
+      rle <- rle(gsub("\\.[0-9]*$","",dimnames(x)[[1]]))
       regions <- rle$values
       cpr <- rle$lengths
       nregions <- length(regions)
@@ -239,7 +239,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       writeBin(as.integer(length(metadata)),zz,size=4)
       writeBin(as.integer(nchar(sets_collapsed)),zz,size=2)
       writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
-      writeBin(as.integer(c(nyears,year_list,nregions,nchar(regions_collapsed))),zz,size=2)
+      writeBin(as.integer(c(nyears,year_list,nregions)),zz,size=2)
+      writeBin(as.integer(nchar(regions_collapsed)),zz,size=4)
       writeChar(regions_collapsed,zz,eos=NULL)
       writeBin(as.integer(c(cpr,ndata*ncells*nyears,nchar(datanames_collapsed))),zz,size=4)
       if(datanames_collapsed!="") writeChar(datanames_collapsed,zz,eos=NULL)

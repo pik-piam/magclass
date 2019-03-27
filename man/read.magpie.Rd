@@ -56,8 +56,8 @@ Reads a MAgPIE-file and converts it to a 3D array of the structure
 }
 \details{
 This function reads from 12 different MAgPIE file\_types. "rds" is
-a R-default format for storing R objects and recommended for compressed 
-storage."cs2" is the new standard format for cellular data with or without 
+a R-default format for storing R objects."cs2" is the new standard 
+format for cellular data with or without 
 header and the first columns (year,regiospatial) or only (regiospatial), 
 "csv" is the standard format for regional data with or without header 
 and the first columns (year,region,cellnumber) or only (region,cellnumber). 
@@ -78,7 +78,7 @@ have a higher compatibility to other languages. \cr\cr Since library version
 The binary MAgPIE formats .m and .mz have the following content/structure
 (you only have to care for that if you want to implement
 read.magpie/write.magpie functions in other languages): \cr \cr 
-[ FileFormatVersion | Current file format version number (currently 3) | integer | 2 Byte ] \cr 
+[ FileFormatVersion | Current file format version number (currently 4) | integer | 2 Byte ] \cr 
 [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
 [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
 [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
@@ -86,7 +86,7 @@ read.magpie/write.magpie functions in other languages): \cr \cr
 [ nyears | Number of years | integer | 2 Byte ]\cr 
 [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
 [ nregions | Number of regions | integer | 2 Byte ] \cr 
-[ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 2 Byte ] \cr 
+[ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
 [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
 [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
