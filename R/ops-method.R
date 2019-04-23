@@ -8,34 +8,6 @@ setMethod(Ops, signature(e1='magpie',e2='magpie'),
               u1 <- units(e1)
               e2 <- install_magpie_units(e2)
               u2 <- units(e2)
-              #Mixed units handling under development 
-              #Does not yet account for scaling factors if units are converted during addition/subtraction
-              #if (is(u1,"mixed_units") & is(u2,"mixed_units")) {
-              #  if (length(setdiff(units(u1),units(u2)))==0) {
-              #    for (i in 1:length(u1)) {
-              #      for (j in 1:length(u2)) {
-              #        if (as.character(units(u1[i]))==as.character(units(u2[j]))) {
-              #          
-              #        }
-              #      }
-              #    }
-              #  }
-              #}else if (is(u1,"mixed_units") | is(u2,"mixed_units")) {
-              #  units_out <- vector()
-              #  k <- 1
-              #  for (i in 1:length(u1)) {
-              #    for (j in 1:length(u2)) {
-              #      units_out[k] <- as.character(units(callGeneric(as_units(u1[i]),as_units(u2[j]))))
-              #      k <- k+1
-              #    }
-              #  }
-              #  if (length(unique(units_out)) > 1) {
-              #    units_out <- units::mixed_units(1,unique(units_out))
-              #  }else {
-              #    units_out <- unique(units_out)
-              #  }
-              #  conv_factor <- 1
-              #}else {
               if (units(u2)!=units(u1)) {
                 if (are_units_convertible(u1,u2)) {
                   e2 <- set_magpie_units(e2,u1)
