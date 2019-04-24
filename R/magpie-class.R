@@ -193,9 +193,11 @@ setMethod("[",
               if(is.factor(j)) j <- as.character(j)
               if(is.numeric(j) & any(j>dim(x)[2])) {
                 j <- paste("y",j,sep="")
-                if(invert) j <- getYears(x)[!(getYears(x) %in% j)]
-              } else if(is.null(j)) {
+              }
+              if(is.null(j)) {
                 j <- 1:dim(x)[2]
+              } else if(is.character(j) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
+                j <- .dimextract(x,j,2,pmatch=pmatch,invert=invert)
               } else if(invert) {
                 j <- getYears(x)[!(getYears(x) %in% j)]
               }
@@ -250,6 +252,7 @@ setMethod("[<-",
               if(is.factor(j)) j <- as.character(j)
               if(is.numeric(j) & any(j>dim(x)[2])) j <- paste("y",j,sep="")
               else if(is.null(j)) j <- 1:dim(x)[2]
+              else if(is.character(j) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) j <- .dimextract(x,j,2,pmatch=pmatch) 
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
