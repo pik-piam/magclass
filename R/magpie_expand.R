@@ -14,6 +14,9 @@
 #' only warnings are returned but no notes. This is done by
 #' options(verbosity.level=1)
 #' 
+#' Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
+#' currently active. To switch to the new setup you have to set \code{options(magpie_version=2)}.
+#' 
 #' @param x MAgPIE object that should be expanded
 #' @param ref MAgPIE object that serves as a reference
 #' @return An expanded version of x.
@@ -29,6 +32,10 @@
 #' 
 #' @export magpie_expand
 magpie_expand <- function(x,ref) {
+  
+  version <- getOption("magclass_version")
+  if(!is.null(version) && version>1) return(magpie_expand2(x,ref))
+                                            
   #x: MAgPIE object which should be expanded
   #ref: Reference object defining the structure to which x should be expanded
   #1.spatial dimension
@@ -195,6 +202,7 @@ magpie_expand <- function(x,ref) {
 }
 
 magpie_expand2 <- function(x,ref) {
+
   #x: MAgPIE object which should be expanded
   #ref: Reference object defining the structure to which x should be expanded
 
@@ -203,6 +211,11 @@ magpie_expand2 <- function(x,ref) {
   #3.data dimension
 
   for(i in 1:3) {
+    if(i==1) {
+      if(dim(ref)[1]==1 && !is.null(rownames(ref)) && rownames(ref)=="GLO") rownames(ref) <- NULL
+      else if(dim(x)[1]==1 && !is.null(rownames(x)) && rownames(x)=="GLO") rownames(x) <- NULL
+    } 
+    
     if(is.null(dimnames(ref)[[i]]) && dim(ref)[i] > 1) stop("Inconsistent MAgPIE reference file: more than 1 element in dimension ",i," but no names given!")
     if(is.null(dimnames(x)[[i]])) {
       if(dim(x)[i] > 1) stop("Inconsistent MAgPIE file: more than 1 element in dimension ",i," but no names given!")
@@ -321,6 +334,7 @@ magpie_expand2 <- function(x,ref) {
       }
     }
   }
+  getSets(x) <- make.unique(getSets(x),sep="")
   return(x)
 }
 

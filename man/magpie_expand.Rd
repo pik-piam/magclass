@@ -29,6 +29,9 @@ You can influence the verbosity of this function by setting the option
 warnings as well as notes are returned. Setting verbosity to 1 means that
 only warnings are returned but no notes. This is done by
 options(verbosity.level=1)
+
+Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
+currently active. To switch to the new setup you have to set \code{options(magpie_version=2)}.
 }
 \examples{
 
