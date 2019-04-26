@@ -31,7 +31,7 @@ only warnings are returned but no notes. This is done by
 options(verbosity.level=1)
 
 Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
-currently active. To switch to the new setup you have to set \code{options(magpie_version=2)}.
+currently active. To switch to the new setup you have to set \code{options(magclass_version=2)}.
 }
 \examples{
 
