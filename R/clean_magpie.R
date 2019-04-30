@@ -44,39 +44,32 @@ clean_magpie <- function(x,what="all") {
       return(o)
     }
     
-    names <- names(dimnames(x))
-    if(!is.na(names[1]) & (names[1]!="") & (names[1]!="NA")) {
-      c1 <- .count_subdim(dimnames(x)[[1]][1])
-      c2 <- .count_subdim(names[1])
-      if(c1!=c2) {
-        if(c1>2) stop("More than 2 spatial subdimensions not yet implemented")
-        names[1] <- paste(names[1],"cell",sep=".")
+    .fix_names <- function(names,ndim,key="data") {
+      if(is.na(names) || names=="" || names=="NA") {
+        tmp <- rep(key,max(1,ndim))
+        names <- paste(make.unique(tmp, sep = ""),collapse =".")
+      } else {
+        cdim <- .count_subdim(names)
+        if(ndim!=cdim) {
+          if(ndim>cdim) {
+            names <- paste(c(names,rep(key,ndim-cdim)),collapse=".")
+          } else {
+            search <- paste0(c(rep("\\.[^\\.]*",cdim-ndim),"$"),collapse="")
+            names <- sub(search,"",names)
+          }
+          names <- paste0(make.unique(strsplit(names,"\\.")[[1]],sep = ""),collapse=".")
+        } 
       }
-    } else {
-      names[1] <- ifelse(all(grepl("\\.",dimnames(x)[[1]])),"region.cell","region") 
-    }
-    if(is.na(names[2]) | names[2]=="NA" | names[2]=="") {
-      names[2] <- "year"
-    }
-    if(is.na(names[3]) | names[3]=="" | names[3]=="NA") {
-      ndim <- nchar(gsub("[^\\.]","",getNames(x)[1])) +1
-      names[3] <- ifelse(length(ndim)>0,paste0("data",1:ndim,collapse="."),"data1")
-    } else {
-      c1 <- .count_subdim(dimnames(x)[[3]][1])
-      c2 <- .count_subdim(names[3])
-      if(c1!=c2) {
-        if(c1>c2) {
-          names[3] <- paste(c(names[3],rep("data",c1-c2)),collapse=".")
-        } else {
-          search <- paste0(c(rep("\\.[^\\.]*",c2-c1),"$"),collapse="")
-          names[3] <- sub(search,"",names[3])
-        }
-        names[3] <- paste0(make.unique(strsplit(names[3],"\\.")[[1]],sep = ""),collapse=".")
-
-      } 
+      return(names)
     }
     
+    names <- names(dimnames(x))
+    keys <- c("region","year","data")
+    for(i in 1:3) {
+      names[i] <- .fix_names(names[i],ndim=.count_subdim(dimnames(x)[[i]][1]),key=keys[i])
+    }
     names(dimnames(x)) <- names
   }  
+  
   return(updateMetadata(x))
 }
