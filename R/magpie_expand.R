@@ -17,6 +17,10 @@
 #' Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
 #' currently active. To switch to the new setup you have to set \code{options(magclass_version=2)}.
 #' 
+#' By default expansion is based on the elements in a dimension ignoring the set name of the dimension.
+#' To expand based on set names instead of contents (recommended) you can switch 
+#' \code{options(magclass_setMatching=TRUE)}.
+#' 
 #' @param x MAgPIE object that should be expanded
 #' @param ref MAgPIE object that serves as a reference
 #' @return An expanded version of x.
@@ -203,6 +207,8 @@ magpie_expand <- function(x,ref) {
 
 magpie_expand2 <- function(x,ref) {
 
+  setMatching <- isTRUE(getOption("magclass_setMatching"))
+  
   #x: MAgPIE object which should be expanded
   #ref: Reference object defining the structure to which x should be expanded
 
@@ -231,12 +237,12 @@ magpie_expand2 <- function(x,ref) {
         } else {
           x <- x[,,rep(1,dim(ref)[i])]
         }
-        dimnames(x)[[i]] <- dimnames(ref)[[i]]
-      }
-    } else if(dim(x)[i]==dim(ref)[i] && all(dimnames(x)[[i]]==dimnames(ref)[[i]])) {
+      } 
+      if(!is.null(dimnames(ref)[[i]])) dimnames(x)[[i]] <- dimnames(ref)[[i]]
+    } else if(dim(x)[i]==dim(ref)[i] && all(dimnames(x)[[i]]==dimnames(ref)[[i]]) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
       # dimension is identical
       next
-    } else if(dim(x)[i]==dim(ref)[i] && all(sort(dimnames(x)[[i]])==sort(dimnames(ref)[[i]]))) {
+    } else if(dim(x)[i]==dim(ref)[i] && all(sort(dimnames(x)[[i]])==sort(dimnames(ref)[[i]])) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
       # same length and entries, but different order
       if(i==1) {
         x <- x[dimnames(ref)[[i]],,]
@@ -257,11 +263,20 @@ magpie_expand2 <- function(x,ref) {
       rfdim <- .alldims(ref, dim=i, sort=TRUE)
       xfdim <- .alldims(x,   dim=i, sort=TRUE)
 
-      # Bug to be fixed: In the case that ref contains subdimensions with identical 
-      # set elements but x is missing one of these it does not realize that
-      # the other has to be added (as it found already a dimension with the same
-      # set elements)
-      toadd <- which(!(rfdim %in% xfdim)) #which dimensions have to be added?
+      if(setMatching || anyDuplicated(rfdim)>0) {
+        # special treatment as duplicates occur in anyDuplicated
+        # Matching will be based on set names!
+        exists <- match(names(rfdim),names(xfdim))
+        # make sure that matches really match
+        for(j in 1:length(exists)) {
+          if(!is.na(exists[j]) && !(rfdim[j] %in% xfdim[exists[j]])) stop("Identical set names (",names(rfdim)[j],") but different content. Correct set names!") 
+        }
+        toadd <- which(is.na(exists))
+      } else {
+        # easy matching based on content (set names ignored!)
+        toadd <- which(!(rfdim %in% xfdim)) #which dimensions have to be added
+      }
+
       if(length(toadd)>0) {
         tmp <- NULL
         for(a in toadd) {

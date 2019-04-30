@@ -32,6 +32,10 @@ options(verbosity.level=1)
 
 Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
 currently active. To switch to the new setup you have to set \code{options(magclass_version=2)}.
+
+By default expansion is based on the elements in a dimension ignoring the set name of the dimension.
+To expand based on set names instead of contents (recommended) you can switch 
+\code{options(magclass_setMatching=TRUE)}.
 }
 \examples{
 
