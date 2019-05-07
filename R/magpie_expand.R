@@ -305,12 +305,12 @@ magpie_expand2 <- function(x,ref) {
       if(any(lengths_order>1)) {
         probs <- which(lengths_order>1)
         taken <- NULL
-        for(i in probs) {
+        for(p in probs) {
           # try to map via set names
-          j <- which(names(xfdim)==names(order)[i])
+          j <- which(names(xfdim)==names(order)[p])
           if(length(j)!=1) stop("Cannot map dimensions as more than one dimension have identical set elements but set names do not match!")
-          if(!(j %in% order[[i]])) stop("Cannot map dimensions as set names are inconsistent!")
-          order[[i]] <- j
+          if(!(j %in% order[[p]])) stop("Cannot map dimensions as set names are inconsistent!")
+          order[[p]] <- j
         }
       }
       order <- unlist(order)
