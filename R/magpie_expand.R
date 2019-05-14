@@ -153,7 +153,23 @@ magpie_expand <- function(x,ref) {
       .tmp <- function(rfdim,xfdim) return(which(xfdim%in% list(rfdim)))
       order <- lapply(rfdim,.tmp,xfdim)
       lengths_order <- sapply(order,length)
-      if(any(lengths_order==0)) stop("Some ref dimensions cannot be found in x after expansion. magpie_expand-function seems to be bugged!")
+      if(any(lengths_order==0)) {
+        .checkForDuplicates <- function(x, name="x") {
+          dx <- lapply(x,duplicated)
+          if(sum(unlist(dx))>0) {
+            elems <- names(dx)[sapply(dx,sum)>0]
+            duplicate <- list()
+            for(e in elems) {
+              duplicate[[e]] <- x[[e]][dx[[e]]]
+            }
+            dtext <- paste(names(unlist(duplicate)),unlist(duplicate), sep=" -> ", collapse=", ")
+            stop("magpie_expand failed because ",name," contains duplicate entities (",dtext,")!") 
+          }
+        }
+        .checkForDuplicates(xfdim,"x")
+        .checkForDuplicates(rfdim,"ref")
+        stop("Some ref dimensions cannot be found in x after expansion. magpie_expand-function seems to be bugged!")
+      }
       if(any(lengths_order>1)) {
         warning("Some ref dimensions are found more than once in x after expansion. Mapping might go wrong!")
         probs <- which(lengths_order>1)
@@ -301,7 +317,23 @@ magpie_expand2 <- function(x,ref) {
       .tmp <- function(rfdim,xfdim) return(which(xfdim %in% list(rfdim)))
       order <- lapply(rfdim,.tmp,xfdim)
       lengths_order <- sapply(order,length)
-      if(any(lengths_order==0)) stop("Some ref dimensions cannot be found in x after expansion. magpie_expand-function seems to be bugged!")
+      if(any(lengths_order==0)) {
+        .checkForDuplicates <- function(x, name="x") {
+          dx <- lapply(x,duplicated)
+          if(sum(unlist(dx))>0) {
+            elems <- names(dx)[sapply(dx,sum)>0]
+            duplicate <- list()
+            for(e in elems) {
+              duplicate[[e]] <- x[[e]][dx[[e]]]
+            }
+            dtext <- paste(names(unlist(duplicate)),unlist(duplicate), sep=" -> ", collapse=", ")
+            stop("magpie_expand failed because ",name," contains duplicate entities (",dtext,")!") 
+          }
+        }
+        .checkForDuplicates(xfdim,"x")
+        .checkForDuplicates(rfdim,"ref")
+        stop("Some ref dimensions cannot be found in x after expansion. magpie_expand-function seems to be bugged!")
+      }
       if(any(lengths_order>1)) {
         probs <- which(lengths_order>1)
         taken <- NULL
