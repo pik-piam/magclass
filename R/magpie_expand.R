@@ -136,6 +136,9 @@ magpie_expand <- function(x,ref) {
       xfdim <- .fulldatadim(x,TRUE)
       
       toadd <- which(!(rfdim %in% xfdim)) #which dimensions have to be added?
+      
+      sizeCheck(dim(x), rfdim[toadd])
+
       if(length(toadd)>0) {
         tmp <- NULL
         for(i in toadd) { 
@@ -294,6 +297,7 @@ magpie_expand2 <- function(x,ref) {
       }
 
       if(length(toadd)>0) {
+        sizeCheck(dim(x), rfdim[toadd])
         tmp <- NULL
         for(a in toadd) {
           tmp  <- paste(rep(tmp,each=length(rfdim[[a]])),rfdim[[a]],sep=".")
