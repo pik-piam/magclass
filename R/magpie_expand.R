@@ -393,7 +393,7 @@ magpie_expand2 <- function(x,ref) {
       }
     }
   }
-  getSets(x) <- make.unique(getSets(x),sep="")
+  getSets(x) <- make.unique(getSets(clean_magpie(x,what="sets")),sep="")
   return(x)
 }
 
