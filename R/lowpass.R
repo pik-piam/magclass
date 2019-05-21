@@ -13,6 +13,8 @@
 #' @param altFilter set special filter rule to indexes defined in this
 #' parameter. The special filter has the structure
 #' x'(n) = (2*x(n)+x(n+1))/3
+#' @param warn boolean deciding whether lowpass issues a warning for
+#' critical parameter choices or not
 #' @return The filtered data vector or MAgPIE object
 #' @author Jan Philipp Dietrich, Misko Stevanovic
 #' @examples
@@ -22,9 +24,9 @@
 #' lowpass(c(0,9,1,5,14,20,6,11,0), i=2, fix="start")
 #' 
 #' @export lowpass
-lowpass <- function(x,i=1, fix=NULL, altFilter=NULL) {
+lowpass <- function(x,i=1, fix=NULL, altFilter=NULL, warn=TRUE) {
   
-  if(!is.null(fix)) warning("Fixing start or end does might modify the total sum of values! Use fix=NULL to let the total sum unchanged!")
+  if(warn && !is.null(fix)) warning("Fixing start or end does modify the total sum of values! Use fix=NULL to let the total sum unchanged!")
   
   if(i==0) return(x)
   

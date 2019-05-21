@@ -4,7 +4,7 @@
 \alias{lowpass}
 \title{Lowpass Filter}
 \usage{
-lowpass(x, i = 1, fix = NULL, altFilter = NULL)
+lowpass(x, i = 1, fix = NULL, altFilter = NULL, warn = TRUE)
 }
 \arguments{
 \item{x}{Vector of data points, that should be filtered or MAgPIE object}
@@ -19,6 +19,9 @@ ending point and \code{"both"} for fixing both ends of the data.}
 \item{altFilter}{set special filter rule to indexes defined in this
 parameter. The special filter has the structure
 x'(n) = (2*x(n)+x(n+1))/3}
+
+\item{warn}{boolean deciding whether lowpass issues a warning for
+critical parameter choices or not}
 }
 \value{
 The filtered data vector or MAgPIE object
