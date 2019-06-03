@@ -21,7 +21,6 @@
 #' \dontrun{
 #' a <- read.lpjml_nc("sdate.nc")}
 #'
-#' @export read.lpjml_nc
 
 read.lpjml_nc <- function(file_name,
                           file_folder = "",
@@ -189,13 +188,13 @@ read.lpjml_nc <- function(file_name,
     if(dim == 4){
       
       tmp <- array(0, dim = c(nc_file$dim$lon$len, nc_file$dim$lat$len, length(years), length(nc_level)))
-      for(i in length(years)){
+      for(i in 1:length(years)){
         for(j in averaging_range*(i-1)+(1:averaging_range)){tmp[,,i,] <- tmp[,,i,]+nc_data[,,j,]/averaging_range}
       }
     } else if (dim == 3){
       
       tmp <- array(0, dim = c(nc_file$dim$lon$len, nc_file$dim$lat$len, length(years)))
-      for(i in length(years)){
+      for(i in 1:length(years)){
         for(j in averaging_range*(i-1)+(1:averaging_range)){tmp[,,i] <- tmp[,,i]+nc_data[,,j]/averaging_range}
       }
     }
