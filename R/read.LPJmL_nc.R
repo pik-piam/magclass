@@ -9,7 +9,6 @@
 #' @param file_folder folder the file is located in (alternatively you can also
 #' specify the full path in file\_name - wildcards are supported)
 #' @param years a vector containing the years of interest
-#' @param start_year first year of LPJmL data
 #' @param split_data split reading routine to avoid memory issues 
 #' @param keep_month keep monthly data (month as 3rd magpie data dim)
 #' @param averaging_range number of years to be averaged (if even: overweight for prevous time period)
@@ -27,16 +26,16 @@
 read.lpjml_nc <- function(file_name,
                           file_folder = "",
                           years       = NULL,
-                          start_year  = 1901,
                           split_data  = FALSE , 
                           keep_month  = FALSE ,
                           averaging_range = 1) {
 
   file_name      <- paste(file_folder,file_name,sep="")
   nc_file        <- ncdf4::nc_open(file_name)
+  start_year     <- nc_file$dim$time$vals[1]
 
   if(!is.numeric(years)) years <- as.numeric(substring(years,2))
-  
+  if(!all(is.element(years, nc_file$dim$time$vals))) stop(paste0("Cannot read years outside of ", paste(nc_file$dim$time$vals, collapse=", ")))
   #taking out lat and lon from nc file
   lat <- nc_file$dim$lat$vals
   lon <- nc_file$dim$lon$vals
@@ -56,7 +55,6 @@ read.lpjml_nc <- function(file_name,
       mag <- mbind(mag, read.lpjml_nc(file_name = file_name, 
                                     file_folder = file_folder,
                                           years = year_x,   
-                                    start_year  = start_year,
                                     split_data  = FALSE ,   
                                     keep_month  = keep_month ,
                                 averaging_range = averaging_range))

@@ -5,8 +5,7 @@
 \title{Read LPJmL from nc-file}
 \usage{
 read.lpjml_nc(file_name, file_folder = "", years = NULL,
-  start_year = 1901, split_data = FALSE, keep_month = FALSE,
-  averaging_range = 1)
+  split_data = FALSE, keep_month = FALSE, averaging_range = 1)
 }
 \arguments{
 \item{file_name}{file name including file ending (wildcards are supported).
@@ -17,8 +16,6 @@ to file\_name and file\_folder)}
 specify the full path in file\_name - wildcards are supported)}
 
 \item{years}{a vector containing the years of interest}
-
-\item{start_year}{first year of LPJmL data}
 
 \item{split_data}{split reading routine to avoid memory issues}
 
