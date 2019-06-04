@@ -31,10 +31,8 @@ read.lpjml_nc <- function(file_name,
 
   file_name      <- paste(file_folder,file_name,sep="")
   nc_file        <- ncdf4::nc_open(file_name)
-  start_year     <- nc_file$dim$time$vals[1]
-
   if(!is.numeric(years)) years <- as.numeric(substring(years,2))
-  if(!all(is.element(years, nc_file$dim$time$vals))) stop(paste0("Cannot read years outside of ", paste(nc_file$dim$time$vals, collapse=", ")))
+ 
   #taking out lat and lon from nc file
   lat <- nc_file$dim$lat$vals
   lon <- nc_file$dim$lon$vals
@@ -83,11 +81,20 @@ read.lpjml_nc <- function(file_name,
   #######################################
   file_shortname <- tail(unlist(strsplit(file_name,'/')),1)
   if(grepl("^m",file_shortname)){
+    
+    start_year     <- as.integer(gsub(".*?([0-9]+).*", "\\1", nc_file$dim$time$units[1]))
+    all_years      <- c(start_year:(length(nc_file$dim$time$vals)/12 + start_year))
+    if(!all(is.element(years, all_years))) stop(paste0("Cannot read years outside of ", paste(all_years, collapse=", ")))
+
     time_level  <- (years - start_year)*12 + 1 
     time_steps  <- c(1:12)
     ntimesteps  <- 12*length(time_level)
     
   } else{
+    
+    start_year     <- nc_file$dim$time$vals[1]
+    if(!all(is.element(years, nc_file$dim$time$vals))) stop(paste0("Cannot read years outside of ", paste(nc_file$dim$time$vals, collapse=", ")))
+  
     time_level  <- years - start_year + 1 
     time_steps  <- 1
     ntimesteps  <- length(time_level)
