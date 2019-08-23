@@ -129,8 +129,13 @@ return(mag)
   }
     
   if(!as.list) {
-     output <- mbind(unlist(output,recursive=FALSE))
-     names(dimnames(output))[3] <- "scenario.model.variable"
+    regions <- Reduce(union,lapply(unlist(output,recursive=FALSE),function(source){getRegions(source)})) # make sure that magpie objects to be merged share the same regions
+    output <- mbind(lapply(unlist(output,recursive=FALSE),function(source){
+        data <- new.magpie(regions,getYears(source),getNames(source),fill=NA)
+        data[getRegions(source),getYears(source),getNames(source)] <- source[getRegions(source),getYears(source),getNames(source)]
+        return(data)
+      }))
+	  names(dimnames(output))[3] <- "scenario.model.variable"
   }
   return(output)
 }
