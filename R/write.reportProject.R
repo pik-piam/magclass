@@ -121,24 +121,24 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
           factor_x=setNames(as.magpie(as.numeric(map$factor[mapindex])),map[mapindex,1])
           original_x=map[mapindex,1]
           
-          if(!all(original_x %in% getNames(data[[n]][[m]]))) {stop(paste0("Indicator ", original_x[which(!original_x%in%getNames(data[[n]][[m]]))]," missing in data but exists in mapping"))}
-            
-          if (any(weight_x=="")){
-            #wenn Gewicht "" dann error
-            stop(paste0("empty weight for indicator "),ind_x)
-          } else if (all(weight_x != "NULL")){ 
-            #wenn Gewicht vorhanden dann average
-            # average: by(data = b,INDICES = b[,2],FUN = function(x){sum(x$breaks*x$test)/sum(x$test)})
-            tmp[,,ind_x]<-  dimSums(data[[n]][[m]][,,original_x]*factor_x*setNames(data[[n]][[m]][,,weight_x],original_x),dim=3.1)/dimSums(setNames(data[[n]][[m]][,,weight_x],original_x),dim=3.1)
-          } else if (all(weight_x=="NULL")){
-            #wenn gewicht NULL dann summation
-            tmp[,,ind_x] <- dimSums(data[[n]][[m]][,,original_x]*factor_x,dim=3.1)
-          } else {
-            stop(paste0("mixture of weights between NULL and parameters for indicator "),ind_x)
-            #wenn Gewicht mischung aus NULL und "" dann error
-          }
+          if(all(original_x %in% getNames(data[[n]][[m]]))) {
+            if (any(weight_x=="")){
+              #wenn Gewicht "" dann error
+              stop(paste0("empty weight for indicator "),ind_x)
+            } else if (all(weight_x != "NULL")){ 
+              #wenn Gewicht vorhanden dann average
+              # average: by(data = b,INDICES = b[,2],FUN = function(x){sum(x$breaks*x$test)/sum(x$test)})
+              tmp[,,ind_x]<-  dimSums(data[[n]][[m]][,,original_x]*factor_x*setNames(data[[n]][[m]][,,weight_x],original_x),dim=3.1)/dimSums(setNames(data[[n]][[m]][,,weight_x],original_x),dim=3.1)
+            } else if (all(weight_x=="NULL")){
+              #wenn gewicht NULL dann summation
+              tmp[,,ind_x] <- dimSums(data[[n]][[m]][,,original_x]*factor_x,dim=3.1)
+            } else {
+              stop(paste0("mixture of weights between NULL and parameters for indicator "),ind_x)
+              #wenn Gewicht mischung aus NULL und "" dann error
+            }
+          } else warning(paste0("Indicator ", original_x[which(!original_x%in%getNames(data[[n]][[m]]))]," missing in data but exists in mapping"))
         }
-        
+            
         getSets(tmp)<-c(getSets(tmp)[1:3],strsplit(names(map)[2],"[.]")[[1]][-1])
         if("unit"%in%names(map)) {
           getNames(tmp)<-paste0(getNames(tmp)," (",map$unit[match(getNames(tmp),map[,2])],")")
