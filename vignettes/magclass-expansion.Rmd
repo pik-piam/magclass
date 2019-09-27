@@ -1,0 +1,117 @@
+---
+title: "MAGPIE Class Object Expansion"
+author: "Jan Philipp Dietrich"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MAGPIE Class Object Expansion}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+# set back to default
+options(magclass_expand_version=2) 
+options(magclass_setMatching=FALSE)
+```
+
+One of the most important features of magclass objects is their auto expansion when used in calculations with other magclass objects: Dimensions of the objects in the calculation are compared and tried to be matched accordingly. Afterwards all objects are expanded in dimensionality to the superset of dimensions involved in the calculation.
+
+This tutorial will go through different variants of this auto expansion logic and explain the differences.
+
+## Auto expansion v1 vs v2
+
+This auto expansion can follow different rules. In magclass version 1 to 4 it was assumed that there is exactly one spatial and one temporal dimension, but various data dimensions (auto expand version 1). Beginning with version 5 of the package this logic has been harmonized and it is now assumed for all main dimensions (spatial, temporal, data) that they consist of more than one subdimension (auto expand version 2). 
+With the updated auto expansion calculation, which previously have led to an error, will now work:
+
+Creating two magpie objects with different world regions:
+```{r, echo = TRUE}
+library(magclass)
+
+# 
+a <- population_magpie
+b <- population_magpie
+getRegions(b)[1] <- "AAA"
+
+```
+
+The multiplication for auto expand version 1 (magclass < 5.0) fails:
+```{r, echo = TRUE, error=TRUE}
+options(magclass_expand_version=1) # default setting for magclass < 5.0
+head(a*b)
+```
+
+The same calculation with auto expand version 2 (magclass >= 5.0) works:
+```{r, echo = TRUE}
+
+options(magclass_expand_version=2) # default setting for magclass >= 5.0
+head(a*b)
+
+
+```
+
+As this modification only changes cases which did not work previously it could be included without causing backwards compatibility issues. 
+
+## Set matching
+
+Another way of modifying auto expansion in magclass is the use of set matching. By default dimensions are compared based on their elements: If dimensions are found which contain the same elements it is assumed that it is the same dimension. While this assumption is correct in many cases it fails in some others, e.g. if an import-export matrix should be created. 
+A better way of distinguishing whether dimensions are identical or not is the use of the set names (the names of the dimension). If they are identical it can be assumed that it is the same dimension otherwise it can be assumed that it is not.
+
+Due to the absense of set names in initial versions of magclass the dimension matching was initially implement based on element comparison. With version 5 of the package set matching is now also supported but switched off by default due to backwards compatibility issues. If you want to switch it on (recommended) you can do so by setting the option `options(magclass_setMatching=TRUE)`. However, if you do so be prepared that the package behavior will be quite different in many cases as the following examples show:
+
+### Idential set elements, different set names
+
+Without set matching, identical set elements but different set names produce a simple entity matching without expansion:
+
+```{r, echo = TRUE}
+options(magclass_expand_version=2) # default setting for magclass >= 5.0
+
+a <- population_magpie
+b <- population_magpie
+
+getSets(a)[1] <- "import"
+getSets(b)[1] <- "export"
+
+options(magclass_setMatching=FALSE)
+head(a*b)
+```
+
+With set matching the same calculation will expand the spatial dimension to a cross product of each region with each other:
+
+```{r, echo = TRUE}
+options(magclass_setMatching=TRUE)
+head(a*b)
+```
+
+### Different set element, identical set names
+
+If the set elements are different but the set names identical this will lead to an expansion of the spatial dimension in the case without set matching (as the set name is just ignored):
+
+```{r, echo = TRUE}
+options(magclass_expand_version=2) # default setting for magclass >= 5.0
+
+a <- population_magpie
+b <- population_magpie
+
+getRegions(a)[1] <- "AAA"
+getRegions(b)[1] <- "BBB"
+
+options(magclass_setMatching=FALSE)
+head(a*b)
+```
+
+With set matching it will return an error as identical set names but differing elements indicates most likely an error.
+
+```{r, echo = TRUE, error=TRUE}
+options(magclass_setMatching=TRUE)
+head(a*b)
+```
+
+To ensure that existing calculations continue to work as they did before use `options(magclass_setMatching=FALSE)`, to write new code more consistently with magclass objects use `options(magclass_setMatching=TRUE)`.
+
+```{r, echo = FALSE}
+# set back to default
+options(magclass_expand_version=2) 
+options(magclass_setMatching=FALSE)
+```

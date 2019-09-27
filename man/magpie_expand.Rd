@@ -30,12 +30,14 @@ warnings as well as notes are returned. Setting verbosity to 1 means that
 only warnings are returned but no notes. This is done by
 options(verbosity.level=1)
 
-Currently magpie_expand is prepared to be updated to a newer version. By default the old setup is
-currently active. To switch to the new setup you have to set \code{options(magclass_version=2)}.
+With version 5 of the package magpie_expand has been updated to a newer version. 
+To switch to the old setup you have to set \code{options(magclass_expand_version=1)}.
 
-By default expansion is based on the elements in a dimension ignoring the set name of the dimension.
-To expand based on set names instead of contents (recommended) you can switch 
-\code{options(magclass_setMatching=TRUE)}.
+By default expansion is based on the elements in a dimension ignoring the set name of 
+the dimension. To expand based on set names instead of contents (recommended) you can 
+switch \code{options(magclass_setMatching=TRUE)}. Please be careful with this setting 
+as it alters the behavior of magclass objects quite significantly! For more information
+have a look at \code{vignette("magclass-expansion")}.
 }
 \examples{
 
