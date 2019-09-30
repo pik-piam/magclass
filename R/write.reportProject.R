@@ -99,7 +99,11 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
         getSets(tmp)<-c(getSets(tmp)[1:3],strsplit(names(map)[2],"[.]")[[1]][-1])
         new_data[[n]][[m]] <- tmp
         
-        tmp<-setdiff(map[,names(map)[1],drop=FALSE],getNames(data[[n]][[m]]))
+        #Select names from mapping which are not NA
+        map_names = map[stats::complete.cases(map[names(map)[1]]),]
+        map_names = getElement(map_names,names(map)[1])
+        #Which names in the mapping are missing in the data
+        tmp <- setdiff(map_names,getNames(data[[n]][[m]]))
         if (length(tmp) !=0) {
           missingc <- c(missingc,tmp)
         }
@@ -164,6 +168,16 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
   
   # save project reporting
   if(format == "default") {
+    if (grepl("(xls$|xlsx$)",file)){
+      
+      if (grepl("~",file)){
+        stop("the sign '~' is not always supported by function write.xlsx. Please change file path")
+      }
+      a <- write.report2(new_data,file=NULL)
+      a <- do.call(rbind,do.call(rbind,a))
+      xlsx::write.xlsx(as.data.frame(a), file = file, row.names = F,
+                 sheetName = "DATA")
+    } else
     write.report2(new_data,file=file,...)
   } else if (format == "IAMC") {
     a <- write.report2(new_data,file=NULL,...)
@@ -215,6 +229,7 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
       }
     }
   }
+  return(new_data)
 }
 
 
