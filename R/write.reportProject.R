@@ -181,10 +181,10 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
     write.report2(new_data,file=file,...)
   } else if (format == "IAMC") {
     a <- write.report2(new_data,file=NULL,...)
-    write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
+    write.csv(a,file=file,row.names = FALSE,quote = FALSE)
   } else if (format == "AgMIP") {
     a <- write.report2(new_data,file=NULL,extracols = "Item")
-    b<-melt(a[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+    b<-melt(a,id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
     write.csv(b,file=file,row.names = FALSE,quote = FALSE)
   }
   
