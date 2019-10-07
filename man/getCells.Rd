@@ -10,7 +10,7 @@ getCells(x)
 
 getCells(x) <- value
 
-setCells(object, nm = "GLO.1")
+setCells(object, nm = "GLO")
 }
 \arguments{
 \item{x, object}{MAgPIE object}
@@ -40,7 +40,7 @@ to the already existing function setNames.
 
  a <- as.magpie(1)
  getCells(a)
- setCells(a,"AFR.1")
+ setCells(a,"AFR")
 
 }
 \seealso{

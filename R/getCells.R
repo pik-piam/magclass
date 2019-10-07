@@ -19,7 +19,7 @@
 #' 
 #'  a <- as.magpie(1)
 #'  getCells(a)
-#'  setCells(a,"AFR.1")
+#'  setCells(a,"AFR")
 #' 
 #' @export
 getCells <- function(x) {

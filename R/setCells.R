@@ -1,6 +1,6 @@
 #' @describeIn getCells set cell names
 #' @export
-setCells <- function(object,nm="GLO.1") {
+setCells <- function(object,nm="GLO") {
   getCells(object) <- nm
   return(object)
 }
