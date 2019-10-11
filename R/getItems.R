@@ -22,8 +22,10 @@ getItems <- function(x,dim,split=FALSE) {
   if(dim==round(dim) && split) {
     tmp <- as.list(as.data.frame(t(matrix(unlist(strsplit(dimnames(x)[[dim]],"\\.")),,dim(x)[dim])),stringsAsFactors=FALSE))
     tmp <- lapply(tmp,unique)
-    tmp2 <- strsplit(getSets(x,fulldim=FALSE)[dim],"\\.")[[1]]
-    if(length(tmp2)==length(tmp)) names(tmp) <- tmp2
+    if(!is.null(getSets(x))) {
+      tmp2 <- strsplit(getSets(x,fulldim=FALSE)[dim],"\\.")[[1]]
+      if(length(tmp2)==length(tmp)) names(tmp) <- tmp2
+    }
     return(tmp)
   }
   tmp <- dimnames(x)[[as.integer(dim)]]
