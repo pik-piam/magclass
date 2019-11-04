@@ -21,7 +21,7 @@ Unit is a name of the unit without ()
 "mif";"agmip";"Item";"unit";"weight";"factor"
 "Nutrition|+|Calorie Supply (kcal/capita/day)";"CALO";"AGR";"kcal/capita/day";"NULL";1}
 
-\item{file}{name of the project specipic report, default=NULL means that the names of the header of the reporting is used}
+\item{file}{name of the output file, default=NULL returns the output as magclass object}
 
 \item{max_file_size}{maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files}
 

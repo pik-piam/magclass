@@ -17,7 +17,7 @@
 #'   Example:
 #' "mif";"agmip";"Item";"unit";"weight";"factor"
 #' "Nutrition|+|Calorie Supply (kcal/capita/day)";"CALO";"AGR";"kcal/capita/day";"NULL";1
-#' @param file name of the project specipic report, default=NULL means that the names of the header of the reporting is used
+#' @param file name of the output file, default=NULL returns the output as magclass object
 #' @param max_file_size maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files
 #' @param format available reporting formats: "default", "IAMC" and "AgMIP". "default" and "IAMC" are very similar (wide format for year) and differ only in the use of semi-colon (default) and comma (IAMC) as seperator. "AgMIP" is in long format. 
 #' @param ... arguments passed to write.report and write.report2
@@ -160,76 +160,72 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
   if (length(missingc) !=0) warning(paste0("Following variables were not found in the generic data and were excluded: \"",paste(unique(missingc),collapse = "\", \""),"\""))
   
   if(!is.null(file)){
-    file <- file
-  } else {  
-    # calculate name of new reporting
-    file <- gsub(names(map)[1],names(map)[2],mif)
-  }  
-  
-  # save project reporting
-  if(format == "default") {
-    if (grepl("(xls$|xlsx$)",file)){
-      
-      if (grepl("~",file)){
-        stop("the sign '~' is not always supported by function write.xlsx. Please change file path")
-      }
-      a <- write.report2(new_data,file=NULL)
-      a <- do.call(rbind,do.call(rbind,a))
-      xlsx::write.xlsx(as.data.frame(a), file = file, row.names = F,
-                 sheetName = "DATA")
-    } else
-    write.report2(new_data,file=file,...)
-  } else if (format == "IAMC") {
-    a <- write.report2(new_data,file=NULL,...)
-    write.csv(a,file=file,row.names = FALSE,quote = FALSE)
-  } else if (format == "AgMIP") {
-    a <- write.report2(new_data,file=NULL,extracols = "Item")
-    b<-melt(a,id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
-    write.csv(b,file=file,row.names = FALSE,quote = FALSE)
-  }
-  
-  if (!is.null(max_file_size)) {
-    file_size <- file.size(file)/10^6 #file size in MB
-    if(file_size > max_file_size) {
-      x <- read.report(file,as.list=FALSE)
-      scen <- getNames(x,dim=1)
-      n_scen <- length(scen)
-      n_files <- ceiling(file_size / max_file_size)
-      if (n_files > n_scen) {
-        n_files <- n_scen
-        warning("Minimum is one scenario per file!")
+    # save project reporting
+    if(format == "default") {
+      if (grepl("(xls$|xlsx$)",file)){
+        
+        if (grepl("~",file)){
+          stop("the sign '~' is not always supported by function write.xlsx. Please change file path")
         }
-      scen_per_file <- floor(length(scen)/n_files)
-      first_scen <- 1
-      for (f in 1:n_files) {
-        print(paste0("File ",f))
-        #prepare scenario subset
-        last_scen <- (first_scen+scen_per_file-1)
-        if (last_scen > n_scen) last_scen <- n_scen
-        scen_subset <- scen[first_scen:last_scen]
-        print(scen_subset)
-        #subset data
-        tmp <- x[,,scen_subset]
-        #prepare file name
-        file_name <- unlist(strsplit(file,"\\."))
-        last <- length(file_name)
-        #write report
-        if(format == "default") {
-          write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
-        } else if (format == "IAMC") {
-          a <- write.report2(tmp,file=NULL,...)
-          write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
-        } else if (format == "AgMIP") {
-          a <- write.report2(tmp,file=NULL,extracols = "Item")
-          b<-melt(tmp[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
-          write.csv(b,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),row.names = FALSE,quote = FALSE)
+        a <- write.report2(new_data,file=NULL)
+        a <- do.call(rbind,do.call(rbind,a))
+        xlsx::write.xlsx(as.data.frame(a), file = file, row.names = F,
+                         sheetName = "DATA")
+      } else
+        write.report2(new_data,file=file,...)
+    } else if (format == "IAMC") {#bugfix needed
+      a <- write.report2(new_data,file=NULL,...)
+      write.csv(a,file=file,row.names = FALSE,quote = FALSE)
+    } else if (format == "AgMIP") {#bugfix needed
+      a <- write.report2(new_data,file=NULL,extracols = "Item")
+      b<-melt(a,id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+      write.csv(b,file=file,row.names = FALSE,quote = FALSE)
+    }
+    
+    if (!is.null(max_file_size)) {
+      file_size <- file.size(file)/10^6 #file size in MB
+      if(file_size > max_file_size) {
+        x <- read.report(file,as.list=FALSE)
+        scen <- getNames(x,dim=1)
+        n_scen <- length(scen)
+        n_files <- ceiling(file_size / max_file_size)
+        if (n_files > n_scen) {
+          n_files <- n_scen
+          warning("Minimum is one scenario per file!")
         }
-        #set counter for next loop
-        first_scen <- first_scen+scen_per_file
+        scen_per_file <- floor(length(scen)/n_files)
+        first_scen <- 1
+        for (f in 1:n_files) {
+          print(paste0("File ",f))
+          #prepare scenario subset
+          last_scen <- (first_scen+scen_per_file-1)
+          if (last_scen > n_scen) last_scen <- n_scen
+          scen_subset <- scen[first_scen:last_scen]
+          print(scen_subset)
+          #subset data
+          tmp <- x[,,scen_subset]
+          #prepare file name
+          file_name <- unlist(strsplit(file,"\\."))
+          last <- length(file_name)
+          #write report
+          if(format == "default") {
+            write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
+          } else if (format == "IAMC") {
+            a <- write.report2(tmp,file=NULL,...)
+            write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
+          } else if (format == "AgMIP") {
+            a <- write.report2(tmp,file=NULL,extracols = "Item")
+            b<-melt(tmp[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+            write.csv(b,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),row.names = FALSE,quote = FALSE)
+          }
+          #set counter for next loop
+          first_scen <- first_scen+scen_per_file
+        }
       }
     }
+  } else {
+    return(new_data)
   }
-  return(new_data)
 }
 
 
