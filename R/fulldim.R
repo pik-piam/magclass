@@ -26,8 +26,12 @@ fulldim <- function(x,sep=".") {
     tmp<-1
   }
   if(length(tmp)==1) if(tmp==0) tmp <- 1
-  if(any(tmp != rep(tmp[1],length(tmp))) | tmp[1]==1) {
+  if(tmp[1]==1) {
+    #no need for splitting
+    return(list(dim(x),dimnames(x)))
+  } else if(any(tmp != rep(tmp[1],length(tmp)))) {
     #data dimension cannot be splitted return dim(x)
+    warning("Data dimension cannot be splitted due to inconsistent number of subdimensions!")
     return(list(dim(x),dimnames(x)))
   } else {
     nElemDims <- tmp[1]
