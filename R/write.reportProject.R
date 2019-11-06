@@ -1,22 +1,29 @@
 #' Write file in specific project format
 #' 
-#' Reads in a reporting.mif or uses a magpie object based on a read in
-#' reporting.mif, substitutes names of variables according to the mappping,
-#' mutliplies by an optional factor in a column named "factor" of the mapping, and saves
+#' Reads in a reporting.mif or uses a magpie object based on a read-in reporting.mif,
+#' substitutes names of variables according to the mappping, mutliplies reported
+#' values by an optional factor in a column named "factor" of the mapping, and saves
 #' the output in a new *.mif
 #' 
 #' 
 #' @param mif Lists with magpie-objects or a magpie-object as created by read.report or a path to
 #' a report.mif
-#' @param mapping mapping of the variable names of the read in mif. the header
-#' is used for naming. The format of the mapping should be: 1st column the standard naming in PIK mif format. X further columns that contain the indicator names in the reporting format. Can also contain several indicator columns (e.g Variable and Item).
+#' @param mapping mapping of the variable names of the read-in mif. The header is used for 
+#' naming. The format of the mapping should be: 1st column the standard naming in PIK mif format. 
+#' X further columns that contain the indicator names in the reporting format. Can also contain 
+#' several indicator columns (e.g Variable and Item).
 #' Optional columns with reserved names are unit, weight, and factor.
-#' Factor is a number that the results will be multplied with (e.g. to transform CO2 into C)
-#' Weight is needed if several mif indicators shall be aggregated to one reporting indicator. You always need a weight column if you have multiple mif to one reporting mappings. If you have a weight column, you have to have values in it for all indicators. If NULL, the results are added up; if you provide an indicator name (of a mif indicator), this indicator will be used for the weighting of a weighted mean.
+#' Factor is a number that the results will be multplied with (e.g. to transform CO2 into C).
+#' Weight is needed if several mif indicators shall be aggregated to one reporting indicator. 
+#' You always need a weight column if you have multiple mif to one reporting mappings. If you have 
+#' a weight column, you have to have values in it for all indicators. If NULL, the results are 
+#' added up; if you provide an indicator name (of a mif indicator), this indicator will be used for 
+#' the weighting of a weighted mean.
 #' Unit is a name of the unit without ()
 #'   Example:
-#' "mif";"agmip";"Item";"unit";"weight";"factor"
+#' "magpie";"agmip";"item";"unit";"weight";"factor"
 #' "Nutrition|+|Calorie Supply (kcal/capita/day)";"CALO";"AGR";"kcal/capita/day";"NULL";1
+#' 
 #' @param file name of the output file, default=NULL returns the output object
 #' @param max_file_size maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files
 #' @param format available reporting formats: "default", "IAMC" and "AgMIP". "default" and "IAMC" are very similar (wide format for year) and differ only in the use of semi-colon (default) and comma (IAMC) as seperator. "AgMIP" is in long format. 
@@ -188,7 +195,8 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
     } else if (format == "AgMIP") {
       a <- write.report2(new_data,file=NULL,extracols = "Item",...)
       a <- do.call(rbind,do.call(rbind,a))
-      b<-melt(a,id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+      b<-melt(a,id.vars = c("Model","Scenario","Region","Item","Variable","Unit"),variable.name = "Year",value.name="Value")
+      b<-b[c("Model","Scenario","Region","Item","Variable","Year","Unit","Value")]      
       write.table(b,file,quote=FALSE,sep=",",row.names=FALSE,col.names=!append,append=append,eol="\n")
     }
     
@@ -222,10 +230,13 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
             write.report2(tmp,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),...)
           } else if (format == "IAMC") {
             a <- write.report2(tmp,file=NULL,...)
-            write.csv(a[[1]][[1]],file=file,row.names = FALSE,quote = FALSE)
+            a <- do.call(rbind,do.call(rbind,a))
+            write.csv(a,file=file,row.names = FALSE,quote = FALSE)
           } else if (format == "AgMIP") {
-            a <- write.report2(tmp,file=NULL,extracols = "Item")
-            b<-melt(tmp[[1]][[1]],id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
+            a <- write.report2(tmp,file=NULL,extracols = "Item",...)
+            a <- do.call(rbind,do.call(rbind,a))
+            b<-melt(a,id.vars = c("Model","Scenario","Region","Item","Variable","Unit"),variable.name = "Year",value.name="Value")
+            b<-b[c("Model","Scenario","Region","Item","Variable","Year","Unit","Value")]      
             write.csv(b,file=paste0(file_name[1:last-1],"_part",f,".",file_name[last]),row.names = FALSE,quote = FALSE)
           }
           #set counter for next loop
