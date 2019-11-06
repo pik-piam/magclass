@@ -17,9 +17,10 @@
 #'   Example:
 #' "mif";"agmip";"Item";"unit";"weight";"factor"
 #' "Nutrition|+|Calorie Supply (kcal/capita/day)";"CALO";"AGR";"kcal/capita/day";"NULL";1
-#' @param file name of the output file, default=NULL returns the output as magclass object
+#' @param file name of the output file, default=NULL returns the output object
 #' @param max_file_size maximum file size in MB; if size of file exceeds max_file_size reporting is split into multiple files
 #' @param format available reporting formats: "default", "IAMC" and "AgMIP". "default" and "IAMC" are very similar (wide format for year) and differ only in the use of semi-colon (default) and comma (IAMC) as seperator. "AgMIP" is in long format. 
+#' @param append Logical which decides whether data should be added to an existing file or an existing file should be overwritten
 #' @param ... arguments passed to write.report and write.report2
 #' @author Christoph Bertram, Lavinia Baumstark, Anastasis Giannousakis, Florian Humpenoeder
 #' @seealso \code{\link{write.report}}
@@ -32,7 +33,7 @@
 #' @export write.reportProject
 #' @importFrom utils read.csv2
 #' 
-write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format="default",...){
+write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format="default",append=FALSE,...){
   if(is.character(mif)){
     data <- read.report(mif,as.list=TRUE)
   } else if (is.list(mif)){
@@ -161,25 +162,34 @@ write.reportProject <- function(mif,mapping,file=NULL,max_file_size=NULL,format=
   
   if(!is.null(file)){
     # save project reporting
+    if(!file.exists(file)) append <- FALSE
     if(format == "default") {
       if (grepl("(xls$|xlsx$)",file)){
         
         if (grepl("~",file)){
           stop("the sign '~' is not always supported by function write.xlsx. Please change file path")
         }
-        a <- write.report2(new_data,file=NULL)
+        a <- write.report2(new_data,file=NULL,...)
         a <- do.call(rbind,do.call(rbind,a))
-        xlsx::write.xlsx(as.data.frame(a), file = file, row.names = F,
-                         sheetName = "DATA")
+        if(append) {#write.xlsx2 does not support append, therefore this workaround
+          existing.data <- xlsx::read.xlsx2(file, sheetName = "DATA",colClasses=NA,check.names=FALSE)
+          new.data <- rbind(existing.data, as.data.frame(a))
+          xlsx::write.xlsx2(new.data, file = file, row.names = F,sheetName = "DATA")
+        } else {
+          xlsx::write.xlsx2(as.data.frame(a), file = file, row.names = F,sheetName = "DATA")
+        }
+        
       } else
-        write.report2(new_data,file=file,...)
-    } else if (format == "IAMC") {#bugfix needed
+        write.report2(new_data,file=file,append=append,...)
+    } else if (format == "IAMC") {
       a <- write.report2(new_data,file=NULL,...)
-      write.csv(a,file=file,row.names = FALSE,quote = FALSE)
-    } else if (format == "AgMIP") {#bugfix needed
-      a <- write.report2(new_data,file=NULL,extracols = "Item")
+      a <- do.call(rbind,do.call(rbind,a))
+      write.table(a,file,quote=FALSE,sep=",",row.names=FALSE,col.names=!append,append=append,eol="\n")
+    } else if (format == "AgMIP") {
+      a <- write.report2(new_data,file=NULL,extracols = "Item",...)
+      a <- do.call(rbind,do.call(rbind,a))
       b<-melt(a,id.vars = c("Model","Scenario","Region","Variable","Item","Unit"),variable.name = "Year")
-      write.csv(b,file=file,row.names = FALSE,quote = FALSE)
+      write.table(b,file,quote=FALSE,sep=",",row.names=FALSE,col.names=!append,append=append,eol="\n")
     }
     
     if (!is.null(max_file_size)) {
