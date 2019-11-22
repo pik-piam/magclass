@@ -4,10 +4,20 @@
 \alias{write.magpie}
 \title{Write MAgPIE-object to file}
 \usage{
-write.magpie(x, file_name, file_folder = "", file_type = NULL,
-  append = FALSE, comment = NULL, comment.char = "*",
-  metadata.char = "~", mode = NULL, nc_compression = 9,
-  verbose = TRUE, ...)
+write.magpie(
+  x,
+  file_name,
+  file_folder = "",
+  file_type = NULL,
+  append = FALSE,
+  comment = NULL,
+  comment.char = "*",
+  metadata.char = "~",
+  mode = NULL,
+  nc_compression = 9,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{MAgPIE-object}

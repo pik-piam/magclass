@@ -4,8 +4,15 @@
 \alias{convergence}
 \title{convergence}
 \usage{
-convergence(origin, aim, start_year = NULL, end_year = NULL,
-  direction = NULL, type = "smooth", par = 1.5)
+convergence(
+  origin,
+  aim,
+  start_year = NULL,
+  end_year = NULL,
+  direction = NULL,
+  type = "smooth",
+  par = 1.5
+)
 }
 \arguments{
 \item{origin}{an object with one name-column}

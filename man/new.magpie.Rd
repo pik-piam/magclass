@@ -4,8 +4,15 @@
 \alias{new.magpie}
 \title{new.magpie}
 \usage{
-new.magpie(cells_and_regions = "GLO", years = NULL, names = NULL,
-  fill = NA, sort = FALSE, sets = NULL, unit = "unknown")
+new.magpie(
+  cells_and_regions = "GLO",
+  years = NULL,
+  names = NULL,
+  fill = NA,
+  sort = FALSE,
+  sets = NULL,
+  unit = "unknown"
+)
 }
 \arguments{
 \item{cells_and_regions}{Either the region names (e.g. "AFR"), or the cells

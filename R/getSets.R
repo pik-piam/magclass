@@ -62,6 +62,17 @@ getSets <- function(x,fulldim=TRUE,sep=".") {
      s2 <- getSets(x,fulldim=TRUE)
      search_s2 <- paste0("(^|\\.)",s2,"(\\.|$)")
      where <- sapply(search_s2,grep,s1)
+     if(is.list(where)) {
+       #duplicates found
+       j <- 1
+       for(i in 1:length(where)) {
+         if(length(where[[i]])>1) {
+           where[[i]] <- where[[i]][j]
+           j <- j+1
+         }
+       }
+       where <- unlist(where)
+     }
      names(where) <- s2
      
      if(length(value)!=length(s2)) stop("Input length does not agree with the number of sets in x!")

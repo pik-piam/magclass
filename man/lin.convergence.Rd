@@ -4,9 +4,15 @@
 \alias{lin.convergence}
 \title{lin.convergence}
 \usage{
-lin.convergence(origin, aim, convergence_time_steps = NULL,
-  start_year = NULL, end_year = NULL, before = "stable",
-  after = "stable")
+lin.convergence(
+  origin,
+  aim,
+  convergence_time_steps = NULL,
+  start_year = NULL,
+  end_year = NULL,
+  before = "stable",
+  after = "stable"
+)
 }
 \arguments{
 \item{origin}{an object with one name-column}

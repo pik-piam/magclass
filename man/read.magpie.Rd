@@ -4,9 +4,15 @@
 \alias{read.magpie}
 \title{Read MAgPIE-object from file}
 \usage{
-read.magpie(file_name, file_folder = "", file_type = NULL,
-  as.array = FALSE, old_format = FALSE, comment.char = "*",
-  check.names = FALSE)
+read.magpie(
+  file_name,
+  file_folder = "",
+  file_type = NULL,
+  as.array = FALSE,
+  old_format = FALSE,
+  comment.char = "*",
+  check.names = FALSE
+)
 }
 \arguments{
 \item{file_name}{file name including file ending (wildcards are supported).

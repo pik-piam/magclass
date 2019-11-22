@@ -4,8 +4,14 @@
 \alias{read.lpjml_nc}
 \title{Read LPJmL from nc-file}
 \usage{
-read.lpjml_nc(file_name, file_folder = "", years = NULL,
-  split_data = FALSE, keep_month = FALSE, averaging_range = 1)
+read.lpjml_nc(
+  file_name,
+  file_folder = "",
+  years = NULL,
+  split_data = FALSE,
+  keep_month = FALSE,
+  averaging_range = 1
+)
 }
 \arguments{
 \item{file_name}{file name including file ending (wildcards are supported).
