@@ -4,8 +4,15 @@
 \alias{write.reportProject}
 \title{Write file in specific project format}
 \usage{
-write.reportProject(mif, mapping, file = NULL, max_file_size = NULL,
-  format = "default", append = FALSE, ...)
+write.reportProject(
+  mif,
+  mapping,
+  file = NULL,
+  max_file_size = NULL,
+  format = "default",
+  append = FALSE,
+  ...
+)
 }
 \arguments{
 \item{mif}{Lists with magpie-objects or a magpie-object as created by read.report or a path to

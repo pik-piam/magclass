@@ -4,8 +4,14 @@
 \alias{calibrate_it}
 \title{calibrate_it}
 \usage{
-calibrate_it(origin, cal_to, cal_type = "convergence", cal_year = NULL,
-  end_year = NULL, report_calibration_factors = FALSE)
+calibrate_it(
+  origin,
+  cal_to,
+  cal_type = "convergence",
+  cal_year = NULL,
+  end_year = NULL,
+  report_calibration_factors = FALSE
+)
 }
 \arguments{
 \item{origin}{Original Values (MAgPIE object)}

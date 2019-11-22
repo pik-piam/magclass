@@ -4,13 +4,20 @@
 \alias{updateMetadata}
 \title{updateMetadata (!experimental!)}
 \usage{
-updateMetadata(x, y = NULL, unit = ifelse(is.null(y), "keep",
-  "update"), source = ifelse(is.null(y), "keep", "merge"),
-  calcHistory = ifelse(is.null(y), "keep", "update"), user = "update",
-  date = "update", description = ifelse(is.null(y), "keep", "merge"),
+updateMetadata(
+  x,
+  y = NULL,
+  unit = ifelse(is.null(y), "keep", "update"),
+  source = ifelse(is.null(y), "keep", "merge"),
+  calcHistory = ifelse(is.null(y), "keep", "update"),
+  user = "update",
+  date = "update",
+  description = ifelse(is.null(y), "keep", "merge"),
   note = ifelse(is.null(y), "keep", "merge"),
-  version = ifelse(is.null(y), "keep", "merge"), n = 1,
-  cH_priority = 2)
+  version = ifelse(is.null(y), "keep", "merge"),
+  n = 1,
+  cH_priority = 2
+)
 }
 \arguments{
 \item{x}{MAgPIE object to be updated}
@@ -74,7 +81,7 @@ This function is currently experimental and non-functional by default! To activa
 set withMetadata(TRUE), otherwise it will not return or modify any metadata!
 }
 \details{
-This function is to be used by other functions to update metadata for magclass objects
+This function is to be used by other functions to update metadata for magclass objects 
 
 When an operation is performed on a MAgPIE dataset, updateMetadata can be used to copy 
 Metadata entries to the new MAgPIE object or update the Metadata fields appropriately.  

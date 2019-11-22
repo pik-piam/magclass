@@ -4,8 +4,14 @@
 \alias{write.magpie.ncdf}
 \title{write.magpie.ncdf}
 \usage{
-write.magpie.ncdf(x, file, nc_compression = 9, var_style = "fullname",
-  comment = NULL, verbose = TRUE)
+write.magpie.ncdf(
+  x,
+  file,
+  nc_compression = 9,
+  var_style = "fullname",
+  comment = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{x}{MAgPIE object. Has to be on half degree resolution. If x as comments in attr, they are plotted as global attributes.}

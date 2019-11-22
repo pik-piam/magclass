@@ -27,7 +27,7 @@ This function is currently experimental and non-functional by default! To activa
 set withMetadata(TRUE), otherwise it will not return or modify any metadata!
 }
 \details{
-The function allows users to set and retrieve metadata for magclass objects
+The function allows users to set and retrieve metadata for magclass objects 
 
 Metadata is an attribute of a magclass object, and it includes the default 
 fields of "unit", "source", "date", "user", "calcHistory", "description" 

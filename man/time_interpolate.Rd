@@ -4,8 +4,12 @@
 \alias{time_interpolate}
 \title{time_interpolate}
 \usage{
-time_interpolate(dataset, interpolated_year,
-  integrate_interpolated_years = FALSE, extrapolation_type = "linear")
+time_interpolate(
+  dataset,
+  interpolated_year,
+  integrate_interpolated_years = FALSE,
+  extrapolation_type = "linear"
+)
 }
 \arguments{
 \item{dataset}{An MAgPIE object}

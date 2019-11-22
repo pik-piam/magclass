@@ -4,8 +4,13 @@
 \alias{convert.report}
 \title{Converts a report from one model to another}
 \usage{
-convert.report(rep, inmodel = NULL, outmodel = "MAgPIE",
-  full = FALSE, as.list = TRUE)
+convert.report(
+  rep,
+  inmodel = NULL,
+  outmodel = "MAgPIE",
+  full = FALSE,
+  as.list = TRUE
+)
 }
 \arguments{
 \item{rep}{Report. Either the file name of a mif file or a report already

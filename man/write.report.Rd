@@ -4,8 +4,16 @@
 \alias{write.report}
 \title{Write file in report format}
 \usage{
-write.report(x, file = NULL, model = "MAgPIE", scenario = "default",
-  unit = NA, ndigit = 4, append = FALSE, skipempty = TRUE)
+write.report(
+  x,
+  file = NULL,
+  model = "MAgPIE",
+  scenario = "default",
+  unit = NA,
+  ndigit = 4,
+  append = FALSE,
+  skipempty = TRUE
+)
 }
 \arguments{
 \item{x}{MAgPIE object or a list of lists with MAgPIE objects as created by
