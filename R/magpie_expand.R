@@ -40,6 +40,7 @@
 magpie_expand <- function(x,ref) {
   
   version <- getOption("magclass_expand_version")
+  if(!is.null(version) && version==2.1) return(magpie_expand2.1(x,ref))
   if(!is.null(version) && version<2) return(magpie_expand1(x,ref))
 
   setMatching <- isTRUE(getOption("magclass_setMatching"))
@@ -211,6 +212,63 @@ magpie_expand <- function(x,ref) {
           }
         }
       }
+    }
+  }
+  getSets(x) <- make.unique(getSets(clean_magpie(x,what="sets")),sep="")
+  return(x)
+}
+
+magpie_expand2.1 <- function(x,ref) {
+  
+  version <- getOption("magclass_expand_version")
+  #if(!is.null(version) && version<2.1) return(magpie_expand2(x,ref))
+  
+  setMatching <- isTRUE(getOption("magclass_setMatching"))
+  
+  #x: MAgPIE object which should be expanded
+  #ref: Reference object defining the structure to which x should be expanded
+  
+  #1.spatial dimension
+  #2.temporal dimension
+  #3.data dimension
+  
+  for(i in 1:3) {
+    # Remove "GLO" from spatial dimension in case another spatial dimension exists
+    if(i==1) {
+      if(dim(ref)[1]==1 && !is.null(rownames(ref)) && rownames(ref)=="GLO") rownames(ref) <- NULL
+      else if(dim(x)[1]==1 && !is.null(rownames(x)) && rownames(x)=="GLO") rownames(x) <- NULL
+    } 
+    
+    if(is.null(dimnames(ref)[[i]]) && dim(ref)[i] > 1) stop("Inconsistent MAgPIE reference file: more than 1 element in dimension ",i," but no names given!")
+    
+    if(is.null(dimnames(ref)[[i]])) next # Nothing to do if ref has no dimnames
+    
+    if(is.null(dimnames(x)[[i]])) {
+      if(dim(x)[i] > 1) stop("Inconsistent MAgPIE file: more than 1 element in dimension ",i," but no names given!")
+      if(dim(ref)[i] > 1) { # Expand single element dimension to dimension of ref
+        if(i==1) {
+          x <- x[rep(1,dim(ref)[i]),,]
+        } else if(i==2) {
+          x <- x[,rep(1,dim(ref)[i]),]
+        } else {
+          x <- x[,,rep(1,dim(ref)[i])]
+        }
+      } 
+      if(!is.null(dimnames(ref)[[i]])) dimnames(x)[[i]] <- dimnames(ref)[[i]]
+    } else if(dim(x)[i]==dim(ref)[i] && all(dimnames(x)[[i]]==dimnames(ref)[[i]]) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
+      # dimension is identical
+      next
+    } else if(dim(x)[i]==dim(ref)[i] && all(sort(dimnames(x)[[i]])==sort(dimnames(ref)[[i]])) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
+      # same length and entries, but different order
+      if(i==1) {
+        x <- x[dimnames(ref)[[i]],,]
+      } else if(i==2) {
+        x <- x[,dimnames(ref)[[i]],]
+      } else {
+        x <- x[,,dimnames(ref)[[i]]]
+      }
+    } else { 
+      x <- magpie_expand_dim(x,ref,dim=i)
     }
   }
   getSets(x) <- make.unique(getSets(clean_magpie(x,what="sets")),sep="")
