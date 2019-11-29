@@ -79,6 +79,9 @@ magpie_expand_dim <- function(x,ref,dim=1) {
   
   m <- merge(dref,dx,sort=FALSE, suffixes=c("_ref","_x"), by=setdiff(intersect(names(dref), names(dx)),".line"))
   
+  # reorder m so that dref columns appear first
+  m <- m[union(names(dref)[1:(ncol(dref)-1)],names(m))]
+  
   tmpdim <- dim(x)
   tmpdim[dim] <- nrow(m)
   sizeCheck(tmpdim)
