@@ -13,18 +13,27 @@
 #' 
 #' magclass:::sizeCheck(dim(population_magpie),dimnames(population_magpie))
 #' 
-sizeCheck <- function(dim, newnames) {
+sizeCheck <- function(dim, newnames=NULL) {
   if(is.null(getOption("magclass_sizeLimit"))) options(magclass_sizeLimit=10^8)
   # estimate new object size and check against size limit
-  if(!is.null(getOption("magclass_sizeLimit")) && getOption("magclass_sizeLimit")<0) {
-    size <- prod(sapply(newnames,length))*prod(dim)
+  if(!is.null(getOption("magclass_sizeLimit")) && getOption("magclass_sizeLimit")>0) {
+    if(is.null(newnames)) {
+      add <- 1
+    } else {
+      add <- prod(sapply(newnames,length))
+    }
+    size <- add*prod(dim)
     if(size > getOption("magclass_sizeLimit")) {
       head2 <- function(x,length=3) {
         if(length(x)<=length) return(x)
         return(c(head(x,3),"..."))
       }
-      head_newnames <- lapply(newnames,head2)
-      stop("magclass object size limit reached. Elements to add: ", paste(names(head_newnames),head_newnames, sep=" = ", collapse=", "))
+      if(is.null(newnames)) {
+        stop("magclass object size limit reached! getOption(\"magclass_sizeLimit\")=",getOption("magclass_sizeLimit"))
+      } else {
+        head_newnames <- lapply(newnames,head2)
+        stop("magclass object size limit reached. Elements to add: ", paste(names(head_newnames),head_newnames, sep=" = ", collapse=", "))
+      }
     }
   }
 }

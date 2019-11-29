@@ -4,7 +4,7 @@
 \alias{sizeCheck}
 \title{sizeCheck}
 \usage{
-sizeCheck(dim, newnames)
+sizeCheck(dim, newnames = NULL)
 }
 \arguments{
 \item{dim}{dimensions of the current object as returned by function \code{dim}}

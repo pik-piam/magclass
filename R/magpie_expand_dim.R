@@ -74,6 +74,11 @@ magpie_expand_dim <- function(x,ref,dim=1) {
   }
   
   m <- merge(dref,dx,sort=FALSE, suffixes=c("_ref","_x"), by=setdiff(intersect(names(dref), names(dx)),".line"))
+  
+  tmpdim <- dim(x)
+  tmpdim[dim] <- nrow(m)
+  sizeCheck(tmpdim)
+  
   if(dim==1) {
     out <- x[m$".line_x",,]
   } else if(dim==2) {
