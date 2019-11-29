@@ -30,8 +30,10 @@ magpie_expand_dim <- function(x,ref,dim=1) {
   dimnames2df <- function(x,dim=1) {
     xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]],".",fixed=TRUE))))
     rownames(xd) <- NULL
-    tmp <- strsplit(names(dimnames(x))[dim],".",fixed=TRUE)[[1]]
-    if(length(tmp)==ncol(xd)) names(xd) <- tmp
+    if(!is.null(names(dimnames(x)))) {
+      tmp <- strsplit(names(dimnames(x))[dim],".",fixed=TRUE)[[1]]
+      if(length(tmp)==ncol(xd)) names(xd) <- tmp
+    }
     xd$".line" <- 1:nrow(xd)
     return(xd)
   }
@@ -48,6 +50,8 @@ magpie_expand_dim <- function(x,ref,dim=1) {
   
   #detect matching columns
   if(!isTRUE(getOption("magclass_setMatching"))) {
+    names(dref)[is.na(names(dref))] <- "NA"
+    names(dx)[is.na(names(dx))] <- "NA"
     lx <- lapply(dx[names(dx)!=".line"],levels)
     lref <- lapply(dref[names(dref)!=".line"],levels)
     if(anyDuplicated(lx)==0 && anyDuplicated(lref)==0) {
