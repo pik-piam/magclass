@@ -20,7 +20,7 @@ getItems <- function(x,dim,split=FALSE) {
   dim <- dimCode(dim,x, missing = "stop")
   if(dim==round(dim) && !split) return(dimnames(x)[[dim]])
   if(dim==round(dim) && split) {
-    tmp <- as.list(as.data.frame(t(matrix(unlist(strsplit(dimnames(x)[[dim]],"\\.")),,dim(x)[dim])),stringsAsFactors=FALSE))
+    tmp <- as.list(as.data.frame(t(matrix(unlist(strsplit(dimnames(x)[[dim]],"\\.")),ncol=dim(x)[dim])),stringsAsFactors=FALSE))
     tmp <- lapply(tmp,unique)
     if(!is.null(getSets(x))) {
       tmp2 <- strsplit(getSets(x,fulldim=FALSE)[dim],"\\.")[[1]]
@@ -29,7 +29,11 @@ getItems <- function(x,dim,split=FALSE) {
     return(tmp)
   }
   tmp <- dimnames(x)[[as.integer(dim)]]
-  dim <- as.integer(strsplit(as.character(dimCode(dim)),split="\\.")[[1]][2])
-  reg <- paste0(rep("([^\\.]*)",dim),collapse="\\.")
-  return(unique(sub(paste0("^",reg,".*$"),paste0("\\",dim),tmp)))
+  subdim <- as.integer(strsplit(as.character(dimCode(dim)),split="\\.")[[1]][2])
+  maxsubdim <- nchar(gsub("[^\\.]*","",tmp[1]))+1
+  if(length(maxsubdim)==0) maxsubdim <- 1
+  if(subdim>maxsubdim) stop("Subdimension ",dimCode(dim), " does not exist (maxsubdim = ",maxsubdim,")!")
+  if(is.null(tmp)) return(NULL)
+  reg <- paste0(rep("([^\\.]*)",subdim),collapse="\\.")
+  return(unique(sub(paste0("^",reg,".*$"),paste0("\\",subdim),tmp)))
 }
