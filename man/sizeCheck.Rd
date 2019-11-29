@@ -4,7 +4,7 @@
 \alias{sizeCheck}
 \title{sizeCheck}
 \usage{
-sizeCheck(dim, newnames)
+sizeCheck(dim, newnames = NULL)
 }
 \arguments{
 \item{dim}{dimensions of the current object as returned by function \code{dim}}
@@ -15,7 +15,7 @@ sizeCheck(dim, newnames)
 Calculates expected magclass object length and checks that it stays below
 the limit defined with magclass_sizeLimit. This is useful to prevent
 out of memory errors in case of unwanted object expansions
-Ignored if \code{getOption("magclass_sizeLimit")} is \code{NULL}.
+Ignored if \code{getOption("magclass_sizeLimit")} is negative.
 }
 \examples{
 
