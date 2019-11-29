@@ -40,8 +40,7 @@ magpie_expand_dim <- function(x,ref,dim=1) {
     cols <- grep("^\\.",names(x),invert=TRUE,value=TRUE)
     tmp <- lapply(x[cols],as.character)
     out <- do.call("paste", c(tmp, sep = "."))
-    attr(out,"name") <- paste(sub("\\.","",cols),collapse=".")
-    return(out)
+    return(list(dimnames=out,name=paste(sub("\\.","",cols),collapse=".")))
   }
   
   dx <- dimnames2df(x,dim=dim)
@@ -74,7 +73,7 @@ magpie_expand_dim <- function(x,ref,dim=1) {
     }
   }
   
-  m <- merge(dx,dref,sort=FALSE, suffixes=c("_x","_ref"), by=setdiff(intersect(names(dx), names(dref)),".line"))
+  m <- merge(dref,dx,sort=FALSE, suffixes=c("_ref","_x"), by=setdiff(intersect(names(dref), names(dx)),".line"))
   if(dim==1) {
     out <- x[m$".line_x",,]
   } else if(dim==2) {
@@ -85,8 +84,8 @@ magpie_expand_dim <- function(x,ref,dim=1) {
     stop("Unsupported dim setting (dim = ",dim,")")
   }
   tmp <- df2dimnames(m)
-  dimnames(out)[[dim]] <- tmp
-  names(dimnames(out))[dim] <- attr(tmp,"name")
+  dimnames(out)[[dim]] <- tmp$dimnames
+  names(dimnames(out))[dim] <- tmp$name
   return(out)
 }
 
