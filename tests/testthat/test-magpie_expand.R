@@ -61,5 +61,9 @@ test_that("subdimension order", {
   i <- new.magpie("GLO",1900,c("value1","value2"), fill=1)
   expect_identical(getItems(magpie_expand(i,h),3),names)
   
+  x <- new.magpie("GLO",2000,c("a","b","c"))
+  y <- new.magpie("GLO",2000,c("1","2","3"))
+  xx <- magpie_expand(x,y)
+  expect_identical(getItems(xx,3),getItems(magpie_expand(y,xx),3))
 })
 
