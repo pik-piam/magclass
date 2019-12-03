@@ -81,6 +81,7 @@ magpie_expand_dim <- function(x,ref,dim=1) {
   
   # reorder m so that dref columns appear first
   m <- m[union(names(dref)[1:(ncol(dref)-1)],names(m))]
+  m <- m[order(m$.line_ref),]
   
   tmpdim <- dim(x)
   tmpdim[dim] <- nrow(m)

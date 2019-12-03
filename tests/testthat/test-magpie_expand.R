@@ -55,6 +55,7 @@ test_that("expansion with unusual set names", {
 })
 
 test_that("subdimension order", {
+  #options(magclass_expand_version=2.1)
   # subdimension order should remain unchanged if possible
   names <- c("bla.value1","bla.value2")
   h <- new.magpie("GLO",1900,names, fill=1)
