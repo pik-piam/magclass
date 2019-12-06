@@ -1,14 +1,8 @@
-## CRAN note
+By accident, the last upload (5.5.0) contained a custom DESCRIPTION-entry "ValidationKey". This has been removed in the new upload (5.5.1). Please ignore the last upload and use version 5.5.1 instead.
 
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: 'Jan Philipp Dietrich <dietrich@pik-potsdam.de>'
+----------------------------------------------------------------------------
 
-Version jumps in minor (submitted: 4.107.0, existing: 4.51.1)
+This version fixes errors which occured with recent R-devel versions caused by a more restrictive behavior of the "dim<-" function.
 
-## Explanation
-
-We managed to fix the problems of the last submission (unknown DESCRIPTION field and CITATION file which was not working before installation).
-
-The jump in version is intended. The package is currently developed quite quickly and we wanted to avoid spamming CRAN daily with new versions. 
-
+In addition, the package comes with various improvements. Most notably, a streamlined routine to expand magclass objects relative to a reference object.
 
