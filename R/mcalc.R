@@ -33,7 +33,9 @@ mcalc <- function(x,f,dim=NULL,append=FALSE) {
   f <- as.formula(f)
   vars <- all.vars(f[[3]])
   
-  if(is.null(dim)) dim <- getDim(vars,x)
+  if(is.null(dim)) dim <- getDim(vars,x,fullmatch=FALSE,dimCode=FALSE)
+  if(length(dim)==0) stop("Dimension not provided and automatic detection failed (no match)!")
+  if(length(dim)>1) stop("Dimension not provided and automatic detection failed (multiple matches)!")
   
   for(v in vars) {
     l <- list()

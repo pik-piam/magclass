@@ -6,19 +6,45 @@
 #' @param elems A vector of characters containing the elements that should be
 #' found in the MAgPIE object
 #' @param x MAgPIE object in which elems should be searched for.
-#' @return The name of the dimension in which elems were found.
+#' @param fullmatch If enabled, only dimensions which match exactly the elements
+#' provided will be returned. Otherwise, it is sufficient if elems contains a subset
+#' of the dimension.
+#' @param dimCode If enabled, the dimCode will be returned, otherwise the name
+#' of the dimension.
+#' @return The name or dimCode of the dimensions in which elems were found.
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{mcalc}},\code{\link{dimCode}}
 #' @examples
 #' 
 #'  data(population_magpie)
-#'  magclass:::getDim(c("AFR","CPA"),population_magpie)
-#' 
-getDim <- function(elems, x){
-  r <- sapply(elems,grepl,fulldim(x)[[2]],fixed=TRUE)
-  if(any(colSums(r)==0)) stop("An element was not found in the given data set (",paste(colnames(r)[colSums(r)==0],collapse=", "),")!")
-  if(any(colSums(r)>1)) stop("An element was found in more than one dimension in the given data set (",paste(colnames(r)[colSums(r)>1],collapse=", "),"). Please specify the dim to use!")
-  if(!any(rowSums(r)==length(elems))) stop("Used elements belong to different dimensions!")
-  dim <- which(rowSums(r)==length(elems))
-  return(names(fulldim(x)[[2]])[dim])
+#'  getDim(c("AFR","CPA"),population_magpie)
+#'  getDim(c("AFR","CPA"),population_magpie,fullmatch=TRUE)
+#'  getDim(c("AFR","CPA"),population_magpie,dimCode=FALSE)
+#'  
+#' @export
+getDim <- function(elems,x,fullmatch=FALSE,dimCode=TRUE) {
+
+  tmpfun <- function(x,elems) {
+    return(all(elems %in% x)) 
+  }
+  tmpfun2 <- function(x,elems,fullmatch,dimCode) {
+    if(fullmatch) {
+      tmp <- sapply(x,setequal,elems)
+    } else {
+      tmp <- sapply(x,tmpfun,elems)
+    }
+    if(dimCode) names(tmp) <- 1:length(tmp)
+    return(tmp)
+  }
+  tmp <- getItems(x,split=TRUE) 
+  tmp2 <- lapply(tmp,tmpfun2,elems,fullmatch,dimCode)
+  if(dimCode) {
+    names(tmp2) <- 1:length(tmp2)
+    tmp2 <- unlist(tmp2)
+    out <- as.numeric(names(tmp2)[tmp2])
+  } else {
+    tmp2 <- unlist(tmp2)
+    out <- names(tmp2)[tmp2]
+  }
+  return(out)
 }

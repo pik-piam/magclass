@@ -7,3 +7,11 @@ test_that("getItems even works for objects without set names", {
   expect_identical(getItems(x,2),"y1995")
   expect_identical(getItems(x,3),"bla")
 })
+
+
+test_that("getItems works for missing dimnames", {
+  x <- new.magpie("GLO",NULL,NULL)
+  expect_identical(getItems(x,3),NULL)
+  expect_identical(getItems(x,3.1),NULL)
+  expect_identical(getItems(x,3,split=TRUE)[[1]],NULL)
+})

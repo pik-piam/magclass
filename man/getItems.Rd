@@ -4,7 +4,7 @@
 \alias{getItems}
 \title{Get Items}
 \usage{
-getItems(x, dim, split = FALSE)
+getItems(x, dim = NULL, split = FALSE)
 }
 \arguments{
 \item{x}{MAgPIE object}

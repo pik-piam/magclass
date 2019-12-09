@@ -16,10 +16,23 @@
 #' getItems(population_magpie,"scenario")
 #' getItems(population_magpie,3.1)
 #' @export
-getItems <- function(x,dim,split=FALSE) {
+getItems <- function(x,dim=NULL,split=FALSE) {
+  if(is.null(dim)) {
+    if(!split) return(dimnames(x))
+    out <- list()
+    for(i in 1:3) out[[i]] <- getItems(x,dim=i,split=TRUE)
+    return(out)
+  }
   dim <- dimCode(dim,x, missing = "stop")
   if(dim==round(dim) && !split) return(dimnames(x)[[dim]])
   if(dim==round(dim) && split) {
+    if(is.null(dimnames(x)[[dim]])) {
+      out <- list(NULL)
+      if(!is.null(getSets(x))) {
+        names(out) <- getSets(x,fulldim=FALSE)[dim]
+      }
+      return(out)
+    } 
     tmp <- as.list(as.data.frame(t(matrix(unlist(strsplit(dimnames(x)[[dim]],"\\.")),ncol=dim(x)[dim])),stringsAsFactors=FALSE))
     tmp <- lapply(tmp,unique)
     if(!is.null(getSets(x))) {
