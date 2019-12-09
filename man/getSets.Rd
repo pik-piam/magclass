@@ -38,7 +38,7 @@ Extracts sets of a MAgPIE-object if available
  getSets(a) <- c("reg","cell","t","bla","blub")
  getSets(a)
  
- getSets(a)[4] <- "BLA"
+ getSets(a)["d3.1"] <- "BLA"
  getSets(a,fulldim=FALSE)
  getSets(a)
 
@@ -50,5 +50,5 @@ Extracts sets of a MAgPIE-object if available
 \code{"\linkS4class{magpie}"}
 }
 \author{
-Markus Bonsch
+Markus Bonsch, Jan Philipp Dietrich
 }

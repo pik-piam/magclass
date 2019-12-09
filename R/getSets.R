@@ -12,7 +12,7 @@
 #' names of the object with.
 #' @return Sets of the MAgPIE-object. If no information about contained sets is
 #' available NULL
-#' @author Markus Bonsch
+#' @author Markus Bonsch, Jan Philipp Dietrich
 #' @seealso \code{\link{getRegions}},
 #' \code{\link{getNames}},\code{\link{getYears}}, \code{\link{getCPR}},
 #' \code{\link{read.magpie}}, \code{\link{write.magpie}},
@@ -23,7 +23,7 @@
 #'  getSets(a) <- c("reg","cell","t","bla","blub")
 #'  getSets(a)
 #'  
-#'  getSets(a)[4] <- "BLA"
+#'  getSets(a)["d3.1"] <- "BLA"
 #'  getSets(a,fulldim=FALSE)
 #'  getSets(a)
 #' 
@@ -39,7 +39,14 @@ getSets <- function(x,fulldim=TRUE,sep=".") {
                             return(x)
                           }
     )
-    out <- as.vector(unlist(tmp))
+    addDimCode <- function(x) {
+      names(x) <- 1:length(x)
+      return(x)
+    }
+    tmp <- lapply(tmp,addDimCode)
+    names(tmp) <- paste0("d",1:length(tmp))
+    
+    out <- unlist(tmp)
   }
   return(out)
 }
