@@ -4,13 +4,15 @@
 \alias{print.magpie}
 \title{print}
 \usage{
-\method{print}{magpie}(x, drop = TRUE, ...)
+\method{print}{magpie}(x, drop = TRUE, reshape = FALSE, ...)
 }
 \arguments{
 \item{x}{MAgPIE object}
 
 \item{drop}{argument which controls whether empty dimensions should be
 skipped or not.}
+
+\item{reshape}{agrument that controls tabular representation of 3rd data dimension cross tables}
 
 \item{...}{arguments to be passed to or from other methods.}
 }
