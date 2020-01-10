@@ -537,7 +537,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       #convert array to magpie object
-      read.magpie <- clean_magpie(as.magpie(mag))
+      read.magpie <- clean_magpie(as.magpie(mag, temporal=2))
       getMetadata(read.magpie) <- metadata
       
     } else {
