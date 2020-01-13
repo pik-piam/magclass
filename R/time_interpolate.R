@@ -91,7 +91,7 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
     }
     dataset<-abind::abind(dataset,dataset_interpolated,along=2)
   }
-  dataset <- as.magpie(dataset)
+  dataset <- as.magpie(dataset,spatial=1,temporal=2)
   dataset <- dataset[,sort(getYears(dataset)),]
   getMetadata(dataset) <- Md
   return(dataset)
