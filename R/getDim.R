@@ -46,5 +46,11 @@ getDim <- function(elems,x,fullmatch=FALSE,dimCode=TRUE) {
     tmp2 <- unlist(tmp2)
     out <- names(tmp2)[tmp2]
   }
+  if(length(out)==0) {
+    tmp <- getItems(x,split=FALSE)
+    tmp2 <- tmpfun2(tmp,elems,fullmatch,dimCode)
+    out <- names(tmp2)[tmp2]
+    if(dimCode) out <- as.numeric(out)
+  }
   return(out)
 }
