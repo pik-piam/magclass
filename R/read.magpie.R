@@ -373,7 +373,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       date <- ifelse(is.null(getMetadata(read.magpie,"date")),"update","keep")
       read.magpie <- updateMetadata(read.magpie,user=user,date=date)
     } else if(file_type=="cs3" | file_type=="cs3r") {
-      x <- read.csv(file_name,comment.char=comment.char, check.names=check.names)
+      x <- read.csv(file_name,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       datacols <- grep("^dummy\\.?[0-9]*$",colnames(x))
       xdimnames <- lapply(lapply(x[datacols],unique),as.character)
       if(!is.list(xdimnames)) xdimnames <- list(xdimnames)
@@ -389,7 +389,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(length(grep("^[A-Z]+_[0-9]+$",getCells(read.magpie)))==ncells(read.magpie)) getCells(read.magpie) <- sub("_",".",getCells(read.magpie))
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
     } else if(file_type=="cs4" | file_type=="cs4r") {
-      x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names)
+      x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names, stringsAsFactors = TRUE)
       read.magpie <- as.magpie(x,tidy=TRUE)
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
     } else if(file_type=="asc"){
@@ -543,9 +543,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     } else {
       #check for header
       if(file_type=="put") {
-        temp <- read.csv(file_name,nrow=1,header=FALSE,sep="\t",comment.char=comment.char, check.names=check.names)      
+        temp <- read.csv(file_name,nrow=1,header=FALSE,sep="\t",comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)      
       } else {
-        temp <- read.csv(file_name,nrow=1,header=FALSE,comment.char=comment.char, check.names=check.names)
+        temp <- read.csv(file_name,nrow=1,header=FALSE,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       }      
       
       #check for numeric elements in first row, which means a missing header
@@ -555,9 +555,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }  		
       
       if(file_type=="put") {
-        temp <- read.csv(file_name,header=header,sep="\t",comment.char=comment.char, check.names=check.names)      
+        temp <- read.csv(file_name,header=header,sep="\t",comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)      
       } else {
-        temp <- read.csv(file_name,header=header,comment.char=comment.char, check.names=check.names)
+        temp <- read.csv(file_name,header=header,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       }
       
       #analyse column content

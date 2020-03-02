@@ -28,7 +28,7 @@
 
 magpie_expand_dim <- function(x,ref,dim=1) {
   dimnames2df <- function(x,dim=1) {
-    xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]],".",fixed=TRUE))))
+    xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]],".",fixed=TRUE),stringsAsFactors=TRUE)),stringsAsFactors=TRUE)
     rownames(xd) <- NULL
     if(!is.null(names(dimnames(x)))) {
       tmp <- strsplit(names(dimnames(x))[dim],".",fixed=TRUE)[[1]]

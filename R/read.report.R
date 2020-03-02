@@ -64,10 +64,10 @@ return(mag)
                         "X2010","X2020","X2030","X2040","X2050","X2060","X2070",
                         "X2080","X2090","X2100")
     #determine seperator
-    s <- read.table(file,sep=";",header=FALSE,nrows=1) 
+    s <- read.table(file,sep=";",header=FALSE,nrows=1,stringsAsFactors=FALSE) 
     if (all(names(s) == "V1")) sep <- "," else sep <- ";"
     #recognize header
-    s <- read.table(file,sep=sep,header=FALSE,nrows=1) 
+    s <- read.table(file,sep=sep,header=FALSE,nrows=1,stringsAsFactors=FALSE) 
     header <- (.trim(s[,1]) == "Model" | .trim(s[,1]) == "MODEL")
     #read in raw data
     raw <- read.table(file,sep=sep,header=header,stringsAsFactors=FALSE,na.strings = "N/A")#,fileEncoding = "UTF8")

@@ -1,5 +1,4 @@
-Feature update:
+Bugfix update:
 
-- getSets adds now dimCode information to output and can now be manipulated via adressing a specific subdimension
-- getItems returns now all dimensions for dim=NULL
+- added stringsAsFactor argument explicitly to functions where it was missing to prepare for upcoming updating in default settings
 
