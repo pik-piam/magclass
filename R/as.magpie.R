@@ -1,5 +1,7 @@
 #' @importFrom methods new setGeneric
 #' @importFrom reshape2 melt
+#' @importFrom forcats fct_explicit_na
+
 #' @exportMethod as.magpie
 setGeneric("as.magpie", function(x,...)standardGeneric("as.magpie"))
 
@@ -261,8 +263,11 @@ setMethod("as.magpie",
               x$region <- paste(x$region,x[[i]],sep=".")
               x <- x[names(x)!=i]
             }
-            #remove NA columns
-            x <- x[colSums(!is.na(x))!=0]
+            # remove NA columns
+            # and <NA> columns that have been replaced by 
+            # forcats::fct_explicit_na()
+            na_string <- formals(fct_explicit_na)[['na_level']]
+            x <- x[colSums(!(na_string == x | is.na(x))) != 0]
 
             #put value column as last column
             x <- x[c(which(names(x)!="value"),which(names(x)=="value"))]
