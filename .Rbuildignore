@@ -4,3 +4,4 @@
 ^test-travisCI.R$
 cran-comments.md
 ^CRAN-RELEASE$
+^\.git$
