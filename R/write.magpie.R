@@ -69,19 +69,19 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 4) | integer | 2 Byte ] \cr 
-#' [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 5) | integer | 2 Byte ] \cr 
+#' [ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
 #' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-#' [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
+#' [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
 #' [ nregions | Number of regions | integer | 2 Byte ] \cr 
-#' [ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
+#' [ nchar_reg | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 #' [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
 #' [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
-#' [ nchar_data | Number of char. of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
+#' [ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
 #' [ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
 #' [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
@@ -207,7 +207,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     if(file_type=="m" | file_type=="mz") {
-      fformat_version <- "4"  #File format version (oldest data has version 0)
+      fformat_version <- "5"  #File format version (oldest data has version 0)
       comment <- paste(comment,collapse="\n")
       ncells <- dim(x)[1]
       nyears <- dim(x)[2]
@@ -235,18 +235,18 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       }
       
       writeBin(as.integer(fformat_version),zz,size=2)
-      writeBin(as.integer(nchar(comment)),zz,size=4)
+      writeBin(as.integer(nchar(comment, type="bytes")),zz,size=4)
       writeBin(as.integer(length(metadata)),zz,size=4)
-      writeBin(as.integer(nchar(sets_collapsed)),zz,size=2)
+      writeBin(as.integer(nchar(sets_collapsed, type="bytes")),zz,size=2)
       writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
       writeBin(as.integer(c(nyears,year_list,nregions)),zz,size=2)
-      writeBin(as.integer(nchar(regions_collapsed)),zz,size=4)
+      writeBin(as.integer(nchar(regions_collapsed, type="bytes")),zz,size=4)
       writeChar(regions_collapsed,zz,eos=NULL)
-      writeBin(as.integer(c(cpr,ndata*ncells*nyears,nchar(datanames_collapsed))),zz,size=4)
+      writeBin(as.integer(c(cpr,ndata*ncells*nyears,nchar(datanames_collapsed, type="bytes"))),zz,size=4)
       if(datanames_collapsed!="") writeChar(datanames_collapsed,zz,eos=NULL)
       writeBin(as.numeric(as.vector(x)),zz,size=4)
       if(comment!="") writeChar(comment,zz,eos=NULL)
-      if(nchar(sets_collapsed)>0) writeChar(sets_collapsed,zz,eos=NULL)
+      if(nchar(sets_collapsed, type="bytes")>0) writeChar(sets_collapsed,zz,eos=NULL)
       if(!is.null(metadata)) writeBin(metadata,zz)
       close(zz)    
       Sys.chmod(file_path, mode)
