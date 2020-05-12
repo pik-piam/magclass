@@ -10,8 +10,14 @@ pandoc: false
 sudo: false
 r_packages: 
  - lucode
+ - devtools
  - testthat
  - covr
+ - sp
+ - maptools
+ - abind
+ - forcats
+ - reshape2
 install:
   - Rscript -e "for(pkg in c('devtools','testthat')) if(!requireNamespace(pkg)) install.packages(pkg)"
   - Rscript -e "if(!requireNamespace('lucode')) devtools::install_github('pik-piam/lucode')"
