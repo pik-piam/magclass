@@ -7,7 +7,7 @@ repos:
 cache: packages
 latex: false
 pandoc: false
-sudo: false
+sudo: required
 r_packages: 
  - lucode
  - devtools
