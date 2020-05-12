@@ -18,4 +18,4 @@ install:
 script:
   - Rscript ./tests/testthat/test-travisCI.R
 after_success:
-  - Rscript -e 'library(covr);codecov()'
+  - Rscript -e 'library(covr);covr::package_coverage(quiet = FALSE);codecov()'
