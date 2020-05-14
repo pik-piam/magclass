@@ -3,8 +3,12 @@
 language: r
 os: linux
 dist: xenial
-before_install:
-  - sudo apt-get install libudunits2-dev
+addons:
+    apt:
+        packages:
+            - libudunits2-dev
+            - libnetcdf-dev
+            - netcdf-bin
 repos:
   CRAN: https://cloud.r-project.org
   PIK:  https://rse.pik-potsdam.de/r/packages/
