@@ -3,6 +3,8 @@
 language: r
 os: linux
 dist: xenial
+before_install:
+  - sudo apt-get install libudunits2-dev
 repos:
   CRAN: https://cloud.r-project.org
   PIK:  https://rse.pik-potsdam.de/r/packages/
