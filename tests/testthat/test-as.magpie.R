@@ -7,6 +7,8 @@ test_that("conversions do not affect content", {
   expect_identical(as.magpie(mag),mag)
   expect_equivalent(as.magpie(as.array(mag)),mag)
   expect_equivalent(as.magpie(as.data.frame(mag)),mag)
+  skip_if_not_installed("quitte")
+  expect_equivalent(as.magpie(quitte::as.quitte(mag)),mag)
 })
 
 test_that("underscores are preserved", {
