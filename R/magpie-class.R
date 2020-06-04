@@ -196,7 +196,7 @@ setMethod("[",
               }
               if(is.null(j)) {
                 j <- 1:dim(x)[2]
-              } else if(is.character(j) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
+              } else if(is.character(j) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
                 j <- .dimextract(x,j,2,pmatch=pmatch,invert=invert)
               } else if(invert) {
                 j <- getYears(x)[!(getYears(x) %in% j)]

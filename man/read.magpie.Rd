@@ -84,19 +84,19 @@ have a higher compatibility to other languages. \cr\cr Since library version
 The binary MAgPIE formats .m and .mz have the following content/structure
 (you only have to care for that if you want to implement
 read.magpie/write.magpie functions in other languages): \cr \cr 
-[ FileFormatVersion | Current file format version number (currently 4) | integer | 2 Byte ] \cr 
-[ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
+[ FileFormatVersion | Current file format version number (currently 5) | integer | 2 Byte ] \cr 
+[ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
 [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-[ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
+[ nchar_sets | Number of character bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 [ nyears | Number of years | integer | 2 Byte ]\cr 
 [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
 [ nregions | Number of regions | integer | 2 Byte ] \cr 
-[ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
+[ nchar_reg | Number of character bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
 [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
 [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
-[ nchar_data | Number of char. of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
+[ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
 [ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
 [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
 [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 

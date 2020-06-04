@@ -59,19 +59,19 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 4) | integer | 2 Byte ] \cr 
-#' [ nchar_comment | Number of characters of the file comment | integer | 4 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 5) | integer | 2 Byte ] \cr 
+#' [ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
 #' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-#' [ nchar_sets | Number of characters of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
+#' [ nchar_sets | Number of character bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
 #' [ nregions | Number of regions | integer | 2 Byte ] \cr 
-#' [ nchar_reg | Number of characters of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
+#' [ nchar_reg | Number of character bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 #' [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
 #' [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
-#' [ nchar_data | Number of char. of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
+#' [ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
 #' [ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
 #' [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
@@ -323,13 +323,15 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       nregions <- readBin(zz,integer(),1,size=2)
       nchar_regions <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
       
-      regions <- strsplit(readChar(zz,nchar_regions),"\n")[[1]]
+      useBytes <- (fformat_version>4)
+      
+      regions <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n")[[1]]
       
       cpr <- readBin(zz,integer(),nregions,size=4)
       nelem <- readBin(zz,integer(),1,size=4)
       nchar_data <- readBin(zz,integer(),1,size=4)
       
-      datanames <- strsplit(readChar(zz,nchar_data),"\n")[[1]]
+      datanames <- strsplit(readChar(zz,nchar_data,useBytes=useBytes),"\n")[[1]]
       
       if(old_format) readBin(zz,integer(),100,size=1) #100 Byte reserved for later file format improvements
       
@@ -346,10 +348,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(length(datanames)>0) dimnames(output)[[3]] <- datanames
       
       if(fformat_version > 0) {
-        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment),"\n")[[1]]  
+        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment,useBytes=useBytes),"\n")[[1]]  
       }
       if(fformat_version > 1) {
-        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets),"\n")[[1]]
+        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets,useBytes=useBytes),"\n")[[1]]
       }
       if(fformat_version > 2) {
         metadata <- unserialize(readBin(zz,raw(),nbyte_metadata))
@@ -373,7 +375,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       date <- ifelse(is.null(getMetadata(read.magpie,"date")),"update","keep")
       read.magpie <- updateMetadata(read.magpie,user=user,date=date)
     } else if(file_type=="cs3" | file_type=="cs3r") {
-      x <- read.csv(file_name,comment.char=comment.char, check.names=check.names)
+      x <- read.csv(file_name,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       datacols <- grep("^dummy\\.?[0-9]*$",colnames(x))
       xdimnames <- lapply(lapply(x[datacols],unique),as.character)
       if(!is.list(xdimnames)) xdimnames <- list(xdimnames)
@@ -389,7 +391,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(length(grep("^[A-Z]+_[0-9]+$",getCells(read.magpie)))==ncells(read.magpie)) getCells(read.magpie) <- sub("_",".",getCells(read.magpie))
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
     } else if(file_type=="cs4" | file_type=="cs4r") {
-      x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names)
+      x <- read.csv(file_name,comment.char=comment.char,header=FALSE, check.names=check.names, stringsAsFactors = TRUE)
       read.magpie <- as.magpie(x,tidy=TRUE)
       attr(read.magpie,"comment") <- .readComment(file_name,comment.char=comment.char)
     } else if(file_type=="asc"){
@@ -543,9 +545,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     } else {
       #check for header
       if(file_type=="put") {
-        temp <- read.csv(file_name,nrow=1,header=FALSE,sep="\t",comment.char=comment.char, check.names=check.names)      
+        temp <- read.csv(file_name,nrow=1,header=FALSE,sep="\t",comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)      
       } else {
-        temp <- read.csv(file_name,nrow=1,header=FALSE,comment.char=comment.char, check.names=check.names)
+        temp <- read.csv(file_name,nrow=1,header=FALSE,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       }      
       
       #check for numeric elements in first row, which means a missing header
@@ -555,9 +557,9 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }  		
       
       if(file_type=="put") {
-        temp <- read.csv(file_name,header=header,sep="\t",comment.char=comment.char, check.names=check.names)      
+        temp <- read.csv(file_name,header=header,sep="\t",comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)      
       } else {
-        temp <- read.csv(file_name,header=header,comment.char=comment.char, check.names=check.names)
+        temp <- read.csv(file_name,header=header,comment.char=comment.char, check.names=check.names, stringsAsFactors = TRUE)
       }
       
       #analyse column content
