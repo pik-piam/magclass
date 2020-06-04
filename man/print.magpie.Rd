@@ -12,7 +12,9 @@
 \item{drop}{argument which controls whether empty dimensions should be
 skipped or not.}
 
-\item{reshape}{agrument that controls tabular representation of 3rd data dimension cross tables}
+\item{reshape}{agrument that controls tabular representation of nested data dimension cross tables,
+FALSE will reproduce standard print behavior
+any pair of two dimension numbers will create a table for these two dims, and loop over the other dimensions}
 
 \item{...}{arguments to be passed to or from other methods.}
 }
@@ -34,5 +36,5 @@ print method for MAgPIE objects for conventient display of magpie data.
 \code{\link[base]{print}}
 }
 \author{
-Jan Philipp Dietrich
+Jan Philipp Dietrich, Kristine Karstens, Felicitas Beier
 }
