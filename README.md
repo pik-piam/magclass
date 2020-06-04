@@ -1,6 +1,6 @@
 # Data Class and Tools for Handling Spatial-Temporal Data
 
-R package **magclass**, version **5.9.3**
+R package **magclass**, version **5.10.0**
 
 [![Travis build status](https://travis-ci.com/pik-piam/magclass.svg?branch=master)](https://travis-ci.com/pik-piam/magclass) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158580.svg)](https://doi.org/10.5281/zenodo.1158580) [![codecov](https://codecov.io/gh/pik-piam/magclass/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/magclass)
 
@@ -36,6 +36,16 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
+## Tutorial
+
+The package comes with vignettes describing the basic functionality of the package and how to use it. You can load them with the following command (the package needs to be installed):
+
+```r
+vignette(magclass-concept)   # Concept behind magclass
+vignette(magclass-expansion) # MAGPIE Class Object Expansion
+vignette(magclass)           # MAGPIE Class Tutorial
+```
+
 ## Questions / Problems
 
 In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pik-potsdam.de>.
@@ -44,9 +54,10 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **magclass** in publications use:
 
-Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K (2020). _magclass: Data Class and Tools for
-Handling Spatial-Temporal Data_. doi: 10.5281/zenodo.1158580 (URL: https://doi.org/10.5281/zenodo.1158580), R
-package version 5.9.3, <URL: https://github.com/pik-piam/magclass>.
+Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K (2020). _magclass: Data Class and
+Tools for Handling Spatial-Temporal Data_. doi: 10.5281/zenodo.1158580 (URL:
+https://doi.org/10.5281/zenodo.1158580), R package version 5.10.0, <URL:
+https://github.com/pik-piam/magclass>.
 
 A BibTeX entry for LaTeX users is
 
@@ -55,7 +66,7 @@ A BibTeX entry for LaTeX users is
   title = {magclass: Data Class and Tools for Handling Spatial-Temporal Data},
   author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens},
   year = {2020},
-  note = {R package version 5.9.3},
+  note = {R package version 5.10.0},
   doi = {10.5281/zenodo.1158580},
   url = {https://github.com/pik-piam/magclass},
 }

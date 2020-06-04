@@ -4,7 +4,7 @@
 \alias{collapseNames}
 \title{Collapse dataset names}
 \usage{
-collapseNames(x, collapsedim = NULL)
+collapseNames(x, collapsedim = NULL, preservedim = NULL)
 }
 \arguments{
 \item{x}{MAgPIE object}
@@ -15,6 +15,10 @@ you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2).
 Alternatively, you can also specify the name of the dimension. Default: NULL.
 CAUTION with parameter collapsedim! You could also force him to remove dimnames, 
 which are NOT the same for each element and so create duplicates in dimnames.}
+
+\item{preservedim}{If you want to remove the name of particular dimensions except some, 
+you can specify the dimension(s) to preserve here. See collapsedim for naming convention.
+Note that preservedim will be ignored in the case, of a specified collapsedim}
 }
 \value{
 The provided MAgPIE object with collapsed names
