@@ -18,7 +18,7 @@ pandoc: false
 r_packages:
   - devtools
   - testthat
-  - lucode
+  - lucode2
   - quitte
 script:
   - Rscript -e 'devtools::test()'
