@@ -34,11 +34,14 @@
 #' @importFrom reshape2 dcast melt
 #' @export
 write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=4,append=FALSE,skipempty=TRUE, extracols=NULL) {
-  if(is.list(x)) {
+ 
+   if(is.list(x)) {
     if(is.list(x[[1]])) {
-      for(scenario in names(x)){
-        for(model in names(x[[scenario]])) {
-          x[[scenario]][[model]] <- write.report2(x[[scenario]][[model]],file=file,model=model,scenario=scenario,unit=unit,ndigit=ndigit,append=append, skipempty=skipempty, extracols=extracols)  
+      for(.scenario in names(x)){
+        for(.model in names(x[[.scenario]])) {
+          scenario = ifelse(is.null(scenario),.scenario,scenario)
+          model = ifelse(is.null(model),.model,model)
+          x[[.scenario]][[.model]] <- write.report2(x[[.scenario]][[.model]],file=file,model=model,scenario=scenario,unit=unit,ndigit=ndigit,append=append, skipempty=skipempty, extracols=extracols)  
           append <- TRUE
         }
       } 
