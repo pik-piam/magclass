@@ -11,6 +11,9 @@
 #' Alternatively, you can also specify the name of the dimension. Default: NULL.
 #' CAUTION with parameter collapsedim! You could also force him to remove dimnames, 
 #' which are NOT the same for each element and so create duplicates in dimnames.
+#' @param preservedim If you want to remove the name of particular dimensions except some, 
+#' you can specify the dimension(s) to preserve here. See collapsedim for naming convention.
+#' Note that preservedim will be ignored in the case, of a specified collapsedim
 #' @return The provided MAgPIE object with collapsed names
 #' @author Jan Philipp Dietrich, David Klein, Xiaoxi Wang
 #' @seealso \code{\link{getNames}}, \code{\link{setNames}},
@@ -46,12 +49,20 @@
 #'  # GLO.1    NA
 #' 
 #' @export collapseNames
-collapseNames <- function(x,collapsedim=NULL) {
+
+collapseNames <- function(x, collapsedim=NULL, preservedim=NULL) {
+  
   if(is.null(x)) return(NULL)
   if(is.null(getNames(x))) return(x)
   f <- fulldim(x)
+  
+  if(length(collapsedim)&length(preservedim)) warning("You can not preserve and collapse dims at the same time.
+                                                      Preservedim argument will be ignored.")
+  
+  
   if (is.null(collapsedim)) {
     collapsedim <- which(f[[1]][-1:-2]==1)
+    if(!is.null(preservedim)) collapsedim <- setdiff(collapsedim, preservedim)
   } else if(is.character(collapsedim)) {
     tmp <- match(collapsedim,names(f[[2]]))-2
     if(any(is.na(tmp))) {
@@ -60,6 +71,8 @@ collapseNames <- function(x,collapsedim=NULL) {
     }
     collapsedim <- tmp
   }
+  
+  
   maxdim <- length(f[[1]])-2
   tmp <- getNames(x)
   tmp2 <- names(dimnames(x))[3]
