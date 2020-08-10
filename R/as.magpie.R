@@ -186,7 +186,7 @@ setMethod("as.magpie",
             if(dim(x)[1]==0) return(copy.attributes(x,new.magpie(NULL)))
             if(is.null(datacol)) {
               for(i in dim(x)[2]:1) {
-                if(all(!is.na(suppressWarnings(as.numeric(x[,i])))) & !is.temporal(x[,i]) & !is.factor(x[,i])) {
+                if(all(!is.na(suppressWarnings(as.numeric(x[!is.na(x[,i]),i])))) & !is.temporal(x[,i]) & !is.factor(x[,i])) {
                   datacol <- i
                 } else {
                   break
