@@ -297,7 +297,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       if(!old_format) {
+        newest_fformat_version <- 6
         fformat_version <- readBin(zz,integer(),1,size=2)
+        if(fformat_version > newest_fformat_version) stop("File format is newer (v",fformat_version,") than the formats supported (v0-v",newest_fformat_version,"). ", 
+                                     "\nPlease update your magclass package to the newest version!")
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
         if(fformat_version > 2) {
