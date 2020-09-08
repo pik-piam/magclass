@@ -65,7 +65,7 @@
 #' [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
-#' [ ncells | Number of cells | integer | 2 Byte ]\cr 
+#' [ ncells | Number of cells | integer | 4 Byte ]\cr 
 #' [ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 #' [ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
@@ -311,19 +311,24 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       } else {
         fformat_version <- 0
       }
-      nyears <- readBin(zz,integer(),1,size=2)
-      year_list <- readBin(zz,integer(),nyears,size=2)
-      useBytes <- (fformat_version>4)
+      nyears    <- readBin(zz,integer(),1, size=2)
+      year_list <- readBin(zz,integer(),nyears, size=2)
+      useBytes  <- (fformat_version>4)
       if(fformat_version > 5) {
-        ncells <- readBin(zz,integer(),1,size=2)
-        nchar_cells <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
-        cellnames <- strsplit(readChar(zz,nchar_cells,useBytes=TRUE),"\n")[[1]]
+        ncells      <- readBin(zz,integer(),1,size=4)
+        nchar_cells <- readBin(zz,integer(),1,size=4)
+        cellnames   <- strsplit(readChar(zz,nchar_cells,useBytes=TRUE),"\n")[[1]]
       } else {
-        nregions <- readBin(zz,integer(),1,size=2)
+        nregions      <- readBin(zz,integer(),1,size=2)
         nchar_regions <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
-        regions <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n")[[1]]
-        cpr <- readBin(zz,integer(),nregions,size=4)
+        regions       <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n")[[1]]
+        cpr           <- readBin(zz,integer(),nregions,size=4)
         ncells <- sum(cpr)
+        if(any(cpr!=1)) {
+          cellnames   <- paste(rep(regions,cpr),1:ncells,sep=".")
+        } else {
+          cellnames   <- regions
+        }
       }
       nelem <- readBin(zz,integer(),1,size=4)
       nchar_data <- readBin(zz,integer(),1,size=4)
@@ -334,13 +339,6 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       
       output <- array(readBin(zz,numeric(),nelem,size=4),c(ncells,nyears,nelem/ncells/nyears))
       output[is.nan(output)] <- NA
-      if(fformat_version < 6) {
-        if(any(cpr!=1)) {
-          cellnames <- paste(rep(regions,cpr),1:ncells,sep=".")
-        } else {
-          cellnames <- regions
-        }
-      }
       if(length(cellnames)==1) cellnames <- list(cellnames)
       dimnames(output)[[1]] <- cellnames
       if(year_list[1]>0) dimnames(output)[[2]] <- paste("y",year_list,sep="")

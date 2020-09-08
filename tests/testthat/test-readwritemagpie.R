@@ -13,9 +13,9 @@ test_that("read/write does not affect content", {
     expect_equivalent(mag,mag2)
   }
   tmpfile <- tempfile(fileext = ".mz")
-  write.magpie(mag,tmpfile)
+  write.magpie(population_magpie,tmpfile)
   mag2 <- read.magpie(tmpfile)
-  expect_equivalent(mag,mag2)
+  expect_equivalent(population_magpie,mag2)
 })
 
 

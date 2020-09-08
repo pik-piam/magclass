@@ -90,7 +90,7 @@ read.magpie/write.magpie functions in other languages): \cr \cr
 [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 [ nyears | Number of years | integer | 2 Byte ]\cr 
 [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
-[ ncells | Number of cells | integer | 2 Byte ]\cr 
+[ ncells | Number of cells | integer | 4 Byte ]\cr 
 [ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
 [ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
 [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
