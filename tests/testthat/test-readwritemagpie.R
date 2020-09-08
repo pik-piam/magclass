@@ -1,6 +1,6 @@
 context("Read/Write Test")
 
-test_that("read/write do not affect content", {
+test_that("read/write does not affect content", {
   data("population_magpie")
   mag <- population_magpie
   names(dimnames(mag)) <- NULL
@@ -12,5 +12,17 @@ test_that("read/write do not affect content", {
     names(dimnames(mag2)) <- NULL
     expect_equivalent(mag,mag2)
   }
+  tmpfile <- tempfile(fileext = ".mz")
+  write.magpie(population_magpie,tmpfile)
+  mag2 <- read.magpie(tmpfile)
+  expect_equivalent(population_magpie,mag2)
 })
 
+
+test_that("read/write conserves cell naming", {
+  p <- new.magpie(c("AFR.2","CPA.3","AFR.1","CPA.4"), fill=0)
+  tmpfile <- tempfile(fileext = ".mz")
+  write.magpie(p,tmpfile)
+  p2 <- read.magpie(tmpfile)
+  expect_identical(getCells(p),getCells(p2))
+})

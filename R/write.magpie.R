@@ -69,17 +69,15 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 5) | integer | 2 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr 
 #' [ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
 #' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
 #' [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
-#' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
-#' [ nregions | Number of regions | integer | 2 Byte ] \cr 
-#' [ nchar_reg | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
-#' [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
-#' [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
+#' [ ncells | Number of cells | integer | 4 Byte ]\cr
+#' [ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
+#' [ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
 #' [ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
 #' [ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
@@ -87,12 +85,7 @@
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
 #' [ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr 
-#' 
-#' Please note that if your data in the spatial dimension is not ordered by
-#' region name each new appearance of a region which already appeared before
-#' will be treated and counted as a new region (e.g.
-#' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
-#' to 3!).
+#'
 #' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"},
 #' \code{\link{read.magpie}},\code{\link{mbind}},\code{\link{write.magpie.ncdf}}
@@ -207,16 +200,13 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
     }
     
     if(file_type=="m" | file_type=="mz") {
-      fformat_version <- "5"  #File format version (oldest data has version 0)
+      fformat_version <- "6"  #File format version (oldest data has version 0)
       comment <- paste(comment,collapse="\n")
       ncells <- dim(x)[1]
       nyears <- dim(x)[2]
       ndata  <- dim(x)[3]    
-      rle <- rle(gsub("\\.[0-9]*$","",dimnames(x)[[1]]))
-      regions <- rle$values
-      cpr <- rle$lengths
-      nregions <- length(regions)
-      regions_collapsed <- paste(regions,collapse='\n')
+      cells <- dimnames(x)[[1]]
+      cells_collapsed <- paste(cells,collapse='\n')
       datanames <- dimnames(x)[[3]]
       datanames_collapsed <- paste(datanames,collapse='\n')    
       sets_collapsed <- paste(getSets(x,fulldim = FALSE), collapse = '\n')
@@ -238,11 +228,10 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       writeBin(as.integer(nchar(comment, type="bytes")),zz,size=4)
       writeBin(as.integer(length(metadata)),zz,size=4)
       writeBin(as.integer(nchar(sets_collapsed, type="bytes")),zz,size=2)
-      writeBin(as.integer(rep(0,92)),zz,size=1) #92 Byte reserved for later file format improvements
-      writeBin(as.integer(c(nyears,year_list,nregions)),zz,size=2)
-      writeBin(as.integer(nchar(regions_collapsed, type="bytes")),zz,size=4)
-      writeChar(regions_collapsed,zz,eos=NULL)
-      writeBin(as.integer(c(cpr,ndata*ncells*nyears,nchar(datanames_collapsed, type="bytes"))),zz,size=4)
+      writeBin(as.integer(c(nyears,year_list)),zz,size=2)
+      writeBin(as.integer(c(ncells,nchar(cells_collapsed, type="bytes"))),zz,size=4)
+      writeChar(cells_collapsed,zz,eos=NULL)
+      writeBin(as.integer(c(ndata*ncells*nyears,nchar(datanames_collapsed, type="bytes"))),zz,size=4)
       if(datanames_collapsed!="") writeChar(datanames_collapsed,zz,eos=NULL)
       writeBin(as.numeric(as.vector(x)),zz,size=4)
       if(comment!="") writeChar(comment,zz,eos=NULL)
