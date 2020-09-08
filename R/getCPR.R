@@ -29,6 +29,10 @@ getCPR <- function(x) {
       stop(paste("No cells-per-region information available for resolution",x))
     }
   } else {
+    # try to reorder by cell/cluster number
+    cells <- try(as.integer(getItems(x,1.2)),silent = TRUE)
+    if(class(cells)!="try-error" && !anyNA(cells)) x <- x[order(cells),,]
+    
     region_names <- getRegions(x)
     cpr <- rep(0,length(region_names))
     names(cpr) <- region_names
