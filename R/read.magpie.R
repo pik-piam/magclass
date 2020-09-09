@@ -320,11 +320,11 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(fformat_version > 5) {
         ncells      <- readBin(zz,integer(),1,size=4)
         nchar_cells <- readBin(zz,integer(),1,size=4)
-        cellnames   <- strsplit(readChar(zz,nchar_cells,useBytes=TRUE),"\n")[[1]]
+        cellnames   <- strsplit(readChar(zz,nchar_cells,useBytes=TRUE),"\n",useBytes=TRUE)[[1]]
       } else {
         nregions      <- readBin(zz,integer(),1,size=2)
         nchar_regions <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
-        regions       <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n")[[1]]
+        regions       <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n",useBytes=useBytes)[[1]]
         cpr           <- readBin(zz,integer(),nregions,size=4)
         ncells <- sum(cpr)
         if(any(cpr!=1)) {
@@ -336,7 +336,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       nelem <- readBin(zz,integer(),1,size=4)
       nchar_data <- readBin(zz,integer(),1,size=4)
       
-      datanames <- strsplit(readChar(zz,nchar_data,useBytes=useBytes),"\n")[[1]]
+      datanames <- strsplit(readChar(zz,nchar_data,useBytes=useBytes),"\n",useBytes=useBytes)[[1]]
       
       if(old_format) readBin(zz,integer(),100,size=1) #100 Byte reserved for later file format improvements
       
@@ -348,10 +348,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       if(length(datanames)>0) dimnames(output)[[3]] <- datanames
       
       if(fformat_version > 0) {
-        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment,useBytes=useBytes),"\n")[[1]]  
+        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment,useBytes=useBytes),"\n", useBytes=useBytes)[[1]]  
       }
       if(fformat_version > 1) {
-        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets,useBytes=useBytes),"\n")[[1]]
+        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets,useBytes=useBytes),"\n",  useBytes=useBytes)[[1]]
       }
       if(fformat_version > 2) {
         metadata <- unserialize(readBin(zz,raw(),nbyte_metadata))
