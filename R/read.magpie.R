@@ -3,8 +3,8 @@
 #' Reads a MAgPIE-file and converts it to a 3D array of the structure
 #' (cells,years,datacolumn)
 #' 
-#' This function reads from 12 different MAgPIE file\_types. "rds" is
-#' a R-default format for storing R objects."cs2" is the new standard 
+#' This function reads from 13 different MAgPIE file\_types. "rds" is
+#' a R-default format for storing R objects."cs2" or "cs2b" is the new standard 
 #' format for cellular data with or without 
 #' header and the first columns (year,regiospatial) or only (regiospatial), 
 #' "csv" is the standard format for regional data with or without header 
@@ -27,9 +27,9 @@
 #' to file\_name and file\_folder)
 #' @param file_folder folder the file is located in (alternatively you can also
 #' specify the full path in file\_name - wildcards are supported)
-#' @param file_type format the data is stored in. Currently 12 formats are
+#' @param file_type format the data is stored in. Currently 13 formats are
 #' available: "rds" (recommended compressed format), 
-#' "cs2" (cellular standard MAgPIE format), "csv" (regional standard
+#' "cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
 #' MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 #' (alternative multidimensional format compatible to GAMS, in contrast to cs3
 #' it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
@@ -112,7 +112,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   if(is.null(file_type)) {
     file_type <- tail(strsplit(file_name,'\\.')[[1]],1)
   }
-  if(!(file_type %in% c('rds','m','mz','csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
+  if(!(file_type %in% c('rds','m','mz','csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
   
   .readComment <- function(file_name,comment.char="*",meta.char="#") {
     comment <- NULL
@@ -794,13 +794,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(as.array){
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
+    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
     read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
+    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
   }
