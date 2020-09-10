@@ -22,9 +22,9 @@ to file\_name and file\_folder)}
 \item{file_folder}{folder the file is located in (alternatively you can also
 specify the full path in file\_name - wildcards are supported)}
 
-\item{file_type}{format the data is stored in. Currently 12 formats are
+\item{file_type}{format the data is stored in. Currently 13 formats are
 available: "rds" (recommended compressed format), 
-"cs2" (cellular standard MAgPIE format), "csv" (regional standard
+"cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
 MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 (alternative multidimensional format compatible to GAMS, in contrast to cs3
 it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
@@ -61,8 +61,8 @@ Reads a MAgPIE-file and converts it to a 3D array of the structure
 (cells,years,datacolumn)
 }
 \details{
-This function reads from 12 different MAgPIE file\_types. "rds" is
-a R-default format for storing R objects."cs2" is the new standard 
+This function reads from 13 different MAgPIE file\_types. "rds" is
+a R-default format for storing R objects."cs2" or "cs2b" is the new standard 
 format for cellular data with or without 
 header and the first columns (year,regiospatial) or only (regiospatial), 
 "csv" is the standard format for regional data with or without header 

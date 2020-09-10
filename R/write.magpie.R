@@ -3,13 +3,15 @@
 #' Writes a MAgPIE-3D-array (cells,years,datacolumn) to a file in one of three
 #' MAgPIE formats (standard, "magpie", "magpie zipped")
 #' 
-#' This function can write 12 different MAgPIE file\_types. "cs2" is the new
+#' This function can write 13 different MAgPIE file\_types. "cs2" is the new
 #' standard format for cellular data with or without header and the first
-#' columns (year,regiospatial) or only (regiospatial), "csv" is the standard
-#' format for regional data with or without header and the first columns
-#' (year,region,cellnumber) or only (region,cellnumber), "cs3" is another csv
-#' format which is specifically designed for multidimensional data for usage in
-#' GAMS.  All these variants are written without further specification. "rds" is
+#' columns (year,regiospatial) or only (regiospatial), "cs2b" is identical to
+#' "cs2" except that it will suppress the data name if it has only 1 element
+#' in the data dimension. "csv" is the standard format for regional 
+#' data with or without header and the first columns (year,region,cellnumber) 
+#' or only (region,cellnumber), "cs3" is another csv format which is 
+#' specifically designed for multidimensional data for usage in GAMS.  
+#' All these variants are written without further specification. "rds" is
 #' a R-default format for storing R objects.
 #' "magpie" (.m) and "magpie zipped" (.mz) are new formats developed to allow a
 #' less storage intensive management of MAgPIE-data. The only difference
@@ -26,11 +28,11 @@
 #' to file\_name and file\_folder)
 #' @param file_folder folder the file should be written to (alternatively you
 #' can also specify the full path in file\_name - wildcards are supported)
-#' @param file_type Format the data should be stored as. Currently 12 formats
-#' are available: "rds" (default R-data format), 
-#' cs2" (cellular standard MAgPIE format), "csv" (regional standard MAgPIE 
-#' format), "cs3" (Format for multidimensional MAgPIE data,
-#' compatible to GAMS), "cs4" (alternative multidimensional format compatible
+#' @param file_type Format the data should be stored as. Currently 13 formats
+#' are available: "rds" (default R-data format), "cs2" (cellular standard 
+#' MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
+#' "csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE 
+#' data, compatible to GAMS), "cs4" (alternative multidimensional format compatible
 #' to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
 #' "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
 #' with the only difference that they have a REMIND compatible format, "m"
@@ -320,6 +322,8 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
       print_regions <- getRegions(x)[1]!="GLO"
       print_data <- ((ndata(x)>1) | !is.null(getNames(x)))
       
+      if(file_type=="cs2b" && ndata(x)==1) getNames(x) <- NULL
+      
       #non-cellular data
       if(!print_cells & (!print_data | !years | !print_regions )) {
         if(file_type=="csvr" | file_type=="cs2r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
@@ -357,7 +361,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         Sys.chmod(file_path, mode)
       } else {      
         if(file_type=="csvr" | file_type=="cs2r") dimnames(x)[[2]] <- sub("y","",dimnames(x)[[2]])
-        if(file_type=="cs2" | file_type=="cs2r") print_regions <- FALSE
+        if(file_type %in% c("cs2","cs2b","cs2r")) print_regions <- FALSE
         output <- array(NA,c(dim(x)[1]*dim(x)[2],dim(x)[3]+print_regions+print_cells+years))
       	output[,(1+print_regions+print_cells+years):dim(output)[2]] <- as.vector(as.matrix(x))
         if(years) {
@@ -367,7 +371,7 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
         }
       	if(print_regions) output[,1+years] <- substring(rep(dimnames(x)[[1]],dim(x)[2]),1,3)
       	if(print_cells) {
-          if(file_type=="cs2"  | file_type=="cs2r") {
+          if(file_type %in% c("cs2","cs2b","cs2r")) {
             output[,1+print_regions+years] <- rep(gsub(".","_",dimnames(x)[[1]],fixed=TRUE),dim(x)[2])
           } else {
             output[,1+print_regions+years] <- rep(1:dim(x)[1],dim(x)[2])
