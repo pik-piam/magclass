@@ -4,16 +4,19 @@
 \alias{getItems}
 \title{Get Items}
 \usage{
-getItems(x, dim = NULL, split = FALSE)
+getItems(x, dim = NULL, split = FALSE, full = FALSE)
 }
 \arguments{
 \item{x}{MAgPIE object}
 
 \item{dim}{Dimension for which the items should be returned. Either number or 
-name of dimension. See \code{\link{dimCode}} for more details.}
+name of dimension or a vector of these. See \code{\link{dimCode}} for more details.}
 
 \item{split}{Boolean which determines whether a main dimension should be split in subdimensions.
 Only applicable to main dimensions (1,2,3) and ignored for all other.}
+
+\item{full}{if TRUE dimension names are returned as they are (including repetitions), if FALSE only
+the dimension elements (unique list of entries) are returned.}
 }
 \value{
 items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a 
