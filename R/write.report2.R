@@ -110,14 +110,14 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   
   # split subdimensions
   colsplit <- function(x,col,sep=".") {
-    if(all(grepl(sep,x[[col]],fixed=TRUE))) {
-      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[col]]),split=sep,fixed=TRUE)),ncol=length(x[[col]]))),stringsAsFactors=FALSE)
-      names(tmp) <- strsplit(names(x)[col],split=sep,fixed=TRUE)[[1]]
+    if(all(grepl(sep,x[[col]],fixed=TRUE,useBytes = TRUE))) {
+      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[col]]),split=sep,fixed=TRUE,useBytes = TRUE)),ncol=length(x[[col]]))),stringsAsFactors=FALSE)
+      names(tmp) <- strsplit(names(x)[col],split=sep,fixed=TRUE,useBytes = TRUE)[[1]]
       x <- cbind(tmp,x[setdiff(1:ncol(x),col)])
     }  
     return(x)
   }
-  for(i in grep(sep,names(x),fixed=TRUE)) x <- colsplit(x,i,sep=sep)
+  for(i in grep(sep,names(x),fixed=TRUE,useBytes = TRUE)) x <- colsplit(x,i,sep=sep)
   
   unitsplit <- function(x,col) {
     w <- grepl("\\(.*\\)",x[[col]])
