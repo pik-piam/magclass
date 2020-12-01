@@ -31,7 +31,6 @@
 #' write.report2(population_magpie)
 #' 
 #' @importFrom utils write.table
-#' @importFrom reshape2 dcast melt
 #' @export
 write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=4,append=FALSE,skipempty=TRUE, extracols=NULL) {
  
@@ -87,6 +86,7 @@ write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=
 }
 
 prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALSE, ndigit=4, extracols=NULL) {
+  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report2!")
   sep <- "."
   # clean data
   x <- round(clean_magpie(x,what="sets"), digits = ndigit)
@@ -102,7 +102,7 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   }
   
   # convert to data frame
-  x <- dcast(melt(x,as.is=TRUE,na.rm = skipempty),eval(parse(text=paste0("...~",names(dimnames(x))[2]))))
+  x <- reshape2::dcast(reshape2::melt(x,as.is=TRUE,na.rm = skipempty),eval(parse(text=paste0("...~",names(dimnames(x))[2]))))
   
   # split data and dimension information
   data <- x[3:length(x)]
