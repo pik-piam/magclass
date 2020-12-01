@@ -95,7 +95,7 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   dimnames(x)[[2]] <- substring(dimnames(x)[[2]],2)
   
   # check for duplicates and possibly remove duplicates
-  d <- duplicated(getNames(x))
+  d <- duplicated(as.data.table(getNames(x)))
   if(any(d)) {
     warning("Data contains duplicate entries (",paste(getNames(x)[d],collapse=", "),"), only first found entries will be written to file!")
     x <- x[,,which(!d)]

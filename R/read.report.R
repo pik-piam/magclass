@@ -94,7 +94,7 @@ read.report <- function(file,as.list=TRUE) {
     mag <- as.array(mag)
     coord <- cbind(regions[tmp$Region],rep(years,each=dim(tmp)[1]),names[paste(tmp$Variable, " (",tmp$Unit,")",sep ="")])
     if(dim(coord)[1]>length(mag)) {
-      duplicates <- duplicated(coord)
+      duplicates <- duplicated(as.data.table(coord))
       warning("Duplicate entries found for model \"",model,"\" and scenario \"",scenario,"\" and only the last entry found in the data will be used (duplicate entries: ",paste(apply(rbind(NULL,unique(coord[duplicates,c(1,3)])),1,paste,collapse="|"),collapse=", "),")!")    
     }
 
