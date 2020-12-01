@@ -206,31 +206,15 @@ setMethod("[",
               if(is.factor(k)) k <- as.character(k)
               if(is.character(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
             }
-            if(ifelse(missing(i),FALSE,is.array(i) | any(abs(i)>dim(x)[1]))) {
-              #indices are supplied as array, return data as numeric
+            
+            if(!missing(i) && missing(j) && !missing(k) && isFALSE(k)) {
+              # there is a weird case in which k is actually missing but is getting the value of the next argument in line (drop)
+              # this one is catched via isFALSE(k)
               return(x@.Data[i])
-            } else if(missing(j) & ifelse(missing(k),TRUE,is.logical(k)) & ifelse(missing(i),FALSE,all(abs(i)<=dim(x)[1]))) {
-              if(length(x@.Data[i,,,drop=FALSE])==0) {
-                return(x@.Data[i])
-              } else {
-                x@.Data <- x@.Data[i,,,drop=FALSE]
-                if(drop) x <- collapseNames(x)
-                return(x)
-              }
-            } else {    
-              if(!missing(k)) {
-                if(is.logical(k)) {
-                  # weird case in which k should be actually missing but gets the value of the next argument in the argument list (drop)
-                  x@.Data <- x@.Data[i,j,,drop=FALSE] 
-                } else {
-                  x@.Data <- x@.Data[i,j,k,drop=FALSE]
-                }
-              } else {
-                x@.Data <- x@.Data[i,j,,drop=FALSE]                
-              }
-              if(drop) x <- collapseNames(x)
-              return(x)
-            }
+            } 
+            x@.Data <- x@.Data[i,j,k,drop=FALSE]
+            if(drop) x <- collapseNames(x)
+            return(x)
     }
 )
 
