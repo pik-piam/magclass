@@ -206,14 +206,15 @@ setMethod("[",
               if(is.factor(k)) k <- as.character(k)
               if(is.character(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
             }
-            if(!missing(i) && missing(j) && !missing(k) && isFALSE(k) && isFALSE(drop) && isFALSE(pmatch) && isFALSE(invert)) {
+            .isFALSE <- function(x) return(is.logical(x) && length(x) == 1 && !is.na(x) && !x)
+            if(!missing(i) && missing(j) && !missing(k) && .isFALSE(k) && .isFALSE(drop) && .isFALSE(pmatch) && .isFALSE(invert)) {
               # there is a weird case in which k is actually missing but is getting the value of the next argument in line (drop)
-              # this one is catched via isFALSE(k)
+              # this one is catched via .isFALSE(k)
               # in addition non-default settings for drop, pmatch and invert indicate that object should still be 
               # returned as magpie object (and not as numeric as the following line will do)
               return(x@.Data[i])
             } 
-            if(!missing(k) && isFALSE(k)) {
+            if(!missing(k) && .isFALSE(k)) {
               # still need to handle weird k=FALSE case separately
               x@.Data <- x@.Data[i,j,,drop=FALSE]  
             } else {
