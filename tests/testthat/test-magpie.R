@@ -18,4 +18,13 @@ test_that("multi element subsetting works", {
   expect_equivalent(as.array(p["PAS","y2005","B1"]), a[9,2,2,drop=FALSE])
 })
 
+test_that("invert argument works", {
+  expect_identical(p[-1,,],   p["AFR",invert=TRUE])
+  expect_identical(p[-1,,],   p["AFR",,invert=TRUE])
+  expect_identical(p[-1,,],   p["AFR",,,invert=TRUE])
+  expect_identical(p[-9,-4,], p["PAS",2025,invert=TRUE])
+  expect_identical(p[-9,-4,], p["PAS",2025,,invert=TRUE])
+  expect_identical(p[,-4,],   p[,2025,,invert=TRUE])
+})
+
 
