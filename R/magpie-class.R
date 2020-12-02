@@ -95,7 +95,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   }
   if(.countdots(i[1])==.countdots(dimnames(x)[[dim]][1]) & pmatch==FALSE){
     #i vector seems to specify the full dimname
-    if(!anyDuplicated(dimnames(x)[[dim]])) {
+    if(!anyDuplicated(as.data.table(dimnames(x)[[dim]]))) {
       if(invert) {
         return(which(!(dimnames(x)[[dim]] %in% i)))
       } else {

@@ -1,5 +1,4 @@
 #' @importFrom methods new setGeneric
-#' @importFrom reshape2 melt
 #' @importFrom forcats fct_explicit_na
 
 #' @exportMethod as.magpie
@@ -198,6 +197,7 @@ setMethod("as.magpie",
               if(datacol==dim(x)[2]) return(tidy2magpie(x,...))
               x[[datacol-1]] <- as.factor(x[[datacol-1]])
             }
+            if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for as.magpie applied on non-tidy data.frames!")
             out <- copy.attributes(x,tidy2magpie(suppressMessages(reshape2::melt(x)),...))
             return(updateMetadata(out, unit=unit))
           }
