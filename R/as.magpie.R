@@ -6,11 +6,16 @@ setGeneric("as.magpie", function(x,...)standardGeneric("as.magpie"))
 
 setMethod("as.magpie",signature(x = "magpie"),function (x) return(x))
 
-tmpfilter <- function(x, sep="\\.", replacement="_") {
+tmpfilter <- function(x, sep=".", replacement="_") {
+  .tmp <- function(x, sep, replacement) {
+    if(sep!=replacement) x <- gsub(sep, replacement, x, fixed = TRUE, useBytes = TRUE)  
+    x[x==""] <- " "
+    return(x)
+  }
   if(is.factor(x)) {
-    levels(x) <- gsub(sep,replacement,levels(x))
+    levels(x) <- .tmp(levels(x), sep, replacement)
   } else if(is.character(x)) {
-    x < gsub(paste0("\\",sep),replacement,x)
+    x <- .tmp(x, sep, replacement)
   }
   return(x)
 }
@@ -177,10 +182,10 @@ setMethod("as.magpie",
           function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", ...)
           {
             # filter illegal characters
-            for(i in 1:dim(x)[2]) {
-              x[[i]] <- tmpfilter(x[[i]], sep=paste0("\\",sep), replacement=replacement)
-              x[[i]] <- tmpfilter(x[[i]], sep="^$", replacement=" ")
-            }
+            cl <- class(x)
+            x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
+            class(x) <- cl
+            
             if(tidy) return(tidy2magpie(x,...))
             if(dim(x)[1]==0) return(copy.attributes(x,new.magpie(NULL)))
             if(is.null(datacol)) {
@@ -250,13 +255,11 @@ setMethod("as.magpie",
               return(as.magpie(x,...))
             }
             x$period <- format(x$period, format = "y%Y")
-            x$unit <- tmpfilter(x$unit, sep="^$", replacement = " ")
             # filter illegal characters
-            for(i in 1:dim(x)[2]) {
-              x[[i]] <- tmpfilter(x[[i]], sep=paste0("\\",sep), replacement=replacement)
-              x[[i]] <- tmpfilter(x[[i]], sep="^$", replacement=" ")
-            }
             
+            cl <- class(x)
+            x <- as.data.frame(lapply(x,tmpfilter,sep=sep, replacement=replacement))
+            class(x) <- cl
             
             if(length(grep("^cell$",names(x),ignore.case=TRUE)) > 0) {
               i <- grep("^cell$",names(x),ignore.case=TRUE,value=TRUE)
