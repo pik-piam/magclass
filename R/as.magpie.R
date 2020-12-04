@@ -179,7 +179,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "data.frame"),
-          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", filter=TRUE, ...)
+          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", filter=FALSE, ...)
           {
             # filter illegal characters
             if(isTRUE(filter)) {

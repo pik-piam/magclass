@@ -46,7 +46,12 @@ data (last column is the data column all other columns contain dimension
 information). This information will help the conversion. \code{sep} defines
 the dimension separator (default is ".") and \code{replacement} defines how 
 the separator as a reserved character should be converted in order to not
-mess up with the object (default "_").}
+mess up with the object (default "_").
+Another available argument for conversions of data.frames and quitte 
+objects to magpie is \code{filter} if set to TRUE (default for quitte)
+"." (separator) will be replaced withe the \code{replacement} character and
+empty entries will be replaced with a single space. If set to FALSE (default
+for data.frames) no filter will be applied to the data.}
 }
 \description{
 The MAgPIE class is a data format for cellular MAgPIE data with a close
