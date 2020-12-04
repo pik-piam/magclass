@@ -184,7 +184,9 @@ setMethod("as.magpie",
             # filter illegal characters
             if(isTRUE(filter)) {
               cl <- class(x)
+              cn <- colnames(x)
               x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
+              colnames(x) <- cn
               class(x) <- cl
             }
             
@@ -261,7 +263,9 @@ setMethod("as.magpie",
             
             if(isTRUE(filter)) {
               cl <- class(x)
-              x <- as.data.frame(lapply(x,tmpfilter,sep=sep, replacement=replacement))
+              cn <- colnames(x)
+              x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
+              colnames(x) <- cn
               class(x) <- cl
             }
             
