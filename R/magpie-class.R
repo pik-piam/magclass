@@ -1,12 +1,12 @@
 
 #' Class "magpie" ~~~
-#' 
+#'
 #' The MAgPIE class is a data format for cellular MAgPIE data with a close
 #' relationship to the array data format. \code{is.magpie} tests if \code{x} is
 #' an MAgPIE-object, \code{as.magpie} transforms \code{x} to an MAgPIE-object
 #' (if possible).
-#' 
-#' 
+#'
+#'
 #' @name magpie-class
 #' @aliases magpie-class as.magpie as.magpie-methods as.magpie,magpie-method
 #' as.magpie,array-method as.magpie,lpj-method as.magpie,data.frame-method
@@ -83,6 +83,7 @@
 #' 
 #' 
 #' @exportClass magpie
+#' @importFrom data.table as.data.table
 #' @importFrom methods setClass
 
 
@@ -128,7 +129,6 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   if(any(dims==0)) {
     dfmissing <- df[dims==0]
     df <- df[dims!=0]
-    fdims <- dims
     dims <- dims[dims>0]
   } else {
     dfmissing <- NULL
@@ -145,7 +145,6 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     dmissing <- which(!(1:maxdim%in%sdims))
     sdims <- c(sdims,dmissing)
     for(d in dmissing) df <- cbind(df,"[^\\.]*")
-    elems <- NULL
     search <-  paste0("^",apply(df[,sdims, drop=FALSE],1,paste,collapse="\\."),"$")
     found <- lapply(search,grep,getNames(x))
     x <- x[,,unlist(found)]
@@ -156,7 +155,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       } else {
         name_extensions <- dfmissing[[1]]
       }
-      getNames(x) <- paste(getNames(x),name_extensions[rep(1:length(name_extensions),length)],sep=".")
+      getNames(x) <- paste(getNames(x),name_extensions[rep(seq_along(name_extensions),length)],sep=".")
       getSets(x,fulldim=FALSE)[3] <- paste(getSets(x,fulldim=FALSE)[3],paste(names(dfmissing),collapse="."),sep=".")
     }
     if(any(length==0) & nrow(df)>0) {

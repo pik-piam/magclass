@@ -179,12 +179,14 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "data.frame"),
-          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", ...)
+          function (x, datacol=NULL, tidy=FALSE, sep=".", replacement="_", unit="unknown", filter=TRUE, ...)
           {
             # filter illegal characters
-            cl <- class(x)
-            x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
-            class(x) <- cl
+            if(isTRUE(filter)) {
+              cl <- class(x)
+              x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
+              class(x) <- cl
+            }
             
             if(tidy) return(tidy2magpie(x,...))
             if(dim(x)[1]==0) return(copy.attributes(x,new.magpie(NULL)))
@@ -210,7 +212,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "quitte"),
-          function(x, sep=".", replacement="_", ...)
+          function(x, sep=".", replacement="_", filter=TRUE, ...)
           {
               is.quitte <- function(x, warn=FALSE) {
                   # object is not formally defined as quitte class
@@ -257,9 +259,11 @@ setMethod("as.magpie",
             x$period <- format(x$period, format = "y%Y")
             # filter illegal characters
             
-            cl <- class(x)
-            x <- as.data.frame(lapply(x,tmpfilter,sep=sep, replacement=replacement))
-            class(x) <- cl
+            if(isTRUE(filter)) {
+              cl <- class(x)
+              x <- as.data.frame(lapply(x,tmpfilter,sep=sep, replacement=replacement))
+              class(x) <- cl
+            }
             
             if(length(grep("^cell$",names(x),ignore.case=TRUE)) > 0) {
               i <- grep("^cell$",names(x),ignore.case=TRUE,value=TRUE)
