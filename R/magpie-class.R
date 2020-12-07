@@ -38,10 +38,10 @@
 #' the separator as a reserved character should be converted in order to not
 #' mess up with the object (default "_").
 #' Another available argument for conversions of data.frames and quitte 
-#' objects to magpie is \code{filter} if set to TRUE (default for quitte)
+#' objects to magpie is \code{filter} if set to TRUE (default)
 #' "." (separator) will be replaced withe the \code{replacement} character and
-#' empty entries will be replaced with a single space. If set to FALSE (default
-#' for data.frames) no filter will be applied to the data.
+#' empty entries will be replaced with a single space. If set to FALSE no filter 
+#' will be applied to the data.
 #' @section Objects from the Class: Objects can be created by calls of the form
 #' \code{new("magpie", data, dim, dimnames, ...)}. MAgPIE objects have three
 #' dimensions (cells,years,datatype) and the dimensionnames of the first
