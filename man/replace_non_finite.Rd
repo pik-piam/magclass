@@ -7,12 +7,12 @@
 replace_non_finite(x, replace = 0)
 }
 \arguments{
-\item{x}{A vector or \code{\link[=magclass]{magpie}} object.}
+\item{x}{A vector or \code{\link[magclass:magclass]{magpie}} object.}
 
 \item{replace}{A value to replace non-finite data with.}
 }
 \value{
-A vector or \code{\link[=magclass]{magpie}} object, same as \code{x}.
+A vector or \code{\link[magclass:magclass]{magpie}} object, same as \code{x}.
 }
 \description{
 Replaces all instances of non-finite data (\code{NA}, \code{NaN}, \code{Inf}, and \code{-Inf}).

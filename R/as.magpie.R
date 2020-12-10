@@ -6,17 +6,28 @@ setGeneric("as.magpie", function(x,...)standardGeneric("as.magpie"))
 
 setMethod("as.magpie",signature(x = "magpie"),function (x) return(x))
 
-tmpfilter <- function(x, sep=".", replacement="_") {
-  .tmp <- function(x, sep, replacement) {
-    if(sep!=replacement) x <- gsub(sep, replacement, x, fixed = TRUE, useBytes = TRUE)  
-    x[x==""] <- " "
+
+tmpfilter <- function(x,sep=".", replacement="_") {
+  .tmpfilter <- function(x, sep=".", replacement="_") {
+    .tmp <- function(x, sep, replacement) {
+      if(sep!=replacement) x <- gsub(sep, replacement, x, fixed = TRUE, useBytes = TRUE)  
+      x[x==""] <- " "
+      return(x)
+    }
+    if(is.factor(x)) {
+      levels(x) <- .tmp(levels(x), sep, replacement)
+    } else if(is.character(x)) {
+      x <- .tmp(x, sep, replacement)
+    }
     return(x)
   }
-  if(is.factor(x)) {
-    levels(x) <- .tmp(levels(x), sep, replacement)
-  } else if(is.character(x)) {
-    x <- .tmp(x, sep, replacement)
-  }
+  cl <- class(x)
+  cn <- colnames(x)
+  rn <- rownames(x)
+  x <- as.data.frame(lapply(x, .tmpfilter, sep=sep, replacement=replacement))
+  colnames(x) <- cn
+  rownames(x) <- rn
+  class(x) <- cl
   return(x)
 }
 
@@ -183,11 +194,7 @@ setMethod("as.magpie",
           {
             # filter illegal characters
             if(isTRUE(filter)) {
-              cl <- class(x)
-              cn <- colnames(x)
-              x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
-              colnames(x) <- cn
-              class(x) <- cl
+              x <- tmpfilter(x, sep=sep, replacement=replacement)
             }
             
             if(tidy) return(tidy2magpie(x,...))
@@ -267,11 +274,7 @@ setMethod("as.magpie",
             # filter illegal characters
             
             if(isTRUE(filter)) {
-              cl <- class(x)
-              cn <- colnames(x)
-              x <- as.data.frame(lapply(x, tmpfilter, sep=sep, replacement=replacement))
-              colnames(x) <- cn
-              class(x) <- cl
+              x <- tmpfilter(x, sep=sep, replacement=replacement)
             }
             
             if(length(grep("^cell$",names(x),ignore.case=TRUE)) > 0) {
