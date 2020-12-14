@@ -86,8 +86,8 @@ read.report <- function(file,as.list=TRUE) {
     ndots <- nchar(gsub("[^\\.]*","",names))
     if(any(ndots!=ndots[1])) names <- gsub("\\.","",names)
     #replace weird ° in tables after sub function evaluation 
-    names        <- sub(pattern="\U3e30623cC",replacement = "K", x = names, useBytes = TRUE)
-    names(names) <- sub(pattern="\U3e30623cC",replacement = "K", x = names(names), useBytes = TRUE)
+    names        <- sub(pattern="\U{00B0}C",replacement = "K", x = names, useBytes = TRUE)
+    names(names) <- sub(pattern="\U{00B0}C",replacement = "K", x = names(names), useBytes = TRUE)
     mag <- new.magpie(sub("ZZZZZZGLO","GLO",(sort(sub("GLO","ZZZZZZGLO",regions)))),years,names)
     yearelems <- grep("^X[0-9]{4}$",dimnames(tmp)[[2]])
     regions[order(sub("GLO","ZZZZZZGLO",regions))] <- dimnames(mag)[[1]]

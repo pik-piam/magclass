@@ -1,6 +1,6 @@
 {
   "title": "magclass: Data Class and Tools for Handling Spatial-Temporal Data",
-  "version": "5.15.5",
+  "version": "5.15.6",
   "description": "<p>Data class for increased interoperability working with spatial-\n    temporal data together with corresponding functions and methods (conversions,\n    basic calculations and basic data manipulation). The class distinguishes\n    between spatial, temporal and other dimensions to facilitate the development\n    and interoperability of tools build for it. Additional features are name-based\n    addressing of data and internal consistency checks (e.g. checking for the right\n    data order in calculations).<\/p>",
   "creators": [
     {
