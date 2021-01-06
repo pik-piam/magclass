@@ -68,10 +68,11 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
 #' @describeIn getItems set dimension names
 #' @export
 "getItems<-" <- function(x,dim,maindim=NULL,value) {
+  if(length(dim)>1) stop("dim with length > 1 is currently not supported when setting items.")
   dc <- dimCode(dim,x)
   if(dc==0 && is.null(maindim)) stop("Dimension does not exist in object and cannot be added as main dimension is not specified!")
   if(!is.null(maindim)) {
-    if(!(maindim %in% 1:3)) stop("maindim can only be 1, 2 or 3!")
+    if(!(maindim %in% 1:3)) stop("Unsupported maindim (can only be 1, 2 or 3!)")
     if(dc==0) {
       dc <- maindim + 0.99999
     } else {
@@ -80,18 +81,36 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
   } else {
     maindim <- round(dc)
   }
-  if(length(value)!=dim(x)[maindim]) stop("Wrong number of dimnames supplied!")
-  value <- gsub(".",",",value,fixed=TRUE)
+  if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
+  nv           <- names(value)
+  value        <- gsub(".",",",value,fixed=TRUE)
+  names(value) <- nv
+  
+  .sortvalues <- function(value, x, dim) {
+    if(!is.null(names(value))) {
+      order <- getItems(x,dim)
+      if(!all(order %in% names(value))) stop("Input vector is named but not all names match items of the dimension to be replaced!")
+      value <- value[order]
+      names(value) <- NULL
+    }
+    return(value)
+  }
+  
   if(dc==maindim) {
-    dimnames(x)[[maindim]] <- value
+    dimnames(x)[[maindim]] <- .sortvalues(value, x, maindim)
+    names(dimnames(x))[maindim] <- gsub(".",",",names(dimnames(x))[maindim],fixed=TRUE)
   } else if(!dimExists(dc,x)) {
+    if(!is.null(names(value))) {
+      warning("Names of input vector are being ignored as dimension is not yet existing!")
+      names(value) <- NULL
+    }
     dimnames(x)[[maindim]] <- paste0(dimnames(x)[[maindim]],".",value)
     if(!is.character(dim)) dim <- "newdim"
     names(dimnames(x))[maindim] <- paste0(names(dimnames(x))[maindim],".",dim)
   } else {
     tmp <- getItems(x,maindim,split = TRUE, full = TRUE)
     subdim <- as.integer(substring(dc,3))
-    tmp[[subdim]] <- value
+    tmp[[subdim]] <- .sortvalues(value, x, dc)
     .paste <- function(...) return(paste(...,sep="."))
     dimnames(x)[[maindim]] <- do.call(.paste,tmp)
   }

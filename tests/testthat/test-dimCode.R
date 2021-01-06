@@ -17,4 +17,8 @@ test_that("dimension codes are correctly extracted", {
   expect_equivalent(dimCode(NULL,pm),NULL)
 })
 
+test_that("illegal dim values are properly detected", {
+  expect_error(dimCode("a.b",pm), "separator must not be used in dimension name")
+})
+
 

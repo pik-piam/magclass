@@ -20,6 +20,7 @@
 #' 
 #' @export
 getCoords <- function(x, xlab="x", ylab="y") {
+  if(!all(dimExists(c(xlab,ylab),x))) stop("No coordinates found in object!")
   .tmp <- function(x,n) return(as.numeric(sub(",",".", getItems(x,n,full=TRUE), fixed=TRUE)))
   return(data.frame(x=.tmp(x,xlab),y=.tmp(x,ylab)))
 }
@@ -31,7 +32,7 @@ getCoords <- function(x, xlab="x", ylab="y") {
   if(!is.data.frame(value)) x <- as.data.frame(value)
   if(all(c("x","y") %in% names(value))) value <- value[c("x","y")]
   if(ncells(x)!=nrow(value)) stop("Number of rows does not match number of cells of the MAgPIE object!")
-  getItems(x,xlab) <- value[[1]]
-  getItems(x,ylab) <- value[[2]]
+  getItems(x, xlab, maindim=1) <- value[[1]]
+  getItems(x,ylab, maindim=1)  <- value[[2]]
   return(x)
 }
