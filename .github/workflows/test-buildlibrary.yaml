@@ -24,7 +24,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          sudo apt-get install libcurl4-openssl-dev libgit2-dev libnetcdf-c++4-1
+          sudo apt-get install libcurl4-openssl-dev libgit2-dev libnetcdf-dev
 
       - name: Query dependencies
         run: |
