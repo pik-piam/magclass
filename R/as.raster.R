@@ -22,6 +22,7 @@ setMethod("as.raster",
     signature(x = "magpie"),
     function (x) 
     {  
+      warning("Still under development! Not for productive use!")
       if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
       
       return(as(x,"raster"))
