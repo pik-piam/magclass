@@ -1,6 +1,5 @@
 context("Raster conversion tests")
 
-skip("Not yet ready")
 skip_if_not_installed("raster")
 
 test_that("raster convertion does not alter data", {

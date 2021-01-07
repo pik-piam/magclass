@@ -27,13 +27,13 @@ as.RasterLayer <- function (x, res=NULL) {
         ncol <- (e@xmax-e@xmin)/res
         nrow <- (e@ymax-e@ymin)/res
         x <- (xy$x + res/2 - e@xmin)/res
-        y <- nrow - (xy$y + res/2)/res + e@ymin
+        y <- nrow - (xy$y + res/2 - e@ymin)/res 
         return(x + ncol*y)
       }
       
       xy <- getCoords(x)
       if(is.null(res)) res <- .guessRes(xy)
-      rout <- raster::raster(res=res)
+      out <- raster::raster(res=res)
       out[.position(xy,res,raster::extent(out))] <- as.vector(x)
       return(out)
 }
