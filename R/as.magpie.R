@@ -315,11 +315,12 @@ setMethod("as.magpie",
           signature(x = "RasterLayer"),
           function(x, unit="unknown", ...)
           {
+            warning("Still under development! Not for productive use!")
             if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
             df <- as.data.frame(x,na.rm=TRUE)
             co <- raster::coordinates(x)[as.integer(rownames(df)),]
             co <- matrix(sub(".",",",co,fixed=TRUE),ncol=2)
-            colnames(co) <- c("lon","lat")
+            colnames(co) <- c("x","y")
             df <- cbind(co,df)
             out <- tidy2magpie(df, spatial=1:2)
             return(updateMetadata(out, unit=unit))

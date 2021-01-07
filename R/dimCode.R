@@ -25,6 +25,8 @@
 #' @export dimCode
 dimCode <- function(dim, x, missing=0, sep="."){
   
+  if(all(is.character(dim)) && any(grepl(sep, dim, fixed=TRUE))) stop("Dimension separator must not be used in dimension name!")
+  
   #function to translate dim to dim code
   if(is.character(dim)) {
     

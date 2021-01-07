@@ -10,6 +10,10 @@
 #' Only applicable to main dimensions (1,2,3) and ignored for all other.
 #' @param full if TRUE dimension names are returned as they are (including repetitions), if FALSE only
 #' the dimension elements (unique list of entries) are returned.
+#' @param maindim main dimension the data should be added to (does not need to be set if \code{dim} exists
+#' in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
+#' in a different main dimension than the one anticipated).
+#' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to.
 #' @return items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a 
 #' main dimension (1,2,3) a list of items for each sub-dimension.
 #' @author Jan Philipp Dietrich
@@ -51,14 +55,64 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
     }
     return(tmp)
   }
+  if(!dimExists(dim,x)) stop("Subdimension ",dimCode(dim,x), " does not exist!")
   tmp <- dimnames(x)[[as.integer(dim)]]
-  subdim <- as.integer(strsplit(as.character(dimCode(dim)),split="\\.")[[1]][2])
-  maxsubdim <- nchar(gsub("[^\\.]*","",tmp[1]))+1
-  if(length(maxsubdim)==0) maxsubdim <- 1
-  if(subdim>maxsubdim) stop("Subdimension ",dimCode(dim), " does not exist (maxsubdim = ",maxsubdim,")!")
   if(is.null(tmp)) return(NULL)
+  subdim <- as.integer(substring(dim,3))
   reg <- paste0(rep("([^\\.]*)",subdim),collapse="\\.")
   out <- sub(paste0("^",reg,".*$"),paste0("\\",subdim),tmp) 
   if(isTRUE(full)) return(out)
   return(unique(out))
+}
+
+#' @describeIn getItems set dimension names
+#' @export
+"getItems<-" <- function(x,dim,maindim=NULL,value) {
+  if(length(dim)>1) stop("dim with length > 1 is currently not supported when setting items.")
+  dc <- dimCode(dim,x)
+  if(dc==0 && is.null(maindim)) stop("Dimension does not exist in object and cannot be added as main dimension is not specified!")
+  if(!is.null(maindim)) {
+    if(!(maindim %in% 1:3)) stop("Unsupported maindim (can only be 1, 2 or 3!)")
+    if(dc==0) {
+      dc <- maindim + 0.99999
+    } else {
+      if(round(dc)!=maindim) stop("Specified dimension (dim) found in main dimension different to maindim!")
+    }
+  } else {
+    maindim <- round(dc)
+  }
+  if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
+  nv           <- names(value)
+  value        <- gsub(".",",",value,fixed=TRUE)
+  names(value) <- nv
+  
+  .sortvalues <- function(value, x, dim) {
+    if(!is.null(names(value))) {
+      order <- getItems(x,dim)
+      if(!all(order %in% names(value))) stop("Input vector is named but not all names match items of the dimension to be replaced!")
+      value <- value[order]
+      names(value) <- NULL
+    }
+    return(value)
+  }
+  
+  if(dc==maindim) {
+    dimnames(x)[[maindim]] <- .sortvalues(value, x, maindim)
+    names(dimnames(x))[maindim] <- gsub(".",",",names(dimnames(x))[maindim],fixed=TRUE)
+  } else if(!dimExists(dc,x)) {
+    if(!is.null(names(value))) {
+      warning("Names of input vector are being ignored as dimension is not yet existing!")
+      names(value) <- NULL
+    }
+    dimnames(x)[[maindim]] <- paste0(dimnames(x)[[maindim]],".",value)
+    if(!is.character(dim)) dim <- "newdim"
+    names(dimnames(x))[maindim] <- paste0(names(dimnames(x))[maindim],".",dim)
+  } else {
+    tmp <- getItems(x,maindim,split = TRUE, full = TRUE)
+    subdim <- as.integer(substring(dc,3))
+    tmp[[subdim]] <- .sortvalues(value, x, dc)
+    .paste <- function(...) return(paste(...,sep="."))
+    dimnames(x)[[maindim]] <- do.call(.paste,tmp)
+  }
+  return(x)
 }
