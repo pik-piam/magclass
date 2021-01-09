@@ -1,16 +1,16 @@
-#' as.RasterLayyer
+#' as.RasterBrick
 #' 
-#' Convert magclass object to a RasterLayer object
+#' Convert magclass object to a RasterBrick object
 #' 
 #' 
 #' @param x MAgPIE object
 #' @param res spatial data resolution. If not provided it will be guessed.
-#' @return A RasterLayer object
+#' @return A RasterBrick object
 #' @author Jan Philipp Dietrich
 #' @export
 
 
-as.RasterLayer <- function (x, res=NULL) {  
+as.RasterBrick <- function (x, res=NULL) {  
       warning("Still under development! Not for productive use!")
       if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
 
@@ -23,18 +23,12 @@ as.RasterLayer <- function (x, res=NULL) {
         return(guess)
       }
       
-      .position <- function(xy,res,e) {
-        ncol <- (e@xmax-e@xmin)/res
-        nrow <- (e@ymax-e@ymin)/res
-        x <- (xy$x + res/2 - e@xmin)/res
-        y <- nrow - (xy$y + res/2 - e@ymin)/res 
-        return(x + ncol*y)
-      }
-      
       xy <- getCoords(x)
       if(is.null(res)) res <- .guessRes(xy)
-      out <- raster::raster(res=res)
-      out[.position(xy,res,raster::extent(out))] <- as.vector(x)
+      out <- raster::brick(ncols=360/res,nrows=180/res, nl=nyears(x)*ndata(x))
+      m   <- wrap(x, list(1,2:3), sep="..")
+      out[raster::cellFromXY(out,xy)] <- m 
+      names(out) <- colnames(m)
       return(out)
 }
 

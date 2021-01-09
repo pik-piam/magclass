@@ -1,5 +1,6 @@
 #' @importFrom methods new setGeneric
 #' @importFrom forcats fct_explicit_na
+#' @importFrom data.table as.data.table tstrsplit melt
 
 #' @exportMethod as.magpie
 setGeneric("as.magpie", function(x,...)standardGeneric("as.magpie"))
@@ -312,7 +313,7 @@ setMethod("as.magpie",
 )
 
 setMethod("as.magpie",
-          signature(x = "RasterLayer"),
+          signature(x = "RasterBrick"),
           function(x, unit="unknown", ...)
           {
             warning("Still under development! Not for productive use!")
@@ -321,8 +322,12 @@ setMethod("as.magpie",
             co <- raster::coordinates(x)[as.integer(rownames(df)),]
             co <- matrix(sub(".",",",co,fixed=TRUE),ncol=2)
             colnames(co) <- c("x","y")
-            df <- cbind(co,df)
-            out <- tidy2magpie(df, spatial=1:2)
+            df <- as.data.table(cbind(co,df))
+            df <- melt(as.data.table(df), id.vars=c("x","y"))
+            variable <- as.data.table(tstrsplit(df$variable,"..",fixed=TRUE))
+            names(variable) <- c("year","data")
+            df <- cbind(df[,1:2],variable,df[,4])
+            out <- tidy2magpie(df, spatial=1:2, temporal=3)
             return(updateMetadata(out, unit=unit))
           }
 )
