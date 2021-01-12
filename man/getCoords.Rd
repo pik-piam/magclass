@@ -32,13 +32,17 @@ Extracts spatial coordinates of a MAgPIE-object
 
 \examples{
 
- a <- as.magpie(1)
- getCells(a)
- setCells(a,"AFR")
+if (requireNamespace("raster", quietly = TRUE)) {
+   r <- raster::brick(ncols=360,nrows=180, nl=4)
+   r[85:89,176:179] <- (1:20 \%*\% t(1:4))
+   names(r) <- c("y2000..bla","y2001..bla","y2000..blub","y2001..blub")
+   m <- as.magpie(r)
+   getCoords(m)
+} 
 
 }
 \seealso{
-\code{\link{getItems}}, \code{"\linkS4class{magpie}"}
+\code{\link{as.RasterBrick}}, \code{\link{getItems}}, \code{"\linkS4class{magpie}"}
 }
 \author{
 Jan Philipp Dietrich
