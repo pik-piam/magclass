@@ -13,14 +13,21 @@
 #' @param maindim main dimension the data should be added to (does not need to be set if \code{dim} exists
 #' in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 #' in a different main dimension than the one anticipated).
-#' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to.
+#' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to. 
+#' If set to NULL the corresponding dimension will be removed.
 #' @return items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a 
 #' main dimension (1,2,3) a list of items for each sub-dimension.
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{dimCode}}
 #' @examples
-#' getItems(population_magpie,"scenario")
-#' getItems(population_magpie,3.1)
+#' x <- population_magpie
+#' getItems(x,"scenario")
+#' getItems(x,3.1)
+#' getItems(x,"i") <- paste0("REG",1:ncells(x))
+#' getItems(x,"i")
+#' y <- x[,1,]
+#' getItems(y,"t") <- NULL
+#' 
 #' @export
 getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
   if(is.null(dim)) dim <- 1:3
@@ -81,38 +88,57 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
   } else {
     maindim <- round(dc)
   }
-  if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
-  nv           <- names(value)
-  value        <- gsub(".",",",value,fixed=TRUE)
-  names(value) <- nv
   
-  .sortvalues <- function(value, x, dim) {
-    if(!is.null(names(value))) {
-      order <- getItems(x,dim)
-      if(!all(order %in% names(value))) stop("Input vector is named but not all names match items of the dimension to be replaced!")
-      value <- value[order]
-      names(value) <- NULL
+  if(!is.null(value)) {
+    if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
+    nv           <- names(value)
+    value        <- gsub(".",",",value,fixed=TRUE)
+    names(value) <- nv
+    
+    .sortvalues <- function(value, x, dim) {
+      if(!is.null(names(value))) {
+        order <- getItems(x,dim)
+        if(!all(order %in% names(value))) stop("Input vector is named but not all names match items of the dimension to be replaced!")
+        value <- value[order]
+        names(value) <- NULL
+      }
+      return(value)
     }
-    return(value)
-  }
-  
-  if(dc==maindim) {
-    dimnames(x)[[maindim]] <- .sortvalues(value, x, maindim)
-    names(dimnames(x))[maindim] <- gsub(".",",",names(dimnames(x))[maindim],fixed=TRUE)
-  } else if(!dimExists(dc,x)) {
-    if(!is.null(names(value))) {
-      warning("Names of input vector are being ignored as dimension is not yet existing!")
-      names(value) <- NULL
+    if(dc==maindim) {
+      dimnames(x)[[maindim]] <- .sortvalues(value, x, maindim)
+      names(dimnames(x))[maindim] <- gsub(".",",",names(dimnames(x))[maindim],fixed=TRUE)
+    } else if(!dimExists(dc,x)) {
+      if(!is.null(names(value))) {
+        warning("Names of input vector are being ignored as dimension is not yet existing!")
+        names(value) <- NULL
+      }
+      dimnames(x)[[maindim]] <- paste0(dimnames(x)[[maindim]],".",value)
+      if(!is.character(dim)) dim <- "newdim"
+      names(dimnames(x))[maindim] <- paste0(names(dimnames(x))[maindim],".",dim)
+    } else {
+      tmp <- getItems(x,maindim,split = TRUE, full = TRUE)
+      subdim <- as.integer(substring(dc,3))
+      tmp[[subdim]] <- .sortvalues(value, x, dc)
+      .paste <- function(...) return(paste(...,sep="."))
+      dimnames(x)[[maindim]] <- do.call(.paste,tmp)
     }
-    dimnames(x)[[maindim]] <- paste0(dimnames(x)[[maindim]],".",value)
-    if(!is.character(dim)) dim <- "newdim"
-    names(dimnames(x))[maindim] <- paste0(names(dimnames(x))[maindim],".",dim)
   } else {
-    tmp <- getItems(x,maindim,split = TRUE, full = TRUE)
-    subdim <- as.integer(substring(dc,3))
-    tmp[[subdim]] <- .sortvalues(value, x, dc)
-    .paste <- function(...) return(paste(...,sep="."))
-    dimnames(x)[[maindim]] <- do.call(.paste,tmp)
+    if(dc==maindim) {
+      if(dim(x)[maindim]>1) stop("Cannot unset dimension names for dimensions with more than 1 element!")
+      if(maindim==1) dimnames(x) <- c(d1=list(NULL),dimnames(x)[2:3])
+      if(maindim==2) dimnames(x) <- c(dimnames(x)[1], d2=list(NULL), dimnames(x)[3])
+      if(maindim==3) dimnames(x) <- c(dimnames(x)[1:2],d3=list(NULL))
+    } else if(!dimExists(dc,x)) {
+      warning("Nothing to do here as dimension does not exist!")
+    } else {
+      tmp <- getItems(x,maindim,split = TRUE, full = TRUE)
+      subdim <- as.integer(substring(dc,3))
+      tmp[[subdim]] <- NULL
+      .paste <- function(...) return(paste(...,sep="."))
+      dimnames(x)[[maindim]] <- do.call(.paste,tmp)
+      subdim <- as.integer(substring(dc,3))
+      names(dimnames(x))[maindim] <- paste(strsplit(names(dimnames(x))[maindim],".",fixed=TRUE)[[1]][-subdim],collapse=".")
+    }
   }
   return(x)
 }
