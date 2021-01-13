@@ -24,7 +24,7 @@
 #' 
 #' @export
 getCoords <- function(x, xlab="x", ylab="y") {
-  if(!all(dimExists(c(xlab,ylab),x))) stop("No coordinates found in object!")
+  if(!hasCoords(x,xlab,ylab)) stop("No coordinates found in object!")
   .tmp <- function(x,n) return(as.numeric(sub(",",".", getItems(x,n,full=TRUE), fixed=TRUE)))
   return(data.frame(x=.tmp(x,xlab),y=.tmp(x,ylab)))
 }
