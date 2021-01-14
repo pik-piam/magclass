@@ -7,13 +7,16 @@
 #' 
 #' 
 #' @param x MAgPIE object
-#' @param dim Dimension for which the items should be returned. Either number or 
-#' name of dimension or a vector of these. See \code{\link{dimCode}} for more details.
-#' CAUTION: If specified this can lead to duplicate entries. 
-#' If set to NULL all single entry subdimensions will be removed.
-#' @param keepdim If you want to remove the name of particular dimensions except some, 
-#' you can specify the dimension(s) to keep here. See \code{\link{dimCode}} for naming convention.
-#' Note that \code{keepdim} will be ignored if \code{dim} has been specified.
+#' @param dim Either NULL, dimension code or 
+#' name of dimension or a vector of these. If set to NULL all single entry subdimensions will 
+#' be removed as they are irrelevant to uniquely identfy a data element. If specified, only the specified
+#' subdimensions will be removed (See \code{\link{dimCode}} for more details how to specify a subdimension).
+#' CAUTION: The function also allows to specify subdimensions which are otherwise needed to clearly identify 
+#' an entry. By removing these subdimensions duplicates in the data will be created potentially causing
+#' problems in the further use of the data set. Be careful in removing subdimensions. 
+#' @param keepdim (only considered if \code{dim} is not specified) Can be used to converse
+#' single element subdimension which otherwise would get deleted. If \code{dim} is specified
+#' this setting will not have any effect.
 #' @return The provided MAgPIE object with collapsed dimensions
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{getItems}}
