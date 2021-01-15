@@ -74,7 +74,7 @@ read.report <- function(file,as.list=TRUE) {
   .return_magpie <- function(tmp,scenario,model) {
     
     #replace weird ° in tables 
-    tmp$Unit      <- sub(pattern="\xb0C",replacement = "K", x = tmp$Unit, useBytes = TRUE)
+    tmp$Unit      <- sub(pattern="\U{00B0}C",replacement = "K", x = tmp$Unit, useBytes = TRUE)
     regions <- unique(as.character(tmp$Region))
     names(regions) <- regions
     years <- sub("X","y",grep("^X[0-9]{4}$",dimnames(tmp)[[2]],value=TRUE))
