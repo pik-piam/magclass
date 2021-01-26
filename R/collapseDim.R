@@ -33,25 +33,25 @@
 
 collapseDim <- function(x, dim=NULL, keepdim=NULL) {
   
-  if(is.null(x)) return(NULL)
+  if (is.null(x)) return(NULL)
   
   if (is.null(dim)) {
-    tmp <- sapply(unlist(getItems(x, split=TRUE),recursive = FALSE),length)
-    dim <- dimCode(names(tmp)[tmp==1],x)
-    if(!is.null(keepdim)) {
+    tmp <- sapply(unlist(getItems(x, split = TRUE),recursive = FALSE),length)
+    dim <- dimCode(names(tmp)[tmp == 1],x)
+    if (!is.null(keepdim)) {
       dim <- setdiff(dim, dimCode(keepdim,x))
       dim <- dim[!(floor(dim) %in% keepdim)]
     }
   } else {
-    if(!is.null(keepdim)) warning("keepdim argument is ignored as dim has been specified!")
+    if (!is.null(keepdim)) warning("keepdim argument is ignored as dim has been specified!")
     dim <- dimCode(dim,x)
   }
   
-  if(any(dim==0)) {
+  if (any(dim == 0)) {
     warning("Some dimensions could not be found in the object and will be ignored!")
-    dim <- dim[dim>0]
+    dim <- dim[dim > 0]
   }
   
-  for(d in dim) getItems(x,dim=d) <- NULL
+  for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL
   return(updateMetadata(x))
 }
