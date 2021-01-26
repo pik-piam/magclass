@@ -12,13 +12,13 @@ Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de"
              person("Lavinia", "Baumstark", email = "lavinia@pik-potsdam.de", role = "ctb"),
              person("Christoph", "Bertram", email = "bertram@pik-potsdam.de", role = "ctb"),
              person("Anastasis", "Giannousakis", email = "giannou@pik-potsdam.de", role = "ctb"),
-             person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),	
- 		         person("Ina", "Neher", role = "ctb"),	
+             person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),
+             person("Ina", "Neher", role = "ctb"),	
              person("Michaja", "Pehl", email = "pehl@pik-potsdam.de", role = "ctb"),	
              person("Anselm", "Schultes", role = "ctb"),	
              person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "ctb"),
-		         person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
-		         person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
+             person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
+             person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
 Description: Data class for increased interoperability working with spatial-
     temporal data together with corresponding functions and methods (conversions,
     basic calculations and basic data manipulation). The class distinguishes
