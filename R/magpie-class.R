@@ -85,6 +85,9 @@
 #' # returning everything but values for PAS or values for 2025
 #' population_magpie["PAS",2025,,invert=TRUE]
 #' 
+#' # accessing subdimension via set name
+#' population_magpie[list(i="AFR"),,list(scenario=c("A2","B1"))]
+#' 
 #' 
 #' 
 #' @exportClass magpie
@@ -120,21 +123,26 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
   
   if(!is.list(i)) i <- list(i)
-  if(!is.null(names(i))) stop("Named lists not yet supported!")
-  elems <- NULL
-  for(j in i) {
-    if(is.factor(j)) j <- as.character(j)
-    tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
-    if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
-    if(is.null(elems)) {
-      elems <- unlist(tmp)
-    } else {
-      elems <- intersect(elems,unlist(tmp))
+  if(!is.null(names(i))) {
+    if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
+    .tmp <- function(n,x,i,invert) {
+      out <- !(getItems(x,dim=n, full=TRUE) %in% i[[n]])
+      if(invert) out <- !out
+      return(out)
+    }
+    elems <- which(rowSums(sapply(names(i),.tmp,x,i,invert)) == 0)
+  } else {
+    elems <- 1:dim(x)[dim]
+    for(j in i) {
+      if(is.factor(j)) j <- as.character(j)
+      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
+      if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
+      tmp <- unlist(tmp)
+      if(invert) tmp <- setdiff(1:dim(x)[dim],tmp)    
+      elems <- intersect(elems,tmp)
     }
   }
-  if(invert) {
-    elems <- setdiff(1:dim(x)[dim],elems)    
-  }
+
   return(elems)
 }
 

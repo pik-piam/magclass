@@ -99,6 +99,9 @@ population_magpie["PAS",2025,]
 # returning everything but values for PAS or values for 2025
 population_magpie["PAS",2025,,invert=TRUE]
 
+# accessing subdimension via set name
+population_magpie[list(i="AFR"),,list(scenario=c("A2","B1"))]
+
 
 
 }
