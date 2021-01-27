@@ -11,15 +11,9 @@
 #' @seealso \code{\link{getCoords}}
 #' @examples
 #' 
-#' hasCoords(population_magpie)
+#' hasCoords(maxample("pop"))
+#' hasCoords(maxample("animal"))
 #' 
-#' if (requireNamespace("raster", quietly = TRUE)) {
-#'    r <- raster::brick(ncols=360,nrows=180, nl=4)
-#'    r[85:89,176:179] <- (1:20 %*% t(1:4))
-#'    names(r) <- c("y2000..bla","y2001..bla","y2000..blub","y2001..blub")
-#'    m <- as.magpie(r)
-#'    hasCoords(m)
-#' } 
 #' 
 #' @export
 hasCoords <- function(x, xlab="x", ylab="y") {

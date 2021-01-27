@@ -13,9 +13,9 @@
 #' \code{\link{add_dimension}},\code{\link{add_columns}},\code{\link{mbind}}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  x <- population_magpie[,"y1995",]*0.2
-#'  a <- place_x_in_y(x, population_magpie)
+#'  pop <- maxample("pop")
+#'  x <- pop[,"y1995",]*0.2
+#'  a <- place_x_in_y(x, pop)
 #' 
 #' @export place_x_in_y
 place_x_in_y<-function(x,y,expand=T){

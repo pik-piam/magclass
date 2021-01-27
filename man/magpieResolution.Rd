@@ -17,12 +17,11 @@ Returns the Resolution of a MAgPIE object
 }
 \examples{
 
-data(population_magpie)
-magpieResolution(population_magpie)
+magpieResolution(maxample("pop"))
 
 }
 \seealso{
-\code{\link{population_magpie}}
+\code{\link{maxample}}
 }
 \author{
 Benjamin Bodirsky

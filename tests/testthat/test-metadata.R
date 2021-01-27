@@ -8,10 +8,11 @@ withMetadata(TRUE)
 
 
 test_that("Read/write metadata works", {
+  pop <- maxample("pop")
   tfile <- paste0(tempdir(),"/test.mz")
-  write.magpie(population_magpie,tfile)
+  write.magpie(pop,tfile)
   a <- read.magpie(tfile)
-  expect_identical(getMetadata(population_magpie),getMetadata(a))
+  expect_identical(getMetadata(pop),getMetadata(a))
 })
 
 withMetadata(cmd)

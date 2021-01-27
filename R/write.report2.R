@@ -27,8 +27,7 @@
 #' @seealso \code{\link{read.report}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' write.report2(population_magpie)
+#' write.report2(maxample("pop"))
 #' 
 #' @importFrom utils write.table
 #' @export

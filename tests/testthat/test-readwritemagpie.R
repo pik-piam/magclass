@@ -1,21 +1,21 @@
 context("Read/Write Test")
 
 test_that("read/write does not affect content", {
-  data("population_magpie")
-  mag <- population_magpie
+  mag <- maxample("pop")
   names(dimnames(mag)) <- NULL
   getNames(mag) <- c("A2-A","B1-A")
-  for(ext in c(".csv",".cs3",".cs4")) {
+  for (ext in c(".csv",".cs3",".cs4")) {
     tmpfile <- tempfile(fileext = ext)
     write.magpie(mag,tmpfile)
     mag2 <- read.magpie(tmpfile)
     names(dimnames(mag2)) <- NULL
     expect_equivalent(mag,mag2)
   }
+  mag <- maxample("pop")
   tmpfile <- tempfile(fileext = ".mz")
-  write.magpie(population_magpie,tmpfile)
+  write.magpie(mag,tmpfile)
   mag2 <- read.magpie(tmpfile)
-  expect_equivalent(population_magpie,mag2)
+  expect_equivalent(mag,mag2)
 })
 
 

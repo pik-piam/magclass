@@ -1,7 +1,5 @@
 context("Lowpass Test")
 
-data("population_magpie")
-
 test_that("lowpass performs proper calculations", {
   # population data after 20 lowpass iterations for first two regions
   dat20 <- new("magpie", .Data = structure(c(959.55885559599, 1482.98153190583, 
@@ -17,7 +15,7 @@ test_that("lowpass performs proper calculations", {
                                                                           "y2035", "y2045", "y2055", "y2065", "y2075", "y2085", "y2095", 
                                                                           "y2105", "y2115", "y2125", "y2135", "y2145"), scenario = "A2")))
   
-  expect_equivalent(lowpass(population_magpie[1:2,,1], i=20), dat20)
+  expect_equivalent(lowpass(maxample("pop")[1:2,,1], i = 20), dat20)
 })
 
 

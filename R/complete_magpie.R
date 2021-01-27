@@ -11,8 +11,8 @@
 #' @seealso \code{\link{add_dimension}},\code{\link{clean_magpie}}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  a <- complete_magpie(population_magpie)
+#'  pop <- maxample("pop")
+#'  a <- complete_magpie(pop)
 #'  b <- add_dimension(a)
 #'  c <- add_dimension(a,nm="dummy2")
 #'  incomplete<-mbind(b[,,1],c)

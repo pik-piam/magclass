@@ -15,7 +15,7 @@
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{getItems}}
 #' @examples
-#' x <- population_magpie
+#' x <- maxample("pop")
 #' setItems(x, "i", paste0("REG",1:ncells(x)))
 #' 
 #' @export

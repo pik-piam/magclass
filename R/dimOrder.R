@@ -10,8 +10,8 @@
 #' @examples
 #' 
 #' \dontrun{ 
-#' data("population_magpie")
-#' x<-setNames(population_magpie,c("kj","kej"))*population_magpie
+#' pop <- maxample("pop")
+#' x <- setNames(pop,c("kj","kej")) * pop
 #' dimOrder(x=x,perm=c(2,1))
 #' }
 #' @export

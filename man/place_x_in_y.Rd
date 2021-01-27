@@ -22,9 +22,9 @@ Function positions magpie object x into magpie object y.
 }
 \examples{
 
- data(population_magpie)
- x <- population_magpie[,"y1995",]*0.2
- a <- place_x_in_y(x, population_magpie)
+ pop <- maxample("pop")
+ x <- pop[,"y1995",]*0.2
+ a <- place_x_in_y(x, pop)
 
 }
 \seealso{

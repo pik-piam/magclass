@@ -2,7 +2,7 @@ library(testthat)
 
 context("Subsetting test")
 
-p <- population_magpie
+p <- maxample("pop")
 a <- as.array(p)
 
 test_that("single element subsetting works", {

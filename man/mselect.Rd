@@ -40,9 +40,8 @@ entries should be searched for!
 
 \examples{
 
- data(population_magpie)
- population_magpie
- mselect(population_magpie,i=c("AFR","EUR"),scenario="A2",t="y2035")
+ pop <- maxample("pop")
+ mselect(pop,i=c("AFR","EUR"),scenario="A2",t="y2035")
 
 }
 \seealso{

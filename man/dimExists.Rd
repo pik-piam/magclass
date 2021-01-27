@@ -23,8 +23,8 @@ MAgPIE objects
 }
 \examples{
 
-data(population_magpie)
-dimExists(c("t","scenario","blablub"),population_magpie)
+pop <- maxample("pop")
+dimExists(c("t","scenario","blablub"),pop)
 
 }
 \seealso{

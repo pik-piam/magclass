@@ -1,7 +1,7 @@
 context("CollapseDim Test")
 
 test_that("arguments (dim and keepdim) work", {
-  x <- add_dimension(population_magpie, add = "dummy", nm = "extra")
+  x <- add_dimension(maxample("pop"), add = "dummy", nm = "extra")
   expect_identical(x, collapseDim(x, keepdim = 3.1))
   expect_identical(collapseDim(x), collapseDim(x, dim = 3.1))
   

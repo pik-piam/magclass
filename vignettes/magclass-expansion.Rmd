@@ -30,8 +30,7 @@ Creating two magpie objects with different world regions:
 library(magclass)
 
 # 
-a <- population_magpie
-b <- population_magpie
+a <- b <- maxample("pop")
 getRegions(b)[1] <- "AAA"
 
 ```
@@ -67,8 +66,7 @@ Without set matching, identical set elements but different set names produce a s
 ```{r, echo = TRUE}
 options(magclass_expand_version=2) # default setting for magclass >= 5.0
 
-a <- population_magpie
-b <- population_magpie
+a <- b <- maxample("pop")
 
 getSets(a)[1] <- "import"
 getSets(b)[1] <- "export"
@@ -91,8 +89,7 @@ If the set elements are different but the set names identical this will lead to 
 ```{r, echo = TRUE}
 options(magclass_expand_version=2) # default setting for magclass >= 5.0
 
-a <- population_magpie
-b <- population_magpie
+a <- b <- maxample("pop")
 
 getRegions(a)[1] <- "AAA"
 getRegions(b)[1] <- "BBB"

@@ -51,8 +51,7 @@ probably replace write.report somewhen in the future
 }
 \examples{
 
-data(population_magpie)
-write.report2(population_magpie)
+write.report2(maxample("pop"))
 
 }
 \seealso{

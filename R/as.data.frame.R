@@ -21,9 +21,9 @@
 #' @keywords methods
 #' @examples
 #' 
-#' data(population_magpie)
-#' head(as.data.frame(population_magpie))
-#' head(as.data.frame(population_magpie,rev=2))
+#' pop <- maxample("pop")
+#' head(as.data.frame(pop))
+#' head(as.data.frame(pop,rev=2))
 #' 
 #' @importFrom utils type.convert
 #' @exportMethod as.data.frame

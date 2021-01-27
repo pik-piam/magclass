@@ -30,8 +30,8 @@ MAgPIE objects
 }
 \examples{
 
-data(population_magpie)
-dimCode(c("t","scenario","blablub"),population_magpie)
+pop <- maxample("pop")
+dimCode(c("t","scenario","blablub"),pop)
 
 }
 \seealso{

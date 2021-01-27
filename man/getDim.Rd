@@ -27,10 +27,10 @@ Function which tries to detect the dimension to which the given elems belong
 }
 \examples{
 
- data(population_magpie)
- getDim(c("AFR","CPA"),population_magpie)
- getDim(c("AFR","CPA"),population_magpie,fullmatch=TRUE)
- getDim(c("AFR","CPA"),population_magpie,dimCode=FALSE)
+ pop <- maxample("pop")
+ getDim(c("AFR","CPA"),pop)
+ getDim(c("AFR","CPA"),pop,fullmatch=TRUE)
+ getDim(c("AFR","CPA"),pop,dimCode=FALSE)
  
 }
 \seealso{

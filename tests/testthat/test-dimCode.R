@@ -1,8 +1,6 @@
 context("dimCode Test")
 
-data("population_magpie")
-
-pm <- population_magpie
+pm <- maxample("pop")
 dimnames(pm)[[1]] <- paste0(dimnames(pm)[[1]],".",1:dim(pm)[1])
 names(dimnames(pm))[1] <- "i.j"
 

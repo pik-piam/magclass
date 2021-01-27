@@ -46,11 +46,10 @@ str(m3)
 
 ## Accessing magpie objects
 
-For the following the example data set `population_magpie` is used. For convenience we will just shorten its name:
+For the following a example data set containing population data is used. For convenience we will just shorten its name:
 
 ```{r, echo = TRUE}
-data("population_magpie")
-pm <- population_magpie
+pm <- maxample("pop")
 ```
 
 ### General properties
