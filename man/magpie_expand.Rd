@@ -18,7 +18,7 @@ An expanded version of x.
 Expands a MAgPIE object based on a reference
 }
 \details{
-Expansion means here that the dimensions of x are expanded acordingly to
+Expansion means here that the dimensions of x are expanded accordingly to
 ref. Please note that this is really only about expansion. In the case that
 one dimension of ref is smaller than of x nothing happens with this
 dimension. At the moment magpie_expand is only internally available in the

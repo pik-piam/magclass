@@ -15,10 +15,9 @@ test_that("reshape FALSE and reshape with c(2,1) are of same length for pure 3 d
 })
 
 test_that("reshape can table subdims, other dims will be printed in header", {
-  pop <- add_dimension(pop,  nm = "newitem1", dim = 3.1, add="dummy")
-  pop <- add_columns(pop, addnm = "newitem2", dim = 3.1)  
- 
-  header_reshapesubdim3print <- capture.output(print(pop, reshape=c(3.1,3.2)))[1]
-  expect_true(all(sapply(getSets(pop)[1:2], grepl, header_reshapesubdim3print)))
+  animal <- maxample("animal")
+  d <- c(3.1,3.2,3.3)
+  header_reshapesubdim3print <- capture.output(print(animal, reshape=d))[1]
+  expect_true(all(sapply(getSets(animal)[paste0("d",d)], grepl, header_reshapesubdim3print)))
 })
 

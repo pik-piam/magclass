@@ -1,22 +1,23 @@
 context("dimCode Test")
 
-pm <- maxample("pop")
-dimnames(pm)[[1]] <- paste0(dimnames(pm)[[1]],".",1:dim(pm)[1])
-names(dimnames(pm))[1] <- "i.j"
+x   <- maxample("animal")
+pop <- maxample("pop")
 
 test_that("dimension codes are correctly extracted", {
-  expect_equivalent(dimCode(1,pm),1)
-  expect_equivalent(dimCode(1.5,pm),1.5)
-  expect_equivalent(dimCode(4.2,pm),0)
-  expect_equivalent(dimCode("t",pm),2)
-  expect_equivalent(dimCode("i",pm),1.1)
-  expect_equivalent(dimCode("j",pm),1.2)
-  expect_equivalent(dimCode(c("t","j","blablub"),pm),c(2,1.2,0))
-  expect_equivalent(dimCode(NULL,pm),NULL)
+  expect_equivalent(dimCode(1,x),1)
+  expect_equivalent(dimCode(1.5,x),1.5)
+  expect_equivalent(dimCode(4.2,x),0)
+  expect_equivalent(dimCode("month",x),2.2)
+  expect_equivalent(dimCode("x",x),1.1)
+  expect_equivalent(dimCode("country",x),1.3)
+  expect_equivalent(dimCode(c("y","year","color"),x),c(1.2,2.1,3.3))
+  expect_equivalent(dimCode(NULL,x),NULL)
+  expect_equivalent(dimCode("t",pop),2)
+  expect_equivalent(dimCode("notavail",pop),0)
 })
 
 test_that("illegal dim values are properly detected", {
-  expect_error(dimCode("a.b",pm), "separator must not be used in dimension name")
+  expect_error(dimCode("a.b",x), "separator must not be used in dimension name")
 })
 
 

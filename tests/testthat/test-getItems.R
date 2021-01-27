@@ -1,7 +1,5 @@
 context("Item Manipulation Test")
 
-pop <- maxample("pop")
-
 test_that("getItems even works for objects without set names", {
   x <- new.magpie("GLO",1995,"bla")
   names(dimnames(x)) <- NULL
@@ -16,6 +14,8 @@ test_that("getItems works for missing dimnames", {
   expect_identical(getItems(x,3.1),NULL)
   expect_identical(getItems(x,3,split=TRUE)[[1]],NULL)
 })
+
+pop <- maxample("pop")
 
 test_that("getItems can add and replace (sub)dimensions and separators are replaced with commas", {
   x <- pop
