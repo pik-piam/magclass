@@ -13,7 +13,7 @@
 #' @param maindim main dimension the data should be added to (does not need to be set if \code{dim} exists
 #' in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 #' in a different main dimension than the one anticipated).
-#' @param raw if set to FALSE inputs will be corrected (e.g. dots replaced by commas) if necessary. If 
+#' @param raw if set to FALSE inputs will be corrected (e.g. dots replaced by the letter "p") if necessary. If 
 #' TRUE data will be written as pro (default) vided (risking the creation of inconsistent objects)
 #' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to. 
 #' If set to NULL the corresponding dimension will be removed.
@@ -95,7 +95,7 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
     if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
     if(!isTRUE(raw)) {
       nv           <- names(value)
-      value        <- gsub(".",",",value,fixed=TRUE)
+      value        <- gsub(".","p",value,fixed=TRUE)
       names(value) <- nv
     }
     

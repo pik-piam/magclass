@@ -192,7 +192,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       getSets(x,fulldim=FALSE)[3] <- paste(getSets(x,fulldim=FALSE)[3],paste(names(dfmissing),collapse="."),sep=".")
     }
     if(any(length==0) & nrow(df)>0) {
-      row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
+      row_extensions <- gsub('\\.',".",gsub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
       if(!is.null(dfmissing)) {
        row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
       }
@@ -216,6 +216,7 @@ setMethod("[",
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
               if(is.data.frame(i)) {
+                warning("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
                 return(.mselect_df(x,i))
               }
               if(is.factor(i)) i <- as.character(i)

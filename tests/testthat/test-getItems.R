@@ -23,8 +23,8 @@ test_that("getItems can add and replace (sub)dimensions and separators are repla
   expect_identical(dimnames(x)[[1]], paste0(dimnames(pop)[[1]],".",1:dim(x)[1]))
   expect_identical(names(dimnames(x))[1], "i.j")
 
-  expect_silent(getItems(x,"i") <- paste0("a.",dim(x)[1]:1))
-  expect_identical(dimnames(x)[[1]], paste0("a,",dim(x)[1]:1,".",1:dim(x)[1]))
+  expect_silent(getItems(x,"i") <- paste0("A.",dim(x)[1]:1))
+  expect_identical(dimnames(x)[[1]], paste0("Ap",dim(x)[1]:1,".",1:dim(x)[1]))
   expect_identical(names(dimnames(x))[1], "i.j")
 
   expect_silent(getItems(x,1) <- getItems(pop,dim=1,split = FALSE))

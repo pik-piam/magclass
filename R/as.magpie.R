@@ -319,7 +319,7 @@ setMethod("as.magpie",
             if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
             df <- as.data.frame(x,na.rm=TRUE)
             co <- raster::coordinates(x)[as.integer(rownames(df)),]
-            co <- matrix(sub(".",",",co,fixed=TRUE),ncol=2)
+            co <- matrix(sub(".","p",co,fixed=TRUE),ncol=2)
             colnames(co) <- c("x","y")
             df <- as.data.table(cbind(co,df))
             df <- melt(df, id.vars=c("x","y"))

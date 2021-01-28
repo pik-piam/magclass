@@ -41,6 +41,7 @@ test_that("multiple subdimensions work", {
 })
 
 test_that("value assignment works", {
-
-
+  a <- maxample("animal")
+  expect_silent(a["BEL","april",] <- 99)
+  expect_true(all(a["BEL","april",] == 99))
 }) 
