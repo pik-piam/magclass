@@ -159,6 +159,11 @@ If you want to specifically select from one dimension from which you have the di
 ```{r, echo = TRUE}
 mselect(pm, scenario="B1", i=c("FSU","LAM"))
 ```
+Or you can use alternatively:
+```{r, echo = TRUE}
+pm[list(i=c("FSU","LAM")),,list(scenario="B1")]
+```
+
 
 ### Data transformations / calculations
 

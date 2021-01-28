@@ -11,7 +11,7 @@
 #' @aliases magpie-class as.magpie as.magpie-methods as.magpie,magpie-method
 #' as.magpie,array-method as.magpie,lpj-method as.magpie,data.frame-method
 #' as.magpie,numeric-method as.magpie,NULL-method as.magpie,quitte-method
-#' as.magpie,tbl_df-method as.magpie,RasterLayer-method
+#' as.magpie,tbl_df-method as.magpie,RasterBrick-method
 #' is.magpie [,magpie-method [,magpie,ANY,ANY-method [<-,magpie,ANY,ANY-method
 #' [<-,magpie-method Ops,magpie,magpie-method Ops,magpie,numeric-method Ops,numeric,magpie-method
 #' @docType class
@@ -85,6 +85,9 @@
 #' # returning everything but values for PAS or values for 2025
 #' population_magpie["PAS",2025,,invert=TRUE]
 #' 
+#' # accessing subdimension via set name
+#' population_magpie[list(i="AFR"),,list(scenario=c("A2","B1"))]
+#' 
 #' 
 #' 
 #' @exportClass magpie
@@ -99,7 +102,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   .countdots <- function(i) {
     return(nchar(gsub("[^\\.]","",i)))
   }
-  if(.countdots(i[1])==.countdots(dimnames(x)[[dim]][1]) & pmatch==FALSE){
+  if(!is.list(i) && .countdots(i[1])==.countdots(dimnames(x)[[dim]][1]) && pmatch==FALSE){
     #i vector seems to specify the full dimname
     if(!anyDuplicated(as.data.table(dimnames(x)[[dim]]))) {
       if(invert) {
@@ -118,13 +121,29 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   
   pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
-  tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(i),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
-  if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(i[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
-  tmp <- unlist(tmp)
-  if(invert) {
-    tmp <- setdiff(1:dim(x)[dim],tmp)    
+  
+  if(!is.list(i)) i <- list(i)
+  if(!is.null(names(i))) {
+    if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
+    .tmp <- function(n,x,i,invert) {
+      out <- !(getItems(x,dim=n, full=TRUE) %in% i[[n]])
+      if(invert) out <- !out
+      return(out)
+    }
+    elems <- which(rowSums(sapply(names(i),.tmp,x,i,invert)) == 0)
+  } else {
+    elems <- 1:dim(x)[dim]
+    for(j in i) {
+      if(is.factor(j)) j <- as.character(j)
+      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
+      if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
+      tmp <- unlist(tmp)
+      if(invert) tmp <- setdiff(1:dim(x)[dim],tmp)    
+      elems <- intersect(elems,tmp)
+    }
   }
-  return(tmp)
+
+  return(elems)
 }
 
 .mselect_df <- function(x,df) {
@@ -191,7 +210,7 @@ setMethod("[",
                 return(.mselect_df(x,i))
               }
               if(is.factor(i)) i <- as.character(i)
-              if(is.character(i)) i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
+              if(is.character(i) || is.list(i)) i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
             }
             if(!missing(j)) {
               if(is.factor(j)) j <- as.character(j)
@@ -200,7 +219,7 @@ setMethod("[",
               }
               if(is.null(j)) {
                 j <- 1:dim(x)[2]
-              } else if(is.character(j) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
+              } else if((is.character(j) || is.list(j)) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
                 j <- .dimextract(x,j,2,pmatch=pmatch,invert=invert)
               } else if(invert) {
                 j <- getYears(x)[!(getYears(x) %in% j)]
@@ -208,7 +227,7 @@ setMethod("[",
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
-              if(is.character(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
+              if(is.character(k) || is.list(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
             }
             .isFALSE <- function(x) return(is.logical(x) && length(x) == 1 && !is.na(x) && !x)
             if(!missing(i) && missing(j) && !missing(k) && .isFALSE(k) && .isFALSE(drop) && .isFALSE(pmatch) && .isFALSE(invert)) {
@@ -241,17 +260,17 @@ setMethod("[<-",
             }
             if(!missing(i)) {
               if(is.factor(i)) i <- as.character(i)
-              if(is.character(i)) i <- .dimextract(x,i,1,pmatch=pmatch) 
+              if(is.character(i) || is.list(i)) i <- .dimextract(x,i,1,pmatch=pmatch) 
             }
             if(!missing(j)) {
               if(is.factor(j)) j <- as.character(j)
               if(is.numeric(j) & any(j>dim(x)[2])) j <- paste("y",j,sep="")
               else if(is.null(j)) j <- 1:dim(x)[2]
-              else if(is.character(j) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) j <- .dimextract(x,j,2,pmatch=pmatch) 
+              else if((is.character(j) || is.list(j)) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) j <- .dimextract(x,j,2,pmatch=pmatch) 
             }
             if(!missing(k)) {
               if(is.factor(k)) k <- as.character(k)
-              if(is.character(k)) k <- .dimextract(x,k,3,pmatch=pmatch) 
+              if(is.character(k) || is.list(k)) k <- .dimextract(x,k,3,pmatch=pmatch) 
             }
             if(missing(value)) {
               x@.Data[i] <- k 

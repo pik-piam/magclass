@@ -25,7 +25,8 @@ the dimension elements (unique list of entries) are returned.}
 in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 in a different main dimension than the one anticipated).}
 
-\item{value}{a vector with the length of the main dimension the dimnames should be replaced in / added to.}
+\item{value}{a vector with the length of the main dimension the dimnames should be replaced in / added to. 
+If set to NULL the corresponding dimension will be removed.}
 }
 \value{
 items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a 
@@ -40,8 +41,14 @@ Extract items of a given (sub-)dimension of a MAgPIE-object
 }}
 
 \examples{
-getItems(population_magpie,"scenario")
-getItems(population_magpie,3.1)
+x <- population_magpie
+getItems(x,"scenario")
+getItems(x,3.1)
+getItems(x,"i") <- paste0("REG",1:ncells(x))
+getItems(x,"i")
+y <- x[,1,]
+getItems(y,"t") <- NULL
+
 }
 \seealso{
 \code{\link{dimCode}}

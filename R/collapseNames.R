@@ -1,5 +1,8 @@
 #' Collapse dataset names
 #' 
+#' This function has been superseded by \code{\link{collapseDim}} which is a 
+#' more generalized version of this function. Please use this one instead!
+#' 
 #' This function will remove names in the data dimension which are the same for
 #' each element (meaning that this data dimension contains exactly one element)
 #' 
@@ -16,7 +19,7 @@
 #' Note that preservedim will be ignored in the case, of a specified collapsedim
 #' @return The provided MAgPIE object with collapsed names
 #' @author Jan Philipp Dietrich, David Klein, Xiaoxi Wang
-#' @seealso \code{\link{getNames}}, \code{\link{setNames}},
+#' @seealso \code{\link{collapseDim}}, \code{\link{getItems}},
 #' \code{"\linkS4class{magpie}"}
 #' @examples
 #' 
