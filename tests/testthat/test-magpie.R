@@ -42,6 +42,13 @@ test_that("multiple subdimensions work", {
 
 test_that("value assignment works", {
   a <- maxample("animal")
-  expect_silent(a["BEL","april",] <- 99)
-  expect_true(all(a["BEL","april",] == 99))
+  expect_silent(a[,NULL,as.factor("rabbit")] <- as.magpie(99))
+  expect_true(all(a[,,"rabbit"] == 99))
+  expect_silent(a[as.factor("NLD"),as.factor(c("april","june")),as.factor("rabbit")] <- 12)
+  expect_true(all(a["NLD","june","rabbit"] == 12))
+  b <- a
+  expect_silent(b[,,] <- 0)
+  expect_true(all(b[,,]==0))
+  expect_silent(b["NLD",c("april","june"),list("rabbit","black")] <- a["NLD",c("april","june"),list("rabbit","black")])
+  expect_identical(b["NLD",c("april","june"),list("rabbit","black")], a["NLD",c("april","june"),list("rabbit","black")])
 }) 
