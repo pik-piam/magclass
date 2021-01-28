@@ -40,4 +40,7 @@ test_that("multiple subdimensions work", {
   expect_equal(as.vector(p["AFR",16,"A2"]), 101)
 })
 
+test_that("value assignment works", {
 
+
+}) 

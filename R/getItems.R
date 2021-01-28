@@ -2,7 +2,7 @@
 #' 
 #' Extract items of a given (sub-)dimension of a MAgPIE-object
 #' 
-#' 
+#' @aliases getItems<-
 #' @param x MAgPIE object
 #' @param dim Dimension for which the items should be returned. Either number or 
 #' name of dimension or a vector of these. See \code{\link{dimCode}} for more details.
@@ -13,6 +13,8 @@
 #' @param maindim main dimension the data should be added to (does not need to be set if \code{dim} exists
 #' in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 #' in a different main dimension than the one anticipated).
+#' @param raw if set to FALSE inputs will be corrected (e.g. dots replaced by commas) if necessary. If 
+#' TRUE data will be written as pro (default) vided (risking the creation of inconsistent objects)
 #' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to. 
 #' If set to NULL the corresponding dimension will be removed.
 #' @return items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a 
@@ -74,7 +76,7 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
 
 #' @describeIn getItems set dimension names
 #' @export
-"getItems<-" <- function(x,dim,maindim=NULL,value) {
+"getItems<-" <- function(x,dim,maindim=NULL,raw=FALSE,value) {
   if(length(dim)>1) stop("dim with length > 1 is currently not supported when setting items.")
   dc <- dimCode(dim,x)
   if(dc==0 && is.null(maindim)) stop("Dimension does not exist in object and cannot be added as main dimension is not specified!")
@@ -91,11 +93,14 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
   
   if(!is.null(value)) {
     if(length(value)!=dim(x)[maindim]) stop("Wrong number of items supplied!")
-    nv           <- names(value)
-    value        <- gsub(".",",",value,fixed=TRUE)
-    names(value) <- nv
+    if(!isTRUE(raw)) {
+      nv           <- names(value)
+      value        <- gsub(".",",",value,fixed=TRUE)
+      names(value) <- nv
+    }
     
     .sortvalues <- function(value, x, dim) {
+      if(length(value) == 1) return(list(value))
       if(!is.null(names(value))) {
         order <- getItems(x,dim)
         if(!all(order %in% names(value))) stop("Input vector is named but not all names match items of the dimension to be replaced!")

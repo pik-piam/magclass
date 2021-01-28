@@ -7,7 +7,7 @@
 \usage{
 getItems(x, dim = NULL, split = FALSE, full = FALSE)
 
-getItems(x, dim, maindim = NULL) <- value
+getItems(x, dim, maindim = NULL, raw = FALSE) <- value
 }
 \arguments{
 \item{x}{MAgPIE object}
@@ -24,6 +24,9 @@ the dimension elements (unique list of entries) are returned.}
 \item{maindim}{main dimension the data should be added to (does not need to be set if \code{dim} exists
 in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 in a different main dimension than the one anticipated).}
+
+\item{raw}{if set to FALSE inputs will be corrected (e.g. dots replaced by commas) if necessary. If 
+TRUE data will be written as pro (default) vided (risking the creation of inconsistent objects)}
 
 \item{value}{a vector with the length of the main dimension the dimnames should be replaced in / added to. 
 If set to NULL the corresponding dimension will be removed.}

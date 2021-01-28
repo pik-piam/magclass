@@ -55,7 +55,7 @@ a certain time
 }
 \examples{
 
-pop <- magclass("pop")
+pop <- maxample("pop")
 population <- add_columns(pop,"MIX")
 population[,,"MIX"] <- lin.convergence(population[,,"A2"],population[,,"B1"],
                                        convergence_time_steps=10)
