@@ -144,11 +144,11 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     elems <- 1:dim(x)[dim]
     for(j in i) {
       if(is.factor(j)) j <- as.character(j)
-      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]])
+      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]][elems])
       if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
       tmp <- unlist(tmp)
       if(invert) tmp <- setdiff(1:dim(x)[dim],tmp)    
-      elems <- intersect(elems,tmp)
+      elems <- elems[tmp]
     }
   }
 
