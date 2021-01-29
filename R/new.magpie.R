@@ -44,9 +44,9 @@ new.magpie <- function(cells_and_regions = "GLO", years = NULL, names = NULL,
   }
   
   object <- new("magpie", array(fill, dim = c(ncells,nyears,ndata)))
-  getItems(object, dim = 1, raw = TRUE) <- cells_and_regions
-  getItems(object, dim = 2, raw = TRUE) <- years
-  getItems(object, dim = 3, raw = TRUE) <- names
+  getItems(object, dim = 1, raw = TRUE) <- as.vector(cells_and_regions)
+  getItems(object, dim = 2, raw = TRUE) <- as.vector(years)
+  getItems(object, dim = 3, raw = TRUE) <- as.vector(names)
   names(dimnames(object)) <- NULL
   if (sort) object <- magpiesort(object)
   object <- clean_magpie(object,"sets")
