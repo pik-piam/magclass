@@ -16,9 +16,9 @@
 #' @seealso \code{\link[utils]{head}}, \code{\link[utils]{tail}}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  head(population_magpie)
-#'  tail(population_magpie,2,4,1)
+#'  pop <- maxample("pop")
+#'  head(pop)
+#'  tail(pop,2,4,1)
 #' 
 #' @importFrom utils head
 #' @export 

@@ -16,10 +16,10 @@
 #' @seealso \code{\link[base]{print}}
 #' @examples
 #' 
-#'   data(population_magpie)
-#'   print(population_magpie)
-#'   print(population_magpie[,1,], drop=FALSE)
-#'   print(population_magpie[,1,])
+#'   pop <- maxample("pop")
+#'   print(pop)
+#'   print(pop[,1,], drop=FALSE)
+#'   print(pop[,1,])
 #' 
 #' @export
 

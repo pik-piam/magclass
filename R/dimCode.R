@@ -19,8 +19,8 @@
 #' @seealso \code{\link{mselect}}, \code{\link{getDim}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' dimCode(c("t","scenario","blablub"),population_magpie)
+#' pop <- maxample("pop")
+#' dimCode(c("t","scenario","blablub"),pop)
 #' 
 #' @export dimCode
 dimCode <- function(dim, x, missing=0, sep="."){

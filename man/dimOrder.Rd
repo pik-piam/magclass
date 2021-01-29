@@ -20,8 +20,8 @@ Changes the order of the 3rd dimension in a magpie object similar to unwrapping 
 \examples{
 
 \dontrun{ 
-data("population_magpie")
-x<-setNames(population_magpie,c("kj","kej"))*population_magpie
+pop <- maxample("pop")
+x <- setNames(pop,c("kj","kej")) * pop
 dimOrder(x=x,perm=c(2,1))
 }
 }

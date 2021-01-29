@@ -26,9 +26,9 @@ object
 }
 \examples{
 
- data(population_magpie)
- head(population_magpie)
- tail(population_magpie,2,4,1)
+ pop <- maxample("pop")
+ head(pop)
+ tail(pop,2,4,1)
 
 }
 \seealso{

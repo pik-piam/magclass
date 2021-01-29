@@ -68,26 +68,35 @@
 #' 
 #' showClass("magpie")
 #' 
-#' data(population_magpie)
+#' pop <- maxample("pop")
 #' 
 #' # returning PAO and PAS for 2025
-#' population_magpie["PA",2025,,pmatch="left"]
+#' pop["PA",2025,,pmatch="left"]
 #' 
 #' # returning CPA for 2025
-#' population_magpie["PA",2025,,pmatch="right"]
+#' pop["PA",2025,,pmatch="right"]
 #' 
 #' # returning CPA PAO and PAS for 2025
-#' population_magpie["PA",2025,,pmatch=TRUE]
+#' pop["PA",2025,,pmatch=TRUE]
 #' 
 #' # returning PAS and 2025
-#' population_magpie["PAS",2025,]
+#' pop["PAS",2025,]
 #' 
 #' # returning everything but values for PAS or values for 2025
-#' population_magpie["PAS",2025,,invert=TRUE]
+#' pop["PAS",2025,,invert=TRUE]
 #' 
 #' # accessing subdimension via set name
-#' population_magpie[list(i="AFR"),,list(scenario=c("A2","B1"))]
 #' 
+#' a <- maxample("animal")
+#' a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"))]
+#' 
+#' # please note that the list elements act as filter. For instance, the 
+#' # following example will not contain any dogs as the data set does
+#' # not contain any dogs which are black.
+#' a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"), color="black")]
+#' 
+#' # an empty object will be returned if no entry fits the filter:
+#' a[list(country="BLA"),,]
 #' 
 #' 
 #' @exportClass magpie
@@ -183,7 +192,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       getSets(x,fulldim=FALSE)[3] <- paste(getSets(x,fulldim=FALSE)[3],paste(names(dfmissing),collapse="."),sep=".")
     }
     if(any(length==0) & nrow(df)>0) {
-      row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
+      row_extensions <- gsub('\\.',".",gsub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
       if(!is.null(dfmissing)) {
        row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
       }
@@ -207,6 +216,7 @@ setMethod("[",
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
               if(is.data.frame(i)) {
+                warning("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
                 return(.mselect_df(x,i))
               }
               if(is.factor(i)) i <- as.character(i)

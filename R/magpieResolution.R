@@ -6,11 +6,10 @@
 #' @param object An MAgPIE object
 #' @return "glo", "reg" or "cell"
 #' @author Benjamin Bodirsky
-#' @seealso \code{\link{population_magpie}}
+#' @seealso \code{\link{maxample}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' magpieResolution(population_magpie)
+#' magpieResolution(maxample("pop"))
 #' 
 #' @export magpieResolution
 magpieResolution<- function(object) {

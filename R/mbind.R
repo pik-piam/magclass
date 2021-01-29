@@ -25,9 +25,9 @@
 #' md <- new.magpie(getRegions(m), getYears(m), "Data2", fill=c(7,6,5,7,8,9))
 #' mbind(m, md)
 #' 
-#' data(population_magpie)
-#' a <- mbind(population_magpie,population_magpie)
-#' dim(population_magpie)
+#' pop <- maxample("pop")
+#' a <- mbind(pop,pop)
+#' dim(pop)
 #' dim(a)
 #' 
 #' 

@@ -12,8 +12,8 @@
 #' @seealso \code{"\linkS4class{magpie}"}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  a <- magpiesort(population_magpie)
+#'  pop <- maxample("pop")
+#'  a <- magpiesort(pop)
 #' 
 #' @export magpiesort
 magpiesort <- function(x) {

@@ -11,7 +11,7 @@
 #' @examples
 #' 
 #'  #create data with 5 identical scenarios
-#'  p <- add_dimension(population_magpie,nm = paste0("scen",1:5))
+#'  p <- add_dimension(maxample("pop"),nm = paste0("scen",1:5))
 #'  p
 #'  dimReduce(p)
 #'  

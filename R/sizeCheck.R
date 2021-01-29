@@ -11,7 +11,8 @@
 #' @author Jan Philipp Dietrich
 #' @examples
 #' 
-#' magclass:::sizeCheck(dim(population_magpie),dimnames(population_magpie))
+#' pop <- maxample("pop")
+#' magclass:::sizeCheck(dim(pop),dimnames(pop))
 #' 
 sizeCheck <- function(dim, newnames=NULL) {
   if(is.null(getOption("magclass_sizeLimit"))) options(magclass_sizeLimit=10^8)

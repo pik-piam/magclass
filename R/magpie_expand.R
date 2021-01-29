@@ -2,7 +2,7 @@
 #' 
 #' Expands a MAgPIE object based on a reference
 #' 
-#' Expansion means here that the dimensions of x are expanded acordingly to
+#' Expansion means here that the dimensions of x are expanded accordingly to
 #' ref. Please note that this is really only about expansion. In the case that
 #' one dimension of ref is smaller than of x nothing happens with this
 #' dimension. At the moment magpie_expand is only internally available in the
@@ -42,7 +42,6 @@ magpie_expand <- function(x,ref) {
   
   version <- getOption("magclass_expand_version")
   if(is.null(version)) options("magclass_expand_version"=2.1)
-  if(!is.null(version) && version<2.1 && version>1) return(magpie_expand2(x,ref))
   if(!is.null(version) && version<2) return(magpie_expand1(x,ref))
   
   setMatching <- isTRUE(getOption("magclass_setMatching"))
@@ -91,183 +90,6 @@ magpie_expand <- function(x,ref) {
       }
     } else { 
       x <- magpie_expand_dim(x,ref,dim=i)
-    }
-  }
-  getSets(x) <- make.unique(getSets(clean_magpie(x,what="sets")),sep="")
-  return(x)
-}
-
-magpie_expand2 <- function(x,ref) {
-  
-  setMatching <- isTRUE(getOption("magclass_setMatching"))
-  
-  #x: MAgPIE object which should be expanded
-  #ref: Reference object defining the structure to which x should be expanded
-
-  #1.spatial dimension
-  #2.temporal dimension
-  #3.data dimension
-
-  for(i in 1:3) {
-    # Remove "GLO" from spatial dimension in case another spatial dimension exists
-    if(i==1) {
-      if(dim(ref)[1]==1 && !is.null(rownames(ref)) && rownames(ref)=="GLO") rownames(ref) <- NULL
-      else if(dim(x)[1]==1 && !is.null(rownames(x)) && rownames(x)=="GLO") rownames(x) <- NULL
-    } 
-    
-    if(is.null(dimnames(ref)[[i]]) && dim(ref)[i] > 1) stop("Inconsistent MAgPIE reference file: more than 1 element in dimension ",i," but no names given!")
-    
-    if(is.null(dimnames(ref)[[i]])) next # Nothing to do if ref has no dimnames
-    
-    if(is.null(dimnames(x)[[i]])) {
-      if(dim(x)[i] > 1) stop("Inconsistent MAgPIE file: more than 1 element in dimension ",i," but no names given!")
-      if(dim(ref)[i] > 1) { # Expand single element dimension to dimension of ref
-        if(i==1) {
-          x <- x[rep(1,dim(ref)[i]),,]
-        } else if(i==2) {
-          x <- x[,rep(1,dim(ref)[i]),]
-        } else {
-          x <- x[,,rep(1,dim(ref)[i])]
-        }
-      } 
-      if(!is.null(dimnames(ref)[[i]])) dimnames(x)[[i]] <- dimnames(ref)[[i]]
-    } else if(dim(x)[i]==dim(ref)[i] && all(dimnames(x)[[i]]==dimnames(ref)[[i]]) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
-      # dimension is identical
-      next
-    } else if(dim(x)[i]==dim(ref)[i] && all(sort(dimnames(x)[[i]])==sort(dimnames(ref)[[i]])) && (!setMatching || names(dimnames(x))[i]==names(dimnames(ref))[i])) {
-      # same length and entries, but different order
-      if(i==1) {
-        x <- x[dimnames(ref)[[i]],,]
-      } else if(i==2) {
-        x <- x[,dimnames(ref)[[i]],]
-      } else {
-        x <- x[,,dimnames(ref)[[i]]]
-      }
-    } else { 
-      # different length and/or different entries
-      # both, x and ref, have dimnames
-      # dimnames do not agree
-      .alldims <- function(x, dim, sort=TRUE) {
-        x <- getItems(x,dim=dim,split=TRUE)
-        if(sort) x <- lapply(x,sort)
-        return(x)
-      }
-      rfdim <- .alldims(ref, dim=i, sort=TRUE)
-      xfdim <- .alldims(x,   dim=i, sort=TRUE)
-
-      if(setMatching || anyDuplicated(rfdim)>0) {
-        # special treatment as duplicates occur in anyDuplicated
-        # Matching will be based on set names!
-        exists <- match(names(rfdim),names(xfdim))
-        # make sure that matches really match
-        for(j in 1:length(exists)) {
-          if(!is.na(exists[j]) && !(rfdim[j] %in% xfdim[exists[j]])) stop("Identical set names (",names(rfdim)[j],") but different content. Correct set names!") 
-        }
-        toadd <- which(is.na(exists))
-      } else {
-        # easy matching based on content (set names ignored!)
-        toadd <- which(!(rfdim %in% xfdim)) #which dimensions have to be added
-      }
-
-      if(length(toadd)>0) {
-        sizeCheck(dim(x), rfdim[toadd])
-        tmp <- NULL
-        for(a in toadd) {
-          tmp  <- paste(rep(tmp,each=length(rfdim[[a]])),rfdim[[a]],sep=".")
-        }
-        newnames <- paste(rep(dimnames(x)[[i]],each=length(tmp)),tmp,sep="")
-        if(i==1) {
-          x <- x[rep(1:dim(x)[i],each=length(tmp)),,]
-        } else if(i==2) {
-          x <- x[,rep(1:dim(x)[i],each=length(tmp)),]
-        } else {
-          x <- x[,,rep(1:dim(x)[i],each=length(tmp))]
-        }
-        dimnames(x)[[i]] <- newnames
-        getSets(x,fulldim=FALSE)[i]  <- paste(getSets(x,fulldim=FALSE)[i],paste(names(rfdim)[toadd],collapse="."),sep=".")
-        if(getOption("magclass.verbosity")>1) message("NOTE (magpie_expand): dimensionality of MAgPIE object expanded (added dimensions:",paste(rfdim[toadd]),")")
-        xfdim <- .alldims(x, dim=i, sort=TRUE)
-      }
-
-      #is the order of the dimensions in the data dimension identical? reorder if necessary (only performed if the number of dimensions is the same)
-
-      .tmp <- function(rfdim,xfdim) return(which(xfdim %in% list(rfdim)))
-      order <- lapply(rfdim,.tmp,xfdim)
-      lengths_order <- sapply(order,length)
-      if(any(lengths_order==0)) {
-        .checkForDuplicates <- function(x, name="x") {
-          dx <- lapply(x,duplicated)
-          if(sum(unlist(dx))>0) {
-            elems <- names(dx)[sapply(dx,sum)>0]
-            duplicate <- list()
-            for(e in elems) {
-              duplicate[[e]] <- x[[e]][dx[[e]]]
-            }
-            dtext <- paste(names(unlist(duplicate)),unlist(duplicate), sep=" -> ", collapse=", ")
-            stop("magpie_expand failed because ",name," contains duplicate entities (",dtext,")!") 
-          }
-        }
-        .checkForDuplicates(xfdim,"x")
-        .checkForDuplicates(rfdim,"ref")
-        stop("Some ref dimensions cannot be found in x after expansion. magpie_expand-function seems to be bugged!")
-      }
-      if(any(lengths_order>1)) {
-        probs <- which(lengths_order>1)
-        taken <- NULL
-        for(p in probs) {
-          # try to map via set names
-          j <- which(names(xfdim)==names(order)[p])
-          if(length(j)!=1) stop("Cannot map dimensions as more than one dimension have identical set elements but set names do not match!")
-          if(!(j %in% order[[p]])) stop("Cannot map dimensions as set names are inconsistent!")
-          order[[p]] <- j
-        }
-      }
-      order <- unlist(order)
-      #add missing dimensions at the end
-      order <- c(order,setdiff(1:length(xfdim),order))
-
-      if(any(order!=1:length(order))) {
-        #different order
-        search <- paste("^",paste(rep("([^\\.]*)",length(order)),collapse="\\."),"$",sep="")
-        replace <- paste(paste("\\",order,sep=""),collapse="\\.")
-        dimnames(x)[[i]] <- sub(search,replace,dimnames(x)[[i]])
-        getSets(x,fulldim=FALSE)[i] <- sub(search,replace,getSets(x,fulldim=FALSE)[i])
-      }
-
-      #try to order x based on ref (only possible if objects have the same size)
-      if(dim(x)[i]==dim(ref)[i]) {
-        if(length(xfdim)==length(rfdim)) {
-          #simple case: same number of dimensions
-          #in the case that now all data names of x and ref agree reorder the data best on order of ref
-          if(all(sort(dimnames(x)[[i]])==sort(dimnames(ref)[[i]]))) {
-            if(i==1) {
-              x@.Data <- x@.Data[dimnames(ref)[[i]],,,drop=FALSE]
-            } else if(i==2) {
-              x@.Data <- x@.Data[,dimnames(ref)[[i]],,drop=FALSE]
-            } else {
-              x@.Data <- x@.Data[,,dimnames(ref)[[i]],drop=FALSE]
-            }
-          } else {
-            stop("names do not agree between ref and expanded x, magpie_expand seems to be bugged! (same #dimensions)")
-          }
-        } else {
-          #more complicated case in which x has more dimensions than ref
-          search <- paste0(paste0(rep("\\.[^\\.]*",length(xfdim)-length(rfdim)),collapse=""),"$")
-          reduced_xnames <- sub(search,"",dimnames(x)[[i]])
-          #in the case that now all data names of x and ref agree reorder the data best on order of ref
-          if(all(sort(reduced_xnames)==sort(dimnames(ref)[[i]]))) {
-            if(i==1) {
-              x <- x[dimnames(ref)[[i]],,]
-            } else if(i==2) {
-              x <- x[,dimnames(ref)[[i]],]
-            } else {
-              x <- x[,,dimnames(ref)[[i]]] 
-            }
-          } else {
-            stop("Names do not agree between ref and expanded x, magpie_expand seems to be bugged! (different #dimensions)")
-          }
-        }
-      }
     }
   }
   getSets(x) <- make.unique(getSets(clean_magpie(x,what="sets")),sep="")

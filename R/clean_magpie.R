@@ -16,8 +16,8 @@
 #' @seealso \code{"\linkS4class{magpie}"}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  a <- clean_magpie(population_magpie)
+#'  pop <- maxample("pop")
+#'  a <- clean_magpie(pop)
 #' 
 #' @export clean_magpie
 clean_magpie <- function(x,what="all") {

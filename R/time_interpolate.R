@@ -21,9 +21,9 @@
 #' @seealso \code{\link{lin.convergence}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' time_interpolate(population_magpie,"y2000",integrate=TRUE)
-#' time_interpolate(population_magpie,c("y1980","y2000"),integrate=TRUE,extrapolation_type="constant")
+#' pop <- maxample("pop")
+#' time_interpolate(pop,"y2000",integrate=TRUE)
+#' time_interpolate(pop,c("y1980","y2000"),integrate=TRUE,extrapolation_type="constant")
 #' 
 #' @export time_interpolate
 time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_years=FALSE,extrapolation_type="linear") {

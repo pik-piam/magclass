@@ -7,7 +7,7 @@
 \usage{
 getItems(x, dim = NULL, split = FALSE, full = FALSE)
 
-getItems(x, dim, maindim = NULL) <- value
+getItems(x, dim, maindim = NULL, raw = FALSE) <- value
 }
 \arguments{
 \item{x}{MAgPIE object}
@@ -25,6 +25,9 @@ the dimension elements (unique list of entries) are returned.}
 in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 in a different main dimension than the one anticipated).}
 
+\item{raw}{if set to FALSE inputs will be corrected (e.g. dots replaced by the letter "p") if necessary. If 
+TRUE data will be written as pro (default) vided (risking the creation of inconsistent objects)}
+
 \item{value}{a vector with the length of the main dimension the dimnames should be replaced in / added to. 
 If set to NULL the corresponding dimension will be removed.}
 }
@@ -41,7 +44,7 @@ Extract items of a given (sub-)dimension of a MAgPIE-object
 }}
 
 \examples{
-x <- population_magpie
+x <- maxample("pop")
 getItems(x,"scenario")
 getItems(x,3.1)
 getItems(x,"i") <- paste0("REG",1:ncells(x))

@@ -32,11 +32,11 @@ entries should be searched for!
 }
 \examples{
 
- data(population_magpie)
- population_magpie
- mcalc(population_magpie,X12 ~ A2*B1,append=TRUE)
- population_magpie
- mcalc(population_magpie,`Nearly B1` ~ 0.5*A2 + 99.5*B1)
+ pop <- maxample("pop")
+ pop
+ mcalc(pop,X12 ~ A2*B1,append=TRUE)
+ pop
+ mcalc(pop,`Nearly B1` ~ 0.5*A2 + 99.5*B1)
  
 
 }

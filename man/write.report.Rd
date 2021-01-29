@@ -48,8 +48,8 @@ intercomparisons.
 \examples{
 
 \dontrun{
-data(population_magpie)
-write.report(population_magpie)
+pop <- maxample("pop")
+write.report(pop)
 }
 
 }

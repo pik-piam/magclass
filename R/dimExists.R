@@ -13,8 +13,8 @@
 #' @seealso \code{\link{dimCode}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' dimExists(c("t","scenario","blablub"),population_magpie)
+#' pop <- maxample("pop")
+#' dimExists(c("t","scenario","blablub"),pop)
 #' 
 #' @export
 dimExists <- function(dim, x, sep="."){

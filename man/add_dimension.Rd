@@ -25,8 +25,7 @@ with an empty data column with the name "nm".
 }
 \examples{
 
- data(population_magpie)
- a <- add_dimension(population_magpie)
+ a <- add_dimension(maxample("pop"))
  str(a)
  fulldim(a)
 

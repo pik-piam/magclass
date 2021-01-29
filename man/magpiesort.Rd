@@ -20,8 +20,8 @@ as the order typically should be correct for MAgPIE objects.
 }
 \examples{
 
- data(population_magpie)
- a <- magpiesort(population_magpie)
+ pop <- maxample("pop")
+ a <- magpiesort(pop)
 
 }
 \seealso{

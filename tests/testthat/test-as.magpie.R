@@ -1,9 +1,7 @@
 context("Conversion Test")
 
-data("population_magpie")
-
 test_that("conversions do not affect content", {
-  mag <- population_magpie
+  mag <- maxample("pop")
   expect_identical(as.magpie(mag),mag)
   expect_equivalent(as.magpie(as.array(mag)),mag)
   expect_equivalent(as.magpie(as.data.frame(mag)),mag)
@@ -12,7 +10,7 @@ test_that("conversions do not affect content", {
 })
 
 test_that("underscores are preserved", {
-  mag2 <- population_magpie
+  mag2 <- maxample("pop")
   getCells(mag2) <- paste(getCells(mag2),1:ncells(mag2),sep="_")
   arr <- as.array(mag2)
   mag3 <- as.magpie(arr,spatial=1)

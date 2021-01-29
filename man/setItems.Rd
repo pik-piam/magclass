@@ -26,7 +26,7 @@ the manipulated MAgPIE object
 Set items of a given (sub-)dimension of a MAgPIE-object
 }
 \examples{
-x <- population_magpie
+x <- maxample("pop")
 setItems(x, "i", paste0("REG",1:ncells(x)))
 
 }

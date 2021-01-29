@@ -82,26 +82,35 @@ regions properly and to have a distinction to other data.
 
 showClass("magpie")
 
-data(population_magpie)
+pop <- maxample("pop")
 
 # returning PAO and PAS for 2025
-population_magpie["PA",2025,,pmatch="left"]
+pop["PA",2025,,pmatch="left"]
 
 # returning CPA for 2025
-population_magpie["PA",2025,,pmatch="right"]
+pop["PA",2025,,pmatch="right"]
 
 # returning CPA PAO and PAS for 2025
-population_magpie["PA",2025,,pmatch=TRUE]
+pop["PA",2025,,pmatch=TRUE]
 
 # returning PAS and 2025
-population_magpie["PAS",2025,]
+pop["PAS",2025,]
 
 # returning everything but values for PAS or values for 2025
-population_magpie["PAS",2025,,invert=TRUE]
+pop["PAS",2025,,invert=TRUE]
 
 # accessing subdimension via set name
-population_magpie[list(i="AFR"),,list(scenario=c("A2","B1"))]
 
+a <- maxample("animal")
+a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"))]
+
+# please note that the list elements act as filter. For instance, the 
+# following example will not contain any dogs as the data set does
+# not contain any dogs which are black.
+a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"), color="black")]
+
+# an empty object will be returned if no entry fits the filter:
+a[list(country="BLA"),,]
 
 
 }

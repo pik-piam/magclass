@@ -31,14 +31,8 @@ Extracts spatial coordinates of a MAgPIE-object
 }}
 
 \examples{
-
-if (requireNamespace("raster", quietly = TRUE)) {
-   r <- raster::brick(ncols=360,nrows=180, nl=4)
-   r[85:89,176:179] <- (1:20 \%*\% t(1:4))
-   names(r) <- c("y2000..bla","y2001..bla","y2000..blub","y2001..blub")
-   m <- as.magpie(r)
-   getCoords(m)
-} 
+  a <- maxample("animal")#'   
+  getCoords(a)
 
 }
 \seealso{
