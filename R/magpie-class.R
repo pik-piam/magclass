@@ -134,13 +134,13 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   if(!is.list(i)) i <- list(i)
   if(!is.null(names(i))) {
     if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
-    .tmp <- function(n,items,i,invert) {
-      out <- !(items[[n]] %in% i[[n]])
-      if(invert) out <- !out
-      return(out)
-    }
     items <- getItems(x, dim = dim, full = TRUE, split = TRUE)
-    elems <- which(rowSums(sapply(names(i),.tmp,items,i,invert)) == 0)
+    elems <- 1:dim(x)[dim]
+    for(n in names(i)) {
+      tmp <- (items[[n]][elems] %in% i[[n]])
+      if(invert) tmp <- setdiff(1:length(elems),tmp)
+      elems <- elems[tmp]
+    }
   } else {
     elems <- 1:dim(x)[dim]
     for(j in i) {
