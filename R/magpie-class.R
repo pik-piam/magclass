@@ -95,10 +95,6 @@
 #' # not contain any dogs which are black.
 #' a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 #' 
-#' # an empty object will be returned if no entry fits the filter:
-#' a[list(country="BLA"),,]
-#' 
-#' 
 #' @exportClass magpie
 #' @importFrom data.table as.data.table
 #' @importFrom methods setClass
@@ -138,6 +134,8 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     elems <- 1:dim(x)[dim]
     for(n in names(i)) {
       tmp <- (items[[n]][elems] %in% i[[n]])
+      found <- (i[[n]] %in% items[[n]][elems[tmp]])
+      if(!all(found)) stop("Data element(s) \"",paste(i[[n]][!found],collapse="\", \""),"\" not existent in MAgPIE object!")
       if(invert) tmp <- setdiff(1:length(elems),tmp)
       elems <- elems[tmp]
     }

@@ -109,10 +109,6 @@ a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"))]
 # not contain any dogs which are black.
 a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 
-# an empty object will be returned if no entry fits the filter:
-a[list(country="BLA"),,]
-
-
 }
 \seealso{
 \code{\link{read.magpie}}, \code{\link{write.magpie}},
