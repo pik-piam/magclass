@@ -95,9 +95,6 @@
 #' # not contain any dogs which are black.
 #' a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 #' 
-#' # an empty object will be returned if no entry fits the filter:
-#' a[list(country="BLA"),,]
-#' 
 #' 
 #' @exportClass magpie
 #' @importFrom data.table as.data.table
@@ -128,18 +125,22 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     }
   }
   
-  pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
+  pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right","[^.]*","")
   pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
   
   if(!is.list(i)) i <- list(i)
   if(!is.null(names(i))) {
-    if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
-    .tmp <- function(n,x,i,invert) {
-      out <- !(getItems(x,dim=n, full=TRUE) %in% i[[n]])
-      if(invert) out <- !out
-      return(out)
+    elems <- 1:dim(x)[dim]
+    name_order <- unname(getSets(x)[which(grepl(paste0("d", dim), names(getSets(x))))])
+    for(j in 1:length(i)) {
+      if(is.factor(i[[j]])) i[[j]] <- as.character(i[[j]])
+      subdim <- which(name_order == names(i)[j])
+      tmp <- lapply(paste("^", strrep("[^.]*\\.", subdim - 1),pmatch1,escapeRegex(i[[j]]),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]][elems])
+      if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(i[[j]][vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
+      tmp <- unlist(tmp)
+      if(invert) tmp <- setdiff(1:length(elems),tmp)
+      elems <- elems[tmp]
     }
-    elems <- which(rowSums(sapply(names(i),.tmp,x,i,invert)) == 0)
   } else {
     elems <- 1:dim(x)[dim]
     for(j in i) {

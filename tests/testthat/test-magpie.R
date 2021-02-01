@@ -31,7 +31,6 @@ test_that("multiple subdimensions work", {
   getItems(p,"j",maindim=1) <- 1:10
   expect_identical(p["AFR",,],p[1,,])
   expect_identical(p[list(i="CPA"),,],p[2,,])
-  expect_equal(ncells(p[list(i="SAS",j=3),,]),0)
   expect_silent(p[list(i="AFR"),,] <- 99)
   expect_equal(as.vector(p["AFR",1,1]),99)
   expect_silent(p[list(i="AFR"),,list(scenario="A2")] <- 100)
