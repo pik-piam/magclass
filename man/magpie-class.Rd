@@ -102,12 +102,12 @@ pop["PAS",2025,,invert=TRUE]
 # accessing subdimension via set name
 
 a <- maxample("animal")
-a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"))]
+a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"))]
 
 # please note that the list elements act as filter. For instance, the 
 # following example will not contain any dogs as the data set does
 # not contain any dogs which are black.
-a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"), color="black")]
+a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 
 # an empty object will be returned if no entry fits the filter:
 a[list(country="BLA"),,]
