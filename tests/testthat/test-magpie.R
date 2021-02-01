@@ -38,6 +38,13 @@ test_that("multiple subdimensions work", {
   expect_equal(as.vector(p["AFR",1,"A2"]), 100)
   expect_silent(p[list("AFR"),2145,list("A2")] <- 101)
   expect_equal(as.vector(p["AFR",16,"A2"]), 101)
+  
+  # testing that years are properly handled
+  t <- c(1995,2005)
+  yt <- paste0("y",t)
+  expect_identical(p[,list(yt),],p[,t,])
+  expect_identical(p[,list(t),],p[,yt,])
+  expect_identical(getYears(p[,list(t),,invert=TRUE]),setdiff(getYears(p),yt))
 })
 
 test_that("value assignment works", {

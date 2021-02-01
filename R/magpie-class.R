@@ -134,12 +134,13 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   if(!is.list(i)) i <- list(i)
   if(!is.null(names(i))) {
     if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
-    .tmp <- function(n,x,i,invert) {
-      out <- !(getItems(x,dim=n, full=TRUE) %in% i[[n]])
+    .tmp <- function(n,items,i,invert) {
+      out <- !(items[[n]] %in% i[[n]])
       if(invert) out <- !out
       return(out)
     }
-    elems <- which(rowSums(sapply(names(i),.tmp,x,i,invert)) == 0)
+    items <- getItems(x, dim = dim, full = TRUE, split = TRUE)
+    elems <- which(rowSums(sapply(names(i),.tmp,items,i,invert)) == 0)
   } else {
     elems <- 1:dim(x)[dim]
     for(j in i) {
@@ -155,59 +156,6 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   return(elems)
 }
 
-.mselect_df <- function(x,df) {
-  if(is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
-  dims <- dimCode(names(df),x)
-  if(all(dims==0)) stop('None of the dimensions in the mapping could be found in the magpie object!')
-  if(any(dims==0)) {
-    dfmissing <- df[dims==0]
-    df <- df[dims!=0]
-    dims <- dims[dims>0]
-  } else {
-    dfmissing <- NULL
-  }
-  if(anyDuplicated(dims)) stop('Dimension(s) "',paste(names(dims)[duplicated(dims)],collapse='", "'),'" appear(s) more than once in the given mapping!')
-  
-  if(any(dims<3)) {
-    stop("Currently only mappings within the data dimensions are supported!")
-  } else {
-    sdims <- as.integer(round((dims-3)*10))
-    maxdim <- nchar(gsub("[^\\.]","",names(dimnames(x))[3]))+1
-    if(any(sdims>maxdim)) stop("Inconsistent dimension information. Data dimension specified which does not seem to exist!")
-    if(nrow(df)>0) df <- matrix(sapply(df,escapeRegex),dim(df),dimnames=dimnames(df))
-    dmissing <- which(!(1:maxdim%in%sdims))
-    sdims <- c(sdims,dmissing)
-    for(d in dmissing) df <- cbind(df,"[^\\.]*")
-    search <-  paste0("^",apply(df[,sdims, drop=FALSE],1,paste,collapse="\\."),"$")
-    found <- lapply(search,grep,getNames(x))
-    x <- x[,,unlist(found)]
-    length <- unlist(lapply(found,length))
-    if(!is.null(dfmissing)) {
-      if(length(dfmissing)>1) {
-        name_extensions <- do.call("paste",c(dfmissing,sep="."))
-      } else {
-        name_extensions <- dfmissing[[1]]
-      }
-      getNames(x) <- paste(getNames(x),name_extensions[rep(seq_along(name_extensions),length)],sep=".")
-      getSets(x,fulldim=FALSE)[3] <- paste(getSets(x,fulldim=FALSE)[3],paste(names(dfmissing),collapse="."),sep=".")
-    }
-    if(any(length==0) & nrow(df)>0) {
-      row_extensions <- gsub('\\.',".",gsub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
-      if(!is.null(dfmissing)) {
-       row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
-      }
-      tmp <- new.magpie(getCells(x),getYears(x),row_extensions,0,sets=getSets(x))
-      if(ndata(x)==0) {
-        x <- tmp
-      } else {
-        x <- mbind(x,tmp)
-      }
-      if(getOption("magclass.verbosity")>1) cat("NOTE (.mselect_df): The following elements were added to x as they appeared in the mapping but not in x: ",paste0(row_extensions,collapse=", ")," (values set to 0)\n")
-    }
-    return(return(x))
-  }
-}
-
 #' @exportMethod [
 setMethod("[",
           signature(x = "magpie"),
@@ -216,22 +164,28 @@ setMethod("[",
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
               if(is.data.frame(i)) {
-                warning("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
-                return(.mselect_df(x,i))
+                stop("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
               }
               if(is.factor(i)) i <- as.character(i)
               if(is.character(i) || is.list(i)) i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
             }
             if(!missing(j)) {
               if(is.factor(j)) j <- as.character(j)
-              if(is.numeric(j) & any(j>dim(x)[2])) {
-                j <- paste("y",j,sep="")
+              .addY <- function(j,n) {
+                if(is.numeric(j) && any(j>n)) {
+                  j <- paste("y",j,sep="")
+                } 
+                return(j)
               }
-              if(is.null(j)) {
+              j <- .addY(j,dim(x)[2])
+              if (is.null(j)) {
                 j <- 1:dim(x)[2]
-              } else if((is.character(j) || is.list(j)) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1],fixed=TRUE)) {
-                j <- .dimextract(x,j,2,pmatch=pmatch,invert=invert)
-              } else if(invert) {
+              } else if (is.character(j) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1], fixed = TRUE)) {
+                j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
+              } else if (is.list(j)) {
+                j <- lapply(j,.addY,dim(x)[2])
+                j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
+              } else if (invert) {
                 j <- getYears(x)[!(getYears(x) %in% j)]
               }
             }

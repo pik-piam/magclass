@@ -21,6 +21,7 @@
 #' main dimension (1,2,3) a list of items for each sub-dimension.
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{dimCode}}
+#' @importFrom data.table tstrsplit
 #' @examples
 #' x <- maxample("pop")
 #' getItems(x,"scenario")
@@ -40,7 +41,7 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
     for(i in dim) out[[as.character(i)]] <- getItems(x,dim=i,split=split,full=full)
     if(all(dim==round(dim))) {
       names(out) <- NULL
-    } else if(!is.null(getSets(x))) {
+    } else if(hasSets(x)) {
       sets <- c(d1="",d2="",d3="",getSets(x))
       names(out) <- sets[paste0("d",dim)]
     }
@@ -51,15 +52,15 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
   if(dim==round(dim) && split) {
     if(is.null(dimnames(x)[[dim]])) {
       out <- list(NULL)
-      if(!is.null(getSets(x))) {
+      if (hasSets(x)) {
         names(out) <- getSets(x,fulldim=FALSE)[dim]
       }
       return(out)
     } 
-    tmp <- as.list(as.data.frame(t(matrix(unlist(strsplit(dimnames(x)[[dim]],"\\.")),ncol=dim(x)[dim])),stringsAsFactors=FALSE))
-    if(!isTRUE(full)) tmp <- lapply(tmp,unique)
-    if(!is.null(getSets(x))) {
-      tmp2 <- strsplit(getSets(x,fulldim=FALSE)[dim],"\\.")[[1]]
+    tmp <- tstrsplit(dimnames(x)[[dim]], ".", fixed=TRUE, names=TRUE)
+    if (!isTRUE(full)) tmp <- lapply(tmp,unique)
+    if (hasSets(x)) {
+      tmp2 <- strsplit(getSets(x,fulldim=FALSE)[dim],".", fixed=TRUE)[[1]]
       if(length(tmp2)==length(tmp)) names(tmp) <- tmp2
     }
     return(tmp)

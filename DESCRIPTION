@@ -1,7 +1,7 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 5.22.1
+Version: 5.23.0
 Date: 2021-02-01
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
@@ -9,6 +9,7 @@ Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de"
              person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"),
              person("Stephen", "Bi", role = "aut"),
              person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = "aut"),
+             person("Debbora", "Leip", email = "leip@pik-potsdam.de", role = "aut"),
              person("Lavinia", "Baumstark", email = "lavinia@pik-potsdam.de", role = "ctb"),
              person("Christoph", "Bertram", email = "bertram@pik-potsdam.de", role = "ctb"),
              person("Anastasis", "Giannousakis", email = "giannou@pik-potsdam.de", role = "ctb"),
@@ -18,8 +19,7 @@ Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de"
              person("Anselm", "Schultes", role = "ctb"),	
              person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "ctb"),
              person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
-             person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"),
-             person("Debbora", "Leip", email = "leip@pik-potsdam.de", role = "aut"))
+             person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
 Description: Data class for increased interoperability working with spatial-
     temporal data together with corresponding functions and methods (conversions,
     basic calculations and basic data manipulation). The class distinguishes
