@@ -88,12 +88,12 @@
 #' # accessing subdimension via set name
 #' 
 #' a <- maxample("animal")
-#' a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"))]
+#' a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"))]
 #' 
 #' # please note that the list elements act as filter. For instance, the 
 #' # following example will not contain any dogs as the data set does
 #' # not contain any dogs which are black.
-#' a[list(country="NLD",y="53,25"),,list(species=c("rabbit","dog"), color="black")]
+#' a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 #' 
 #' # an empty object will be returned if no entry fits the filter:
 #' a[list(country="BLA"),,]
@@ -147,7 +147,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]][elems])
       if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
       tmp <- unlist(tmp)
-      if(invert) tmp <- setdiff(1:dim(x)[dim],tmp)    
+      if(invert) tmp <- setdiff(1:length(elems),tmp)
       elems <- elems[tmp]
     }
   }
