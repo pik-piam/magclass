@@ -103,17 +103,22 @@
 setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
 .dimextract <- function(x,i,dim,pmatch=FALSE,invert=FALSE) {
+  if(is.factor(i)) i <- as.character(i)
+  if(!is.character(i) && !is.list(i)) return(i)
+  
   if(length(i)==0) return(NULL)
+  dimnames <- dimnames(x)[[dim]]
+  if(is.null(dimnames)) stop("Missing element names in dimensions ",dim, "!")
   .countdots <- function(i) {
     return(nchar(gsub("[^\\.]","",i)))
   }
-  if(!is.list(i) && .countdots(i[1])==.countdots(dimnames(x)[[dim]][1]) && pmatch==FALSE){
+  if(!is.list(i) && .countdots(i[1])==.countdots(dimnames[1]) && pmatch==FALSE){
     #i vector seems to specify the full dimname
-    if(!anyDuplicated(as.data.table(dimnames(x)[[dim]]))) {
+    if(!anyDuplicated(as.data.table(dimnames))) {
       if(invert) {
-        return(which(!(dimnames(x)[[dim]] %in% i)))
+        return(which(!(dimnames %in% i)))
       } else {
-        match <- match(i,dimnames(x)[[dim]])
+        match <- match(i,dimnames)
         if(any(is.na(match))) {
           stop("subscript out of bounds (\"",paste0(i[is.na(match)],collapse="\", \""),"\")")
         }
@@ -143,7 +148,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     elems <- 1:dim(x)[dim]
     for(j in i) {
       if(is.factor(j)) j <- as.character(j)
-      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames(x)[[dim]][elems])
+      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames[elems])
       if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
       tmp <- unlist(tmp)
       if(invert) tmp <- setdiff(1:length(elems),tmp)
@@ -161,36 +166,21 @@ setMethod("[",
           {
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
-              if(is.data.frame(i)) {
-                stop("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
-              }
-              if(is.factor(i)) i <- as.character(i)
-              if(is.character(i) || is.list(i)) i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
+              if(is.data.frame(i)) stop("Subsetting via a data.frame in magclass is deprecated. Please get in contact with the package maintainer!")
+              i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
             }
             if(!missing(j)) {
-              if(is.factor(j)) j <- as.character(j)
               .addY <- function(j,n) {
-                if(is.numeric(j) && any(j>n)) {
-                  j <- paste("y",j,sep="")
-                } 
+                if(is.list(j)) return(lapply(j,.addY,n))
+                if(is.numeric(j) && any(j>n)) return(paste("y",j,sep=""))
                 return(j)
               }
               j <- .addY(j,dim(x)[2])
-              if (is.null(j)) {
-                j <- 1:dim(x)[2]
-              } else if (is.character(j) && !is.null(dimnames(x)[[2]]) && grepl(".",dimnames(x)[[2]][1], fixed = TRUE)) {
-                j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
-              } else if (is.list(j)) {
-                j <- lapply(j,.addY,dim(x)[2])
-                j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
-              } else if (invert) {
-                j <- getYears(x)[!(getYears(x) %in% j)]
-              }
+              if (is.null(j)) j <- 1:dim(x)[2]
+              j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
             }
-            if(!missing(k)) {
-              if(is.factor(k)) k <- as.character(k)
-              if(is.character(k) || is.list(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
-            }
+            if(!missing(k)) k <- .dimextract(x,k,3,pmatch=pmatch,invert=invert)
+            
             .isFALSE <- function(x) return(is.logical(x) && length(x) == 1 && !is.na(x) && !x)
             if(!missing(i) && missing(j) && !missing(k) && .isFALSE(k) && .isFALSE(drop) && .isFALSE(pmatch) && .isFALSE(invert)) {
               # there is a weird case in which k is actually missing but is getting the value of the next argument in line (drop)

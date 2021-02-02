@@ -27,6 +27,15 @@ test_that("invert argument works", {
   expect_identical(p[,-4,],   p[,2025,,invert=TRUE])
 })
 
+test_that("pmatch argument works", {
+  expect_identical(getItems(p[,list("y1"),,pmatch=TRUE],2),"y1995")
+  expect_identical(getItems(p[,"y1",,pmatch=TRUE],2),"y1995")
+  expect_error(getItems(p[,"y1",,pmatch="right"],2),"not existent")
+  expect_identical(getItems(p[,"y1",,pmatch="left"],2),"y1995")
+  expect_error(getItems(p[,"05",,pmatch="left"],2),"not existent")
+  expect_identical(getItems(p[,"05",,pmatch="right"],2), c("y2005","y2105"))
+})
+
 test_that("multiple subdimensions work", {
   getItems(p,"j",maindim=1) <- 1:10
   expect_identical(p["AFR",,],p[1,,])
