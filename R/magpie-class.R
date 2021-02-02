@@ -129,33 +129,28 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     }
   }
   
-  pmatch1 <- ifelse(pmatch==TRUE | pmatch=="right",".*","")
-  pmatch2 <- ifelse(pmatch==TRUE | pmatch=="left",".*","")
+  pmatch1 <- ifelse(pmatch == TRUE | pmatch == "right","[^.]*","")
+  pmatch2 <- ifelse(pmatch == TRUE | pmatch == "left","[^.]*","")
   
-  if(!is.list(i)) i <- list(i)
-  if(!is.null(names(i))) {
-    if(pmatch!=FALSE) stop("partial matching for named lists currently not supported!")
-    items <- getItems(x, dim = dim, full = TRUE, split = TRUE)
-    elems <- 1:dim(x)[dim]
-    for(n in names(i)) {
-      tmp <- (items[[n]][elems] %in% i[[n]])
-      found <- (i[[n]] %in% items[[n]][elems[tmp]])
-      if(!all(found)) stop("Data element(s) \"",paste(i[[n]][!found],collapse="\", \""),"\" not existent in MAgPIE object!")
-      if(invert) tmp <- setdiff(1:length(elems),tmp)
-      elems <- elems[tmp]
+  if (!is.list(i)) i <- list(i)
+  elems <- 1:dim(x)[dim]
+  if (!is.null(names(i))) name_order <- strsplit(names(dimnames(x))[dim],".",fixed = TRUE)[[1]]
+  k <- 1
+  for (j in i) {
+    if (is.factor(j)) j <- as.character(j)
+    if (!is.null(names(i))) {
+      subdim <- which(name_order == names(i)[k])
+      startpattern <- paste0("^", strrep("[^.]*\\.", subdim - 1))
+    } else {
+      startpattern <- "(^|\\.)"
     }
-  } else {
-    elems <- 1:dim(x)[dim]
-    for(j in i) {
-      if(is.factor(j)) j <- as.character(j)
-      tmp <- lapply(paste("(^|\\.)",pmatch1,escapeRegex(j),pmatch2,"(\\.|$)",sep=""),grep,dimnames[elems])
-      if(any(vapply(tmp,length,length(tmp))==0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp))==0],collapse="\", \""),"\" not existent in MAgPIE object!")
-      tmp <- unlist(tmp)
-      if(invert) tmp <- setdiff(1:length(elems),tmp)
-      elems <- elems[tmp]
-    }
+    tmp <- lapply(paste0(startpattern,pmatch1,escapeRegex(j),pmatch2,"(\\.|$)"), grep, dimnames[elems], perl = TRUE)
+    if (any(vapply(tmp,length,length(tmp)) == 0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp)) == 0],collapse = "\", \""),"\" not existent in MAgPIE object!")
+    tmp <- unlist(tmp)
+    if (invert) tmp <- setdiff(1:length(elems),tmp)
+    elems <- elems[tmp]
+    k <- k + 1
   }
-
   return(elems)
 }
 
