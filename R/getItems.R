@@ -112,7 +112,7 @@ getItems <- function(x,dim=NULL,split=FALSE,full=FALSE) {
     }
     if(dc==maindim) {
       dimnames(x)[[maindim]] <- .sortvalues(value, x, maindim)
-      names(dimnames(x))[maindim] <- gsub(".",",",names(dimnames(x))[maindim],fixed=TRUE)
+      if(!isTRUE(raw)) names(dimnames(x))[maindim] <- gsub(".","p",names(dimnames(x))[maindim],fixed=TRUE)
     } else if(!dimExists(dc,x)) {
       if(!is.null(names(value))) {
         warning("Names of input vector are being ignored as dimension is not yet existing!")

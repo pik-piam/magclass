@@ -95,6 +95,15 @@
 #' # not contain any dogs which are black.
 #' a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 #' 
+#' # it is also possible to extract given combinations of subdimensions
+#' # via a data-frame
+#' df <- data.frame(getItems(a,3,split=TRUE,full=TRUE))[c(1,3,4),][3:2]
+#' getItems(a[df],3)
+#' 
+#' # Unknown dimensions to be added in output!
+#' df$blub <- paste0("bl",1:dim(df)[1])
+#' getItems(a[df],3)
+#' 
 #' @exportClass magpie
 #' @importFrom data.table as.data.table
 #' @importFrom methods setClass
@@ -102,7 +111,65 @@
 
 setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
+.mselect_df <- function(x,df) {
+  if (is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
+  dims <- dimCode(names(df),x)
+  if (all(dims == 0)) stop('None of the dimensions in the mapping could be found in the magpie object!')
+  dfmissing <- NULL
+  if (any(dims == 0)) {
+    dfmissing <- df[dims == 0]
+    df <- df[dims != 0]
+    dims <- dims[dims > 0]
+  } 
+  
+  if (anyDuplicated(dims)) stop('Dimension(s) "',paste(names(dims)[duplicated(dims)],collapse = '", "'),'" appear(s) more than once in the given mapping!')
+  
+  maindim <- unname(round(dims[1]))
+  if(any(round(dims)!=maindim)) stop('Data.frame must only contain subdimensions with a shared main dimension. Mixtures across main dimensions are not allowed!')
+  
+  sdims <- as.integer(substring(dims,3))
+  maxdim <- nchar(gsub("[^\\.]","",names(dimnames(x))[maindim]))+1
+  if(nrow(df) == 1) df[1,] <- escapeRegex(df[1,])
+  if(nrow(df)>1) df <- data.frame(sapply(df,escapeRegex))
+  dmissing <- which(!(1:maxdim%in%sdims))
+  sdims <- c(sdims,dmissing)
+  for(d in dmissing) df <- cbind(df,"[^\\.]*")
+  df <- df[order(sdims)]
+  search <-  paste0("^",apply(df,1,paste,collapse="\\."),"$")
+  .subset <- function(x,f,dim) {
+    if (dim == 1) return(x[f,,])
+    if (dim == 2) return(x[,f,])
+    return(x[,,f])
+  }
+  found <- lapply(search, grep, getItems(x, dim = maindim, full = TRUE), perl = TRUE)
+  x <- .subset(x,unlist(found),maindim)
+  length <- unlist(lapply(found,length))
+  
+  if (!is.null(dfmissing)) {
+    if (length(dfmissing) > 1) {
+      name_ext_raw <- do.call("paste", c(dfmissing, sep = "."))
+    } else {
+      name_ext_raw <- dfmissing[[1]]
+    }
+    name_extensions <- name_ext_raw[rep(seq_along(name_ext_raw),length)]
+    getItems(x, dim = maindim, raw = TRUE) <- paste(getItems(x, dim = maindim, full = TRUE), name_extensions, sep = ".")
+    names(dimnames(x))[maindim] <- paste(getSets(x, fulldim = FALSE)[maindim], paste(names(dfmissing), collapse = "."), sep = ".")
+  }
+  if (any(length == 0) && nrow(df) > 0) {
+    row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length == 0])),fixed = TRUE),fixed = TRUE)
+    if (!is.null(dfmissing)) row_extensions <- paste(row_extensions,name_ext_raw[length == 0],sep = ".") 
+    elems <- rep(1,length(row_extensions))
+    ext <- .subset(x,elems,maindim)
+    getItems(ext, dim = maindim, raw = TRUE) <- row_extensions
+    ext[,,] <- NA
+    x <- mbind(x,ext)
+    if (getOption("magclass.verbosity") > 1) message("NOTE (.mselect_df): The following elements were added to x as they appeared in the mapping but not in x: ",paste0(row_extensions,collapse = ", ")," (values set to NA)\n")
+  }
+  return(x)
+}
+
 .dimextract <- function(x,i,dim,pmatch=FALSE,invert=FALSE) {
+  
   if(is.factor(i)) i <- as.character(i)
   if(!is.character(i) && !is.list(i)) return(i)
   
@@ -154,59 +221,6 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   return(elems)
 }
 
-.mselect_df <- function(x,df) {
-  if(is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
-  dims <- dimCode(names(df),x)
-  if(all(dims==0)) stop('None of the dimensions in the mapping could be found in the magpie object!')
-  if(any(dims==0)) {
-    dfmissing <- df[dims==0]
-    df <- df[dims!=0]
-    dims <- dims[dims>0]
-  } else {
-    dfmissing <- NULL
-  }
-  if(anyDuplicated(dims)) stop('Dimension(s) "',paste(names(dims)[duplicated(dims)],collapse='", "'),'" appear(s) more than once in the given mapping!')
-  
-  if(any(dims<3)) {
-    stop("Currently only mappings within the data dimensions are supported!")
-  } else {
-    sdims <- as.integer(round((dims-3)*10))
-    maxdim <- nchar(gsub("[^\\.]","",names(dimnames(x))[3]))+1
-    if(any(sdims>maxdim)) stop("Inconsistent dimension information. Data dimension specified which does not seem to exist!")
-    if(nrow(df)>0) df <- matrix(sapply(df,escapeRegex),dim(df),dimnames=dimnames(df))
-    dmissing <- which(!(1:maxdim%in%sdims))
-    sdims <- c(sdims,dmissing)
-    for(d in dmissing) df <- cbind(df,"[^\\.]*")
-    search <-  paste0("^",apply(df[,sdims, drop=FALSE],1,paste,collapse="\\."),"$")
-    found <- lapply(search,grep,getNames(x))
-    x <- x[,,unlist(found)]
-    length <- unlist(lapply(found,length))
-    if(!is.null(dfmissing)) {
-      if(length(dfmissing)>1) {
-        name_extensions <- do.call("paste",c(dfmissing,sep="."))
-      } else {
-        name_extensions <- dfmissing[[1]]
-      }
-      getNames(x) <- paste(getNames(x),name_extensions[rep(seq_along(name_extensions),length)],sep=".")
-      getSets(x,fulldim=FALSE)[3] <- paste(getSets(x,fulldim=FALSE)[3],paste(names(dfmissing),collapse="."),sep=".")
-    }
-    if(any(length==0) & nrow(df)>0) {
-      row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length==0])),fixed=TRUE),fixed=TRUE)
-      if(!is.null(dfmissing)) {
-        row_extensions <- paste(row_extensions,name_extensions[length==0],sep=".") 
-      }
-      tmp <- new.magpie(getCells(x),getYears(x),row_extensions,0,sets=getSets(x))
-      if(ndata(x)==0) {
-        x <- tmp
-      } else {
-        x <- mbind(x,tmp)
-      }
-      if(getOption("magclass.verbosity")>1) cat("NOTE (.mselect_df): The following elements were added to x as they appeared in the mapping but not in x: ",paste0(row_extensions,collapse=", ")," (values set to 0)\n")
-    }
-    return(return(x))
-  }
-}
-
 #' @exportMethod [
 setMethod("[",
           signature(x = "magpie"),
@@ -214,9 +228,7 @@ setMethod("[",
           {
             if(is.null(dim(x))) return(x@.Data[i])
             if(!missing(i)) {
-              if(is.data.frame(i)) {
-                return(.mselect_df(x,i))
-              }
+              if(is.data.frame(i)) return(.mselect_df(x, i))
               i <- .dimextract(x,i,1,pmatch=pmatch,invert=invert)
             }
             if(!missing(j)) {
@@ -287,7 +299,7 @@ setMethod("[<-",
                 #dangerous writing of value as order might be wrong! 
                 stop("Replacement does not work! Different replacement length!")
               } else if(length(value)!=1) {
-                if(getOption("magclass.verbosity")>1) cat("NOTE ([<-): Dangerous replacement! As replacement value is not an MAgPIE object name checking is deactivated!\n")
+                if(getOption("magclass.verbosity")>1) message("NOTE ([<-): Dangerous replacement! As replacement value is not an MAgPIE object name checking is deactivated!\n")
               }
               x@.Data[i,j,k] <- value
               if (!is.null(getMetadata(value,"calcHistory"))) x <- updateMetadata(x,value,n=2,calcHistory="merge",cH_priority=4)

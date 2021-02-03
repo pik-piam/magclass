@@ -5,6 +5,10 @@ context("Subsetting test")
 p <- maxample("pop")
 a <- as.array(p)
 
+mv <- getOption("magclass.verbosity")
+on.exit(options(magclass.verbosity=mv))
+options(magclass.verbosity=2)
+
 test_that("single element subsetting works", {
   expect_identical(p[11],a[11])
   expect_identical(p[3], a[3])
@@ -14,14 +18,19 @@ test_that("multi element subsetting works", {
   expect_equivalent(as.array(p[3,,]),                a[3,,,drop=FALSE])
   expect_equivalent(as.array(p["FSU",,]),            a[4,,,drop=FALSE])
   expect_equivalent(as.array(p[,2005,]),             a[,2,,drop=FALSE])
-  expect_equivalent(as.array(p["PAS",,"B1"]),        a[9,,2,drop=FALSE])
-  expect_equivalent(as.array(p["PAS","y2005","B1"]), a[9,2,2,drop=FALSE])
+  expect_equivalent(as.array(p[as.factor("PAS"),,"B1"]),     a[9,,2,drop=FALSE])
+  expect_equivalent(as.array(p["PAS","y2005","B1"]),         a[9,2,2,drop=FALSE])
   expect_equivalent(as.array(p[c("CPA","CPA"),,]),           a[c(2,2),,,drop=FALSE])
   expect_equivalent(as.array(p[list(c("CPA","CPA")),,]),     a[c(2,2),,,drop=FALSE])
   expect_equivalent(as.array(p[list(i=c("CPA","CPA")),,]),   a[c(2,2),,,drop=FALSE])
   expect_equivalent(as.array(p[c("EUR","CPA"),,]),           a[c(3,2),,,drop=FALSE])
   expect_equivalent(as.array(p[list(c("EUR","CPA")),,]),     a[c(3,2),,,drop=FALSE])
   expect_equivalent(as.array(p[list(i=c("EUR","CPA")),,]),   a[c(3,2),,,drop=FALSE])
+  expect_equivalent(as.array(p[character(0),character(0),character(0)]), a[NULL,NULL,NULL,drop=FALSE])
+  
+  expect_error(p[,,"A3"], "out of bounds")
+  dimnames(p)[[3]] <- NULL
+  expect_error(p[,,"A2"], "Missing element names")
 })
 
 test_that("invert argument works", {
@@ -33,8 +42,14 @@ test_that("invert argument works", {
   expect_identical(p[,-4,],   p[,2025,,invert=TRUE])
 })
 
+test_that("drop works", {
+  a <- maxample("animal")
+  expect_identical(getItems(a[,,,drop = TRUE], dim = 3)[1], "rabbit.black")
+})
+
 test_that("pmatch argument works", {
   expect_identical(getItems(p[,list("y1"),,pmatch=TRUE],2),"y1995")
+  expect_identical(getItems(p[,list(as.factor("y1")),,pmatch=TRUE],2),"y1995")
   expect_identical(getItems(p[,"y1",,pmatch=TRUE],2),"y1995")
   expect_error(getItems(p[,"y1",,pmatch="right"],2),"not existent")
   expect_identical(getItems(p[,"y1",,pmatch="left"],2),"y1995")
@@ -70,7 +85,12 @@ test_that("value assignment works", {
   expect_true(all(a["NLD","june","rabbit"] == 12))
   b <- a
   expect_silent(b[,,] <- 0)
-  expect_true(all(b[,,]==0))
+  expect_true(all(b[,,] == 0))
+  expect_silent(b[,,] <- as.magpie(99))
+  expect_true(all(b[,,] == 99))
+  expect_message({b[1:2,1,1] <- 1:2}, "Dangerous replacement")
+  expect_error(b[1:2,1:2,1:2] <- 1:7, "Different replacement length!")
+  
   expect_silent(b["NLD",c("april","june"),list("rabbit","black")] <- a["NLD",c("april","june"),list("rabbit","black")])
   expect_identical(b["NLD",c("april","june"),list("rabbit","black")], a["NLD",c("april","june"),list("rabbit","black")])
 }) 
@@ -78,8 +98,65 @@ test_that("value assignment works", {
 
 test_that("data.frame subsetting works", {
   a <- maxample("animal")
-  df <- data.frame(getItems(a,3,split=TRUE,full=TRUE))
+  df <- data.frame(getItems(a,3,split=TRUE,full=TRUE), stringsAsFactors = FALSE)
   w <- c(1,3,4)
   expect_identical(getItems(a[df[w,]],3), getItems(a,3)[w])
+  expect_identical(getItems(a[df[3:1][w,]],3), getItems(a,3)[w])
+  expect_identical(getItems(a[df[3:2][w,]],3), getItems(a,3)[w])
   
+  # Unknown dimensions to be added in output!
+  df$blub <- paste0("bl",1:dim(df)[1])
+  expect_identical(getItems(a[df[w,]],3), paste(getItems(a,3),df$blub,sep=".")[w])
+  
+  df2 <- df
+  df2$ble <- paste0("ble",1:dim(df2)[1])
+  expect_identical(getItems(a[df2[w,]],3), paste(getItems(a,3),df2$blub,df2$ble,sep=".")[w])
+  
+  #subselections work
+  df$species <- NULL
+  expect_identical(getItems(a[df[1,]],3), c("animal.rabbit.black.bl1", "animal.bird.black.bl1"))
+  expect_identical(getItems(a[df[w,]],3), c("animal.rabbit.black.bl1", "animal.bird.black.bl1",
+                                            "animal.rabbit.black.bl3", "animal.bird.black.bl3",  
+                                            "animal.bird.red.bl4"))
+  
+  df2 <- df
+  df2$type <- NULL
+  expect_identical(getItems(a[df2[1,]],3), c("animal.rabbit.black.bl1", "animal.bird.black.bl1"))
+  
+  
+  #rows in df but not in a will get added with value NA
+  df[3,1] <- "car"
+  expect_message({b <- a[df[w,]]}, "elements were added")
+  expect_identical(getItems(b,3), c("animal.rabbit.black.bl1", "animal.bird.black.bl1",
+                                            "animal.bird.red.bl4", "car.NA.black.bl3"))
+  expect_true(all(is.na(b[,,"car.NA.black.bl3"])))
+  
+  df[4,1] <- "house"
+  expect_message({b <- a[df[w,]]}, "elements were added")
+  expect_identical(getItems(b,3), c("animal.rabbit.black.bl1", "animal.bird.black.bl1",
+                                            "car.NA.black.bl3","house.NA.red.bl4"))
+  
+  
+  df1 <- data.frame(getItems(a,1,split=TRUE,full=TRUE))
+  expect_identical(getItems(a[df1[w,]],1), getItems(a,1)[w])
+  df2 <- data.frame(getItems(a,2,split=TRUE,full=TRUE))
+  expect_identical(getItems(a[df2[w,][c(3,1,2)]],2), getItems(a,2)[w])
+  
+  names(df2)[2] <- names(df2)[1]
+  expect_error(a[df2], "more than once")
+  
+  names(df2)[2] <- "country"
+  expect_error(a[df2], "must only contain subdimensions with a shared main dimension")
+  
+  
+  names(df2) <- paste0("bla",1:length(df2))
+  expect_error(a[df2], "None of the dimensions in the mapping could be found")
+  names(dimnames(a)) <- NULL
+  expect_error(a[df], "must have names")
+  
+})
+
+test_that("duplicates detection works", {
+  a <- maxample("animal")
+  expect_warning(a[,c(1,1,2,3),][,"y2000.april.20",],"contain duplicates")
 })
