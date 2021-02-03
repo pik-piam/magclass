@@ -74,3 +74,12 @@ test_that("value assignment works", {
   expect_silent(b["NLD",c("april","june"),list("rabbit","black")] <- a["NLD",c("april","june"),list("rabbit","black")])
   expect_identical(b["NLD",c("april","june"),list("rabbit","black")], a["NLD",c("april","june"),list("rabbit","black")])
 }) 
+
+
+test_that("data.frame subsetting works", {
+  a <- maxample("animal")
+  df <- data.frame(getItems(a,3,split=TRUE,full=TRUE))
+  w <- c(1,3,4)
+  expect_identical(getItems(a[df[w,]],3), getItems(a,3)[w])
+  
+})
