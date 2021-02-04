@@ -154,6 +154,11 @@ test_that("data.frame subsetting works", {
   names(dimnames(a)) <- NULL
   expect_error(a[df], "must have names")
   
+  #check that it works for single subdimension
+  p <- maxample("pop")
+  df <- data.frame(getItems(p,3,split=TRUE,full=TRUE), stringsAsFactors = FALSE)
+  df$blub <- paste0("bla",1:nrow(df))
+  expect_identical(getItems(p[df],3), paste0(getItems(p,3),".",df$blub))
 })
 
 test_that("duplicates detection works", {

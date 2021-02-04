@@ -113,7 +113,10 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
 .mselect_df <- function(x,df) {
   if (is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
+  
   dims <- dimCode(names(df),x)
+  dims[dims %in% 1:3] <- dims[dims %in% 1:3] + 0.1
+  
   if (all(dims == 0)) stop('None of the dimensions in the mapping could be found in the magpie object!')
   dfmissing <- NULL
   if (any(dims == 0)) {
