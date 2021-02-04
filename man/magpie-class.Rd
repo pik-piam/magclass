@@ -109,6 +109,15 @@ a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"))]
 # not contain any dogs which are black.
 a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
 
+# it is also possible to extract given combinations of subdimensions
+# via a data-frame
+df <- data.frame(getItems(a,3,split=TRUE,full=TRUE))[c(1,3,4),][3:2]
+getItems(a[df],3)
+
+# Unknown dimensions to be added in output!
+df$blub <- paste0("bl",1:dim(df)[1])
+getItems(a[df],3)
+
 }
 \seealso{
 \code{\link{read.magpie}}, \code{\link{write.magpie}},
