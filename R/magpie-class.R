@@ -145,6 +145,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     return(x[,,f])
   }
   found <- lapply(search, grep, getItems(x, dim = maindim, full = TRUE), perl = TRUE)
+  x1 <- .subset(x,1,maindim)
   x <- .subset(x,unlist(found),maindim)
   length <- unlist(lapply(found,length))
   
@@ -162,10 +163,10 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
     row_extensions <- gsub('\\.',".",sub('[^\\.]*','NA',sub("^\\^","",sub("\\$$","",search[length == 0])),fixed = TRUE),fixed = TRUE)
     if (!is.null(dfmissing)) row_extensions <- paste(row_extensions,name_ext_raw[length == 0],sep = ".") 
     elems <- rep(1,length(row_extensions))
-    ext <- .subset(x,elems,maindim)
+    ext <- .subset(x1,elems,maindim)
     getItems(ext, dim = maindim, raw = TRUE) <- row_extensions
     ext[,,] <- NA
-    x <- mbind(x,ext)
+    x <- suppressWarnings(mbind(x,ext))
     if (getOption("magclass.verbosity") > 1) message("NOTE (.mselect_df): The following elements were added to x as they appeared in the mapping but not in x: ",paste0(row_extensions,collapse = ", ")," (values set to NA)\n")
   }
   return(x)

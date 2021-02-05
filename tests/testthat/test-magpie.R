@@ -159,6 +159,12 @@ test_that("data.frame subsetting works", {
   df <- data.frame(getItems(p,3,split=TRUE,full=TRUE), stringsAsFactors = FALSE)
   df$blub <- paste0("bla",1:nrow(df))
   expect_identical(getItems(p[df],3), paste0(getItems(p,3),".",df$blub))
+  
+  #check that it works if not element can be found in object
+  df$scenario <- c("C1","D2")
+  expect_identical(getItems(p[df],3), c("C1.bla1","D2.bla2"))
+  expect_true(all(is.na(p[df])))
+  
 })
 
 test_that("duplicates detection works", {
