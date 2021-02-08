@@ -14,6 +14,8 @@
 \alias{as.magpie,quitte-method}
 \alias{as.magpie,tbl_df-method}
 \alias{as.magpie,RasterBrick-method}
+\alias{as.magpie,RasterLayer-method}
+\alias{as.magpie,RasterStack-method}
 \alias{is.magpie}
 \alias{[,magpie-method}
 \alias{[,magpie,ANY,ANY-method}

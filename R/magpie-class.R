@@ -12,6 +12,7 @@
 #' as.magpie,array-method as.magpie,lpj-method as.magpie,data.frame-method
 #' as.magpie,numeric-method as.magpie,NULL-method as.magpie,quitte-method
 #' as.magpie,tbl_df-method as.magpie,RasterBrick-method
+#' as.magpie,RasterLayer-method as.magpie,RasterStack-method
 #' is.magpie [,magpie-method [,magpie,ANY,ANY-method [<-,magpie,ANY,ANY-method
 #' [<-,magpie-method Ops,magpie,magpie-method Ops,magpie,numeric-method Ops,numeric,magpie-method
 #' @docType class

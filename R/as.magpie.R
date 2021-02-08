@@ -312,29 +312,50 @@ setMethod("as.magpie",
           }
 )
 
+
+.raster2magpie <- function(x, unit="unknown", temporal=NULL) {
+  if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
+  df <- as.data.frame(x,na.rm=TRUE)
+  co <- raster::coordinates(x)[as.integer(rownames(df)),]
+  co <- matrix(sub(".","p",co,fixed=TRUE),ncol=2)
+  colnames(co) <- c("x","y")
+  df <- as.data.table(cbind(co,df))
+  df <- melt(df, id.vars=c("x","y"))
+  variable <- as.data.table(tstrsplit(df$variable,"..",fixed=TRUE))
+  if(!is.null(temporal)) temporal <- temporal + 2
+  if(ncol(variable)==1) {
+    names(variable) <- "data"
+  } else if(ncol(variable)==2) {
+    names(variable) <- c("year","data")
+    if(is.null(temporal)) temporal <- 3
+  } else {
+    stop("Reserved dimension separator \"..\" occurred more than once in layer names! Cannot convert raster object")
+  }
+  df <- cbind(df[,1:2],variable,df[,4])
+  out <- tidy2magpie(df, spatial=1:2, temporal=temporal)
+  return(updateMetadata(out, unit=unit))
+}
+
 setMethod("as.magpie",
           signature(x = "RasterBrick"),
-          function(x, unit="unknown", ...)
+          function(x, unit="unknown", temporal=NULL, ...)
           {
-            if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
-            df <- as.data.frame(x,na.rm=TRUE)
-            co <- raster::coordinates(x)[as.integer(rownames(df)),]
-            co <- matrix(sub(".","p",co,fixed=TRUE),ncol=2)
-            colnames(co) <- c("x","y")
-            df <- as.data.table(cbind(co,df))
-            df <- melt(df, id.vars=c("x","y"))
-            variable <- as.data.table(tstrsplit(df$variable,"..",fixed=TRUE))
-            if(ncol(variable)==1) {
-              names(variable) <- "data"
-              temporal <- NULL
-            } else if(ncol(variable)==2) {
-              names(variable) <- c("year","data")
-              temporal <- 3
-            } else {
-              stop("Reserved dimension separator \"..\" occurred more than once in layer names! Cannot convert raster object")
-            }
-            df <- cbind(df[,1:2],variable,df[,4])
-            out <- tidy2magpie(df, spatial=1:2, temporal=temporal)
-            return(updateMetadata(out, unit=unit))
+            return(.raster2magpie(x, unit = unit, temporal = temporal))
+          }
+)
+
+setMethod("as.magpie",
+          signature(x = "RasterStack"),
+          function(x, unit="unknown", temporal=NULL, ...)
+          {
+            return(.raster2magpie(x, unit = unit, temporal = temporal))
+          }
+)
+
+setMethod("as.magpie",
+          signature(x = "RasterLayer"),
+          function(x, unit="unknown", temporal=NULL, ...)
+          {
+            return(.raster2magpie(x, unit = unit, temporal = temporal))
           }
 )
