@@ -165,6 +165,10 @@ test_that("data.frame subsetting works", {
   expect_identical(getItems(p[df],3), c("C1.bla1","D2.bla2"))
   expect_true(all(is.na(p[df])))
   
+  #check that empty magclass objects can get expanded
+  p0 <- p[,,NULL]
+  expect_true(all(is.na(p0[df])))
+  expect_identical(getItems(p0[df],3), c("C1.bla1","D2.bla2"))
 })
 
 test_that("duplicates detection works", {
