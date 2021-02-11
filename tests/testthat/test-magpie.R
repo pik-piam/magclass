@@ -27,11 +27,21 @@ test_that("multi element subsetting works", {
   expect_equivalent(as.array(p[list(c("EUR","CPA")),,]),     a[c(3,2),,,drop=FALSE])
   expect_equivalent(as.array(p[list(i=c("EUR","CPA")),,]),   a[c(3,2),,,drop=FALSE])
   expect_equivalent(as.array(p[character(0),character(0),character(0)]), a[NULL,NULL,NULL,drop=FALSE])
-  
+})
+
+test_that("error detection works", {
   expect_error(p[,,"A3"], "out of bounds")
+  expect_error(p[,,list("A3")], "out of bounds")
+  expect_error(p[,,list(scenario="A3")], "out of bounds")
+  expect_error(p[,,list(blub="A2")], "subdimension does not exist")
+
+  names(dimnames(p)) <- NULL  
+  expect_error(p[,,list(scenario="A2")], "subdimension does not exist \\(missing set names\\)")
+  
   dimnames(p)[[3]] <- NULL
   expect_error(p[,,"A2"], "Missing element names")
 })
+
 
 test_that("invert argument works", {
   expect_identical(p[-1,,],   p["AFR",invert=TRUE])
@@ -51,9 +61,9 @@ test_that("pmatch argument works", {
   expect_identical(getItems(p[,list("y1"),,pmatch=TRUE],2),"y1995")
   expect_identical(getItems(p[,list(as.factor("y1")),,pmatch=TRUE],2),"y1995")
   expect_identical(getItems(p[,"y1",,pmatch=TRUE],2),"y1995")
-  expect_error(getItems(p[,"y1",,pmatch="right"],2),"not existent")
+  expect_error(getItems(p[,"y1",,pmatch="right"],2),"out of bounds")
   expect_identical(getItems(p[,"y1",,pmatch="left"],2),"y1995")
-  expect_error(getItems(p[,"05",,pmatch="left"],2),"not existent")
+  expect_error(getItems(p[,"05",,pmatch="left"],2),"out of bounds")
   expect_identical(getItems(p[,"05",,pmatch="right"],2), c("y2005","y2105"))
 })
 
@@ -61,7 +71,6 @@ test_that("multiple subdimensions work", {
   getItems(p,"j",maindim=1) <- 1:10
   expect_identical(p["AFR",,],p[1,,])
   expect_identical(p[list(i="CPA"),,],p[2,,])
-  expect_error(ncells(p[list(i="SAS",j=3),,]),"not existent")
   expect_silent(p[list(i="AFR"),,] <- 99)
   expect_equal(as.vector(p["AFR",1,1]),99)
   expect_silent(p[list(i="AFR"),,list(scenario="A2")] <- 100)

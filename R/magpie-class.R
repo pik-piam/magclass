@@ -210,7 +210,11 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   
   if (!is.list(i)) i <- list(i)
   elems <- 1:dim(x)[dim]
-  if (!is.null(names(i))) name_order <- strsplit(names(dimnames(x))[dim],".",fixed = TRUE)[[1]]
+  if (!is.null(names(i))) {
+    if(is.null(names(dimnames(x))[dim])) stop("subdimension does not exist (missing set names)!")
+    name_order <- strsplit(names(dimnames(x))[dim],".",fixed = TRUE)[[1]]
+    if(!all(names(i) %in% name_order)) stop("subdimension does not exist (\"",paste(names(i)[!(names(i) %in% name_order)],collapse = "\", \""),"\")") 
+  }
   k <- 1
   for (j in i) {
     if (is.factor(j)) j <- as.character(j)
@@ -221,7 +225,7 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
       startpattern <- "(^|\\.)"
     }
     tmp <- lapply(paste0(startpattern,pmatch1,escapeRegex(j),pmatch2,"(\\.|$)"), grep, dimnames[elems], perl = TRUE)
-    if (any(vapply(tmp,length,length(tmp)) == 0)) stop("Data element(s) \"",paste(j[vapply(tmp,length,length(tmp)) == 0],collapse = "\", \""),"\" not existent in MAgPIE object!")
+    if (any(vapply(tmp,length,length(tmp)) == 0)) stop("subscript out of bounds (\"",paste(j[vapply(tmp,length,length(tmp)) == 0],collapse = "\", \""),"\")")
     tmp <- unlist(tmp)
     if (invert) tmp <- setdiff(1:length(elems),tmp)
     elems <- elems[tmp]
