@@ -44,12 +44,13 @@ test_that("error detection works", {
 
 
 test_that("invert argument works", {
-  expect_identical(p[-1,,],   p["AFR",invert=TRUE])
-  expect_identical(p[-1,,],   p["AFR",,invert=TRUE])
-  expect_identical(p[-1,,],   p["AFR",,,invert=TRUE])
-  expect_identical(p[-9,-4,], p["PAS",2025,invert=TRUE])
-  expect_identical(p[-9,-4,], p["PAS",2025,,invert=TRUE])
-  expect_identical(p[,-4,],   p[,2025,,invert=TRUE])
+  expect_identical(p[-1,,],    p["AFR",invert=TRUE])
+  expect_identical(p[-1,,],    p["AFR",,invert=TRUE])
+  expect_identical(p[-1,,],    p["AFR",,,invert=TRUE])
+  expect_identical(p[-9,-4,],  p["PAS",2025,invert=TRUE])
+  expect_identical(p[-9,-4,],  p["PAS",2025,,invert=TRUE])
+  expect_identical(p[,-4,],    p[,2025,,invert=TRUE])
+  expect_identical(p[-1:-3,,], p[1:3,,,invert=TRUE])
 })
 
 test_that("drop works", {
