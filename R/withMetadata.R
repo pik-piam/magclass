@@ -11,11 +11,13 @@
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{getMetadata}}
 #' @examples
-#'  withMetadata()
-#'  withMetadata(TRUE)
-#'  a <- as.magpie(1)
-#'  getMetadata(a)
-#'  withMetadata(FALSE)
+#' \dontrun{
+#'    withMetadata()
+#'    withMetadata(TRUE)
+#'    a <- as.magpie(1)
+#'    getMetadata(a)
+#'    withMetadata(FALSE)
+#'  }
 #' @export
 
 withMetadata <- function(set=NULL,verbosity=NULL) {
