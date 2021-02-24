@@ -30,6 +30,9 @@
 #' 
 install_magpie_units <- function(x=NULL) {
   if (!withMetadata()) return(x)
+  if (!requireNamespace("units", versionCheck = list(name = "units", op = ">=", version = "0.7.0"), quietly = TRUE)) {
+    stop("units package in version >= 0.7 required")
+  }
   units::units_options(auto_convert_names_to_symbols=FALSE, allow_mixed=FALSE, negative_power=TRUE, set_units_mode="standard")
   
   unit_syntax <- function(z) {
@@ -225,7 +228,7 @@ install_magpie_units <- function(x=NULL) {
         }else {
           base <- paste0("t_",base)
           base <- gsub("of_","",base)
-          units::install_conversion_constant(base,"tonne",1)
+          units::install_unit(base,"tonne",1)
         }
       }else if (grepl("square",pre[jj],ignore.case=TRUE)) {
         if (suff=="") {
@@ -255,7 +258,7 @@ install_magpie_units <- function(x=NULL) {
         base <- remove_spaces(base)
       }else {
         warning(base," has been successfully installed but is not a recognized unit. Standardize if possible.")
-        units::install_symbolic_unit(base,dimensionless=FALSE)
+        units::install_unit(base,"")
       }
     }
     return(units::as_units(multiplier,paste0(SI_prefix,base,suff)))
@@ -280,7 +283,7 @@ install_magpie_units <- function(x=NULL) {
           if (is_unit_installed(remove_spaces(b[[i]]))) {
             b[[i]] <- remove_spaces(b[[i]])
           }else {
-            units::install_symbolic_unit(b[[i]],dimensionless=FALSE)
+            units::install_unit(b[[i]],"")
           }
         }
       }
@@ -317,7 +320,7 @@ install_magpie_units <- function(x=NULL) {
             if (is_unit_installed(remove_spaces(w[[ii]]))) {
               w[[ii]] <- remove_spaces(w[[ii]])
             }else {
-              units::install_symbolic_unit(w[[ii]],dimensionless=FALSE)
+              units::install_unit(w[[ii]],"")
             }
           }
         }
@@ -351,32 +354,6 @@ install_magpie_units <- function(x=NULL) {
     }
     if (grepl(",",a,fixed=TRUE) | grepl(";",a,fixed=TRUE)) {
       return(units::as_units("unknown"))
-    #*****Mixed units handling in development*****  
-    #  a <- unlist(strsplit(a,","))
-    #  a <- unlist(strsplit(a,";"))
-    #  for (i in 1:length(a)) {
-    #    if (grepl("_for_",a[i]) | grepl("_in_",a[i])) {
-    #      warning("Unit entry \"",a[i],"\" should only include the unit and not the description.")
-    #    }
-    #    a[i] <- gsub("^_*","",gsub("_*$","",a[i]))
-    #    if (is_unit_installed(remove_spaces(a[i]))) {
-    #      a[i] <- remove_spaces(a[i])
-    #    }else {
-    #      a[i] <- split_denominator(a[i])
-    #      a[i] <- split_multiples(a[i])
-    #      if (!is_unit_installed(a[i])) {
-    #        a[i] <- unit_syntax(a[i])
-    #        if (!is_unit_installed(a[i])) {
-    #          if (!is_unit_installed(remove_spaces(a[i]))) {
-    #            units::install_symbolic_unit(a[i],dimensionless=FALSE)
-    #          }else {
-    #            a[i] <- remove_spaces(a[i])
-    #          }
-    #        }
-    #      }
-    #    }
-    #  }
-    #  return(units::mixed_units(1,a))
     }
     if (grepl("/",a,fixed=TRUE) | grepl("*",a,fixed=TRUE)) {
       a <- split_denominator(a)
@@ -386,7 +363,7 @@ install_magpie_units <- function(x=NULL) {
     }
     if (!is_unit_installed(a)) {
       if (!is_unit_installed(remove_spaces(a))) {
-        units::install_symbolic_unit(a,dimensionless=FALSE)
+        units::install_unit(a,"")
       }else {
         a <- remove_spaces(a)
       }
@@ -395,36 +372,9 @@ install_magpie_units <- function(x=NULL) {
   }
   
   #Initialize some commonly used units in MAGPIE and REMIND
-  if (!is_unit_installed("tDM") & !is_unit_installed("pkm") & !is_unit_installed("unknown")) {
-    units::install_conversion_constant("tDM","tonne",1)                      #tonnes of dry matter
-    units::install_conversion_constant("tWM","tonne",1)                      #tonnes of wet matter
-    units::install_conversion_constant("BTU","toe",2.5e-8)                   #tonnes of oil equivalent
-    units::install_symbolic_unit("people",dimensionless=FALSE)               #people
-    units::install_conversion_constant("people","person",1)                  #people interchangeable with person
-    units::install_conversion_constant("people","capita",1)                  #capita interchangeable with people
-    units::install_symbolic_unit("animal",dimensionless=FALSE)               #animals
-    units::install_symbolic_unit("tCO2eq",dimensionless=FALSE)               #tonnes of CO2 equivalent
-    units::install_conversion_constant("tCO2eq","tCO2_",1)                   #tonnes of CO2
-    units::install_conversion_constant("tC","tCO2_",44/12)                   #tonnes of carbon
-    units::install_conversion_constant("tN2O","tCO2eq",298)                  #tonnes of N2O
-    units::install_conversion_constant("tN","tN2O",44/28)                    #tonnes of nitrogen
-    units::install_conversion_constant("tN","tNO2_",46/14)                   #tonnes of NO2
-    units::install_conversion_constant("tN","tNO3_",62/14)                   #tonnes of NO3
-    units::install_conversion_constant("tN","tNH3_",17/14)                   #tonnes of NH3
-    units::install_conversion_constant("tCH4_","tCO2eq",36)                  #tonnes of methane
-    units::install_symbolic_unit("USD",dimensionless=FALSE)                  #US Dollars in 2018 currency value (InflationTool.com)
-    units::install_conversion_constant("USD05_","USD",1/1.33)                  #US Dollars in 2005 currency value (InflationTool.com)
-    units::install_conversion_constant("USD95_","USD05_",1/1.27)               #US Dollars in 1995 currency value (InflationTool.com)
-    units::install_conversion_constant("EUR","USD",1/1.13365)                  #Euros at exchange rate with USD on 11.12.2018 (XE.com)
-    units::install_conversion_constant("EUR05_","EUR",1/1.24)                  #Euros in 2005 currency value (InflationTool.com)
-    units::install_conversion_constant("EUR95_","EUR05_",1/1.22)               #Euros in 1995 currency value (InflationTool.com)
-    units::install_symbolic_unit("share",dimensionless=TRUE)                 #Share (dimension)
-    units::install_symbolic_unit("passenger",dimensionless=FALSE)            #passengers
-    units::install_conversion_constant("pkm","passenger*km",1)               #passenger-kilometer pkm
-    units::install_conversion_constant("Wh","W*h",1)                         #Watt-hours
-    units::install_conversion_constant("annum","year",1)                     #annum
-    units::install_conversion_constant("Wa","watt*annum",1)                  #Watts-annum
-    units::install_symbolic_unit("unknown")                                  #unknown units; placeholder for mixed units
+  if (!is_unit_installed("tDM") || !is_unit_installed("pkm") || !is_unit_installed("unknown")) {
+    units <- readRDS(system.file("extdata/metadata/units.rds", package = "magclass"))
+    for(i in 1:nrow(units)) units::install_unit(symbol = units$unit[i], def = units$def[i],  name= units$name[i])
   }
   
   if (is.null(x)) {

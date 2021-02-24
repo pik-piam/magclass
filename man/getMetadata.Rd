@@ -50,22 +50,24 @@ merge the calcHistory of two magpie objects.
 }}
 
 \examples{
- withMetadata(TRUE)
- a <- as.magpie(1)
- #returns NULL
- getMetadata(a)
- #set the unit field
- getMetadata(a, "unit") <- "GtCO2eq"
- getMetadata(a)
+ \dontrun{
+   withMetadata(TRUE)
+   a <- as.magpie(1)
+   #returns NULL
+   getMetadata(a)
+   #set the unit field
+   getMetadata(a, "unit") <- "GtCO2eq"
+   getMetadata(a)
  
- #set all Metadata fields
- M <- list(unit='kg', source=list(author='John Doe', date='January 1, 2017', 
- title='example', publication='BigJournal, Vol. 200, pp. 100-115', institution='IEA'), 
- date=as.character(Sys.time()), user='my name', calcHistory=list('downloadSource','readSource'), 
- description='nonsense data')
- getMetadata(a) <- M
- getMetadata(a)
- withMetadata(FALSE)
+   #set all Metadata fields
+   M <- list(unit='kg', source=list(author='John Doe', date='January 1, 2017', 
+   title='example', publication='BigJournal, Vol. 200, pp. 100-115', institution='IEA'), 
+   date=as.character(Sys.time()), user='my name', calcHistory=list('downloadSource','readSource'), 
+   description='nonsense data')
+   getMetadata(a) <- M
+   getMetadata(a)
+   withMetadata(FALSE)
+ }
 }
 \seealso{
 \code{\link{getComment}}, \code{\link{getRegions}}, \code{\link{getNames}},
