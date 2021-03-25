@@ -27,20 +27,20 @@
 #' @seealso \code{\link{read.report}}
 #' @examples
 #' 
-#' data(population_magpie)
-#' write.report2(population_magpie)
+#' write.report2(maxample("pop"))
 #' 
 #' @importFrom utils write.table
-#' @importFrom reshape2 dcast melt
 #' @export
 write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=4,append=FALSE,skipempty=TRUE, extracols=NULL) {
  
+  scenario_call = scenario
+  model_call = model
    if(is.list(x)) {
     if(is.list(x[[1]])) {
       for(.scenario in names(x)){
         for(.model in names(x[[.scenario]])) {
-          scenario = ifelse(is.null(scenario),.scenario,scenario)
-          model = ifelse(is.null(model),.model,model)
+          scenario = ifelse(is.null(scenario_call),.scenario,scenario)
+          model = ifelse(is.null(model_call),.model,model)
           x[[.scenario]][[.model]] <- write.report2(x[[.scenario]][[.model]],file=file,model=model,scenario=scenario,unit=unit,ndigit=ndigit,append=append, skipempty=skipempty, extracols=extracols)  
           append <- TRUE
         }
@@ -85,6 +85,7 @@ write.report2 <- function(x,file=NULL,model=NULL,scenario=NULL,unit=NULL,ndigit=
 }
 
 prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALSE, ndigit=4, extracols=NULL) {
+  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report2!")
   sep <- "."
   # clean data
   x <- round(clean_magpie(x,what="sets"), digits = ndigit)
@@ -93,14 +94,14 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   dimnames(x)[[2]] <- substring(dimnames(x)[[2]],2)
   
   # check for duplicates and possibly remove duplicates
-  d <- duplicated(getNames(x))
+  d <- duplicated(as.data.table(getNames(x)))
   if(any(d)) {
     warning("Data contains duplicate entries (",paste(getNames(x)[d],collapse=", "),"), only first found entries will be written to file!")
     x <- x[,,which(!d)]
   }
   
   # convert to data frame
-  x <- dcast(melt(x,as.is=TRUE,na.rm = skipempty),eval(parse(text=paste0("...~",names(dimnames(x))[2]))))
+  x <- reshape2::dcast(reshape2::melt(x,as.is=TRUE,na.rm = skipempty),eval(parse(text=paste0("...~",names(dimnames(x))[2]))))
   
   # split data and dimension information
   data <- x[3:length(x)]
@@ -108,14 +109,14 @@ prepare_data <- function(x, model=NULL, scenario=NULL, unit=NULL, skipempty=FALS
   
   # split subdimensions
   colsplit <- function(x,col,sep=".") {
-    if(all(grepl(sep,x[[col]],fixed=TRUE))) {
-      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[col]]),split=sep,fixed=TRUE)),ncol=length(x[[col]]))),stringsAsFactors=FALSE)
-      names(tmp) <- strsplit(names(x)[col],split=sep,fixed=TRUE)[[1]]
+    if(all(grepl(sep,x[[col]],fixed=TRUE,useBytes = TRUE))) {
+      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[col]]),split=sep,fixed=TRUE,useBytes = TRUE)),ncol=length(x[[col]]))),stringsAsFactors=FALSE)
+      names(tmp) <- strsplit(names(x)[col],split=sep,fixed=TRUE,useBytes = TRUE)[[1]]
       x <- cbind(tmp,x[setdiff(1:ncol(x),col)])
     }  
     return(x)
   }
-  for(i in grep(sep,names(x),fixed=TRUE)) x <- colsplit(x,i,sep=sep)
+  for(i in grep(sep,names(x),fixed=TRUE,useBytes = TRUE)) x <- colsplit(x,i,sep=sep)
   
   unitsplit <- function(x,col) {
     w <- grepl("\\(.*\\)",x[[col]])

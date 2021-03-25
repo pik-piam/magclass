@@ -19,8 +19,7 @@ Analysis function for magpie objects
 }
 \examples{
 
-data(population_magpie)
- test<-population_magpie
+ test <- maxample("pop")
  dimnames(test)[[1]]<-c("AFG","DEU","FRA","EGY","IND","IDN","RUS","CHN","USA","YEM")
  where(test>500)
 

@@ -19,18 +19,18 @@
 #' @seealso \code{\link{convergence}},\code{\link{lin.convergence}}
 #' @examples
 #' 
-#'   data(population_magpie)
-#'   test<-as.magpie(array(1000,dim(population_magpie[,,"A2"]),dimnames(population_magpie[,,"A2"])))
-#'   calibrate_it(origin=population_magpie,cal_to=test[,"y1995",],cal_type="growth_rate")
-#'   calibrate_it(origin=population_magpie,cal_to=test[,"y1995",],cal_type="convergence", 
+#'   pop <- maxample("pop")
+#'   test<-as.magpie(array(1000,dim(pop[,,"A2"]),dimnames(pop[,,"A2"])))
+#'   calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="growth_rate")
+#'   calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="convergence", 
 #'                cal_year="y1995", end_year="y2055")
-#'   calibrate_it(origin=population_magpie,cal_to=test[,"y1995",],cal_type="none")
+#'   calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="none")
 #' 
 #' @export calibrate_it
 calibrate_it<-function(origin, cal_to, cal_type="convergence", cal_year=NULL, end_year=NULL, report_calibration_factors=FALSE) {
-#data(population_magpie) 
-#origin = population_magpie[,,"A2"]
-#cal_to= population_magpie[,,"B1"]
+#data(pop) 
+#origin = pop[,,"A2"]
+#cal_to= pop[,,"B1"]
 #cal_year="y1995"
 #end_year="y2155"
 #cal_type="convergence"

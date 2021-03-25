@@ -2,10 +2,24 @@ library(testthat)
 
 context("Expansion Test")
 
+mev <- getOption("magclass_expand_version")
+msm <- getOption("magclass_setMatching")
+
+on.exit({options(magclass_expand_version=mev);
+         options(magclass_setMatching=msm)})
+
 test_that("partial expansion", {
   a <- new.magpie(c("AFR.1","AFR.2","EUR.1"),fill = 1)
   b <- new.magpie(c("AFR","EUR"),fill = 1)
+  
+  options(magclass_expand_version=1)
+  expect_equivalent(magpie_expand(b,a),a)
+  options(magclass_expand_version=NULL)
+  options(magclass_setMatching=TRUE)
   expect_identical(magpie_expand(b,a),a)
+  options(magclass_setMatching=msm)
+  expect_identical(magpie_expand(b,a),a)
+  
   d <- new.magpie(c("AFR.BLUB.1","AFR.BLUB.2","EUR.BLUB.1",
                     "AFR.BLA.1","AFR.BLA.2","EUR.BLA.1"),fill = 1)
   e <- new.magpie(c("BLA.AFR.A","BLA.EUR.A","BLUB.AFR.A","BLUB.EUR.A",

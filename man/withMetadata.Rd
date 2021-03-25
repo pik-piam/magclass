@@ -21,11 +21,13 @@ Convenience function to (de-)activate metadata handling in magpie objects and
 to return current setting
 }
 \examples{
- withMetadata()
- withMetadata(TRUE)
- a <- as.magpie(1)
- getMetadata(a)
- withMetadata(FALSE)
+\dontrun{
+   withMetadata()
+   withMetadata(TRUE)
+   a <- as.magpie(1)
+   getMetadata(a)
+   withMetadata(FALSE)
+ }
 }
 \seealso{
 \code{\link{getMetadata}}

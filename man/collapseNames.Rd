@@ -24,6 +24,10 @@ Note that preservedim will be ignored in the case, of a specified collapsedim}
 The provided MAgPIE object with collapsed names
 }
 \description{
+This function has been superseded by \code{\link{collapseDim}} which is a 
+more generalized version of this function. Please use this one instead!
+}
+\details{
 This function will remove names in the data dimension which are the same for
 each element (meaning that this data dimension contains exactly one element)
 }
@@ -59,7 +63,7 @@ each element (meaning that this data dimension contains exactly one element)
 
 }
 \seealso{
-\code{\link{getNames}}, \code{\link{setNames}},
+\code{\link{collapseDim}}, \code{\link{getItems}},
 \code{"\linkS4class{magpie}"}
 }
 \author{

@@ -25,13 +25,10 @@ apply command for magpieobjects. Very efficient for replacing loops.
 }
 \examples{
 
-\dontrun{ 
-data("population_magpie")
-magpply(population_magpie,FUN=sum,MARGIN=2)
-fourdim<-population_magpie*setNames(population_magpie,c("jkk","lk"))
-magpply(fourdim,FUN=sum,MARGIN=c(1,3.1))
-magpply(fourdim,FUN=function(x){return(x+1)},MARGIN=c(1,3.1),integrate=TRUE)
-}
+pop <- maxample("pop")
+magpply(pop,FUN=sum,MARGIN=2)
+fourdim <- pop * setNames(pop, c("jkk","lk"))
+magpply(fourdim, FUN=sum, MARGIN=c(1,3.1))
 
 }
 \author{

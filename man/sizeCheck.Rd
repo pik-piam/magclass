@@ -19,7 +19,8 @@ Ignored if \code{getOption("magclass_sizeLimit")} is negative.
 }
 \examples{
 
-magclass:::sizeCheck(dim(population_magpie),dimnames(population_magpie))
+pop <- maxample("pop")
+magclass:::sizeCheck(dim(pop),dimnames(pop))
 
 }
 \author{

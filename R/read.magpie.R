@@ -3,8 +3,8 @@
 #' Reads a MAgPIE-file and converts it to a 3D array of the structure
 #' (cells,years,datacolumn)
 #' 
-#' This function reads from 12 different MAgPIE file\_types. "rds" is
-#' a R-default format for storing R objects."cs2" is the new standard 
+#' This function reads from 13 different MAgPIE file\_types. "rds" is
+#' a R-default format for storing R objects."cs2" or "cs2b" is the new standard 
 #' format for cellular data with or without 
 #' header and the first columns (year,regiospatial) or only (regiospatial), 
 #' "csv" is the standard format for regional data with or without header 
@@ -27,9 +27,9 @@
 #' to file\_name and file\_folder)
 #' @param file_folder folder the file is located in (alternatively you can also
 #' specify the full path in file\_name - wildcards are supported)
-#' @param file_type format the data is stored in. Currently 12 formats are
+#' @param file_type format the data is stored in. Currently 13 formats are
 #' available: "rds" (recommended compressed format), 
-#' "cs2" (cellular standard MAgPIE format), "csv" (regional standard
+#' "cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
 #' MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 #' (alternative multidimensional format compatible to GAMS, in contrast to cs3
 #' it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
@@ -59,17 +59,15 @@
 #' The binary MAgPIE formats .m and .mz have the following content/structure
 #' (you only have to care for that if you want to implement
 #' read.magpie/write.magpie functions in other languages): \cr \cr 
-#' [ FileFormatVersion | Current file format version number (currently 5) | integer | 2 Byte ] \cr 
+#' [ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr 
 #' [ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
 #' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-#' [ nchar_sets | Number of character bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
-#' [ not used | Bytes reserved for later file format improvements | integer | 92 Byte ] \cr
+#' [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
 #' [ nyears | Number of years | integer | 2 Byte ]\cr 
 #' [ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
-#' [ nregions | Number of regions | integer | 2 Byte ] \cr 
-#' [ nchar_reg | Number of character bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
-#' [ regions | Regionnames saved as reg1\\nreg2 (\\n is the delimiter) | character | 1*nchar_reg Byte ] \cr 
-#' [ cpr | Cells per region | integer | 4*nreg Byte ] \cr 
+#' [ ncells | Number of cells | integer | 4 Byte ]\cr 
+#' [ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
+#' [ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
 #' [ nelem | Total number of data elements | integer | 4 Byte ] \cr 
 #' [ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
 #' [ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
@@ -77,12 +75,7 @@
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
 #' [ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr 
-#' 
-#' Please note that if your data in the spatial dimension is not ordered by
-#' region name each new appearance of a region which already appeared before
-#' will be treated and counted as a new region (e.g.
-#' AFR.1,AFR.2,CPA.3,CPA.4,AFR.5 will count AFR twice and nregions will be set
-#' to 3!).
+#'
 #' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @examples
@@ -119,7 +112,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   if(is.null(file_type)) {
     file_type <- tail(strsplit(file_name,'\\.')[[1]],1)
   }
-  if(!(file_type %in% c('rds','m','mz','csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
+  if(!(file_type %in% c('rds','m','mz','csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r','put',"asc","nc","nc2"))) stop(paste("Unkown file type:",file_type))
   
   .readComment <- function(file_name,comment.char="*",meta.char="#") {
     comment <- NULL
@@ -304,7 +297,10 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       }
       
       if(!old_format) {
+        newest_fformat_version <- 6
         fformat_version <- readBin(zz,integer(),1,size=2)
+        if(fformat_version > newest_fformat_version) stop("File format is newer (v",fformat_version,") than the formats supported (v0-v",newest_fformat_version,"). ", 
+                                     "\nPlease update your magclass package to the newest version!")
         nchar_comment <- readBin(zz,integer(),1,size=4)
         empty <- 94
         if(fformat_version > 2) {
@@ -314,44 +310,48 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
           nchar_sets <- readBin(zz,integer(),1,size=2)
           empty <- empty - 2
         }
-        readBin(zz,integer(),empty,size=1) #Bytes reserved for later file format improvements
+        if(fformat_version < 6) readBin(zz,integer(),empty,size=1) #Bytes reserved for later file format improvements
       } else {
         fformat_version <- 0
       }
-      nyears <- readBin(zz,integer(),1,size=2)
-      year_list <- readBin(zz,integer(),nyears,size=2)
-      nregions <- readBin(zz,integer(),1,size=2)
-      nchar_regions <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
-      
-      useBytes <- (fformat_version>4)
-      
-      regions <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n")[[1]]
-      
-      cpr <- readBin(zz,integer(),nregions,size=4)
+      nyears    <- readBin(zz,integer(),1, size=2)
+      year_list <- readBin(zz,integer(),nyears, size=2)
+      useBytes  <- (fformat_version>4)
+      if(fformat_version > 5) {
+        ncells      <- readBin(zz,integer(),1,size=4)
+        nchar_cells <- readBin(zz,integer(),1,size=4)
+        cellnames   <- strsplit(readChar(zz,nchar_cells,useBytes=TRUE),"\n",useBytes=TRUE)[[1]]
+      } else {
+        nregions      <- readBin(zz,integer(),1,size=2)
+        nchar_regions <- readBin(zz,integer(),1,size=ifelse(fformat_version>3,4,2))
+        regions       <- strsplit(readChar(zz,nchar_regions,useBytes=useBytes),"\n",useBytes=useBytes)[[1]]
+        cpr           <- readBin(zz,integer(),nregions,size=4)
+        ncells <- sum(cpr)
+        if(any(cpr!=1)) {
+          cellnames   <- paste(rep(regions,cpr),1:ncells,sep=".")
+        } else {
+          cellnames   <- regions
+        }
+      }
       nelem <- readBin(zz,integer(),1,size=4)
       nchar_data <- readBin(zz,integer(),1,size=4)
       
-      datanames <- strsplit(readChar(zz,nchar_data,useBytes=useBytes),"\n")[[1]]
+      datanames <- strsplit(readChar(zz,nchar_data,useBytes=useBytes),"\n",useBytes=useBytes)[[1]]
       
       if(old_format) readBin(zz,integer(),100,size=1) #100 Byte reserved for later file format improvements
       
-      output <- array(readBin(zz,numeric(),nelem,size=4),c(sum(cpr),nyears,nelem/sum(cpr)/nyears))
+      output <- array(readBin(zz,numeric(),nelem,size=4),c(ncells,nyears,nelem/ncells/nyears))
       output[is.nan(output)] <- NA
-      if(any(cpr!=1)) {
-        cellnames <- paste(rep(regions,cpr),1:sum(cpr),sep=".")
-      } else {
-        cellnames <- regions
-      }
       if(length(cellnames)==1) cellnames <- list(cellnames)
       dimnames(output)[[1]] <- cellnames
       if(year_list[1]>0) dimnames(output)[[2]] <- paste("y",year_list,sep="")
       if(length(datanames)>0) dimnames(output)[[3]] <- datanames
       
       if(fformat_version > 0) {
-        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment,useBytes=useBytes),"\n")[[1]]  
+        if(nchar_comment>0) attr(output,"comment") <- strsplit(readChar(zz,nchar_comment,useBytes=useBytes),"\n", useBytes=useBytes)[[1]]  
       }
       if(fformat_version > 1) {
-        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets,useBytes=useBytes),"\n")[[1]]
+        if(nchar_sets > 0) names(dimnames(output)) <- strsplit(readChar(zz,nchar_sets,useBytes=useBytes),"\n",  useBytes=useBytes)[[1]]
       }
       if(fformat_version > 2) {
         metadata <- unserialize(readBin(zz,raw(),nbyte_metadata))
@@ -794,13 +794,13 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
   }
   if(as.array){
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
+    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
     read.magpie <- as.array(read.magpie)[,,]
   } else {
     read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
+    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
       getMetadata(read.magpie) <- .readMetadata(file_name)
     }
   }

@@ -1,24 +1,25 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 5.10.2
-Date: 2020-06-14
+Version: 5.24.7
+Date: 2021-02-24
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
              person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"),
              person("Stephen", "Bi", role = "aut"),
              person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = "aut"),
+             person("Debbora", "Leip", email = "leip@pik-potsdam.de", role = "aut"),
              person("Lavinia", "Baumstark", email = "lavinia@pik-potsdam.de", role = "ctb"),
              person("Christoph", "Bertram", email = "bertram@pik-potsdam.de", role = "ctb"),
              person("Anastasis", "Giannousakis", email = "giannou@pik-potsdam.de", role = "ctb"),
-             person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),	
- 		         person("Ina", "Neher", role = "ctb"),	
+             person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),
+             person("Ina", "Neher", role = "ctb"),	
              person("Michaja", "Pehl", email = "pehl@pik-potsdam.de", role = "ctb"),	
              person("Anselm", "Schultes", role = "ctb"),	
              person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "ctb"),
-		         person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
-		         person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
+             person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
+             person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
 Description: Data class for increased interoperability working with spatial-
     temporal data together with corresponding functions and methods (conversions,
     basic calculations and basic data manipulation). The class distinguishes
@@ -34,21 +35,23 @@ Imports:
     sp,
     maptools,
     abind,
-    forcats,
-    reshape2
+    data.table,
+    forcats
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
+    reshape2,
     data.tree,
-    units,
+    raster,
+    units(>= 0.7.0),
     udunits2,
-    ncdf4
+    ncdf4,
+    covr
 URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.1158580
 BugReports: https://github.com/pik-piam/magclass/issues
 License: LGPL-3 | file LICENSE
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
-ValidationKey: 94014554

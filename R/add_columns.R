@@ -12,8 +12,8 @@
 #' @seealso \code{\link{add_dimension}},\code{\link{mbind}}
 #' @examples
 #' 
-#'  data(population_magpie)
-#'  a <- add_columns(population_magpie)
+#'  pop <- maxample("pop")
+#'  a <- add_columns(pop)
 #'  str(a)
 #'  fulldim(a)
 #' 

@@ -25,8 +25,8 @@ removes cell numbers if it is purely regional data)
 }
 \examples{
 
- data(population_magpie)
- a <- clean_magpie(population_magpie)
+ pop <- maxample("pop")
+ a <- clean_magpie(pop)
 
 }
 \seealso{

@@ -22,8 +22,8 @@ filled with NAs.
 }
 \examples{
 
- data(population_magpie)
- a <- add_columns(population_magpie)
+ pop <- maxample("pop")
+ a <- add_columns(pop)
  str(a)
  fulldim(a)
 

@@ -32,9 +32,9 @@ Cell, Region, Year, Data1, Data2,... and Value } }
 
 \examples{
 
-data(population_magpie)
-head(as.data.frame(population_magpie))
-head(as.data.frame(population_magpie,rev=2))
+pop <- maxample("pop")
+head(as.data.frame(pop))
+head(as.data.frame(pop,rev=2))
 
 }
 \keyword{methods}
