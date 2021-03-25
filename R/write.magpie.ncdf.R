@@ -20,6 +20,7 @@
 #' @seealso \code{\link{write.magpie}}
 #' 
 write.magpie.ncdf<-function(x,file,nc_compression = 9, var_style="fullname", comment=NULL, verbose=TRUE){
+  
   if (!requireNamespace("ncdf4", quietly = TRUE)) stop("The package ncdf4 is required for writing NCDF4 files!")
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
@@ -81,18 +82,30 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9, var_style="fullname", com
  if(var_style == "grouped") getNames(x) <- gsub(pattern = "\\.",replacement = "/",getNames(x)) # '/' will be recognized as group-seperator
  #  var_style == "fullname" do not alter '.'-seperators, which lead to fullname variable in nc-file 
  
-  mag <- as.array(x)
-  coord <- magclassdata$half_deg[, c("lon", "lat")]
-  NODATA <- NA
-  lon <- seq(-179.75, 179.75, by = 0.5)
-  lat <- seq(-89.75, 89.75, by = 0.5)
-  time <- as.numeric(unlist(lapply(strsplit(dimnames(mag)[[2]], 
-                                            "y"), function(mag) mag[2])))
-  data <- dimnames(mag)[[3]]
-  if(verbose) message("Converting MAgPIE Data to 720 x 360 array")
-  netcdf <- array(NODATA, dim = c(720, 360, dim(mag)[2], 
-                                  dim(mag)[3]), dimnames = list(lon, lat, time, 
-                                                                data))
+ mag  <- as.array(x)
+ time <- as.numeric(unlist(lapply(strsplit(dimnames(mag)[[2]], "y"), function(mag) mag[2])))
+ data <- dimnames(mag)[[3]]
+ 
+ NODATA <- NA
+ lon <- seq(-179.75, 179.75, by = 0.5)
+ lat <- seq(-89.75, 89.75, by = 0.5)
+ if(verbose) message("Converting MAgPIE Data to 720 x 360 array")
+ netcdf <- array(NODATA, dim = c(720, 360, dim(mag)[2], 
+                                 dim(mag)[3]), dimnames = list(lon, lat, time, 
+                                                               data))
+ if(length(getCells(mag))==59199){
+   
+   coord <- magclassdata$half_deg[, c("lon", "lat")]
+  
+ } else {
+   
+   if(!hasCoords(x)){stop("Data has to be provided with 59199 cell or in half-degree data with cell names containing coordinate information.")}
+   coord <- getItems(x, dim=c("x","y"), full=TRUE)
+   coord$lon <- as.numeric(gsub("p","\\.", coord$x))
+   coord$lat <- as.numeric(gsub("p","\\.", coord$y))
+   coord <- data.frame(coord[3:4])
+}
+ 
   if(verbose) pb <- txtProgressBar(min = 0, max = dim(mag)[1], style = 3)
   for (i in 1:ncells(mag)) {
     netcdf[which(coord[i, 1] == lon), which(coord[i,2] == lat), , ] <- mag[i, , , drop = FALSE]
