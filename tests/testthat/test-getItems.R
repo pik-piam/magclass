@@ -30,6 +30,16 @@ test_that("getItems can add and replace (sub)dimensions and separators are repla
   expect_silent(getItems(x,1) <- getItems(pop,dim=1,split = FALSE))
   expect_identical(getItems(x,1),getItems(pop,1))
   expect_false(grepl(".",names(dimnames(x))[[1]], fixed=TRUE))
+  
+  expect_silent(getItems(x,1.2) <- rep("GLO",10))
+  expect_identical(unname(getSets(x)["d1.2"]), "newdim")
+  expect_true(dimExists(1.2,x))
+  expect_silent(getItems(x,1.2) <- NULL)
+  expect_false(dimExists(1.2,x))
+  expect_warning(getItems(x,1.2) <- NULL, "Nothing to do here")
+  expect_error(getItems(pop,1) <- NULL, "Cannot unset dimension")
+  pop1 <- pop[1,,]
+  expect_silent(getItems(pop1,1) <- NULL)
 })
 
 test_that("getItems returns errors for unsupported inputs", {
@@ -38,6 +48,15 @@ test_that("getItems returns errors for unsupported inputs", {
   expect_error(getItems(x,1) <- "blub", "Wrong number of items")
   expect_error(getItems(x,4) <- "blub", "main dimension is not specified")
   expect_error(getItems(x,4,maindim=4) <- "blub", "Unsupported maindim")
+  
+  expect_error(getItems(pop, "t", maindim = 1) <- 12, "dimension different to maindim")
+  
+  expect_error(getItems(pop,dim=1.3), "Subdimension 1.3 does not exist")
+  
+  expect_silent(tmp <- getItems(pop,1))
+  names(tmp) <- tmp
+  names(tmp)[1] <- "BLA"
+  expect_error(getItems(pop,1) <- tmp, "not all names match")
 })
 
 test_that("getItems maps entries when input vector is named", {
