@@ -315,7 +315,11 @@ setMethod("as.magpie",
 
 .raster2magpie <- function(x, unit="unknown", temporal=NULL) {
   if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for conversion of raster objects!")
-  df <- as.data.frame(x,na.rm=TRUE)
+  # na.rm = TRUE seems to remove all cells in which at least one layer has an NA. Hence, use na.rm = FALSE
+  # and remove all cells which have NAs in ALL layers afterwards!
+  df <- as.data.frame(x, na.rm = FALSE)
+  df <- df[rowSums(!is.na(df)) != 0,, drop = FALSE]
+  
   co <- raster::coordinates(x)[as.integer(rownames(df)),]
   co <- matrix(sub(".","p",co,fixed=TRUE),ncol=2)
   colnames(co) <- c("x","y")

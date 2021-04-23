@@ -27,6 +27,7 @@ test_that("Unit calculations work", {
   expect_identical(units(pop), install_magpie_units("1e+06 people"))
   expect_identical(units(pop + pop), install_magpie_units("1e+06 people"))
   expect_identical(units(pop * pop), install_magpie_units("1e+12 people^2"))
+  expect_error(units(pop) <- "m", "people cannot be converted to m")
   pop2 <- pop
   units(pop2) <- "people"
   expect_identical(units(pop2), install_magpie_units("people"))
