@@ -33,7 +33,12 @@ setMethod("as.data.frame",
   function(x,rev=1) 
   {
     if(rev==1) {
-      dimnames(x)[[2]] <- getYears(x,as.integer=TRUE)
+      yearsAsIntegers <- suppressWarnings(getYears(x,as.integer=TRUE))
+      if(any(is.na(getYears(x)) != is.na(yearsAsIntegers))) {
+        dimnames(x)[[2]] <- getYears(x)
+      } else {
+        dimnames(x)[[2]] <- yearsAsIntegers
+      }
       if(is.null(dimnames(x)[[2]])) dimnames(x)[[2]] <- 0
       if(is.null(dimnames(x)[[3]])) dimnames(x)[[3]] <- "NA"
       if(any(dim(x)==0)) {

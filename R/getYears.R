@@ -29,7 +29,7 @@
 #' @export
 getYears <- function(x,as.integer=FALSE) {
   if(as.integer) {
-    return(as.integer(substring(dimnames(x)[[2]],2)))  
+    return(as.integer(sub("^y", "", dimnames(x)[[2]])))
   } else {
     return(dimnames(x)[[2]])
   }
