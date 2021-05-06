@@ -331,7 +331,12 @@ write.magpie <- function(x,file_name,file_folder="",file_type=NULL,append=FALSE,
           output <-  array(x,dim=dim(x)[1:2],dimnames=list(dimnames(x)[[1]],dimnames(x)[[2]]))
           output <- aperm(output)
           if(print_regions) {
-            output <- rbind(substring(dimnames(x)[[1]],1,3),output)
+            if (all(dimExists(c(1.2,1.3),x) == c(TRUE,FALSE))) {
+              tmp <- sub("\\.[^.]*$","",dimnames(x)[[1]])
+            } else {
+              tmp <- dimnames(x)[[1]]
+            }
+            output <- rbind(tmp,output)
             if(years) output <- cbind(c("dummy",dimnames(x)[[2]]),output)
           } else {
             if(years) output <- cbind(dimnames(x)[[2]],output)          
