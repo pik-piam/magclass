@@ -29,6 +29,10 @@ test_that("multi element subsetting works", {
   expect_equivalent(as.array(p[character(0),character(0),character(0)]), a[NULL,NULL,NULL,drop=FALSE])
 })
 
+test_that("boolean subsetting works", {
+  expect_identical(p[p > 1000],p[p[10:1,,] > 1000])
+})
+
 test_that("error detection works", {
   expect_error(p[,,"A3"], "out of bounds")
   expect_error(p[,,list("A3")], "out of bounds")

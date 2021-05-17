@@ -178,11 +178,12 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
   return(x)
 }
 
-.dimextract <- function(x,i,dim,pmatch=FALSE,invert=FALSE) {
+.dimextract <- function(x, i, dim, pmatch=FALSE, invert=FALSE) {
   
-  if(is.factor(i)) i <- as.character(i)
-  if(invert && is.numeric(i)) i <- -i
-  if(!is.character(i) && !is.list(i)) return(i)
+  if (is.magpie(i)) i <- magpie_expand(i,x)
+  if (is.factor(i)) i <- as.character(i)
+  if (invert && is.numeric(i)) i <- -i
+  if (!is.character(i) && !is.list(i)) return(i)
   
   if(length(i)==0) return(NULL)
   dimnames <- dimnames(x)[[dim]]
