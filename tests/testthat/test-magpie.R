@@ -37,6 +37,7 @@ test_that("boolean subsetting works", {
   p2 <- p[1,,1]
   expect_identical(p[,p2>1000,],p[,as.vector(p2>1000),])
   expect_identical(p[,p2[,16:1,]>1000,],p[,as.vector(p2>1000),])
+  expect_identical(p[,p2[,c(16:10,1:9),]>1000,],p[,as.vector(p2>1000),])
 })
 
 test_that("error detection works", {
