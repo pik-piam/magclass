@@ -181,7 +181,20 @@ setClass("magpie",contains="array",prototype=array(0,c(0,0,0)))
 
 .dimextract <- function(x, i, dim, pmatch=FALSE, invert=FALSE) {
   
-  if (is.magpie(i)) i <- magpie_expand(i,x)
+  if (is.magpie(i) && is.logical(i)) {
+    # check whether input is a 1D magpie object
+    if(dim(i)[dim] == length(i)) {
+      elemsX <- getItems(x,dim=dim)
+      elemsI <- getItems(i,dim=dim)
+      i <- as.vector(i)
+      if (dim(x)[dim] > 1 && setequal(elemsX, elemsI)) {
+        # reorder, if necessary
+        i <- i[match(elemsX, elemsI)]
+      }
+    } else if (dim == 1) {
+      i <- magpie_expand(i,x)   
+    }
+  }
   if (is.factor(i)) i <- as.character(i)
   if (invert && is.numeric(i)) i <- -i
   if (!is.character(i) && !is.list(i)) return(i)

@@ -31,6 +31,12 @@ test_that("multi element subsetting works", {
 
 test_that("boolean subsetting works", {
   expect_identical(p[p > 1000],p[p[10:1,,] > 1000])
+  p2 <- p[,1,1]
+  expect_identical(p[p2>1000,,],p[as.vector(p2>1000),,])
+  expect_identical(p[p2[10:1,,]>1000,,],p[as.vector(p2>1000),,])
+  p2 <- p[1,,1]
+  expect_identical(p[,p2>1000,],p[,as.vector(p2>1000),])
+  expect_identical(p[,p2[,16:1,]>1000,],p[,as.vector(p2>1000),])
 })
 
 test_that("error detection works", {
