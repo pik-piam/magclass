@@ -15,7 +15,8 @@
 #' as.magpie,RasterLayer-method as.magpie,RasterStack-method
 #' is.magpie [,magpie-method [,magpie,ANY,ANY-method [<-,magpie,ANY,ANY-method
 #' [<-,magpie-method Ops,magpie,magpie-method Ops,magpie,numeric-method Ops,numeric,magpie-method
-#' ifelse,magpie-method
+#' ifelse,magpie-method is.na,magpie-method is.nan,magpie-method
+#' is.infinite,magpie-method is.finite,magpie-method
 #' @docType class
 #' @param x An object that should be either tested or transformed as/to an
 #' MAgPIE-object.

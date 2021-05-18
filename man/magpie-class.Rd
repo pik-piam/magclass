@@ -25,6 +25,10 @@
 \alias{Ops,magpie,numeric-method}
 \alias{Ops,numeric,magpie-method}
 \alias{ifelse,magpie-method}
+\alias{is.na,magpie-method}
+\alias{is.nan,magpie-method}
+\alias{is.infinite,magpie-method}
+\alias{is.finite,magpie-method}
 \title{Class "magpie" ~~~}
 \arguments{
 \item{x}{An object that should be either tested or transformed as/to an
