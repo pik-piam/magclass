@@ -4,27 +4,30 @@
 \alias{dimOrder}
 \title{dimOrder}
 \usage{
-dimOrder(x, perm)
+dimOrder(x, perm, dim = 3)
 }
 \arguments{
 \item{x}{magpie object}
 
-\item{perm}{vector with the new order of the 3rd dimension}
+\item{perm}{vector with the new order of the sub-dimension. Missing
+sub-dimensions will added automatically at the end}
+
+\item{dim}{main dimension in which the order of sub-dimensions should
+be changed (1, 2 or 3)}
 }
 \value{
 magpie object
 }
 \description{
-Changes the order of the 3rd dimension in a magpie object similar to unwrapping and applying the aperm command, but more efficient.
+Changes the order of the sub-dimension in a magpie object
+similar to unwrapping and applying the aperm command, but more efficient.
 }
 \examples{
-
-\dontrun{ 
-pop <- maxample("pop")
-x <- setNames(pop,c("kj","kej")) * pop
-dimOrder(x=x,perm=c(2,1))
-}
+a <- maxample("animal")
+head(a)
+head(dimOrder(a, perm = 3:1, dim = 1))
+head(dimOrder(a, perm = c(2,1,3), dim = 3))
 }
 \author{
-Benjamin Leon Bodirsky
+Jan Philipp Dietrich, Benjamin Leon Bodirsky
 }
