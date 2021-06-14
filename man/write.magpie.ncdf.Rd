@@ -14,7 +14,8 @@ write.magpie.ncdf(
 )
 }
 \arguments{
-\item{x}{MAgPIE object. Has to be on half degree resolution. If x as comments in attr, they are plotted as global attributes.}
+\item{x}{MAgPIE object. Has to be on half degree resolution. If x as comments in attr,
+they are plotted as global attributes.}
 
 \item{file}{file path as provided in write.magpie}
 
@@ -24,16 +25,20 @@ compression) and 9 (most compression), the netCDF file is written in netCDF
 version 4 format. If set to NA, the netCDF file is written in netCDF version
 3 format.}
 
-\item{var_style}{change between variable naming in nc-file; "fullname" for ungrouped name, "grouped" for variable names divided into sub-groups}
+\item{var_style}{change between variable naming in nc-file; "fullname" for ungrouped name,
+"grouped" for variable names divided into sub-groups}
 
-\item{comment}{Vector of comments (also used for setting the unit). Comments are set as global attributes in the netcdf file. Format of comments: "indicator: comment" (e.g. "unit: Share of land area per grid cell")}
+\item{comment}{Vector of comments (also used for setting the unit). Comments are
+set as global attributes in the netcdf file. Format of comments: "indicator: comment"
+(e.g. "unit: Share of land area per grid cell")}
 
 \item{verbose}{Boolean deciding about whether function should be verbose or not}
 }
 \value{
 netcdf file. Writes one file per year per
 data column. In the case that more than one year and data column is supplied
-several files are written with the structure filename_year_datacolumn.asc. In the case several data dimensions exist, they are saved as subcategories.
+several files are written with the structure filename_year_datacolumn.asc. In the case
+several data dimensions exist, they are saved as subcategories.
 }
 \description{
 Writes magpie object into netcdf4 file.

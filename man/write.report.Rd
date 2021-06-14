@@ -46,7 +46,6 @@ it directly using the reporting format as it is used for many model
 intercomparisons.
 }
 \examples{
-
 \dontrun{
 pop <- maxample("pop")
 write.report(pop)

@@ -20,13 +20,12 @@ magpie object to its real dimensions, so you can apply unwrap.
 }
 \examples{
 
- pop <- maxample("pop")
- a <- complete_magpie(pop)
- b <- add_dimension(a)
- c <- add_dimension(a,nm="dummy2")
- incomplete<-mbind(b[,,1],c)
- d<-complete_magpie(incomplete)
-
+pop <- maxample("pop")
+a <- complete_magpie(pop)
+b <- add_dimension(a)
+c <- add_dimension(a, nm = "dummy2")
+incomplete <- mbind(b[, , 1], c)
+d <- complete_magpie(incomplete)
 }
 \seealso{
 \code{\link{add_dimension}},\code{\link{clean_magpie}}

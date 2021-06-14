@@ -38,9 +38,8 @@ Function to extrapolate missing years in MAgPIE objects.
 \examples{
 
 pop <- maxample("pop")
-time_interpolate(pop,"y2000",integrate=TRUE)
-time_interpolate(pop,c("y1980","y2000"),integrate=TRUE,extrapolation_type="constant")
-
+time_interpolate(pop, "y2000", integrate = TRUE)
+time_interpolate(pop, c("y1980", "y2000"), integrate = TRUE, extrapolation_type = "constant")
 }
 \seealso{
 \code{\link{lin.convergence}}

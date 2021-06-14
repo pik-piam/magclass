@@ -38,7 +38,7 @@ required work to get a new interaction running.
 \strong{Definition}
 
 The format is characterized by the following features:
-  
+
 \itemize{
   \item The file ending is ".mif"
   \item The file is written in ASCII format
@@ -46,7 +46,7 @@ The format is characterized by the following features:
   \item The file always contains a header
   \item The format of the header is: \code{Model;Scenario;Region;Variable;Unit;<ADDITIONAL_COLUMNS>;<YEARS>;}
 }
- 
+
 The first 5 entries always have to exist, <ADDITIONAL_COLUMNS> is additional
 information which can be added optionally (e.g. "Description") and <YEARS>
 are the years for which data is delivered. <YEARS> are always written as 4
@@ -64,9 +64,8 @@ to work with different temporal resolutions. For variables basically
 everything can be reported here. Missing values have to be marked with "N/A".
 }
 \examples{
-
 \dontrun{
-  read.report("report.csv")
+read.report("report.csv")
 }
 
 }
