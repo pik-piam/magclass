@@ -48,7 +48,6 @@ mcalc <- function(x,f,dim=NULL,append=FALSE) {
     assign(as.character(as.list(match.call())$x),mbind(x,eval(f[[3]])),envir =  parent.frame()) 
   } else {
     out <- eval(f[[3]])
-    out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="update", description="copy")
     return(out)
   }
 }

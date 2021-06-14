@@ -71,5 +71,5 @@ clean_magpie <- function(x,what="all") {
     names(dimnames(x)) <- names
   }  
   
-  return(updateMetadata(x))
+  return(x)
 }

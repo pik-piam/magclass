@@ -53,5 +53,5 @@ collapseDim <- function(x, dim=NULL, keepdim=NULL) {
   }
   
   for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL
-  return(updateMetadata(x))
+  return(x)
 }

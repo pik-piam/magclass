@@ -82,7 +82,6 @@ mselect <- function(x,...,collapseNames=FALSE) {
 "mselect<-" <- function(x,...,value) {
   m <- .mselect_coords(x,...)
   x[m$i,m$j,m$k] <- value
-  x <- updateMetadata(x)
   return(x)
 }
 

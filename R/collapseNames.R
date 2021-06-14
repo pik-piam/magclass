@@ -95,5 +95,5 @@ collapseNames <- function(x, collapsedim=NULL, preservedim=NULL) {
   getNames(x) <- tmp
   names(dimnames(x))[3] <- tmp2
   x <- clean_magpie(x,what="sets")
-  return(updateMetadata(x))
+  return(x)
 }

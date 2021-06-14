@@ -39,9 +39,8 @@ dimReduce <- function(x, dim_exclude=NULL) {
     if(dim(x_single)[2]==1) getYears(x_single) <- NULL
     # same information in all dimension entries?
     if(all(x - x_single  == 0, na.rm = TRUE)) {
-      getMetadata(x_single) <- getMetadata(x)
       x <- x_single
     }      
   }
-  return(updateMetadata(x))
+  return(x)
 }

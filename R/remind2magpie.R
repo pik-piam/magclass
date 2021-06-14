@@ -28,6 +28,5 @@ remind2magpie <- function(x) {
   x2["PAO",,] <- x["ROW",,]
   x2["PAS",,] <- x["OAS",,]
   x2["SAS",,] <- x["IND",,]
-  if(withMetadata())  x2 <- updateMetadata(x2,x)
   return(x2)
 }
