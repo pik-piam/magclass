@@ -6,7 +6,6 @@ setMethod("rowMeans",
           {
             out <- rowMeans(as.array(x), na.rm=na.rm, dims=dims, ...)
             out <- as.magpie(as.array(x))
-            getMetadata(out) <- getMetadata(x)
             return(out)
           }
           )

@@ -60,10 +60,6 @@ write.report <- function(x,file=NULL,model="MAgPIE",scenario="default",unit=NA,n
         model <- fulldim(x)[[2]]$model
       }
     }
-
-    if (is.na(unit) & withMetadata()) {
-      unit <- units(x)
-    }
     unitdef<-unit
     if (is(unit,"units")) {
       if (as.numeric(unit)!=1) {

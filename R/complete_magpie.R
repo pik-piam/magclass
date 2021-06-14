@@ -35,6 +35,5 @@ complete_magpie<-function(x,fill=NA) {
     out<-mbind(x,add)
   } else {out<-x}
   out<-out[,,order(getNames(out))]
-  getMetadata(out) <- getMetadata(x)
   return(out)
 }

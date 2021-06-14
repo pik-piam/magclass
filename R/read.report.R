@@ -82,7 +82,7 @@ read.report <- function(file,as.list=TRUE) {
     units <- sub("^.*#SPLITHERE# \\((.*)\\)$","\\1",names)
     names(names) <- sub("#SPLITHERE#", "", names)
     names <- sub("#SPLITHERE#","",names)
-    #delete dots if they are aparrently not used as dimension separator
+    #delete dots if they are aparently not used as dimension separator
     ndots <- nchar(gsub("[^\\.]*","",names))
     if(any(ndots!=ndots[1])) names <- gsub("\\.","",names)
     #replace weird ° in tables after sub function evaluation 
@@ -101,8 +101,7 @@ read.report <- function(file,as.list=TRUE) {
     mag[coord] <- suppressWarnings(as.numeric(as.vector(as.matrix(tmp[,yearelems]))))
     names(dimnames(mag)) <- c("region","year","variable")
     mag <- as.magpie(mag,spatial=1,temporal=2)
-    if (withMetadata())  getMetadata(mag,"unit") <- install_magpie_units(units)
-return(mag)  
+    return(mag)  
   }
 
   .readmif <- function(file) {

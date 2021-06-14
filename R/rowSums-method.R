@@ -27,7 +27,6 @@ setMethod("rowSums",
           {
             out <- rowSums(as.array(x), na.rm=na.rm, dims=dims, ...)
             out <- as.magpie(as.array(out),spatial=1)
-            getMetadata(out) <- getMetadata(x)
             return(out)
           }
           )

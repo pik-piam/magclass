@@ -39,13 +39,12 @@ Standardized functions to calibrate values to a certain baseyear.
 }
 \examples{
 
-  pop <- maxample("pop")
-  test<-as.magpie(array(1000,dim(pop[,,"A2"]),dimnames(pop[,,"A2"])))
-  calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="growth_rate")
-  calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="convergence", 
-               cal_year="y1995", end_year="y2055")
-  calibrate_it(origin=pop,cal_to=test[,"y1995",],cal_type="none")
-
+pop <- maxample("pop")
+test <- as.magpie(array(1000, dim(pop[, , "A2"]), dimnames(pop[, , "A2"])))
+calibrate_it(origin = pop, cal_to = test[, "y1995", ], cal_type = "growth_rate")
+calibrate_it(origin = pop, cal_to = test[, "y1995", ], cal_type = "convergence",
+  cal_year = "y1995", end_year = "y2055")
+calibrate_it(origin = pop, cal_to = test[, "y1995", ], cal_type = "none")
 }
 \seealso{
 \code{\link{convergence}},\code{\link{lin.convergence}}

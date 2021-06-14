@@ -236,14 +236,11 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
           useBytes = useBytes)[[1]]
       }
       if (fformatVersion > 2) {
-        metadata <- unserialize(readBin(zz, raw(), nbyteMetadata))
+       readBin(zz, raw(), nbyteMetadata)
       }
       close(zz)
       attr(output, "FileFormatVersion") <- fformatVersion
       readMagpie <- new("magpie", output)
-      if (fformatVersion > 2) {
-        getMetadata(readMagpie) <- metadata
-      }
     } else if (file_type == "rds") {
       readMagpie <- readRDS(file_name)
       if (!is.magpie(readMagpie)) stop("File does not contain a magpie object!")
@@ -366,8 +363,6 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
 
       # convert array to magpie object
       readMagpie <- clean_magpie(as.magpie(mag, temporal = 2))
-      getMetadata(readMagpie) <- metadata
-
     } else {
       # check for header
       if (file_type == "put") {

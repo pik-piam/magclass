@@ -11,7 +11,8 @@ magpply(X, FUN, MARGIN, ..., integrate = FALSE)
 
 \item{FUN}{function that shall be applied X}
 
-\item{MARGIN}{dimension over which FUN shall be applied (like a loop over that dimension). This dimension will be preserved in the output object}
+\item{MARGIN}{dimension over which FUN shall be applied (like a loop over that dimension).
+This dimension will be preserved in the output object}
 
 \item{...}{further parameters passed on to FUN}
 
@@ -26,10 +27,9 @@ apply command for magpieobjects. Very efficient for replacing loops.
 \examples{
 
 pop <- maxample("pop")
-magpply(pop,FUN=sum,MARGIN=2)
-fourdim <- pop * setNames(pop, c("jkk","lk"))
-magpply(fourdim, FUN=sum, MARGIN=c(1,3.1))
-
+magpply(pop, FUN = sum, MARGIN = 2)
+fourdim <- pop * setNames(pop, c("jkk", "lk"))
+magpply(fourdim, FUN = sum, MARGIN = c(1, 3.1))
 }
 \author{
 Benjamin Leon Bodirsky

@@ -25,39 +25,8 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9, var_style="fullname", com
   if (is.null(getNames(x)) | is.null(getYears(x))) 
     stop("Year and Data name are necessary for saving to NetCDF format")
 
-  # metadata new implementation
-  if(!is.null(getMetadata(x))) {
+  if(!is.null(comment)) {
     metadata <- TRUE
-    commentary <- getMetadata(x)
-    indicator <- names(commentary)
-    if(is.list(commentary$source)) {
-      for(i in 1:length(commentary$source)) {
-        indicator[[length(indicator)+1]] <- paste("source",i)
-        commentary[[length(commentary)+1]] <- commentary$source[[i]]
-      }
-      commentary$source <- NULL
-      indicator <- indicator[-match("source",indicator)]
-    }
-    if(!any(indicator=="unit")) {
-      units <- "unknown"
-    }else if (is.character(commentary$unit)) {
-      units <- commentary$unit
-    }else if (is(commentary$unit,"units")) {
-      if (as.numeric(commentary$unit)==1) {
-        units <- as.character(units(commentary$unit))
-      }else {
-        units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)))
-      }
-    #Mixed units handling in development  
-    #}else if is(commentary$unit,"mixed_units") {
-      #units <- paste(as.character(commentary$unit),as.character(units(commentary$unit)),collapse=", ")
-    }else {
-      units <- "unknown"
-    }
-    commentary$unit <- units
-    #metadata old implementation
-  }else if(!is.null(comment)) {
-    metadata=TRUE
     indicator = substring(text = comment,first = 1, last=regexpr(pattern = ": ",text = comment)-1)
     commentary = substring(text = comment,first = (regexpr(pattern = ": ",text = comment)+2))
     if(any(indicator=="")){
@@ -69,7 +38,7 @@ write.magpie.ncdf<-function(x,file,nc_compression = 9, var_style="fullname", com
     indicator<-indicator[which(indicator!="")]
     
     if(!any(indicator=="unit")) { 
-      units="not specified" 
+      units <- "not specified" 
     } else {
       units <- commentary[which(indicator=="unit")]
     }

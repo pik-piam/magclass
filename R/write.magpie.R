@@ -71,7 +71,7 @@
 #' read.magpie/write.magpie functions in other languages): \cr \cr
 #' [ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr
 #' [ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr
-#' [ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr
+#' [ nbyte_metadata | Number of bytes of the serialized metadata (currently = 0) | integer | 4 Byte ] \cr
 #' [ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr
 #' [ nyears | Number of years | integer | 2 Byte ]\cr
 #' [ yearList | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr
@@ -84,7 +84,7 @@
 #' [ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr
 #' [ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
-#' [ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr
+#' [ metadata | serialized metadata information (currently not in use) | bytes | 1*nbyte_metadata Byte] \cr
 #'
 #' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"},
@@ -122,7 +122,6 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     # look for comment/addtitional information
     if (is.null(comment) & !is.null(attr(x, "comment"))) comment <- attr(x, "comment")
     if (is.null(comment)) comment <- ""
-    metadata <- getMetadata(x)
 
     # expand wildcards
     filePath <- paste(Sys.glob(dirname(filePath)), basename(filePath), sep = "/")
@@ -147,7 +146,6 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       datanames <- dimnames(x)[[3]]
       datanamesCollapsed <- paste(datanames, collapse = "\n")
       setsCollapsed <- paste(getSets(x, fulldim = FALSE), collapse = "\n")
-      metadata <- serialize(metadata, NULL, FALSE)
 
       if (years) {
         yearList <- as.integer(substr(dimnames(x)[[2]], 2, 5))
@@ -163,7 +161,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
 
       writeBin(as.integer(fformatVersion), zz, size = 2)
       writeBin(as.integer(nchar(comment, type = "bytes")), zz, size = 4)
-      writeBin(as.integer(length(metadata)), zz, size = 4)
+      writeBin(as.integer(0), zz, size = 4)
       writeBin(as.integer(nchar(setsCollapsed, type = "bytes")), zz, size = 2)
       writeBin(as.integer(c(nyears, yearList)), zz, size = 2)
       writeBin(as.integer(c(ncells, nchar(cellsCollapsed, type = "bytes"))), zz, size = 4)
@@ -173,7 +171,6 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       writeBin(as.numeric(as.vector(x)), zz, size = 4)
       if (comment != "") writeChar(comment, zz, eos = NULL)
       if (nchar(setsCollapsed, type = "bytes") > 0) writeChar(setsCollapsed, zz, eos = NULL)
-      if (!is.null(metadata)) writeBin(metadata, zz)
       close(zz)
       Sys.chmod(filePath, mode)
     } else if (file_type == "asc") {

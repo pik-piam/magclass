@@ -17,8 +17,9 @@ Converts a MAgPIE object with Remind regions to a MAgPIE object with MAgPIE
 regions
 }
 \examples{
-
- \dontrun{a <- remind2magpie(remind_c_prices)}
+\dontrun{
+a <- remind2magpie(remind_c_prices)
+}
 
 }
 \seealso{

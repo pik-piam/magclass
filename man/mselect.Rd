@@ -40,9 +40,8 @@ entries should be searched for!
 
 \examples{
 
- pop <- maxample("pop")
- mselect(pop,i=c("AFR","EUR"),scenario="A2",t="y2035")
-
+pop <- maxample("pop")
+mselect(pop, i = c("AFR", "EUR"), scenario = "A2", t = "y2035")
 }
 \seealso{
 \code{\link{collapseNames}}, \code{"\linkS4class{magpie}"}

@@ -9,11 +9,11 @@ collapseDim(x, dim = NULL, keepdim = NULL)
 \arguments{
 \item{x}{MAgPIE object}
 
-\item{dim}{Either NULL, dimension code or 
-name of dimension or a vector of these. If set to NULL all single entry subdimensions will 
+\item{dim}{Either NULL, dimension code or
+name of dimension or a vector of these. If set to NULL all single entry subdimensions will
 be removed as they are irrelevant to uniquely identfy a data element. If specified, only the specified
 subdimensions will be removed (See \code{\link{dimCode}} for more details how to specify a subdimension).
-CAUTION: The function also allows to specify subdimensions which are otherwise needed to clearly identify 
+CAUTION: The function also allows to specify subdimensions which are otherwise needed to clearly identify
 an entry. By removing these subdimensions duplicates in the data will be created potentially causing
 problems in the further use of the data set. Be careful in removing subdimensions.}
 
@@ -32,12 +32,11 @@ of the function \code{\link{collapseNames}}
 }
 \examples{
 
- x <- new.magpie(c("GLO.1","GLO.2"),2000,c("bla.a","bla.b"))  
- collapseDim(x)
- collapseDim(x,keepdim=1:2)
- collapseDim(x,dim=1.1)
- collapseDim(x,dim=3.2)
-
+x <- new.magpie(c("GLO.1", "GLO.2"), 2000, c("bla.a", "bla.b"))
+collapseDim(x)
+collapseDim(x, keepdim = 1:2)
+collapseDim(x, dim = 1.1)
+collapseDim(x, dim = 3.2)
 }
 \seealso{
 \code{\link{getItems}}

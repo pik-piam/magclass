@@ -44,8 +44,6 @@ Suggests:
     reshape2,
     data.tree,
     raster,
-    units(>= 0.7.0),
-    udunits2,
     ncdf4,
     covr
 URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.1158580

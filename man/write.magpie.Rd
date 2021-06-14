@@ -12,7 +12,6 @@ write.magpie(
   append = FALSE,
   comment = NULL,
   comment.char = "*",
-  metadata.char = "~",
   mode = NULL,
   nc_compression = 9,
   verbose = TRUE,
@@ -30,9 +29,9 @@ to file\_name and file\_folder)}
 can also specify the full path in file\_name - wildcards are supported)}
 
 \item{file_type}{Format the data should be stored as. Currently 13 formats
-are available: "rds" (default R-data format), "cs2" (cellular standard 
+are available: "rds" (default R-data format), "cs2" (cellular standard
 MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
-"csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE 
+"csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE
 data, compatible to GAMS), "cs4" (alternative multidimensional format compatible
 to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
 "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
@@ -56,9 +55,6 @@ content of attr(x,"comment")}
 \item{comment.char}{character: a character vector of length one containing a
 single character or an empty string. Use "" to turn off the interpretation
 of comments altogether.}
-
-\item{metadata.char}{character: a character vector of length one containing a
-single character or an empty string.}
 
 \item{mode}{File permissions the file should be written with as 3-digit
 number (e.g. "777" means full access for user, group and all, "750" means
@@ -85,10 +81,10 @@ This function can write 13 different MAgPIE file\_types. "cs2" is the new
 standard format for cellular data with or without header and the first
 columns (year,regiospatial) or only (regiospatial), "cs2b" is identical to
 "cs2" except that it will suppress the data name if it has only 1 element
-in the data dimension. "csv" is the standard format for regional 
-data with or without header and the first columns (year,region,cellnumber) 
-or only (region,cellnumber), "cs3" is another csv format which is 
-specifically designed for multidimensional data for usage in GAMS.  
+in the data dimension. "csv" is the standard format for regional
+data with or without header and the first columns (year,region,cellnumber)
+or only (region,cellnumber), "cs3" is another csv format which is
+specifically designed for multidimensional data for usage in GAMS.
 All these variants are written without further specification. "rds" is
 a R-default format for storing R objects.
 "magpie" (.m) and "magpie zipped" (.mz) are new formats developed to allow a
@@ -103,29 +99,28 @@ several files are written with the structure filename_year_datacolumn.asc
 \note{
 The binary MAgPIE formats .m and .mz have the following content/structure
 (you only have to care for that if you want to implement
-read.magpie/write.magpie functions in other languages): \cr \cr 
-[ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr 
-[ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
-[ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-[ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
-[ nyears | Number of years | integer | 2 Byte ]\cr 
-[ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
+read.magpie/write.magpie functions in other languages): \cr \cr
+[ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr
+[ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr
+[ nbyte_metadata | Number of bytes of the serialized metadata (currently = 0) | integer | 4 Byte ] \cr
+[ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr
+[ nyears | Number of years | integer | 2 Byte ]\cr
+[ yearList | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr
 [ ncells | Number of cells | integer | 4 Byte ]\cr
-[ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
-[ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
-[ nelem | Total number of data elements | integer | 4 Byte ] \cr 
+[ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr
+[ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr
+[ nelem | Total number of data elements | integer | 4 Byte ] \cr
 [ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
-[ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
-[ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
-[ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
+[ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr
+[ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr
+[ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr
 [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
-[ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr
+[ metadata | serialized metadata information (currently not in use) | bytes | 1*nbyte_metadata Byte] \cr
 }
 \examples{
 
 # a <- read.magpie("lpj_yield_ir.csv")
 # write.magpie(a,"lpj_yield_ir.mz")
-
 }
 \seealso{
 \code{"\linkS4class{magpie}"},

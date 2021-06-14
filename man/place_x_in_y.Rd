@@ -22,10 +22,9 @@ Function positions magpie object x into magpie object y.
 }
 \examples{
 
- pop <- maxample("pop")
- x <- pop[,"y1995",]*0.2
- a <- place_x_in_y(x, pop)
-
+pop <- maxample("pop")
+x <- pop[, "y1995", ] * 0.2
+a <- place_x_in_y(x, pop)
 }
 \seealso{
 \code{\link{add_dimension}},\code{\link{add_columns}},\code{\link{mbind}}

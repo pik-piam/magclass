@@ -34,11 +34,9 @@ This function sums over any dimension of a magpie object or an array
 }
 \examples{
 
-  test<-as.magpie(array(1:4,dim=c(2,2)))
-  dimSums(test,dim=c(1,3))
-  dimSums(test[,,1],na.rm=TRUE,dim=c(1,2))
-  
-
+test <- as.magpie(array(1:4, dim = c(2, 2)))
+dimSums(test, dim = c(1, 3))
+dimSums(test[, , 1], na.rm = TRUE, dim = c(1, 2))
 }
 \seealso{
 \code{\link{rowSums}}, \code{\link{dimSums}}, \code{\link{dimCode}}
