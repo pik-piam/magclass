@@ -162,131 +162,6 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     }
   }
   
-  .readMetadata <- function(file_name,comment.char="*",meta.char="~") {
-    metadata <- list()
-    field <- vector()
-    if(!is.null(comment.char) & !is.null(meta.char)) {
-      if(comment.char!="" & meta.char!="") {
-        zz <- file(file_name)
-        open(zz)
-        tmp <- readLines(zz,1)
-        i <- 0
-        while(grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
-          if(grepl(meta.char,substr(tmp,3,3),fixed=TRUE)) {
-            i <- i+1
-            #isolate the metadata field names
-            tmp2 <- unlist(strsplit(tmp, meta.char, fixed=TRUE))[2]
-            field[i] <- trimws(unlist(strsplit(tmp2,":",fixed=TRUE))[1])
-            #calcHistory must be reconstructed from a character to a Node object
-            if(field[i]=="calcHistory"){
-              tmp <- readLines(zz,1)
-              node <- list()
-              j <- 1
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
-                if(j==1){
-                  #isolate the node name from whitespace and formatting characters
-                  tmpsplit <- unlist(strsplit(tmp,"  ",fixed=TRUE))
-                  node[[1]] <- data.tree::Node$new(unlist(strsplit(tmpsplit[1],"* ",fixed=TRUE))[2])
-                }else{
-                  tmpsplit <- unlist(strsplit(tmp,"--"))
-                  node[[j]] <- data.tree::Node$new(unlist(strsplit(tmpsplit[2],"  "))[1])
-                  #special algorithm for adding to the root node
-                  if(grepl("\u00B0",tmp,fixed=TRUE)){
-                    if(!grepl("\u00A6",tmp)){
-                      if(greplength(" ",tmpsplit[1])==2){
-                        node[[1]]$AddChildNode(node[[j]])
-                      }else  addNode(node,tmpsplit[1],j)
-                    }else  addNode(node,tmpsplit[1],j)
-                  }else if(greplength("\u00A6",tmpsplit[1])==1){
-                    if(greplength(" ",tmpsplit[1])==2){
-                      node[[1]]$AddChildNode(node[[j]])
-                    }else  addNode(node,tmpsplit[1],j)
-                  }else if(greplength("\u00A6",tmpsplit[1])>1)  addNode(node,tmpsplit[1],j)
-                }
-                tmp <- readLines(zz,1)
-                j <- j+1
-              }
-              metadata[[i]] <- node[[1]]
-            }else if(field[[i]]=="source") {
-              tmp <- readLines(zz,1)
-              tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
-              metadata[[i]] <- tmp
-              tmp <- readLines(zz,1)
-              k <- 1
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl("[^[:space:]]",tmp) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
-                tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
-                #Create a list if there are multiple sources (Bibtex class uses @ to indicate entry type for each entry)
-                if(grepl("@",substr(tmp,1,3),fixed=TRUE)) {
-                  k <- k+1
-                  if(!is.list(metadata[[i]]))  metadata[[i]] <- list(metadata[[i]])
-                  class(metadata[[i]][[k-1]]) <- "Bibtex"
-                  tmp <- gsub(comment.char,"",tmp,fixed=TRUE)
-                  metadata[[i]][[k]] <- tmp
-                  tmp <- readLines(zz,1)
-                }else {
-                  if (is.list(metadata[[i]]))  metadata[[i]][[k]] <- c(metadata[[i]][[k]], tmp)
-                  else  metadata[[i]] <- c(metadata[[i]], tmp)
-                  tmp <- readLines(zz,1)
-                }
-              }
-              #convert to Bibtex class for storage
-              if (is.list(metadata[[i]])) {
-                class(metadata[[i]][[k]]) <- "Bibtex"
-                name <- list()
-                for (j in 1:length(metadata[[i]])) {
-                  for (n in 1:length(metadata[[i]][[j]])) {
-                    if(n==1) name[[j]] <- trimws(unlist(strsplit(metadata[[i]][[j]][[n]]," = ",fixed=TRUE))[1],"left")
-                    else  name[[j]][n] <- trimws(unlist(strsplit(metadata[[i]][[j]][[n]]," = ",fixed=TRUE))[1],"left")
-                  }
-                  names(metadata[[i]][[j]]) <- name[[j]]
-                }
-              }else {
-                class(metadata[[i]]) <- "Bibtex"
-                name <- vector()
-                for (j in 1:length(metadata[[i]])) {
-                  name[j] <- trimws(unlist(strsplit(metadata[[i]][[j]]," = ",fixed=TRUE))[1],"left")
-                }
-                names(metadata[[i]]) <- name
-              }
-            }else if (field[i]=="unit") {
-              metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
-              if (grepl(",",metadata[[i]])) {
-                metadata[[i]] <- install_magpie_units("unknown")
-                #Mixed Units handling in development
-                
-              }else if (grepl("^\\d",metadata[[i]])) {
-                unitChar <- unlist(strsplit(metadata[[i]]," "))
-                unitChar[2] <- as.character(units(install_magpie_units(unitChar[2])))
-                metadata[[i]] <- units::as_units(as.numeric(unitChar[1]),unitChar[2])
-              }else {
-                metadata[[i]] <- install_magpie_units(metadata[[i]])
-              }
-              tmp <- readLines(zz,1)
-            }else {
-              metadata[[i]] <- unlist(strsplit(tmp2,": ",fixed=TRUE))[2]
-              tmp <- readLines(zz,1)
-              if(is.na(metadata[[i]])) {
-                tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
-                metadata[[i]] <- tmp
-                tmp <- readLines(zz,1)
-              }
-              while(!grepl(meta.char,substr(tmp,3,3),fixed=TRUE) & grepl(comment.char,substr(tmp,1,1),fixed=TRUE)) {
-                tmp <- trimws(gsub(comment.char,"",tmp,fixed=TRUE),"left")
-                if (grepl("[^[:space:]]",tmp)) {
-                  metadata[[i]] <- c(metadata[[i]], tmp)
-                }
-                tmp <- readLines(zz,1)
-              }
-            }
-          }else  tmp <- readLines(zz,1)
-        }
-        close(zz)
-      }
-    }
-    names(metadata) <- field
-    return(metadata)
-  }
-  
   if(file.exists(file_name)) {
     if(file_type=="m" | file_type=="mz") {
       
@@ -361,13 +236,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
       read.magpie <- new("magpie",output)
       if(fformat_version > 2){
         getMetadata(read.magpie) <- metadata
-        if(is.null(metadata$user))  user <- "update"
-        else  user <- "keep"
-        if(is.null(metadata$date))  date <- "update"
-        else  date <- "keep"
-        read.magpie <- updateMetadata(read.magpie,user=user,date=date)
       }
-      
     } else if(file_type=="rds") {
       read.magpie <- readRDS(file_name)
       if(!is.magpie(read.magpie)) stop("File does not contain a magpie object!")
@@ -792,17 +661,7 @@ read.magpie <- function(file_name,file_folder="",file_type=NULL,as.array=FALSE,o
     warning(paste("File",file_name,"does not exist"))
     read.magpie <- NULL
   }
-  if(as.array){
-    read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
-      getMetadata(read.magpie) <- .readMetadata(file_name)
-    }
-    read.magpie <- as.array(read.magpie)[,,]
-  } else {
-    read.magpie <- as.magpie(read.magpie)
-    if(file_type %in% c('csv','cs2','cs2b','cs3','cs4','csvr','cs2r','cs3r','cs4r') && withMetadata()){
-      getMetadata(read.magpie) <- .readMetadata(file_name)
-    }
-  }
+  read.magpie <- as.magpie(read.magpie)
+  if (as.array) read.magpie <- as.array(read.magpie)[,,]
   return(read.magpie)
 }
