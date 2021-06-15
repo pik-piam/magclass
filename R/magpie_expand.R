@@ -183,9 +183,8 @@ magpie_expand1 <- function(x,ref) {
       #both, x and ref, have data names
       #data names do not agree
       .fulldatadim <- function(x,sort=TRUE) {
-        x <- fulldim(x)[[2]]
-        x[[2]] <- NULL #remove temporal dim
-        x[[1]] <- NULL #remove spatial dim
+        x <- getItems(x, dim = 3, split = TRUE)
+        names(x) <- NULL
         if(sort) x <- lapply(x,sort)
         return(x)
       }

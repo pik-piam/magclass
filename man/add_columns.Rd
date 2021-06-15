@@ -22,11 +22,10 @@ filled with NAs.
 }
 \examples{
 
- pop <- maxample("pop")
- a <- add_columns(pop)
- str(a)
- getItems(a, split = TRUE)
-
+pop <- maxample("pop")
+a <- add_columns(pop)
+str(a)
+getItems(a, split = TRUE)
 }
 \seealso{
 \code{\link{add_dimension}},\code{\link{mbind}}

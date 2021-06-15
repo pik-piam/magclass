@@ -25,10 +25,9 @@ with an empty data column with the name "nm".
 }
 \examples{
 
- a <- add_dimension(maxample("pop"))
- str(a)
- getItems(a, split = TRUE)
-
+a <- add_dimension(maxample("pop"))
+str(a)
+getItems(a, split = TRUE)
 }
 \seealso{
 \code{\link{add_columns}},\code{\link{mbind}}

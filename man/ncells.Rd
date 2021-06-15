@@ -36,12 +36,11 @@ MAgPIE-object
 
 \examples{
 
-  a <- is.magpie(NULL)
-  ncells(a)
-  nyears(a)
-  ndata(a)
-  nregions(a)
-
+a <- is.magpie(NULL)
+ncells(a)
+nyears(a)
+ndata(a)
+nregions(a)
 }
 \author{
 Jan Philipp Dietrich

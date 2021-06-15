@@ -57,8 +57,9 @@ write.report <- function(x, file = NULL, model = "MAgPIE", scenario = "default",
     # does not put it into the data-dimension
     if (scenario[1] == "default" & length(scenario) == 1 & length(names(attr(x, "dimnames"))) > 2) {
       if (names(attr(x, "dimnames"))[[3]] == "scenario.model.variable") {
-        scenario <- fulldim(x)[[2]]$scenario
-        model <- fulldim(x)[[2]]$model
+        fulldim <- getItems(x, dim=3, split=TRUE)
+        scenario <- fulldim$scenario
+        model <- fulldim$model
       }
     }
     unitdef <- unit
@@ -72,7 +73,7 @@ write.report <- function(x, file = NULL, model = "MAgPIE", scenario = "default",
     ii <- 1
     for (mod in model) {
       for (scen in scenario) {
-        if (length(fulldim(x)[[2]]) == 5) {
+        if (ndim(x, dim = 3) == 3) {
           if (length(strsplit(getNames(x)[1], split = "\\.")[[1]]) > 1              &
             scen %in% unlist(lapply(strsplit(getNames(x), split = "\\."), "[[", 1))              &
             mod %in% unlist(lapply(strsplit(getNames(x), split = "\\."), "[[", 2))) {
@@ -113,7 +114,7 @@ write.report <- function(x, file = NULL, model = "MAgPIE", scenario = "default",
         output[, "Region"] <- rep(regions, ndata)
 
         for (i in 1:ndata) {
-          if (length(fulldim(x)[[2]]) == 5) {
+          if (ndim(x, dim = 3) == 3) {
             if (length(strsplit(getNames(xtemp)[i], split = "\\.")[[1]]) > 1                &
               strsplit(getNames(xtemp)[i], split = "\\.")[[1]][[1]] == scen                &
               strsplit(getNames(xtemp)[i], split = "\\.")[[1]][[2]] == mod) {

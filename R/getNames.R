@@ -1,8 +1,6 @@
 .dim_fulldim <- function(x,dim) {
-  tmp <- fulldim(x)[[2]]
-  tmp[[2]] <- NULL #remove temporal dimension
-  tmp[[1]] <- NULL #remove spatial dimension
-  
+  tmp <- getItems(x, dim = 3, split = TRUE)
+
   if(!is.null(dim)) {
     #check whether dim contains only 1 element
     if(length(dim)>1) stop("Only a single dimension can be chosen with argument \"dim\"!")

@@ -19,9 +19,8 @@ Reconstruct the full dimensionality of a MAgPIE object
 }
 \examples{
 
-  a <- as.magpie(array(1:6,c(3,2),list(c("bla","blub","ble"),c("up","down"))))
-  unwrap(a)
-
+a <- as.magpie(array(1:6, c(3, 2), list(c("bla", "blub", "ble"), c("up", "down"))))
+unwrap(a)
 }
 \seealso{
 \code{\link{wrap}},\code{\link{fulldim}}
