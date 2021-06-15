@@ -31,23 +31,23 @@ only warnings are returned but no notes. This is done by
 options(verbosity.level=1)
 
 With version 5 of the package magpie_expand has been updated to a newer version
-(currently 2.1). To switch to the old setup you have to set 
-\code{options(magclass_expand_version=1)}.
+(currently 2.1) and since version 6 this is the only currently supported
+version. To switch to the old setup you have to install magclass  in a version < 6 
+and set \code{options(magclass_expand_version=1)}.
 
-By default expansion is based on the elements in a dimension ignoring the set name of 
-the dimension. To expand based on set names instead of contents (recommended) you can 
-switch \code{options(magclass_setMatching=TRUE)}. Please be careful with this setting 
+By default expansion is based on the elements in a dimension ignoring the set name of
+the dimension. To expand based on set names instead of contents (recommended) you can
+switch \code{options(magclass_setMatching=TRUE)}. Please be careful with this setting
 as it alters the behavior of magclass objects quite significantly! For more information
 have a look at \code{vignette("magclass-expansion")}.
 }
 \examples{
 
- a <- new.magpie(c("AFR","CPA"),"y1995",c("m","n"))
- b <- new.magpie("GLO","y1995",c("bla","blub"))
- magpie_expand(b,a)
- options(magclass.verbosity=1)
- magpie_expand(b,a)
-
+a <- new.magpie(c("AFR", "CPA"), "y1995", c("m", "n"))
+b <- new.magpie("GLO", "y1995", c("bla", "blub"))
+magpie_expand(b, a)
+options(magclass.verbosity = 1)
+magpie_expand(b, a)
 }
 \seealso{
 \code{\link{as.magpie}}, \code{\link[base]{options}}
