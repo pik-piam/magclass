@@ -57,7 +57,7 @@ write.report <- function(x, file = NULL, model = "MAgPIE", scenario = "default",
     # does not put it into the data-dimension
     if (scenario[1] == "default" & length(scenario) == 1 & length(names(attr(x, "dimnames"))) > 2) {
       if (names(attr(x, "dimnames"))[[3]] == "scenario.model.variable") {
-        fulldim <- getItems(x, dim=3, split=TRUE)
+        fulldim <- getItems(x, dim = 3, split = TRUE)
         scenario <- fulldim$scenario
         model <- fulldim$model
       }

@@ -1,24 +1,24 @@
-.dim_fulldim <- function(x,dim) {
+.dimFulldim <- function(x, dim) {
   tmp <- getItems(x, dim = 3, split = TRUE)
 
-  if(!is.null(dim)) {
-    #check whether dim contains only 1 element
-    if(length(dim)>1) stop("Only a single dimension can be chosen with argument \"dim\"!")
-    #check whether chosen dimension exists
-    if(is.numeric(dim)) {
-      if(dim < 1 | dim > length(tmp)) stop("Chosen data dimension does not exist (dim = ",dim,")")
-      which_dim <- dim
+  if (!is.null(dim)) {
+    # check whether dim contains only 1 element
+    if (length(dim) > 1) stop("Only a single dimension can be chosen with argument \"dim\"!")
+    # check whether chosen dimension exists
+    if (is.numeric(dim)) {
+      if (dim < 1 | dim > length(tmp)) stop("Chosen data dimension does not exist (dim = ", dim, ")")
+      whichDim <- dim
     } else {
-      if(sum(names(tmp) %in% dim)==0) stop("Chosen data dimension does not exist (dim = ",dim,")")
-      which_dim <- which(names(tmp) %in% dim)
+      if (sum(names(tmp) %in% dim) == 0) stop("Chosen data dimension does not exist (dim = ", dim, ")")
+      whichDim <- which(names(tmp) %in% dim)
     }
     maxdim <- length(tmp)
     tmp <- tmp[[dim]]
-    if(!is.null(tmp)) {
-      attr(tmp,"which_dim") <- which_dim
-      attr(tmp,"maxdim") <- maxdim
+    if (!is.null(tmp)) {
+      attr(tmp, "which_dim") <- whichDim
+      attr(tmp, "maxdim") <- maxdim
     }
-  }  
+  }
   return(tmp)
 }
 
@@ -29,14 +29,14 @@
 
 
 #' Get dataset names
-#' 
+#'
 #' Extracts dataset names of a MAgPIE-object
-#' 
+#'
 #' setNames is a shortcut to use a MAgPIE object with manipulated data names.
 #' The setNames method uses the variable names "object" and "nm" in order to be
 #' consistent to the already existing function setNames.
-#' 
-#' @aliases getNames getNames<- 
+#'
+#' @aliases getNames getNames<-
 #' @param x MAgPIE object
 #' @param fulldim specifies, how the object is treated. In case of FALSE, it is
 #' assumed that x is 3 dimensional and dimnames(x)[[3]] is returned. In case of
@@ -53,31 +53,30 @@
 #' \code{\link{write.magpie}},\code{\link{ndata}},
 #' \code{"\linkS4class{magpie}"}
 #' @examples
-#' 
-#'  a <- as.magpie(1)
-#'  getNames(a)
-#'  setNames(a,"bla")
-#'  
-#'  x <- new.magpie("GLO",2000,c("a.o1","b.o1","a.o2"))
-#'  getNames(x,dim=2)
-#'  
-#'  getSets(x,fulldim=FALSE)[3] <- "bla.blub"
-#'  getNames(x,dim="bla")
-#'  
-#'  getSets(x)[4] <- "ble"
-#'  getNames(x,dim="ble") <- c("Hi","Bye")
-#'  x
-#' 
+#'
+#' a <- as.magpie(1)
+#' getNames(a)
+#' setNames(a, "bla")
+#'
+#' x <- new.magpie("GLO", 2000, c("a.o1", "b.o1", "a.o2"))
+#' getNames(x, dim = 2)
+#'
+#' getSets(x, fulldim = FALSE)[3] <- "bla.blub"
+#' getNames(x, dim = "bla")
+#'
+#' getSets(x)[4] <- "ble"
+#' getNames(x, dim = "ble") <- c("Hi", "Bye")
+#' x
 #' @export
-getNames <- function(x,fulldim=FALSE,dim=NULL) {
-  if(!is.null(dim)) fulldim <- TRUE
-  if(fulldim==FALSE){
+getNames <- function(x, fulldim = FALSE, dim = NULL) {
+  if (!is.null(dim)) fulldim <- TRUE
+  if (fulldim == FALSE) {
     return(dimnames(x)[[3]])
   } else {
-    tmp <- .dim_fulldim(x,dim)
-    if(!is.null(tmp)) {
-      attr(tmp,"which_dim") <- NULL
-      attr(tmp,"maxdim") <- NULL
+    tmp <- .dimFulldim(x, dim)
+    if (!is.null(tmp)) {
+      attr(tmp, "which_dim") <- NULL
+      attr(tmp, "maxdim") <- NULL
     }
     return(tmp)
   }
@@ -85,46 +84,46 @@ getNames <- function(x,fulldim=FALSE,dim=NULL) {
 
 #' @describeIn getNames set names
 #' @export
-"getNames<-" <- function(x,dim=NULL,value) {
-  if(is.null(dim)) {
-    if(is.null(value)) {
-      if(ndata(x)>1) stop("Setting data names to NULL is not possible as ndata is bigger than 1!")
-      s <- getSets(x,fulldim=FALSE)[3]
+"getNames<-" <- function(x, dim = NULL, value) { #nolint
+  if (is.null(dim)) {
+    if (is.null(value)) {
+      if (ndata(x) > 1) stop("Setting data names to NULL is not possible as ndata is bigger than 1!")
+      s <- getSets(x, fulldim = FALSE)[3]
       dimnames(x)[[3]] <- value
-      getSets(x,fulldim=FALSE)[3] <- s
+      getSets(x, fulldim = FALSE)[3] <- s
     } else {
-      if(ndata(x)!=length(value)) stop("Wrong number of data names supplied!")
-      if(ndata(x)==0) return(x)
-      tmp <- nchar(gsub("[^\\.]*","",value))
-      if(any(tmp!=tmp[1])) stop("Inconsistent names! Number of dots per name has always to be the same as it is separating different data dimensions")
+      if (ndata(x) != length(value)) stop("Wrong number of data names supplied!")
+      if (ndata(x) == 0) return(x)
+      tmp <- nchar(gsub("[^\\.]*", "", value))
+      if (any(tmp != tmp[1])) stop("Inconsistent names! Number of dots per name has always to be",
+                                   " the same as it is separating different data dimensions")
       dimnames(x)[[3]] <- value
     }
     return(x)
   } else {
-   old_names <- .dim_fulldim(x,dim) 
-   if(is.null(old_names)) {
-     getNames(x,dim=NULL) <- value
-     return(x)
-   }
-   which_dim <- attr(old_names,"which_dim")
-   maxdim <- attr(old_names,"maxdim")
-   if(is.null(which_dim)) which_dim <- 1
-   if(is.null(maxdim)) maxdim <- 1
-   
-   if(is.null(value)) {
-     if(length(old_names) > 1) stop("Setting data names to NULL is not possible as data dimension has more than 1 element!") 
-     return(collapseNames(x,collapsedim=which_dim))
-   } else {
-     if(length(old_names)!=length(value)) stop("Wrong number of data names supplied!")
-     d <- dimnames(x)[[3]]
-     searchstring <- 
-     start_pattern <- paste0("^(",paste(rep("[^\\.]*\\.",which_dim-1),collapse=""),")")
-     end_pattern <- paste0("(",paste(rep("\\.[^\\.]*",maxdim-which_dim),collapse=""),")$")
-     for(i in 1:length(value)) {
-       d <- sub(paste0(start_pattern,escapeRegex(old_names[i]),end_pattern),paste0("\\1",value[i],"\\2"),d)
-     }
-     dimnames(x)[[3]] <- d
-     return(x)
-   }
+    oldNames <- .dimFulldim(x, dim)
+    if (is.null(oldNames)) {
+      getNames(x, dim = NULL) <- value
+      return(x)
+    }
+    whichDim <- attr(oldNames, "which_dim")
+    maxdim <- attr(oldNames, "maxdim")
+    if (is.null(whichDim)) whichDim <- 1
+    if (is.null(maxdim)) maxdim <- 1
+
+    if (is.null(value)) {
+      if (length(oldNames) > 1) stop("Setting names to NULL is not allowed for dimensions with > 1 elements!")
+      return(collapseNames(x, collapsedim = whichDim))
+    } else {
+      if (length(oldNames) != length(value)) stop("Wrong number of data names supplied!")
+      d <- dimnames(x)[[3]]
+      startPattern <- paste0("^(", paste(rep("[^\\.]*\\.", whichDim - 1), collapse = ""), ")")
+      endPattern <- paste0("(", paste(rep("\\.[^\\.]*", maxdim - whichDim), collapse = ""), ")$")
+      for (i in seq_along(value)) {
+        d <- sub(paste0(startPattern, escapeRegex(oldNames[i]), endPattern), paste0("\\1", value[i], "\\2"), d)
+      }
+      dimnames(x)[[3]] <- d
+      return(x)
+    }
   }
 }
