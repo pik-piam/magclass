@@ -24,6 +24,6 @@
 #' @export collapseNames
 
 collapseNames <- function(x, collapsedim = NULL, preservedim = NULL) {
-  if (is.null(collapsedim)) return(collapseDim(x, keepdim = c(1:2,preservedim/10 + 3)))
-  return(collapseDim(x, dim = collapsedim/10 + 3))
+  if (is.null(collapsedim)) return(collapseDim(x, keepdim = c(1:2, preservedim / 10 + 3)))
+  return(collapseDim(x, dim = collapsedim / 10 + 3))
 }
