@@ -31,36 +31,6 @@ more generalized version of this function. Please use this one instead!
 This function will remove names in the data dimension which are the same for
 each element (meaning that this data dimension contains exactly one element)
 }
-\examples{
-
-x <- new.magpie("GLO", 2000, c("bla.a", "bla.b"))
-print(x)
-# An object of class "magpie"
-# , , bla.a
-#      y2000
-# GLO.1    NA
-# , , bla.b
-#      y2000
-# GLO.1    NA
-
-print(collapseNames(x))
-# An object of class "magpie"
-# , , a
-#      y2000
-# GLO.1    NA
-# , , b
-#      y2000
-# GLO.1    NA
-
-print(collapseNames(x), collapseNames = 2)
-# An object of class "magpie"
-# , , bla
-#      y2000
-# GLO.1    NA
-# , , bla
-#      y2000
-# GLO.1    NA
-}
 \seealso{
 \code{\link{collapseDim}}, \code{\link{getItems}},
 \code{"\linkS4class{magpie}"}

@@ -32,7 +32,7 @@ options(verbosity.level=1)
 
 With version 5 of the package magpie_expand has been updated to a newer version
 (currently 2.1) and since version 6 this is the only currently supported
-version. To switch to the old setup you have to install magclass  in a version < 6 
+version. To switch to the old setup you have to install magclass  in a version < 6
 and set \code{options(magclass_expand_version=1)}.
 
 By default expansion is based on the elements in a dimension ignoring the set name of
