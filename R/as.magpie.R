@@ -184,6 +184,13 @@ setMethod("as.magpie",
 )
 
 setMethod("as.magpie",
+          signature(x = "logical"),
+          function(x, unit = "unknown", ...) {
+            return(copy.attributes(x, as.magpie(as.array(x), ...)))
+          }
+)
+
+setMethod("as.magpie",
   signature(x = "NULL"),
   function(x) {
     return(NULL)
