@@ -25,7 +25,7 @@ filled with NAs.
  pop <- maxample("pop")
  a <- add_columns(pop)
  str(a)
- fulldim(a)
+ getItems(a, split = TRUE)
 
 }
 \seealso{

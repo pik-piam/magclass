@@ -109,7 +109,7 @@ getComment(pm)
 
 let's have a look at the full dimensionality of the object
 ```{r, echo = TRUE}
-fulldim(pm)
+getItems(pm, split = TRUE)
 ```
 
 if this is a bit confusing, this is the condensed version analogous to the standard 3 dim subsetting

@@ -27,7 +27,7 @@ with an empty data column with the name "nm".
 
  a <- add_dimension(maxample("pop"))
  str(a)
- fulldim(a)
+ getItems(a, split = TRUE)
 
 }
 \seealso{

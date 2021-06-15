@@ -14,7 +14,7 @@
 #'  
 #'  a <- maxample("animal")
 #'  str(a)
-#'  fulldim(a)
+#'  getItems(a, split = TRUE)
 #' 
 #' @export 
 maxample <- function(data){

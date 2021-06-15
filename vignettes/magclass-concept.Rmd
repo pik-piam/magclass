@@ -78,13 +78,13 @@ ar <- array(1:6, c(3,2), list(c("bla","blub","ble"),
 a <- as.magpie(ar)
 head(a)
 
-getNames(a)
+getItems(a, dim=3)
 
-getNames(a[,,"up"])
+getItems(a[,,"up"], dim=3)
 
-getNames(a[,,"up",drop=TRUE])
+getItems(a[,,"up",drop=TRUE], dim=3)
 
-fulldim(a)
+getItems(a, dim=3, split = TRUE)
 
 ```
 

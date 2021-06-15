@@ -15,7 +15,7 @@
 #'  pop <- maxample("pop")
 #'  a <- add_columns(pop)
 #'  str(a)
-#'  fulldim(a)
+#'  getItems(a, split = TRUE)
 #' 
 #' @export add_columns
 add_columns<-function(x,addnm=c("new"),dim=3.1){

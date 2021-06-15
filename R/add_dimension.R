@@ -16,7 +16,7 @@
 #' 
 #'  a <- add_dimension(maxample("pop"))
 #'  str(a)
-#'  fulldim(a)
+#'  getItems(a, split = TRUE)
 #' 
 #' @export add_dimension
 add_dimension<-function(x,dim=3.1,add="new", nm="dummy"){
