@@ -54,11 +54,9 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **magclass** in publications use:
 
-Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip
-D (2021). _magclass: Data Class and Tools for Handling Spatial-Temporal
-Data_. doi: 10.5281/zenodo.1158580 (URL:
-https://doi.org/10.5281/zenodo.1158580), R package version 6.0.0, <URL:
-https://github.com/pik-piam/magclass>.
+Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip D (2021). _magclass: Data Class and Tools
+for Handling Spatial-Temporal Data_. doi: 10.5281/zenodo.1158580 (URL: https://doi.org/10.5281/zenodo.1158580), R
+package version 6.0.0, <URL: https://github.com/pik-piam/magclass>.
 
 A BibTeX entry for LaTeX users is
 

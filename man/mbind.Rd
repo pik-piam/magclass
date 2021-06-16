@@ -2,7 +2,6 @@
 % Please edit documentation in R/mbind.R
 \name{mbind}
 \alias{mbind}
-\alias{mbind2}
 \title{mbind}
 \usage{
 mbind(...)
@@ -17,13 +16,6 @@ The merged MAgPIE object
 Merges MAgPIE-objects with identical structure in two dimensions. If data
 differs in the temporal or spatial dimension each year or region/cell must
 appear only once!
-}
-\details{
-mbind2 is a reimplementation from mbind which had the aim to increase its
-overall memory efficiency. However, it is not clear which function is better
-and there are also some changes in behaviour of both functions. Therefore,
-the new version was just added as mbind2 instead of using it as a full
-replacement for mbind.
 }
 \examples{
 
