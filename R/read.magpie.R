@@ -138,33 +138,6 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
     return(substring(comment, 2))
   }
 
-  # function to count how many times a pattern is found within a string
-  greplength <- function(pattern, text) {
-    return(length(grep(pattern, unlist(strsplit(text, "")))))
-  }
-  # function helps reconstruct calcHistory into a Node object
-  addNode <- function(node, string, a, n = 6) {
-    # node position determined by number of whitespaces and formatting characters
-    spaces <- greplength(" ", string)
-    if (grepl("\u00B0", string) & grepl("\u00A6", string)) {
-      spaces <- spaces + greplength("\u00A6", string)
-    } else if (greplength("\u00A6", string) > 1) {
-      spaces <- spaces + greplength("\u00A6", string) - 1
-    }
-    # algorithm to determine node's level in the data tree is dependent on whitespaces
-    lvl <- (spaces + n) / 4
-    # algorithm to determine where to attach each node
-    for (b in 1:(a - 1)) {
-      if (node[[a - b]]$level == lvl) {
-        node[[a - b]]$AddSiblingNode(node[[a]])
-        break
-      } else if (node[[a - b]]$level == (lvl - 1)) {
-        node[[a - b]]$AddChildNode(node[[a]])
-        break
-      }
-    }
-  }
-
   if (file.exists(file_name)) {
     if (file_type == "m" | file_type == "mz") {
 
