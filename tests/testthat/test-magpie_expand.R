@@ -60,3 +60,10 @@ test_that("subdimension order", {
   xx <- magpie_expand(x, y)
   expect_identical(getItems(xx, 3), getItems(magpie_expand(y, xx), 3))
 })
+
+test_that("magpie_expand_dim works", {
+  a <- maxample("animal")
+  expect_error(magclass:::magpie_expand_dim(a,a,dim=4), "Unsupported dim setting")
+  expect_error(magclass:::magpie_expand_dim(a[,,2:5],a,dim=3), "Identical set names but different content")
+  expect_identical(magclass:::magpie_expand_dim(collapseDim(a, "day"), a, dim=2), a)
+})

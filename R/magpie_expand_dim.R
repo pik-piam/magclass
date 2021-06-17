@@ -27,6 +27,9 @@
 #'  magclass:::magpie_expand_dim(d,e,dim=1)
 
 magpie_expand_dim <- function(x,ref,dim=1) {
+  
+  if (!(dim %in% seq_len(3))) stop("Unsupported dim setting (dim = ",dim,")")
+  
   dimnames2df <- function(x,dim=1) {
     xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]],".",fixed=TRUE),stringsAsFactors=TRUE)),stringsAsFactors=TRUE)
     rownames(xd) <- NULL
@@ -95,11 +98,9 @@ magpie_expand_dim <- function(x,ref,dim=1) {
     out <- x[m$".line_x",,]
   } else if(dim==2) {
     out <- x[,m$".line_x",]
-  } else if(dim==3) {
-    out <- x[,,m$".line_x"]
   } else {
-    stop("Unsupported dim setting (dim = ",dim,")")
-  }
+    out <- x[,,m$".line_x"]
+  } 
   tmp <- df2dimnames(m)
   dimnames(out)[[dim]] <- tmp$dimnames
   names(dimnames(out))[dim] <- tmp$name

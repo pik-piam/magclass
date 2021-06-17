@@ -18,3 +18,12 @@ test_that("Incorrect inputs are properly detected", {
   expect_error(maxample("nothere"), "Unknown data set")
   expect_warning(magclass:::.duplicates_check(getCoords(a)[c(1, 1, 2:5), ]), "Duplicate entries")
 })
+
+test_that("magpiesort works", {
+  expect_error(magpiesort(1), "not a MAgPIE object")
+  expect_identical(magpiesort(a[,dim(a)[2]:1,]), magpiesort(a))
+  expect_identical(getItems(magpiesort(a), dim = 1),
+                   getItems(magpiesort(a[,,NULL]), dim = 1))
+  expect_identical(getItems(magpiesort(a[1,,]), dim = 2),
+                   getItems(magpiesort(a[NULL,,]), dim = 2))
+})
