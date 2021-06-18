@@ -41,14 +41,14 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
       dim <- setdiff(dim, dimCode(keepdim, x))
       dim <- dim[!(floor(dim) %in% keepdim)]
     }
+    dim <- dim[dim > 0]
   } else {
     if (!is.null(keepdim)) warning("keepdim argument is ignored as dim has been specified!")
     dim <- dimCode(dim, x)
-  }
-
-  if (any(dim == 0)) {
-    warning("Some dimensions could not be found in the object and will be ignored!")
-    dim <- dim[dim > 0]
+    if (any(dim == 0)) {
+      warning("Some dimensions could not be found in the object and will be ignored!")
+      dim <- dim[dim > 0]
+    }
   }
 
   for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL

@@ -27,19 +27,19 @@
 #' @export
 
 dimReduce <- function(x, dim_exclude = NULL) { #nolint
-  x <- collapseNames(x)
+  x <- collapseDim(x)
   x <- clean_magpie(x)
-  fd <- fulldim(x)[[2]]
+  fd <- unlist(getItems(x, split=TRUE), recursive = FALSE)
   for (s in setdiff(getSets(x), dim_exclude)) {
     tmp <- list()
     tmp[[s]] <- fd[[s]][1]
-    xSingle <- mselect(x, tmp, collapseNames = TRUE)
-    if (dim(xSingle)[1] == 1) getCells(xSingle) <- "GLO"
-    if (dim(xSingle)[2] == 1) getYears(xSingle) <- NULL
+    xSingle <- mselect(x, tmp)
     # same information in all dimension entries?
     if (all(x - xSingle  == 0, na.rm = TRUE)) {
       x <- xSingle
     }
   }
+  x <- collapseDim(x)
+  if (dim(x)[1] == 1) getCells(x) <- "GLO"
   return(x)
 }
