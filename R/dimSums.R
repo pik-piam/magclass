@@ -1,4 +1,4 @@
-.dimSumsFallback <- function(x, na.rm = FALSE, dims = NULL, sep = ".", ...) { #nolint
+.dimSumsFallback <- function(x, na.rm = FALSE, dims = NULL, ...) { # nolint
   dims <- as.integer(round((dims - 3) * 10 + 2))
   # fallback option if data dimension is sparse
   if (!is.magpie(x)) stop("Input is not a MAgPIE object!")
@@ -24,7 +24,7 @@
   x <- as.array(x)
   for (i in un) {
     j <- which(dimnames(x)[[3]] == i)
-    out[, , i] <- dimSums(x[, , j, drop = FALSE], na.rm = na.rm, dim = 3, sep = sep, ...)
+    out[, , i] <- dimSums(x[, , j, drop = FALSE], na.rm = na.rm, dim = 3, ...)
   }
   if (ndata(out) == 1) if (getNames(out) == "") getNames(out) <- NULL
 
@@ -41,16 +41,13 @@
 #'
 #'
 #' @param x A MAgPIE-object or an array
-#' @param na.rm logical. Should missing values (including NaN) be omitted from
-#' the calculations?
-#' @param dims Depreceated version of argument dim. Please use dim instead (it
-#' is just it there for back compatibility and will be removed soon.)
 #' @param dim The dimensions(s) to sum over. A vector of integers or characters
 #' (dimension names). If the MAgPIE object has more than 1 actual dimension
 #' collected in the third real dimension, each actual dimension can be summed
 #' over using the corresponding dim code (see \code{\link{dimCode}} for more
 #' information)
-#' @param sep A character separating joined dimension names
+#' @param na.rm logical. Should missing values (including NaN) be omitted from
+#' the calculations?
 #' @param ...  Further arguments passed to rowSums internally
 #' @return \item{value}{A MAgPIE object or an array (depending on the format of
 #' x) with values summed over the specified dimensions}
@@ -62,21 +59,12 @@
 #' dimSums(test, dim = c(1, 3))
 #' dimSums(test[, , 1], na.rm = TRUE, dim = c(1, 2))
 #' @export dimSums
-dimSums <- function(x, na.rm = FALSE, dims = NULL, dim = 3, sep = ".", ...) { #nolint
-  if (!is.null(dims)) {
-    warning('Argument "dims" is depreceated, please use "dim" instead. See ?dimSums for more information!')
-    if (is.character(dims)) {
-      dim <- dims
-    } else {
-      dim <- dims
-      dim[dim >= 3] <- 3 + (dim[dim >= 3] - 2) / 10
-    }
-  }
+dimSums <- function(x, dim = 3, na.rm = FALSE, ...) { # nolint
   if (is.magpie(x)) {
     dim <- dimCode(dim, x)
     if (prod(fulldim(x)[[1]]) != prod(dim(x))) {
       if (any(dim > 3)) {
-        tmp <- .dimSumsFallback(x, na.rm = na.rm, dims = dim[dim > 3], sep = sep, ...)
+        tmp <- .dimSumsFallback(x, na.rm = na.rm, dims = dim[dim > 3], ...)
       } else {
         tmp <- x
       }

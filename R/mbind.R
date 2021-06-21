@@ -11,7 +11,7 @@
 #' @examples
 #'
 #' m <- new.magpie(c("AFR", "CPA", "EUR"), c(1995, 2005), "Data1", fill = c(1, 2, 3, 4, 5, 6))
-#' ms <- dimSums(m, dims = 1)
+#' ms <- dimSums(m, dim = 3.1)
 #' mbind(m, ms)
 #' my <- new.magpie(getRegions(m), 2010, getNames(m), fill = c(6, 6, 4))
 #' mbind(m, my)

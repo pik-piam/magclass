@@ -4,16 +4,10 @@
 \alias{dimSums}
 \title{Summation over dimensions}
 \usage{
-dimSums(x, na.rm = FALSE, dims = NULL, dim = 3, sep = ".", ...)
+dimSums(x, dim = 3, na.rm = FALSE, ...)
 }
 \arguments{
 \item{x}{A MAgPIE-object or an array}
-
-\item{na.rm}{logical. Should missing values (including NaN) be omitted from
-the calculations?}
-
-\item{dims}{Depreceated version of argument dim. Please use dim instead (it
-is just it there for back compatibility and will be removed soon.)}
 
 \item{dim}{The dimensions(s) to sum over. A vector of integers or characters
 (dimension names). If the MAgPIE object has more than 1 actual dimension
@@ -21,7 +15,8 @@ collected in the third real dimension, each actual dimension can be summed
 over using the corresponding dim code (see \code{\link{dimCode}} for more
 information)}
 
-\item{sep}{A character separating joined dimension names}
+\item{na.rm}{logical. Should missing values (including NaN) be omitted from
+the calculations?}
 
 \item{...}{Further arguments passed to rowSums internally}
 }

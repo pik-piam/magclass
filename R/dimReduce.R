@@ -26,10 +26,10 @@
 #' dimReduce(p)
 #' @export
 
-dimReduce <- function(x, dim_exclude = NULL) { #nolint
+dimReduce <- function(x, dim_exclude = NULL) { # nolint
   x <- collapseDim(x)
   x <- clean_magpie(x)
-  fd <- unlist(getItems(x, split=TRUE), recursive = FALSE)
+  fd <- unlist(getItems(x, split = TRUE), recursive = FALSE)
   for (s in setdiff(getSets(x), dim_exclude)) {
     tmp <- list()
     tmp[[s]] <- fd[[s]][1]
