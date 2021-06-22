@@ -5,44 +5,28 @@
 #'
 #'
 #' @param x MAgPIE object which should be extended.
-#' @param dim The dimension number of the new dimension. 4 stands for the
-#' second name dimension.
+#' @param dim The dimension number of the new dimension (e.g. 3.1)
 #' @param add The name of the new dimension
 #' @param nm The name of the first entry in dimension "add".
 #' @return The extended MAgPIE object
-#' @author Benjamin Bodirsky
+#' @author Jan Philipp Dietrich, Benjamin Bodirsky
 #' @seealso \code{\link{add_columns}},\code{\link{mbind}}
 #' @examples
 #'
-#' a <- add_dimension(maxample("pop"))
-#' str(a)
-#' getItems(a, split = TRUE)
-#' @export add_dimension
+#' a <- maxample("animal")
+#' str(add_dimension(a, dim=3.2))
+#' str(add_dimension(a, dim=2.3))
+#' @export
 add_dimension <- function(x, dim = 3.1, add = "new", nm = "dummy") { #nolint
-  x <- clean_magpie(x)
-  dim <- as.numeric(dim)
-  olddim <- old_dim_convention(dim)
-  if (olddim < 3) stop("Dimensions below 3 are currently not supported by add_dimensions.")
-  if (is.null(getNames(x))) {
-    getNames(x) <- "NA"
-  }
-  firstnm <- nm[1]
-
-  separate <- strsplit(dimnames(x)[[3]], split = "\\.")
-  newnm <- NULL
-  for (i in seq_along(separate)) {
-    newnm <- c(newnm, paste(append(separate[[i]], firstnm, after = olddim - 3), collapse = "."))
-  }
-  dimnames(x)[[3]] <- newnm
-  names(dimnames(x))[3] <- paste(append(
-    strsplit(names(dimnames(x))[3], split = "\\.")[[1]],
-    add, after = olddim - 3), collapse = ".")
-
-  if (length(nm) > 1) {
-    x <- add_columns(x, addnm = nm[2:length(nm)], dim = dim)
-    tmp <- list(neu = nm[1])
-    names(tmp) <- add
-    x[, , ] <- mselect(x, tmp)
-  }
+  maindim <- round(dim)
+  subdim  <- as.integer(sub("^.\\.","",dim))
+  items <- getItems(x, dim=maindim, split = TRUE, full=TRUE)
+  olddims <- seq_along(items)
+  items[[add]] <- rep(nm, dim(x)[maindim])
+  reorder <- c(olddims[olddims<subdim], length(items), olddims[olddims>=subdim])
+  items <- items[reorder]
+  getItems(x, dim=maindim, raw=TRUE) <- apply(as.data.frame(items),1,paste, collapse=".")
+  getSets(x, fulldim = FALSE)[maindim] <- paste(names(items), collapse=".")
   return(x)
 }
+  

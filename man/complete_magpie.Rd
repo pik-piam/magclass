@@ -33,5 +33,5 @@ complete_magpie(ani)
 \code{\link{add_dimension}},\code{\link{clean_magpie}}
 }
 \author{
-Benjamin Bodirsky
+Jan Philipp Dietrich, Benjamin Bodirsky
 }
