@@ -1,5 +1,5 @@
 a <- maxample("animal")
-attr(a,"Metadata") <- NULL
+attr(a, "Metadata") <- NULL
 
 test_that("getComment works", {
   x <- as.magpie(1)
@@ -41,23 +41,33 @@ test_that("unwrap works", {
 })
 
 test_that("add_dimension works", {
-  a_mini <- a[1,1:3,1:2]
-  attr(a_mini, ".internal.selfref") <- NULL
-  ref1 <- new("magpie", 
-              .Data = structure(c(0, 0, 0, 6, 7, 9), 
-                                .Dim = c(1L, 3L, 2L), 
+  aMini <- a[1, 1:3, 1:2]
+  attr(aMini, ".internal.selfref") <- NULL
+  ref1 <- new("magpie",
+              .Data = structure(c(0, 0, 0, 6, 7, 9),
+                                .Dim = c(1L, 3L, 2L),
                                 .Dimnames = list(x.y.country.cell = "5p75.53p25.NLD.14084",
                                                  year.month.day = c("y2000.april.20", "y2000.may.20", "y2000.june.20"),
                                                  new.type.species.color = c("dummy.animal.rabbit.black",
                                                                             "dummy.animal.rabbit.white"))))
-  expect_identical(add_dimension(a_mini), ref1)
+  expect_identical(add_dimension(aMini), ref1)
   ref2 <- new("magpie",
               .Data = structure(c(0, 0, 0, 6, 7, 9),
                                 .Dim = c(1L, 3L, 2L),
                                 .Dimnames = list(x.y.country.cell = "5p75.53p25.NLD.14084",
                                                  year.new.month.day = c("y2000.dummy.april.20", "y2000.dummy.may.20",
                                                                         "y2000.dummy.june.20"),
-                                                 type.species.color = c("animal.rabbit.black", 
+                                                 type.species.color = c("animal.rabbit.black",
                                                                         "animal.rabbit.white"))))
-  expect_identical(add_dimension(a_mini, dim=2.2), ref2)
+  expect_identical(add_dimension(aMini, dim = 2.2), ref2)
+  ref3 <- new("magpie",
+              .Data = structure(c(0, 0, 0, 0, 0, 0, 6, 7, 9, 6, 7, 9),
+                                .Dim = c(1L, 6L, 2L),
+                                .Dimnames = list(x.y.country.cell = "5p75.53p25.NLD.14084",
+                                                 year.new.month.day = c("y2000.d1.april.20", "y2000.d1.may.20",
+                                                                        "y2000.d1.june.20", "y2000.d2.april.20",
+                                                                        "y2000.d2.may.20",  "y2000.d2.june.20"),
+                                                 type.species.color = c("animal.rabbit.black",
+                                                                        "animal.rabbit.white"))))
+  expect_identical(add_dimension(aMini, dim = 2.2, nm = paste0("d", 1:2)), ref3)
 })

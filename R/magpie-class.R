@@ -85,6 +85,9 @@
 #' # returning PAS and 2025
 #' pop["PAS", 2025, ]
 #'
+#' # return all entries for year 2025
+#' pop[2025, dim = 2]
+#'
 #' # returning everything but values for PAS or values for 2025
 #' pop["PAS", 2025, , invert = TRUE]
 #'
@@ -113,7 +116,7 @@
 
 setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
 
-.mselectDF <- function(x, df) {
+.mselectDF <- function(x, df) { #nolint
   if (is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
 
   dims <- dimCode(names(df), x)
@@ -135,9 +138,9 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     " Mixtures across main dimensions are not allowed!")
 
   sdims <- as.integer(substring(dims, 3))
-  maxdim <- nchar(gsub("[^\\.]", "", names(dimnames(x))[maindim])) + 1
+  maxdim <- nchar(gsub("[^\\.]", "", names(dimnames(x))[maindim])) + 1 #nolint
   if (nrow(df) == 1) df[1, ] <- escapeRegex(df[1, ])
-  if (nrow(df) > 1) df <- data.frame(sapply(df, escapeRegex))
+  if (nrow(df) > 1) df <- data.frame(sapply(df, escapeRegex)) #nolint
   dmissing <- which(!(1:maxdim %in% sdims))
   sdims <- c(sdims, dmissing)
   for (d in dmissing) df <- cbind(df, "[^\\.]*")
@@ -187,7 +190,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   return(x)
 }
 
-.dimextract <- function(x, i, dim, pmatch = FALSE, invert = FALSE) {
+.dimextract <- function(x, i, dim, pmatch = FALSE, invert = FALSE) { #nolint
 
   if (is.magpie(i) && is.logical(i)) {
     # check whether input is a 1D magpie object
@@ -211,7 +214,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   dimnames <- dimnames(x)[[dim]]
   if (is.null(dimnames)) stop("Missing element names in dimensions ", dim, "!")
   .countdots <- function(i) {
-    return(nchar(gsub("[^\\.]", "", i)))
+    return(nchar(gsub("[^\\.]", "", i))) #nolint
   }
   if (!is.list(i) && .countdots(i[1]) == .countdots(dimnames[1]) && pmatch == FALSE) {
     # i vector seems to specify the full dimname
@@ -266,9 +269,22 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
 }
 
 #' @exportMethod [
-setMethod("[",
+setMethod("[", #nolint
   signature(x = "magpie"),
-  function(x, i, j, k, drop = FALSE, pmatch = FALSE, invert = FALSE) {
+  function(x, i, j, k, drop = FALSE, pmatch = FALSE, invert = FALSE, dim = NULL) {
+    if (!is.null(dim)) {
+      if (!is.element(dim, 1:3)) stop("Invalid dim selection (allowed: 1, 2 or 3)")
+      if (!missing(j) || (!missing(k) && !is.null(k) && k != FALSE)) {
+        stop("Only single dimension selection allowed when dim is set!")
+      }
+      if (dim == 1) {
+        return(x[i, , , drop = drop, pmatch = pmatch, invert = invert])
+      } else if (dim == 2) {
+        return(x[, i, , drop = drop, pmatch = pmatch, invert = invert])
+      } else {
+        return(x[, , i, drop = drop, pmatch = pmatch, invert = invert])
+      }
+    }
     if (is.null(dim(x))) return(x@.Data[i])
     if (!missing(i)) {
       if (is.data.frame(i)) return(.mselectDF(x, i))
@@ -308,9 +324,26 @@ setMethod("[",
 )
 
 #' @exportMethod [<-
-setMethod("[<-",
+setMethod("[<-", #nolint
   signature(x = "magpie"),
-  function(x, i, j, k, value, pmatch = FALSE) {
+  function(x, i, j, k, value, pmatch = FALSE, dim = NULL) {
+    if (!is.null(dim)) {
+      if (!is.element(dim, 1:3)) stop("Invalid dim selection (allowed: 1, 2 or 3)")
+      if (!missing(j) || (!missing(k) && !missing(value))) {
+        stop("Only single dimension selection allowed when dim is set!")
+      }
+      if (missing(value) && !missing(k)) {
+        value <- k
+      }
+      if (dim == 1) {
+        x[i, , , pmatch = pmatch] <- value
+      } else if (dim == 2) {
+        x[, i, , pmatch = pmatch] <- value
+      } else {
+        x[, , i, pmatch = pmatch] <- value
+      }
+      return(x)
+    }
     if (is.null(dim(x))) {
       tmp <- x@.Data
       tmp[i] <- k

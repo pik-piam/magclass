@@ -25,8 +25,8 @@ with an empty data column with the name "nm".
 \examples{
 
 a <- maxample("animal")
-str(add_dimension(a, dim=3.2))
-str(add_dimension(a, dim=2.3))
+str(add_dimension(a, dim = 3.2))
+str(add_dimension(a, dim = 2.3, nm = paste0("d", 1:3)))
 }
 \seealso{
 \code{\link{add_columns}},\code{\link{mbind}}

@@ -104,6 +104,9 @@ pop["PA", 2025, , pmatch = TRUE]
 # returning PAS and 2025
 pop["PAS", 2025, ]
 
+# return all entries for year 2025
+pop[2025, dim = 2]
+
 # returning everything but values for PAS or values for 2025
 pop["PAS", 2025, , invert = TRUE]
 
