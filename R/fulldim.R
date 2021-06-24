@@ -19,6 +19,7 @@
 #' 
 #' @export fulldim
 fulldim <- function(x,sep=".") {
+  .Deprecated("getItems")
   if(!is.null(dimnames(x)[[3]])){
     elemsplit <- strsplit(dimnames(x)[[3]],sep,fixed=TRUE)
     tmp <- sapply(elemsplit,length)
