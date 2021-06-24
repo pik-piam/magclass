@@ -86,10 +86,10 @@ dimSums <- function(x, dim = 3, na.rm = FALSE, ...) { # nolint
   } else if (is.array(x)) {
     tmp <- x
   } else {
-    stop("Input is neiter an array nor a MAgPIE object!")
+    stop("Input is neither an array nor a MAgPIE object!")
   }
 
-  if (any(dim > length(dim(tmp))))
+  if (any(dim == 0) || any(dim > length(dim(tmp))))
     stop("Invalid dimension(s) specified")
   unchangedDims <- which(!seq_along(dim(tmp)) %in% dim)
   out <- aperm(tmp, perm = c(unchangedDims, dim))

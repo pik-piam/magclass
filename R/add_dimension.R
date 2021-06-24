@@ -18,7 +18,7 @@
 #' str(add_dimension(a, dim = 2.3, nm = paste0("d", 1:3)))
 #' @export
 add_dimension <- function(x, dim = 3.1, add = "new", nm = "dummy") { # nolint
-  maindim <- round(dim)
+  maindim <- floor(dim)
   subdim  <- as.integer(sub("^.\\.", "", dim))
   if (length(nm) > 1) {
     expand <- rep(seq_len(dim(x)[maindim]), length(nm))
