@@ -49,8 +49,11 @@ mbind <- function(...) {
   diffdata <- FALSE
   for (i in seq_along(inputs)) {
     if (!is.magpie(inputs[[i]])) stop("Inputs must all be MAgPIE-objects")
-    if (is.null(dimnames(inputs[[i]])[[3]])) dimnames(inputs[[i]])[[3]] <- paste("dummydimname", 1:ndata(inputs[[i]]),
-                                                                                 sep = "")
+    for (j in 1:3) {
+      if (is.null(dimnames(inputs[[i]])[[j]])) {
+        dimnames(inputs[[i]])[[j]] <- paste("dummy", c("",seq_len(dim(inputs[[i]])[j]-1)), sep = "")
+      }
+    }
     # Check which dimensions differ
     if (suppressWarnings(any(sort(dimnames(inputs[[1]])[[1]]) != sort(dimnames(inputs[[i]])[[1]])))) diffspat <- TRUE
     if (suppressWarnings(any(sort(dimnames(inputs[[1]])[[2]]) != sort(dimnames(inputs[[i]])[[2]])))) difftemp <- TRUE
@@ -89,7 +92,11 @@ mbind <- function(...) {
                                          " different numbers of data subdimensions in inputs!")
     output <- new("magpie", abind::abind(inputs, along = 3))
   }
-  if (length(grep("dummydimname", getNames(output), fixed = TRUE)) == ndata(output)) dimnames(output)[[3]] <- NULL
+  for (j in 1:3) {
+    if (length(grep("^dummy[0-9]*$", getItems(output, dim = j), perl = TRUE)) == dim(output)[j]) {
+      getItems(output, dim = j, raw = TRUE) <- NULL
+    }
+  }
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
 
   return(output)

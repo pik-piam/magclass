@@ -20,7 +20,9 @@ test_that("mbind works", {
   expect_error(mbind(p[, 1:3, 1], p), "Cannot handle")
   expect_error(mbind(p[1:3, , 1], p), "Cannot handle")
 
-  p0 <- p[, , 1]
-  getItems(p0, dim = 3) <- NULL
-  expect_null(getItems(mbind(p0, p0), dim = 3))
+  for (i in seq_len(3)) {
+    p0 <- p[1, dim = i]
+    getItems(p0, dim = i) <- NULL
+    expect_null(getItems(mbind(p0, p0), dim = i))
+  }
 })

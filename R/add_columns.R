@@ -1,46 +1,30 @@
 #' add_columns
 #'
-#' Function adds new columns to the existing magpie object. The new columns are
-#' filled with NAs.
-#'
+#' Function adds new columns to the existing magpie object.
 #'
 #' @param x MAgPIE object which should be extended.
-#' @param dim The number of the dimension that should be extended
-#' @param addnm The new columns within dimension "dim"
+#' @param dim The (sub)dimension to be filled either identified via
+#' name or dimension code (see \code{\link{dimCode}} for more information)
+#' @param addnm The new elements that should be added to the (sub)dimension
+#' @param fill fill value of length 1 for the newly added columns (NA by default)
 #' @return The extended MAgPIE object
-#' @author Benjamin Bodirsky
-#' @seealso \code{\link{add_dimension}},\code{\link{mbind}}
+#' @author Jan Philipp Dietrich, Benjamin Bodirsky
+#' @seealso \code{\link{add_dimension}},\code{\link{dimCode}}
 #' @examples
-#'
-#' pop <- maxample("pop")
-#' a <- add_columns(pop)
-#' str(a)
-#' getItems(a, split = TRUE)
-#' @export add_columns
-add_columns <- function(x, addnm = c("new"), dim = 3.1) { # nolint
-  if (length(addnm) == 0) return(x)
-  oldDim <- old_dim_convention(dim)
-  if (oldDim == 1) {
-    newColumns <- x[rep(1, length(addnm)), , ]
-    newColumns <- setCells(newColumns, paste(substr(addnm, 1, 3), ".",
-                                             (oldDim(x)[oldDim] + 1):(oldDim(x)[oldDim] + length(addnm)), sep = ""))
-    newColumns[, , ] <- NA
-  } else if (oldDim == 2) {
-    newColumns <- x[, rep(1, length(addnm)), ]
-    newColumns <- setYears(newColumns, addnm)
-    newColumns[, , ] <- NA
-  } else if (oldDim > 2) {
-    newColumns <- x[, , getItems(x, dim = dim)[1]]
-    getNames(newColumns, dim = oldDim - 2) <- addnm[1]
-    if (length(addnm) > 1) {
-      singleColumnX <- newColumns
-      for (i in 2:length(addnm)) {
-        getNames(singleColumnX, dim = oldDim - 2) <- addnm[i]
-        newColumns <- mbind(newColumns, as.magpie(singleColumnX))
-      }
-    }
-    newColumns[, , ] <- NA
-  }
-  output <- mbind(x, newColumns)
-  return(output)
+#' a <- maxample("animal")
+#' a2 <- add_columns(a, addnm = c("horse", "magpie"), dim = "species", fill = 42)
+#' getItems(a2, dim = 3)
+#' getItems(a2, dim = 3, split = TRUE)
+#' head(a2[,,"magpie"])
+#' 
+#' @export
+add_columns <- function(x, addnm = "new", dim = 3.1, fill = NA) {
+  if (length(dim) != 1)   stop("dim must be a single (sub)dimension!")
+  if (length(fill) != 1) stop("fill value must be of length 1")
+  if (!dimExists(dim, x)) stop("dim ", dim, " does not exist")
+  dim <- dimCode(dim, x)
+  add <- add_dimension(dimSums(x, dim = dim), dim = dim, nm = addnm)
+  add[,,] <- fill
+  getSets(add) <- getSets(x)
+  return(mbind(x,add))
 }
