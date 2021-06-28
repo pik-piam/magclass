@@ -20,13 +20,6 @@ If a MAgPIE object is created from a source with more than one data
 dimension, these data dimensions are combined to a single dimension. fulldim
 reconstructs the original dimensionality and reports it.
 }
-\examples{
-
-  a <- as.magpie(array(1:6,c(3,2),list(c("bla","blub","ble"),c("up","down"))))
-  fulldim(a)
-
-
-}
 \seealso{
 \code{\link{as.magpie}},\code{\link{unwrap}},\code{\link{wrap}}
 }

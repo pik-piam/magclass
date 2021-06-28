@@ -39,4 +39,3 @@ test_that("unwrap works", {
   expect_error(unwrap(x[, , c(1, 1)]), "Duplicated names detected")
   expect_error(unwrap(a), "needs to be complete")
 })
-

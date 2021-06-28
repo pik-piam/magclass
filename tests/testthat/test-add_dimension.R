@@ -31,8 +31,8 @@ test_that("add_dimension works", {
                                                  type.species.color = c("animal.rabbit.black",
                                                                         "animal.rabbit.white"))))
   expect_identical(add_dimension(aMini, dim = 2.2, nm = paste0("d", 1:2)), ref3)
-  
-  a0 <- dimSums(a[,1,1], dim = 1)
+
+  a0 <- dimSums(a[, 1, 1], dim = 1)
   ref4 <- new("magpie", .Data = structure(190, .Dim = c(1L, 1L, 1L),
                                           .Dimnames = list(new = "dummy", year.month.day = "y2000.april.20",
                                                            type.species.color = "animal.rabbit.black")))

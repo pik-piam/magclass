@@ -24,7 +24,7 @@
 #' dim(a)
 #' @export mbind
 #' @importFrom methods new
-mbind <- function(...) {
+mbind <- function(...) { #nolint
   inputs <- list(...)
   if (length(inputs) == 1 & is.list(inputs[[1]])) inputs <- inputs[[1]]
   # Remove NULL elements from list
@@ -51,7 +51,7 @@ mbind <- function(...) {
     if (!is.magpie(inputs[[i]])) stop("Inputs must all be MAgPIE-objects")
     for (j in 1:3) {
       if (is.null(dimnames(inputs[[i]])[[j]])) {
-        dimnames(inputs[[i]])[[j]] <- paste("dummy", c("",seq_len(dim(inputs[[i]])[j]-1)), sep = "")
+        dimnames(inputs[[i]])[[j]] <- paste("dummy", c("", seq_len(dim(inputs[[i]])[j] - 1)), sep = "")
       }
     }
     # Check which dimensions differ
@@ -87,7 +87,7 @@ mbind <- function(...) {
     output <- new("magpie", abind::abind(inputs, along = 1))
   } else {
     tmp <- function(x) return(length(getNames(x, fulldim = TRUE)))
-    tmp <- sapply(inputs, tmp)
+    tmp <- sapply(inputs, tmp) #nolint
     if (length(unique(tmp)) > 1) warning("mbind most likely returned an erronous magpie object due to",
                                          " different numbers of data subdimensions in inputs!")
     output <- new("magpie", abind::abind(inputs, along = 3))

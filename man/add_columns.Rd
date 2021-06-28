@@ -23,10 +23,11 @@ The extended MAgPIE object
 Function adds new columns to the existing magpie object.
 }
 \examples{
-pop <- maxample("pop")
-a <- add_columns(pop)
-str(a)
-getItems(a, split = TRUE)
+a <- maxample("animal")
+a2 <- add_columns(a, addnm = c("horse", "magpie"), dim = "species", fill = 42)
+getItems(a2, dim = 3)
+getItems(a2, dim = 3, split = TRUE)
+head(a2[,,"magpie"])
 
 }
 \seealso{

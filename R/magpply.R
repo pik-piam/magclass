@@ -23,24 +23,24 @@
 
 magpply <- function(X, FUN, MARGIN = NULL, DIM = NULL, ..., integrate = FALSE) { # nolint
   if (!is.magpie(X)) stop("Input is not a MAgPIE object!")
-  if(!is.null(MARGIN) && !is.null(DIM)) stop("Please specify either MARGIN or DIM, not both at the same time!")
-  if(!is.null(MARGIN)) {
+  if (!is.null(MARGIN) && !is.null(DIM)) stop("Please specify either MARGIN or DIM, not both at the same time!")
+  if (!is.null(MARGIN)) {
     # converting MARGIN to DIM
-    MARGIN <- dimCode(MARGIN, X)
-    DIM <- NULL
-    for(i in 1:3) {
-      if(!is.element(i,floor(MARGIN))) {
-        DIM <- c(DIM, i)
-      } else if (is.element(i,floor(MARGIN)) && !is.element(i, MARGIN)) {
-        DIM <- c(DIM, setdiff(i + seq_len(ndim(X, dim = i))/10, MARGIN))
+    MARGIN <- dimCode(MARGIN, X) #nolint
+    DIM <- NULL #nolint
+    for (i in 1:3) {
+      if (!is.element(i, floor(MARGIN))) {
+        DIM <- c(DIM, i) #nolint
+      } else if (is.element(i, floor(MARGIN)) && !is.element(i, MARGIN)) {
+        DIM <- c(DIM, setdiff(i + seq_len(ndim(X, dim = i)) / 10, MARGIN)) #nolint
       }
     }
   }
   dim <- sort(dimCode(DIM, X), decreasing = TRUE)
   if (any(dim == 0)) stop("Invalid dimension(s) specified")
-  if(integrate) xIn <- X
+  if (integrate) xIn <- X
   for (d in dim) getItems(X, dim = d, raw = TRUE) <- NULL
-  noNames <- which(sapply(dimnames(X), is.null)) #nolint
+  noNames <- which(sapply(dimnames(X), is.null)) # nolint
   for (i in noNames) {
     getItems(X, dim = i) <- rep("dummy", dim(X)[i])
   }
@@ -49,6 +49,6 @@ magpply <- function(X, FUN, MARGIN = NULL, DIM = NULL, ..., integrate = FALSE) {
   for (i in noNames) {
     getItems(out, dim = i) <- NULL
   }
-  if(integrate) out <- magpie_expand(out, xIn)
+  if (integrate) out <- magpie_expand(out, xIn)
   return(out)
 }

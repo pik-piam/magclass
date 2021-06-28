@@ -15,16 +15,15 @@
 #' a2 <- add_columns(a, addnm = c("horse", "magpie"), dim = "species", fill = 42)
 #' getItems(a2, dim = 3)
 #' getItems(a2, dim = 3, split = TRUE)
-#' head(a2[,,"magpie"])
-#' 
+#' head(a2[, , "magpie"])
 #' @export
-add_columns <- function(x, addnm = "new", dim = 3.1, fill = NA) {
-  if (length(dim) != 1)   stop("dim must be a single (sub)dimension!")
+add_columns <- function(x, addnm = "new", dim = 3.1, fill = NA) { #nolint
+  if (length(dim) != 1) stop("dim must be a single (sub)dimension!")
   if (length(fill) != 1) stop("fill value must be of length 1")
   if (!dimExists(dim, x)) stop("dim ", dim, " does not exist")
   dim <- dimCode(dim, x)
   add <- add_dimension(dimSums(x, dim = dim), dim = dim, nm = addnm)
-  add[,,] <- fill
+  add[, , ] <- fill
   getSets(add) <- getSets(x)
-  return(mbind(x,add))
+  return(mbind(x, add))
 }
