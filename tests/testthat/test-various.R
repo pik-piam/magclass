@@ -1,5 +1,8 @@
 a <- maxample("animal")
 attr(a, "Metadata") <- NULL
+p <- maxample("pop")
+attr(p, "Metadata") <- NULL
+
 
 test_that("getComment works", {
   x <- as.magpie(1)
@@ -27,6 +30,7 @@ test_that("magpiesort works", {
                    getItems(magpiesort(a[, , NULL]), dim = 1))
   expect_identical(getItems(magpiesort(a[1, , ]), dim = 2),
                    getItems(magpiesort(a[NULL, , ]), dim = 2))
+  expect_identical(magpiesort(p), magpiesort(p[dim(p)[1]:1, , ]))
 })
 
 test_that("unwrap works", {
@@ -38,4 +42,11 @@ test_that("unwrap works", {
   expect_error(unwrap(1), "not a MAgPIE object")
   expect_error(unwrap(x[, , c(1, 1)]), "Duplicated names detected")
   expect_error(unwrap(a), "needs to be complete")
+})
+
+test_that("head and tail work", {
+  expect_identical(head(a, n2 = 2), a[1:3, 1:2, 1:2])
+  expect_identical(tail(a, n2 = 2), a[dim(a)[1] - 2:0, dim(a)[2] - 1:0, dim(a)[3] - 1:0])
+  expect_identical(tail(a[1, 1, 1]), a[1, 1, 1])
+  expect_identical(head(a[1, 1, 1]), a[1, 1, 1])
 })

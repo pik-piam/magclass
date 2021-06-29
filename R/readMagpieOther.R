@@ -157,7 +157,6 @@ readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names 
     }
   }
   if (length(cellnames) == 1) cellnames <- list(cellnames)
-
   output <- array(NA, c(ncells, nyears, ncols))
   dimnames(output)[[1]] <- cellnames
   dimnames(output)[[2]] <- yearnames

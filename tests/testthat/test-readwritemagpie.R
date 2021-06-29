@@ -4,7 +4,8 @@ test_that("read/write does not affect content", {
   mag <- maxample("pop")
   names(dimnames(mag)) <- NULL
   getNames(mag) <- c("A2-A", "B1-A")
-  for (ext in c(".csv", ".cs3", ".cs4")) {
+  getComment(mag) <- "This is a comment"
+  for (ext in c(".csv", ".cs3", ".cs3r", ".cs4", ".cs4r")) {
     tmpfile <- tempfile(fileext = ext)
     write.magpie(mag, tmpfile)
     mag2 <- read.magpie(tmpfile)
@@ -12,8 +13,7 @@ test_that("read/write does not affect content", {
     expect_equivalent(mag, mag2)
     unlink(tmpfile)
   }
-  getComment(mag) <- "This is a comment"
-  for (ext in c(".mz", ".rds")) {
+  for (ext in c(".m", ".mz", ".rds")) {
     tmpfile <- tempfile(fileext = ext)
     write.magpie(mag, tmpfile)
     mag2 <- read.magpie(tmpfile)
@@ -30,6 +30,14 @@ test_that("read/write does not affect content", {
   names(dimnames(in2)) <- NULL
   attr(m2, "Metadata") <- NULL
   expect_equal(in2, m2)
+  unlink(tmpfile)
+
+  m3 <- setCells(mag[1, , ], "GLO")
+  tmpfile <- tempfile(fileext = ".cs2r")
+  write.magpie(m3, tmpfile)
+  mag3 <- read.magpie(tmpfile)
+  names(dimnames(mag3)) <- NULL
+  expect_equivalent(m3, mag3)
   unlink(tmpfile)
 })
 
