@@ -9,7 +9,6 @@ read.magpie(
   file_folder = "",
   file_type = NULL,
   as.array = FALSE,
-  old_format = FALSE,
   comment.char = "*",
   check.names = FALSE
 )
@@ -39,9 +38,6 @@ mentioned standard MAgPIE format is assumed.}
 \item{as.array}{Should the input be transformed to an array? This can be
 useful for regional or global inputs, but all advantages of the magpie-class
 are lost.}
-
-\item{old_format}{used to read files in old MAgPIE-format (unused space was
-not located at the beginning of the file), will be removed soon.}
 
 \item{comment.char}{character: a character vector of length one containing a
 single character or an empty string. Use "" to turn off the interpretation
@@ -100,13 +96,6 @@ read.magpie/write.magpie functions in other languages): \cr \cr
 [ comment | Comment with additional information about the data | character | 1*ncharComment Byte ] \cr
 [ sets | Set names with \\n as delimiter | character | 1*ncharSets Byte] \cr
 [ metadata | serialized metadata information | bytes | 1*nbyteMetadata Byte] \cr
-}
-\examples{
-\dontrun{
-a <- read.magpie("lpj_yield_ir.csv")
-write.magpie(a, "lpj_yield_ir.mz")
-}
-
 }
 \seealso{
 \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
