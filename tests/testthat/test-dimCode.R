@@ -18,6 +18,11 @@ test_that("dimension codes are correctly extracted", {
 
 test_that("illegal dim values are properly detected", {
   expect_error(dimCode("a.b",x), "separator must not be used in dimension name")
+  getSets(pop) <- rep("same",3)
+  expect_error(dimCode("same", pop), "found more than once")
+  getSets(x, fulldim = FALSE)[3] <- "species.species.color"
+  expect_error(dimCode("species",x), "more than once")
+  expect_error(dimCode(5,x, missing = "stop"), "illegal dimension")
 })
 
 

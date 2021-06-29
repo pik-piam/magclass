@@ -50,3 +50,10 @@ test_that("head and tail work", {
   expect_identical(tail(a[1, 1, 1]), a[1, 1, 1])
   expect_identical(head(a[1, 1, 1]), a[1, 1, 1])
 })
+
+test_that("getCells works", {
+  expect_error(getCells(p) <- 12, "Wrong number of cell names supplied")
+  p0a <- p0b <- p[NULL,,]
+  expect_silent(getCells(p0a) <- NULL)
+  expect_identical(p0a, p0b)
+})
