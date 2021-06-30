@@ -8,6 +8,7 @@ test_that("getComment works", {
   x <- as.magpie(1)
   expect_silent(getComment(x) <- "this is a comment")
   expect_identical(getComment(x), "this is a comment")
+  expect_identical(getComment(setComment(x, "new comment")), "new comment")
 })
 
 test_that("is-methods work", {
@@ -63,4 +64,20 @@ test_that("getRegions works", {
   expect_identical(getRegions(a), c("NLD", "BEL", "LUX"))
   expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated")
   expect_identical(getRegions(a), "BLA")
+})
+
+test_that("rounding works", {
+  ref <- new("magpie", .Data = structure(c(552.67, 1280.64), .Dim = c(2L, 1L, 1L),
+                                         .Dimnames = list(i = c("AFR", "CPA"), t = "y1995", scenario = "A2")))
+  expect_identical(round(p[1:2, 1, 1], 2), ref)
+})
+
+test_that("isYear works", {
+  expect_true(all(isYear(getYears(p, as.integer = TRUE), with_y = FALSE)))
+  expect_true(all(isYear(getYears(p), with_y = TRUE)))
+  expect_false(isYear("yabcd"))
+  expect_false(isYear("y12345"))
+  expect_false(isYear("abcd", with_y = FALSE))
+  expect_false(isYear("12345", with_y = FALSE))
+  expect_error(isYear(p), "is no Vector")
 })
