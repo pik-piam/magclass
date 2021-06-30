@@ -27,10 +27,10 @@ of any subdimension via the dim argument.
 
 getCPR(0.5)
 a <- maxample("animal")
-getCPR(a, dim="color")
-getCPR(a, dim=3.2)
-getCPR(a, dim="country")
-getCPR(a, dim=c("color", "species"))
+getCPR(a, dim = "color")
+getCPR(a, dim = 3.2)
+getCPR(a, dim = "country")
+getCPR(a, dim = c("color", "species"))
 }
 \seealso{
 \code{\link{getRegions}}, \code{\link{read.magpie}},

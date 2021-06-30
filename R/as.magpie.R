@@ -46,7 +46,7 @@ setMethod("as.magpie",
   }
 )
 
-setMethod("as.magpie",
+setMethod("as.magpie", #nolint
   signature(x = "array"),
   function(x, spatial = NULL, temporal = NULL, unit = "unknown", ...) {
     storeAttributes <- copy.attributes(x, 0)
@@ -243,7 +243,7 @@ setMethod("as.magpie",
 
       mandatoryColumns <- c("model", "scenario", "region", "variable", "unit", "period", "value")
       factorColumns    <- c("model", "scenario", "region", "variable", "unit")
-      isQuitte <- all(mandatoryColumns %in% names(x)) && all(sapply(x[factorColumns], is.factor)) &&
+      isQuitte <- all(mandatoryColumns %in% names(x)) && all(sapply(x[factorColumns], is.factor)) && #nolint
                   is.numeric(x$value) && (methods::is(x$period, "POSIXct") || is.integer(x$period))
       return(isQuitte)
     }

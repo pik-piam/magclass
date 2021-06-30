@@ -53,13 +53,13 @@ test_that("head and tail work", {
 
 test_that("getCells works", {
   expect_error(getCells(p) <- 12, "Wrong number of cell names supplied")
-  p0a <- p0b <- p[NULL,,]
+  p0a <- p0b <- p[NULL, , ]
   expect_silent(getCells(p0a) <- NULL)
   expect_identical(p0a, p0b)
 })
 
 test_that("getRegions works", {
-  a <- collapseDim(a, dim = c("x","y"))
+  a <- collapseDim(a, dim = c("x", "y"))
   expect_identical(getRegions(a), c("NLD", "BEL", "LUX"))
   expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated")
   expect_identical(getRegions(a), "BLA")

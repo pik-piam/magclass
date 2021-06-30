@@ -1,5 +1,6 @@
 
 a <- maxample("animal")
+p <- maxample("pop")
 
 test_that("dimSums works", {
   ref1 <- new("magpie",
@@ -43,4 +44,9 @@ test_that("dimSums works", {
   ref3 <- new("magpie", .Data = structure(25770, .Dim = c(1L, 1L, 1L),
                                           .Dimnames = list(d1 = NULL, d2 = NULL, d3 = NULL)))
   expect_identical(dimSums(a, dim = 1:3), ref3)
+
+  expect_true(all(dimSums(p, dim = 1) - colSums(p) == 0))
+  expect_true(all(dimSums(p, dim = 2:3) - rowSums(p) == 0))
+  expect_true(all(dimSums(p, dim = 1) / dim(p)[1] - colMeans(p) == 0))
+  expect_true(all(magpply(p, mean, dim = 2:3) - rowMeans(p) == 0))
 })
