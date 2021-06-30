@@ -31,16 +31,7 @@ getRegions <- function(x) {
 #' @describeIn getRegions overwrite region names
 #' @export
 "getRegions<-" <- function(x,value) {
-  reg <- getRegions(x)
-  if(!grepl(".",reg[1],fixed=TRUE)) {
-    getCells(x) <- value
-    return(x)
-  }
-  if(length(reg)!=length(value)) stop("Number of regions must agree with current number of regions!")
-  tmp <- paste("SAVEREPLACE",dimnames(x)[[1]])
-  for(i in 1:nregions(x)) {
-    tmp <- sub(paste("SAVEREPLACE ",reg[i],"\\.",sep=""),paste(value[i],"\\.",sep=""),tmp)
-  }
-  dimnames(x)[[1]] <- tmp
+  .Deprecated("getItems")
+  getCells(x) <- value
   return(x)
 }

@@ -27,7 +27,7 @@ getCoords <- function(x, xlab="x", ylab="y") {
 #' @export
 "getCoords<-" <- function(x,xlab="x",ylab="y",value) {
   if(is.null(ncol(value)) || ncol(value)!=2) stop("Coordinates supplied in unsupported format (must be a two column data.frame)") 
-  if(!is.data.frame(value)) x <- as.data.frame(value)
+  if(!is.data.frame(value)) value <- as.data.frame(value)
   if(all(c("x","y") %in% names(value))) value <- value[c("x","y")]
   if(ncells(x)!=nrow(value)) stop("Number of rows does not match number of cells of the MAgPIE object!")
   getItems(x, xlab, maindim=1) <- value[[1]]

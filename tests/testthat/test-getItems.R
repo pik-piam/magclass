@@ -69,6 +69,8 @@ test_that("getItems maps entries when input vector is named", {
   # test for subdimensioin
   x <- pop
   expect_warning(getItems(x,"j",maindim=1) <- value, "Names of input vector are being ignored")
+  expect_silent(x2 <- setItems(x, "i", value))
   expect_silent(getItems(x,"i") <- value)
   expect_identical(getItems(x,"i"), as.character(dim(x)[1]:1))
+  expect_identical(x,x2)
 })

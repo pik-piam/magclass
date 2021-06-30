@@ -57,3 +57,10 @@ test_that("getCells works", {
   expect_silent(getCells(p0a) <- NULL)
   expect_identical(p0a, p0b)
 })
+
+test_that("getRegions works", {
+  a <- collapseDim(a, dim = c("x","y"))
+  expect_identical(getRegions(a), c("NLD", "BEL", "LUX"))
+  expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated")
+  expect_identical(getRegions(a), "BLA")
+})
