@@ -94,7 +94,18 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
   }
 
   if (!is.null(value)) {
-    if (length(value) != dim(x)[maindim]) stop("Wrong number of items supplied!")
+    if (length(value) != dim(x)[maindim]) {
+      elems <- getItems(x, dim = dim)
+      if(length(elems) != length(value)) stop("Wrong number of items supplied!")
+      # try to expand value input to full length of main dimension
+      if(is.null(names(value))) {
+        names(value) <- elems
+      } else if(!setequal(names(value), elems)) {
+        stop("Names of input vector do not match existing dimension names!")
+      }
+      elemsFull <- getItems(x, dim = dim, full = TRUE)
+      value <- unname(value[elemsFull])
+    }
     if (!isTRUE(raw)) {
       nv           <- names(value)
       value        <- gsub(".", "p", value, fixed = TRUE)
