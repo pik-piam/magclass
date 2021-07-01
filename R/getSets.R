@@ -58,9 +58,7 @@ getSets <- function(x,fulldim=TRUE,sep=".") {
 "getSets<-" <- function(x,fulldim=TRUE,sep=".",value) {
    x <- clean_magpie(x,what="sets")
    if(is.null(value)) return(x)
-   if(length(names(dimnames(x)))==0) fulldim <- FALSE  
-   if(length(value)==3) fulldim <- FALSE
-   if(length(value)==0) fulldim <- FALSE
+   if(is.null(names(dimnames(x))) || length(value) %in% c(0,3)) fulldim <- FALSE
    if(!fulldim) {
      names(dimnames(x)) <- value
      return(x)

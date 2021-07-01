@@ -4,7 +4,7 @@
 \alias{setItems}
 \title{Set Items}
 \usage{
-setItems(x, dim, value, maindim = NULL)
+setItems(x, dim, value, maindim = NULL, raw = FALSE)
 }
 \arguments{
 \item{x}{MAgPIE object}
@@ -18,6 +18,9 @@ If set to NULL the corresponding dimension will be removed.}
 \item{maindim}{main dimension the data should be added to (does not need to be set if \code{dim} exists
 in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 in a different main dimension than the one anticipated).}
+
+\item{raw}{if set to FALSE inputs will be corrected (e.g. dots replaced by the letter "p") if necessary. If
+TRUE data will be written as is (risking the creation of inconsistent objects).}
 }
 \value{
 the manipulated MAgPIE object

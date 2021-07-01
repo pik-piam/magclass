@@ -7,6 +7,8 @@ test_that("dimension codes are correctly extracted", {
   expect_equivalent(dimCode(1, x), 1)
   expect_equivalent(dimCode(1.5, x), 1.5)
   expect_equivalent(dimCode(4.2, x), 0)
+  expect_equivalent(dimCode(3.5, x, strict = FALSE), 3.5)
+  expect_equivalent(dimCode(3.5, x, strict = TRUE), 0)
   expect_equivalent(dimCode("month", x), 2.2)
   expect_equivalent(dimCode("x", x), 1.1)
   expect_equivalent(dimCode("country", x), 1.3)

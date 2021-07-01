@@ -14,7 +14,7 @@
 #' in the data. Should be set if \code{dim} might not exist, or if \code{dim} might potentially exist
 #' in a different main dimension than the one anticipated).
 #' @param raw if set to FALSE inputs will be corrected (e.g. dots replaced by the letter "p") if necessary. If
-#' TRUE data will be written as pro (default) vided (risking the creation of inconsistent objects)
+#' TRUE data will be written as is (risking the creation of inconsistent objects).
 #' @param value a vector with the length of the main dimension the dimnames should be replaced in / added to.
 #' If set to NULL the corresponding dimension will be removed.
 #' @return items of the requested dimension in the MAgPIE-object. If split=TRUE and applied to a
@@ -38,7 +38,7 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
   if (length(dim) > 1) {
     out <- list()
     for (i in dim) out[[as.character(i)]] <- getItems(x, dim = i, split = split, full = full)
-    if (all(dim == round(dim))) {
+    if (all(dim == floor(dim))) {
       names(out) <- NULL
     } else if (hasSets(x)) {
       sets <- c(d1 = "", d2 = "", d3 = "", getSets(x))
@@ -47,8 +47,8 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
     return(out)
   }
 
-  if (dim == round(dim) && !split) return(dimnames(x)[[dim]])
-  if (dim == round(dim) && split) {
+  if (dim == floor(dim) && !split) return(dimnames(x)[[dim]])
+  if (dim == floor(dim) && split) {
     if (is.null(dimnames(x)[[dim]])) {
       out <- list(NULL)
       if (hasSets(x)) {
@@ -87,16 +87,16 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
     if (dc == 0) {
       dc <- maindim + 0.99999
     } else {
-      if (round(dc) != maindim) stop("Specified dimension (dim) found in main dimension different to maindim!")
+      if (floor(dc) != maindim) stop("Specified dimension (dim) found in main dimension different to maindim!")
     }
   } else {
-    maindim <- round(dc)
+    maindim <- floor(dc)
   }
 
   if (!is.null(value)) {
     if (length(value) != dim(x)[maindim]) {
-      elems <- getItems(x, dim = dim)
-      if(length(elems) != length(value)) stop("Wrong number of items supplied!")
+      elems <- try(getItems(x, dim = dim), silent = TRUE)
+      if("try-error" %in% class(elems) || length(elems) != length(value)) stop("Wrong number of items supplied!")
       # try to expand value input to full length of main dimension
       if(is.null(names(value))) {
         names(value) <- elems

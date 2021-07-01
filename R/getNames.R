@@ -1,33 +1,3 @@
-.dimFulldim <- function(x, dim) {
-  tmp <- getItems(x, dim = 3, split = TRUE)
-
-  if (!is.null(dim)) {
-    # check whether dim contains only 1 element
-    if (length(dim) > 1) stop("Only a single dimension can be chosen with argument \"dim\"!")
-    # check whether chosen dimension exists
-    if (is.numeric(dim)) {
-      if (dim < 1 | dim > length(tmp)) stop("Chosen data dimension does not exist (dim = ", dim, ")")
-      whichDim <- dim
-    } else {
-      if (sum(names(tmp) %in% dim) == 0) stop("Chosen data dimension does not exist (dim = ", dim, ")")
-      whichDim <- which(names(tmp) %in% dim)
-    }
-    maxdim <- length(tmp)
-    tmp <- tmp[[dim]]
-    if (!is.null(tmp)) {
-      attr(tmp, "which_dim") <- whichDim
-      attr(tmp, "maxdim") <- maxdim
-    }
-  }
-  return(tmp)
-}
-
-
-
-
-
-
-
 #' Get dataset names
 #'
 #' Extracts dataset names of a MAgPIE-object
@@ -69,61 +39,22 @@
 #' x
 #' @export
 getNames <- function(x, fulldim = FALSE, dim = NULL) {
-  if (!is.null(dim)) fulldim <- TRUE
-  if (fulldim == FALSE) {
-    return(dimnames(x)[[3]])
-  } else {
-    tmp <- .dimFulldim(x, dim)
-    if (!is.null(tmp)) {
-      attr(tmp, "which_dim") <- NULL
-      attr(tmp, "maxdim") <- NULL
-    }
-    return(tmp)
-  }
+  return(getItems(x, dim = .convertDim(dim), split = fulldim))
 }
 
 #' @describeIn getNames set names
 #' @export
 "getNames<-" <- function(x, dim = NULL, value) { #nolint
-  if (is.null(dim)) {
-    if (is.null(value)) {
-      if (ndata(x) > 1) stop("Setting data names to NULL is not possible as ndata is bigger than 1!")
-      s <- getSets(x, fulldim = FALSE)[3]
-      dimnames(x)[[3]] <- value
-      getSets(x, fulldim = FALSE)[3] <- s
-    } else {
-      if (ndata(x) != length(value)) stop("Wrong number of data names supplied!")
-      if (ndata(x) == 0) return(x)
-      tmp <- nchar(gsub("[^\\.]*", "", value))
-      if (any(tmp != tmp[1])) stop("Inconsistent names! Number of dots per name has always to be",
-                                   " the same as it is separating different data dimensions")
-      dimnames(x)[[3]] <- value
-    }
-    return(x)
-  } else {
-    oldNames <- .dimFulldim(x, dim)
-    if (is.null(oldNames)) {
-      getNames(x, dim = NULL) <- value
-      return(x)
-    }
-    whichDim <- attr(oldNames, "which_dim")
-    maxdim <- attr(oldNames, "maxdim")
-    if (is.null(whichDim)) whichDim <- 1
-    if (is.null(maxdim)) maxdim <- 1
+  if(is.null(dim) && is.null(value) && dim(x)[3] > 1) stop("Cannot unset names!")
+  return(setItems(x, dim = .convertDim(dim), value = value, raw = TRUE))
+}
 
-    if (is.null(value)) {
-      if (length(oldNames) > 1) stop("Setting names to NULL is not allowed for dimensions with > 1 elements!")
-      return(collapseNames(x, collapsedim = whichDim))
-    } else {
-      if (length(oldNames) != length(value)) stop("Wrong number of data names supplied!")
-      d <- dimnames(x)[[3]]
-      startPattern <- paste0("^(", paste(rep("[^\\.]*\\.", whichDim - 1), collapse = ""), ")")
-      endPattern <- paste0("(", paste(rep("\\.[^\\.]*", maxdim - whichDim), collapse = ""), ")$")
-      for (i in seq_along(value)) {
-        d <- sub(paste0(startPattern, escapeRegex(oldNames[i]), endPattern), paste0("\\1", value[i], "\\2"), d)
-      }
-      dimnames(x)[[3]] <- d
-      return(x)
-    }
+.convertDim <- function(dim) {
+  if(is.null(dim)) {
+    dim <- 3
+  } else if(is.numeric(dim)) {
+    if(length(dim) != 1 || !is.element(dim,1:9)) stop("Unsupported dim selection!")
+    dim <- 3 + dim/10
   }
+  return(dim)
 }
