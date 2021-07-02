@@ -19,7 +19,6 @@ Ignored if \code{getOption("magclass_sizeLimit")} is negative.
 
 pop <- maxample("pop")
 magclass:::sizeCheck(dim(pop))
-
 }
 \author{
 Jan Philipp Dietrich

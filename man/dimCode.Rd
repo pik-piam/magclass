@@ -35,8 +35,7 @@ MAgPIE objects
 \examples{
 
 pop <- maxample("pop")
-dimCode(c("t","scenario","blablub"),pop)
-
+dimCode(c("t", "scenario", "blablub"), pop)
 }
 \seealso{
 \code{\link{mselect}}, \code{\link{getDim}}

@@ -69,7 +69,7 @@ test_that("getRegions works", {
 test_that("getRegionList works", {
   a <- collapseDim(a, dim = c("x", "y"))
   expect_warning(rl <- getRegionList(a), "deprecated")
-  expect_identical(rl, as.factor(getItems(a, dim="country", full=TRUE)))
+  expect_identical(rl, as.factor(getItems(a, dim = "country", full = TRUE)))
   expect_error(suppressWarnings(getRegionList(a) <- "GLO"), "Lengths of RegionLists do not agree")
   expect_warning(getRegionList(a) <- rep("GLO", dim(a)[1]), "deprecated")
   expect_identical(suppressWarnings(getRegionList(a)), as.factor(rep("GLO", dim(a)[1])))
@@ -93,8 +93,8 @@ test_that("isYear works", {
 
 test_that("getYear works", {
   expect_error(getYears(p) <- 1999, "Wrong number of years")
-  expect_silent(getYears(p[,-(1:nyears(p)),]) <- NULL)
-  p1 <- p[,1,]
+  expect_silent(getYears(p[, -(1:nyears(p)), ]) <- NULL) #nolint
+  p1 <- p[, 1, ]
   expect_silent(getYears(p1) <- NULL)
   expect_null(getYears(p1))
   expect_error(getYears(p) <- NULL, "Setting years to NULL is not possible")

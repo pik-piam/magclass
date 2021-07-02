@@ -39,22 +39,22 @@
 #' x
 #' @export
 getNames <- function(x, fulldim = FALSE, dim = NULL) {
-  return(getItems(x, dim = .convertDim(dim), split = fulldim))
+  return(getItems(x, dim = .convertDim(dim), split = fulldim)) #nolint
 }
 
 #' @describeIn getNames set names
 #' @export
-"getNames<-" <- function(x, dim = NULL, value) { #nolint
-  if(is.null(dim) && is.null(value) && dim(x)[3] > 1) stop("Cannot unset names!")
+"getNames<-" <- function(x, dim = NULL, value) { # nolint
+  if (is.null(dim) && is.null(value) && dim(x)[3] > 1) stop("Cannot unset names!")
   return(setItems(x, dim = .convertDim(dim), value = value, raw = TRUE))
 }
 
 .convertDim <- function(dim) {
-  if(is.null(dim)) {
+  if (is.null(dim)) {
     dim <- 3
-  } else if(is.numeric(dim)) {
-    if(length(dim) != 1 || !is.element(dim,1:9)) stop("Unsupported dim selection!")
-    dim <- 3 + dim/10
+  } else if (is.numeric(dim)) {
+    if (length(dim) != 1 || !is.element(dim, 1:9)) stop("Unsupported dim selection!")
+    dim <- 3 + dim / 10
   }
   return(dim)
 }

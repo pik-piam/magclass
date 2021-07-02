@@ -41,7 +41,7 @@
 magpie_expand <- function(x, ref) { # nolint
 
   version <- getOption("magclass_expand_version")
-  if (is.null(version)) options("magclass_expand_version" = 2.1)
+  if (is.null(version)) options("magclass_expand_version" = 2.1) #nolint
   if (!is.null(version) && version != 2.1) stop("Unsupported magclass expand version (", version, ")!")
 
   setMatching <- isTRUE(getOption("magclass_setMatching"))

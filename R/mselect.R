@@ -15,10 +15,10 @@
 
   .getItemsX <- function(x, dim) {
     out <- getItems(x, dim = dim)
-    if(is.null(out)) out <- 1
+    if (is.null(out)) out <- 1
     return(out)
   }
-  
+
   i <- .getItemsX(x, dim = 1)
   j <- .getItemsX(x, dim = 2)
   k <- .getItemsX(x, dim = 3)

@@ -25,18 +25,19 @@
 #'                     "BLA.AFR.B", "BLA.EUR.B", "BLUB.AFR.B", "BLUB.EUR.B"), fill = 2)
 #'  getSets(e)[1:3] <- c("b", "reg", "a")
 #'  magclass:::magpie_expand_dim(d, e, dim = 1)
-magpie_expand_dim <- function(x, ref, dim = 1) {
+magpie_expand_dim <- function(x, ref, dim = 1) { #nolint
 
   if (!(dim %in% seq_len(3))) stop("Unsupported dim setting (dim = ", dim, ")")
 
   dimnames2df <- function(x, dim = 1) {
-    xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]], ".", fixed = TRUE), stringsAsFactors = TRUE)), stringsAsFactors = TRUE)
+    xd <- as.data.frame(t(as.data.frame(strsplit(dimnames(x)[[dim]], ".", fixed = TRUE), stringsAsFactors = TRUE)),
+                        stringsAsFactors = TRUE)
     rownames(xd) <- NULL
     if (!is.null(names(dimnames(x)))) {
       tmp <- strsplit(names(dimnames(x))[dim], ".", fixed = TRUE)[[1]]
       if (length(tmp) == ncol(xd)) names(xd) <- tmp
     }
-    xd$".line" <- 1:nrow(xd)
+    xd$".line" <- seq_len(nrow(xd))
     return(xd)
   }
 
@@ -62,20 +63,20 @@ magpie_expand_dim <- function(x, ref, dim = 1) {
       # set matching will be used instead)
 
       # temporarily split .line col from rest
-      dref.line <- dref[".line"]
-      dx.line   <- dx[".line"]
+      drefLine <- dref[".line"]
+      dxLine   <- dx[".line"]
       dref[".line"] <- NULL
       dx[".line"] <- NULL
       # ensure unique set names
       tmp <- make.unique(c(names(dref), names(dx)), sep = "")
-      names(dref) <- tmp[1:ncol(dref)]
+      names(dref) <- tmp[seq_len(ncol(dref))]
       names(dx) <- tmp[(ncol(dref) + 1):length(tmp)]
       m <- match(lx, lref)
       tmp <- names(dref)[m]
       tmp[is.na(tmp)] <- names(dx)[is.na(tmp)]
       names(dx) <- tmp
-      dref[".line"] <- dref.line
-      dx[".line"] <- dx.line
+      dref[".line"] <- drefLine
+      dx[".line"] <- dxLine
     }
   }
 
@@ -92,7 +93,7 @@ magpie_expand_dim <- function(x, ref, dim = 1) {
   tmpdim <- dim(x)
   tmpdim[dim] <- nrow(m)
   sizeCheck(tmpdim)
-  
+
   out <- x[m$".line_x", dim = dim]
   tmp <- df2dimnames(m)
   dimnames(out)[[dim]] <- tmp$dimnames

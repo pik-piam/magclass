@@ -73,18 +73,19 @@ test_that("getItems maps entries when input vector is named", {
   expect_silent(getItems(x, "i") <- value)
   expect_identical(getItems(x, "i"), as.character(dim(x)[1]:1))
   expect_identical(x, x2)
-  
+
   a <- maxample("animal")
   expect_error(getItems(a, 3.2) <- c("hase", "vogel"), "Wrong number of items")
-  expect_error(getItems(a, 3.2) <- c(rabbit="hase", bird="vogel", cat="hund"), "Names of input vector do not match")
-  
+  expect_error(getItems(a, 3.2) <- c(rabbit = "hase", bird = "vogel", cat = "hund"),
+               "Names of input vector do not match")
+
   expect_silent(getItems(a, 3.2) <- c("hase", "vogel", "hund"))
-  expect_identical(getItems(a, dim = 3), c("animal.hase.black","animal.hase.white", "animal.vogel.black", 
+  expect_identical(getItems(a, dim = 3), c("animal.hase.black", "animal.hase.white", "animal.vogel.black",
                                            "animal.vogel.red", "animal.hund.brown"))
   expect_error(getItems(a, 3.2) <- c("hase", "vogel"), "Wrong number of items")
   expect_error(getItems(a, 3.2) <- c("hase", "vogel"), "Wrong number of items")
-  
+
   a2 <- maxample("animal")
-  expect_silent(getItems(a2, 3.2) <- c(bird="vogel", dog="hund", rabbit="hase"))
-  expect_identical(a,a2)  
+  expect_silent(getItems(a2, 3.2) <- c(bird = "vogel", dog = "hund", rabbit = "hase"))
+  expect_identical(a, a2)
 })

@@ -31,7 +31,7 @@
 #' y <- x[, 1, ]
 #' getItems(y, "t") <- NULL
 #' @export
-getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
+getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { # nolint
   if (is.null(dim)) dim <- 1:3
   dim <- dimCode(dim, x, missing = "stop")
   if (setequal(dim, 1:3) && !split) return(dimnames(x))
@@ -76,7 +76,7 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
 
 #' @describeIn getItems set dimension names
 #' @export
-"getItems<-" <- function(x, dim, maindim = NULL, raw = FALSE, value) { #nolint
+"getItems<-" <- function(x, dim, maindim = NULL, raw = FALSE, value) { # nolint
   if (length(dim) > 1) stop("dim with length > 1 is currently not supported when setting items.")
   dc <- dimCode(dim, x)
   if (dc == 0 && is.null(maindim)) {
@@ -96,11 +96,11 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { #nolint
   if (!is.null(value)) {
     if (length(value) != dim(x)[maindim]) {
       elems <- try(getItems(x, dim = dim), silent = TRUE)
-      if("try-error" %in% class(elems) || length(elems) != length(value)) stop("Wrong number of items supplied!")
+      if ("try-error" %in% class(elems) || length(elems) != length(value)) stop("Wrong number of items supplied!")
       # try to expand value input to full length of main dimension
-      if(is.null(names(value))) {
+      if (is.null(names(value))) {
         names(value) <- elems
-      } else if(!setequal(names(value), elems)) {
+      } else if (!setequal(names(value), elems)) {
         stop("Names of input vector do not match existing dimension names!")
       }
       elemsFull <- getItems(x, dim = dim, full = TRUE)

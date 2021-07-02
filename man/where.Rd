@@ -19,9 +19,8 @@ Analysis function for magpie objects
 }
 \examples{
 
- p <- maxample("pop"))
- where(p > 500)
-
+p <- maxample("pop")
+where(p > 500)
 }
 \seealso{
 whereplot in package luplot
