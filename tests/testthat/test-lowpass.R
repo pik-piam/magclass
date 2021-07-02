@@ -1,5 +1,7 @@
 context("Lowpass Test")
 
+p <- maxample("pop")
+
 test_that("lowpass performs proper calculations", {
   # population data after 20 lowpass iterations for first two regions
   dat20 <- new("magpie", .Data = structure(c(959.55885559599, 1482.98153190583, 
@@ -15,7 +17,15 @@ test_that("lowpass performs proper calculations", {
                                                                           "y2035", "y2045", "y2055", "y2065", "y2075", "y2085", "y2095", 
                                                                           "y2105", "y2115", "y2125", "y2135", "y2145"), scenario = "A2")))
   
-  expect_equivalent(lowpass(maxample("pop")[1:2,,1], i = 20), dat20)
+  expect_equivalent(lowpass(p[1:2,,1], i = 20), dat20)
+  expect_identical(lowpass(p[1:2,1:5,]), lowpass(p[1:2,c(5,3,1,2,4),]))
+  expect_warning(lowpass(p, fix = "start"), "does modify the total sum")
+  expect_error(lowpass(p, fix ="blablub"), "not available")
+  expect_identical(lowpass(p, i = 0), p)
+  expect_identical(lowpass(c(5,3,21,8)),c(4.5, 8, 13.25, 11.25))
+  expect_identical(lowpass(c(5,3,21,8), altFilter = 1:2), c(4.5, 9, 13.25, 11.25))
+  expect_identical(as.vector(lowpass(setYears(as.magpie(c(5,3,21,8), temporal = 1), 1:4), altFilter = 1:2)),
+                   lowpass(c(5,3,21,8), altFilter = 1:2))
 })
 
 

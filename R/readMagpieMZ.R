@@ -6,6 +6,7 @@ readMagpieMZ <- function(fileName, compressed) {
   } else {
     zz <- file(fileName, "rb")
   }
+  on.exit(close(zz))
 
   newestFformatVersion <- 6
   fformatVersion <- readBin(zz, integer(), 1, size = 2)
@@ -66,7 +67,6 @@ readMagpieMZ <- function(fileName, compressed) {
   if (fformatVersion > 2) {
     readBin(zz, raw(), nbyteMetadata)
   }
-  close(zz)
   attr(output, "FileFormatVersion") <- fformatVersion
   return(new("magpie", output))
 }

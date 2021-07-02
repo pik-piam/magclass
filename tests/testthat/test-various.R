@@ -81,3 +81,10 @@ test_that("isYear works", {
   expect_false(isYear("12345", with_y = FALSE))
   expect_error(isYear(p), "is no Vector")
 })
+
+test_that("sizeCheck works", {
+  limit <- getOption("magclass_sizeLimit")
+  options(magclass_sizeLimit = 1)
+  on.exit(options(magclass_sizeLimit = limit))
+  expect_error(magclass:::sizeCheck(p), "object size limit reached")
+})

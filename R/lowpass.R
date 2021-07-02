@@ -25,8 +25,13 @@
 #' 
 #' @export
 lowpass <- function(x,i=1, fix=NULL, altFilter=NULL, warn=TRUE) {
-  
-  if(warn && !is.null(fix)) warning("Fixing start or end does modify the total sum of values! Use fix=NULL to let the total sum unchanged!")
+
+  if (!is.null(fix) && !(fix %in% c("start", "end", "both"))) {
+    stop("Option \"",fix,"\" is not available for the \"fix\" argunemt!")   
+  }
+  if(warn && !is.null(fix)) {
+    warning("Fixing start or end does modify the total sum of values! Use fix=NULL to let the total sum unchanged!")
+  }
   
   if(i==0) return(x)
   
@@ -41,15 +46,15 @@ lowpass <- function(x,i=1, fix=NULL, altFilter=NULL, warn=TRUE) {
     for(j in 1:i) {
       y <- x
       x[,2:(l-1),] <- (y[,1:(l-2),] + 2*y[,2:(l-1),] + y[,3:l,])/4
-      if(!is.null(altFilter))
+      if(!is.null(altFilter)) {
         x[,altFilter,] <- (2*y[,altFilter,] + y[,altFilter+1,])/3  
-      if(is.null(fix)){
+      }
+      if(is.null(fix) || !(fix %in% c("start", "both"))){
         x[,1,] <- (3*y[,1,]+y[,2,])/4
+      }
+      if(is.null(fix) || !(fix %in% c("end", "both"))){
         x[,l,] <- (3*y[,l,]+y[,l-1,])/4
       }
-      else if (fix=="start") x[,l,] <- (3*y[,l,]+y[,l-1,])/4
-      else if (fix=="end")   x[,1,] <- (3*y[,1,]+y[,2,])/4
-      else if (fix!="both") stop(paste("Option \"",fix,"\" is not available for the \"fix\" argunemt!",sep=""))    
     }
     x <- as.magpie(x)
     copy.attributes(x) <- x2
@@ -58,16 +63,17 @@ lowpass <- function(x,i=1, fix=NULL, altFilter=NULL, warn=TRUE) {
     for(j in 1:i) {
       y <- x
       x[2:(l-1)] <- (y[1:(l-2)] + 2*y[2:(l-1)] + y[3:l])/4
-      if(!is.null(altFilter))
+      if(!is.null(altFilter)) {
         x[altFilter] <- (2*y[altFilter] + y[altFilter+1])/3  
-      if(is.null(fix)){
+      }
+      if(is.null(fix) || !(fix %in% c("start", "both"))){
         x[1] <- (3*y[1]+y[2])/4
+      }
+      if(is.null(fix) || !(fix %in% c("end", "both"))){
         x[l] <- (3*y[l]+y[l-1])/4
       }
-      else if (fix=="start") x[l] <- (3*y[l]+y[l-1])/4
-      else if (fix=="end") x[1] <- (3*y[1]+y[2])/4
-      else if (fix!="both") stop(paste("Option \"",fix,"\" is not available for the \"fix\" argunemt!",sep=""))    }
-  }  
+    }  
+  }
   return(x)
 }
 

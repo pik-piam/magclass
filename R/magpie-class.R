@@ -345,8 +345,7 @@ setMethod("[<-", #nolint
       return(x)
     }
     if (is.null(dim(x))) {
-      tmp <- x@.Data
-      tmp[i] <- k
+      tmp <- x@.Data; tmp[i] <- k
       return(tmp)
     }
     if (!missing(i)) {

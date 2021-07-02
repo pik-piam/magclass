@@ -69,13 +69,7 @@ magpie_expand <- function(x, ref) { # nolint
     if (is.null(dimnames(x)[[i]])) {
       if (dim(x)[i] > 1) stop("Inconsistent MAgPIE file: more than 1 element in dimension ", i, " but no names given!")
       if (dim(ref)[i] > 1) { # Expand single element dimension to dimension of ref
-        if (i == 1) {
-          x <- x[rep(1, dim(ref)[i]), , ]
-        } else if (i == 2) {
-          x <- x[, rep(1, dim(ref)[i]), ]
-        } else {
-          x <- x[, , rep(1, dim(ref)[i])]
-        }
+         x <- x[rep(1, dim(ref)[i]), dim = i]
       }
       if (!is.null(dimnames(ref)[[i]])) dimnames(x)[[i]] <- dimnames(ref)[[i]]
     } else if (dim(x)[i] == dim(ref)[i] && all(dimnames(x)[[i]] == dimnames(ref)[[i]]) &&
@@ -85,13 +79,7 @@ magpie_expand <- function(x, ref) { # nolint
     } else if (dim(x)[i] == dim(ref)[i] && all(sort(dimnames(x)[[i]]) == sort(dimnames(ref)[[i]])) &&
       (!setMatching || names(dimnames(x))[i] == names(dimnames(ref))[i])) {
       # same length and entries, but different order
-      if (i == 1) {
-        x <- x[dimnames(ref)[[i]], , ]
-      } else if (i == 2) {
-        x <- x[, dimnames(ref)[[i]], ]
-      } else {
-        x <- x[, , dimnames(ref)[[i]]]
-      }
+      x <- x[dimnames(ref)[[i]], dim = i]
     } else {
       x <- magpie_expand_dim(x, ref, dim = i)
     }

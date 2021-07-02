@@ -92,14 +92,8 @@ magpie_expand_dim <- function(x, ref, dim = 1) {
   tmpdim <- dim(x)
   tmpdim[dim] <- nrow(m)
   sizeCheck(tmpdim)
-
-  if (dim == 1) {
-    out <- x[m$".line_x", , ]
-  } else if (dim == 2) {
-    out <- x[, m$".line_x", ]
-  } else {
-    out <- x[, , m$".line_x"]
-  }
+  
+  out <- x[m$".line_x", dim = dim]
   tmp <- df2dimnames(m)
   dimnames(out)[[dim]] <- tmp$dimnames
   names(dimnames(out))[dim] <- tmp$name
