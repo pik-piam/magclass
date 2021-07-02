@@ -28,7 +28,6 @@
 #' @return returns a time-series with the same timesteps as origin, which
 #' lineary fades into the values of the aim object
 #' @author Benjamin Bodirsky, Jan Philipp Dietrich
-#' @seealso \code{\link{lin.convergence}}
 #' @examples
 #' 
 #' pop <- maxample("pop") 

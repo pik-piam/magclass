@@ -18,7 +18,7 @@
 #' or after the years in data, the two closest neighbours are used for
 #' extrapolation.
 #' @author Benjamin Bodirsky, Jan Philipp Dietrich
-#' @seealso \code{\link{lin.convergence}}
+#' @seealso \code{\link{convergence}}
 #' @examples
 #'
 #' pop <- maxample("pop")

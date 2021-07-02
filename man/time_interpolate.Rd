@@ -42,7 +42,7 @@ time_interpolate(pop, "y2000", integrate = TRUE)
 time_interpolate(pop, c("y1980", "y2000"), integrate = TRUE, extrapolation_type = "constant")
 }
 \seealso{
-\code{\link{lin.convergence}}
+\code{\link{convergence}}
 }
 \author{
 Benjamin Bodirsky, Jan Philipp Dietrich

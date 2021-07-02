@@ -59,9 +59,6 @@ population[,,"MIX"]<-convergence(population[,,"A2"],population[,,"B1"])
 
 
 }
-\seealso{
-\code{\link{lin.convergence}}
-}
 \author{
 Benjamin Bodirsky, Jan Philipp Dietrich
 }
