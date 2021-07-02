@@ -38,8 +38,8 @@ print.magpie <- function(x, drop = TRUE, reshape = FALSE, ...) {
 
       # check if specified subdims exists in x
       if (!all(reshape %in% dims)) {
-        warning("Non-existing subdims specified in 'reshape'. Call print again with 'reshape=FALSE'.")
-        print.magpie(x, reshape = FALSE, drop = drop)
+        warning("Non-existing subdims specified in 'reshape'. Call print again with reshape=FALSE.")
+        return(print.magpie(x, reshape = FALSE, drop = drop))
       }
 
       names(reshape) <- c(names(dims[dims == reshape[1]]), names(dims[dims == reshape[2]]))
@@ -56,15 +56,7 @@ print.magpie <- function(x, drop = TRUE, reshape = FALSE, ...) {
         missing                <- tail(missing, length(missing) - 1)
 
         for (j in getItems(toPrint, dim = i)) {
-
-          if (round(i) == 1) {
-            toPrintReduced <- toPrint[j, , ]
-          } else if (round(i) == 2) {
-            toPrintReduced <- toPrint[, j, ]
-          } else if (round(i) == 3) {
-            toPrintReduced <- toPrint[, , j]
-          } else stop("Something is wrong.")
-
+          toPrintReduced <- toPrint[j, dim = floor(i)]
           if (is.na(header[trunc(i)])) {
             header[trunc(i)] <- j
           } else {
