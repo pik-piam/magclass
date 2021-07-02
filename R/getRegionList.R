@@ -19,6 +19,7 @@
 #' 
 #' @export
 getRegionList <- function(x) {
+  .Deprecated("getItems")
   return(factor(sub("\\..*$","",dimnames(x)[[1]])))
 }
 

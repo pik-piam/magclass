@@ -66,6 +66,15 @@ test_that("getRegions works", {
   expect_identical(getRegions(a), "BLA")
 })
 
+test_that("getRegionList works", {
+  a <- collapseDim(a, dim = c("x", "y"))
+  expect_warning(rl <- getRegionList(a), "deprecated")
+  expect_identical(rl, as.factor(getItems(a, dim="country", full=TRUE)))
+  expect_error(suppressWarnings(getRegionList(a) <- "GLO"), "Lengths of RegionLists do not agree")
+  expect_warning(getRegionList(a) <- rep("GLO", dim(a)[1]), "deprecated")
+  expect_identical(suppressWarnings(getRegionList(a)), as.factor(rep("GLO", dim(a)[1])))
+})
+
 test_that("rounding works", {
   ref <- new("magpie", .Data = structure(c(552.67, 1280.64), .Dim = c(2L, 1L, 1L),
                                          .Dimnames = list(i = c("AFR", "CPA"), t = "y1995", scenario = "A2")))
@@ -80,6 +89,16 @@ test_that("isYear works", {
   expect_false(isYear("abcd", with_y = FALSE))
   expect_false(isYear("12345", with_y = FALSE))
   expect_error(isYear(p), "is no Vector")
+})
+
+test_that("getYear works", {
+  expect_error(getYears(p) <- 1999, "Wrong number of years")
+  expect_silent(getYears(p[,-(1:nyears(p)),]) <- NULL)
+  p1 <- p[,1,]
+  expect_silent(getYears(p1) <- NULL)
+  expect_null(getYears(p1))
+  expect_error(getYears(p) <- NULL, "Setting years to NULL is not possible")
+  expect_error(getYears(p1) <- "x1000", "Wrong year format")
 })
 
 test_that("sizeCheck works", {
