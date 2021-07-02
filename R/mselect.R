@@ -13,12 +13,15 @@
   sep <- "\\."
   sets <- strsplit(names(dimnames(x)), sep)
 
-  i <- getCells(x)
-  j <- getYears(x)
-  k <- getNames(x)
-
-  if (is.null(j)) j <- 1
-  if (is.null(k)) k <- 1
+  .getItemsX <- function(x, dim) {
+    out <- getItems(x, dim = dim)
+    if(is.null(out)) out <- 1
+    return(out)
+  }
+  
+  i <- .getItemsX(x, dim = 1)
+  j <- .getItemsX(x, dim = 2)
+  k <- .getItemsX(x, dim = 3)
 
   for (n in names(args)) {
     where <- grep(paste0("^", n, "$"), unlist(sets))
