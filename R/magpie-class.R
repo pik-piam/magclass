@@ -181,7 +181,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     getItems(ext, dim = maindim, raw = TRUE) <- rowExtensions
     ext[, , ] <- NA
     x <- suppressWarnings(mbind(x, ext))
-    if (getOption("magclass.verbosity") > 1) {
+    if (!is.null(getOption("magclass.verbosity")) && getOption("magclass.verbosity") > 1) {
       message("NOTE (.mselectDF): The following elements were added to x as they appeared",
         " in the mapping but not in x: ", paste0(rowExtensions, collapse = ", "),
         " (values set to NA)\n")
@@ -376,7 +376,8 @@ setMethod("[<-", #nolint
       } else if (length(value) != length(x@.Data[i, j, k]) & length(value) != 1) {
         # dangerous writing of value as order might be wrong!
         stop("Replacement does not work! Different replacement length!")
-      } else if (length(value) != 1 && getOption("magclass.verbosity") > 1) {
+      } else if (length(value) != 1 && !is.null(getOption("magclass.verbosity")) &&
+                 getOption("magclass.verbosity") > 1) {
         message("NOTE ([<-): Dangerous replacement! As replacement value is not",
           " an MAgPIE object name checking is deactivated!\n")
       }

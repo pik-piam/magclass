@@ -25,10 +25,10 @@ dimension. At the moment magpie_expand is only internally available in the
 magclass library
 
 You can influence the verbosity of this function by setting the option
-"magclass.verbosity". By default verbosity is set to 2 which means that
-warnings as well as notes are returned. Setting verbosity to 1 means that
-only warnings are returned but no notes. This is done by
-options(verbosity.level=1)
+"magclass.verbosity". By default verbosity is set to 1 which means that
+only warnings are returned. Setting verbosity to 2 means that warnings
+as well as additional notes are returned. This is done by
+options(verbosity.level=2)
 
 With version 5 of the package magpie_expand has been updated to a newer version
 (currently 2.1) and since version 6 this is the only currently supported
@@ -46,7 +46,7 @@ have a look at \code{vignette("magclass-expansion")}.
 a <- new.magpie(c("AFR", "CPA"), "y1995", c("m", "n"))
 b <- new.magpie("GLO", "y1995", c("bla", "blub"))
 magpie_expand(b, a)
-options(magclass.verbosity = 1)
+options(magclass.verbosity = 2)
 magpie_expand(b, a)
 }
 \seealso{
