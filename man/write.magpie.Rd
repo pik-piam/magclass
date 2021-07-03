@@ -13,8 +13,6 @@ write.magpie(
   comment = NULL,
   comment.char = "*",
   mode = NULL,
-  nc_compression = 9,
-  verbose = TRUE,
   ...
 )
 }
@@ -28,7 +26,7 @@ to file\_name and file\_folder)}
 \item{file_folder}{folder the file should be written to (alternatively you
 can also specify the full path in file\_name - wildcards are supported)}
 
-\item{file_type}{Format the data should be stored as. Currently 13 formats
+\item{file_type}{Format the data should be stored as. Currently following formats
 are available: "rds" (default R-data format), "cs2" (cellular standard
 MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
 "csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE
@@ -37,9 +35,9 @@ to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
 "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
 with the only difference that they have a REMIND compatible format, "m"
 (binary MAgPIE format "magpie"), "mz" (compressed binary MAgPIE format
-"magpie zipped"), "asc" (ASCII grid format / only available for 0.5deg data)
-and "nc" (netCDF format / only available for 0.5deg data). If
-file\_type=NULL the file ending of the file\_name is used as format. If
+"magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif" 
+(GEOtiff format) and "grd" (native raster format). If file\_type=NULL
+the file ending of the file\_name is used as format. If
 format is different to the formats mentioned standard MAgPIE format is
 assumed. Please be aware that the file\_name is independent of the
 file\_type you choose here, so no additional file ending will be added!}
@@ -62,15 +60,7 @@ full access for user, read access for group and no acess for anybody else).
 Set to NULL system defaults will be used. Access codes are identical to the
 codes used in unix function chmod.}
 
-\item{nc_compression}{Only used if file\_type="nc". Sets the compression
-level for netCDF files (default is 9). If set to an integer between 1 (least
-compression) and 9 (most compression), the netCDF file is written in netCDF
-version 4 format. If set to NA, the netCDF file is written in netCDF version
-3 format.}
-
-\item{verbose}{Boolean deciding about whether function should be verbose or not}
-
-\item{...}{arguments to be passed to write.magpie.ncdf}
+\item{...}{additional arguments passed to specific write functions}
 }
 \description{
 Writes a MAgPIE-3D-array (cells,years,datacolumn) to a file in one of three

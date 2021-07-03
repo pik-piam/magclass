@@ -61,6 +61,11 @@ test_that("read supports older formats", {
   expect_equal(a2, ref2)
 })
 
+test_that("handling of spatial data works", {
+  md <- magclass:::magclassdata$half_deg
+  m05 <- new.magpie(paste0(md$region,".",seq_len(dim(md)[1])), years = c(2000,2001), fill = c(md$lon,md$lat))
+})
+
 
 test_that("read/write conserves cell naming", {
   p <- new.magpie(c("AFR.2", "CPA.3", "AFR.1", "CPA.4"), fill = 0)
@@ -104,4 +109,6 @@ test_that("read/write triggers errors and warnings correctly", {
   expect_error(read.magpie(tmpfile), "does not contain a magpie object")
   unlink(tmpfile)
 
+  expect_error(write.magpie(as.magpie(1), "bla.nc"), "No coordinates")
+  expect_error(write.magpie(a, "blub.asc"), "choose just one")
 })

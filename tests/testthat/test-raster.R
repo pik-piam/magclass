@@ -3,6 +3,7 @@ context("Raster conversion tests")
 skip_if_not_installed("raster")
 
 test_that("raster convertion does not alter data", {
+  expect_error(as.RasterBrick(1), "not a magpie object")
   for(i in c(0.5,2)) {
     for(j in c(1,4)) {
       for(t in c(1,3)) {
