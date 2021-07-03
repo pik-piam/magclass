@@ -4,7 +4,7 @@
 \alias{magpply}
 \title{magpply}
 \usage{
-magpply(X, FUN, MARGIN = NULL, DIM = NULL, ..., integrate = FALSE)
+magpply(X, FUN, MARGIN = NULL, DIM = NULL, ..., INTEGRATE = FALSE)
 }
 \arguments{
 \item{X}{magpie object}
@@ -20,7 +20,7 @@ excluding dimensions from the calculation and DIM including them.}
 
 \item{...}{further parameters passed on to FUN}
 
-\item{integrate}{if TRUE, the output will be filled into an magpie object of the same dimensionality as X}
+\item{INTEGRATE}{if TRUE, the output will be filled into an magpie object of the same dimensionality as X}
 }
 \value{
 magpie object

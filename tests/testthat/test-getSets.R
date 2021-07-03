@@ -13,4 +13,6 @@ test_that("sets names can be overwritten", {
   expect_error(getSets(x) <- 1:2, "length does not agree")
   names(dimnames(x)) <- "bla"
   expect_identical(getSets(x), c(d1.1 = "bla", d2.1 = NA, d3.1 = NA))
+  getSets(x) <- c("", "bla", "blub")
+  expect_identical(getSets(x), c(d1.1 = NA, d2.1 = "bla", d3.1 = "blub"))
 })

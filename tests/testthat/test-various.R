@@ -34,7 +34,7 @@ test_that("magpiesort works", {
   expect_identical(magpiesort(p), magpiesort(p[dim(p)[1]:1, , ]))
 })
 
-test_that("unwrap works", {
+test_that("(un)wrap works", {
   x <- as.magpie(array(1:6, c(3, 2), list(c("bla", "blub", "ble"), c("up", "down"))))
   ref <- structure(1:6, .Dim = c(1L, 1L, 3L, 2L),
                    .Dimnames = list("GLO", NULL, c("bla", "blub", "ble"), c("up", "down")))
@@ -43,6 +43,20 @@ test_that("unwrap works", {
   expect_error(unwrap(1), "not a MAgPIE object")
   expect_error(unwrap(x[, , c(1, 1)]), "Duplicated names detected")
   expect_error(unwrap(a), "needs to be complete")
+  p0 <- p[,,1]
+  getItems(p0, dim = 3) <- NULL
+  a0 <- as.array(p0)
+  names(dimnames(a0)) <- NULL
+  expect_identical(unwrap(p0), a0)
+  expect_error(wrap(1), "not an array")
+  expect_error(wrap(p0, map = 1), "not a list")
+  expect_error(wrap(p0, map= list(1,1)), "duplicated dimension indices")
+  expect_error(wrap(p0, map= list(1:4)), "non-existing dimension")
+  expect_error(wrap(p0, map = list(1)), "miss some dimensions")
+  ref <- new("magpie", .Data = structure(c(AFR.y1995. = 553, CPA.y1995. = 1281),
+                                         .Dim = 2L, .Dimnames = list(i.t.d3 = c("AFR.y1995.", "CPA.y1995."))))
+  expect_identical(wrap(round(p0[1:2,1,1]), map=list(1:3)), ref)
+  expect_identical(wrap(p0[1:2,1,NULL]), new("magpie", .Data = structure(numeric(0), .Dim = 0L)))
 })
 
 test_that("head and tail work", {

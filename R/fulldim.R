@@ -18,9 +18,9 @@ fulldim <- function(x, sep = ".") { #nolint
     elemsplit <- strsplit(dimnames(x)[[3]], sep, fixed = TRUE)
     tmp <- sapply(elemsplit, length) #nolint
   } else {
-    tmp <- 1
+    tmp <- 0
   }
-  if (length(tmp) == 1) if (tmp == 0) tmp <- 1
+  if (length(tmp) == 1 && tmp == 0) tmp <- 1
   if (tmp[1] == 1) {
     # no need for splitting
     return(list(dim(x), dimnames(x)))
@@ -40,12 +40,10 @@ fulldim <- function(x, sep = ".") { #nolint
       dim <- c(dim, length(dimnames[[i + 2]]))
     }
     tmp <- getSets(x, sep = sep)
-    if (length(tmp) == length(dimnames) | is.null(tmp)) {
+    if (length(tmp) == length(dimnames) || is.null(tmp)) {
       names(dimnames) <- tmp
-    } else {
-      if (length(tmp) == length(dimnames) + 1 & length(grep(sep, names(dimnames(x))[1], fixed = TRUE))) {
+    } else if (length(tmp) == length(dimnames) + 1 && length(grep(sep, names(dimnames(x))[1], fixed = TRUE))) {
         names(dimnames) <- c(names(dimnames(x))[1], tmp[3:length(tmp)])
-      }
     }
     return(list(dim, dimnames))
   }
