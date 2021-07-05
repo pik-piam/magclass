@@ -48,5 +48,18 @@ test_that("read/write report works", {
   expect_warning(p4 <- read.report(f, as.list = FALSE), "Replaced")
   expect_identical(getItems(p4, dim = 3), c("NA.NA.Ap2 (NA)", "NA.NA.B1 (NA)"))
 
+  
+  # test list format
+  p <- maxample("pop")
+  write.report(p, f1)
+  pl <- read.report(f1, as.list = TRUE)
+  write.report(pl, f2)
+  pl2 <- read.report(f2, as.list = TRUE)
+  expect_identical(pl, pl2)
+  
+  expect_error(write.report(as.list(1)), "Wrong format")
+  expect_error(write.report(1), "not a MAgPIE object")
+  expect_warning(write.report(p[,,rep(1,2)], f), "duplicate entries")
+  
   unlink(c(f, f1, f2))
 })

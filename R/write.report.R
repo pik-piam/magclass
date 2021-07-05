@@ -39,7 +39,7 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
         for (.model in names(x[[.scenario]])) {
           scenario <- ifelse(is.null(scenarioCall), .scenario, scenario)
           model <- ifelse(is.null(modelCall), .model, model)
-          x[[.scenario]][[.model]] <- write.report2(x[[.scenario]][[.model]], file = file, model = model,
+          x[[.scenario]][[.model]] <- write.report(x[[.scenario]][[.model]], file = file, model = model,
                                                     scenario = scenario, unit = unit, ndigit = ndigit, append = append,
                                                     skipempty = skipempty, extracols = extracols)
           append <- TRUE
@@ -90,7 +90,7 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
 
 prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty = FALSE,
                         ndigit = 4, extracols = NULL) {
-  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report2!")
+  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report!")
   sep <- "."
   # clean data
   x <- round(clean_magpie(x, what = "sets"), digits = ndigit)
