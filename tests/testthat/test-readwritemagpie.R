@@ -39,9 +39,9 @@ test_that("read/write does not affect content", {
   names(dimnames(mag3)) <- NULL
   expect_equivalent(m3, mag3)
   unlink(tmpfile)
-  
+
   expect_error(write.magpie(1), "Input is not in MAgPIE-format")
-  
+
 })
 
 test_that("read supports older formats", {
@@ -63,7 +63,7 @@ test_that("read supports older formats", {
 
 test_that("handling of spatial data works", {
   md <- magclass:::magclassdata$half_deg
-  m05 <- new.magpie(paste0(md$region,".",seq_len(dim(md)[1])), years = c(2000,2001), fill = c(md$lon,md$lat))
+  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(2000, 2001), fill = c(md$lon, md$lat))
 })
 
 

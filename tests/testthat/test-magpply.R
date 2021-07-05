@@ -11,8 +11,8 @@ test_that("magpply works", {
                                                  type.color = c("animal.black", "animal.white",
                                                                 "animal.red", "animal.brown"))))
   expect_identical(magpply(a[1:2, 1:2, ], FUN = sum, DIM = "species"), ref1)
-  expect_identical(magpply(a[1:2, 1:2, ], FUN = sum, DIM = 3.2, INTEGRATE = TRUE), magpie_expand(ref1, a[1:2, 1:2,]))
-  expect_identical(magpply(a[1:2, 1:2, ], FUN = sum, MARGIN = c(1,2,3.1,3.3)), ref1)
+  expect_identical(magpply(a[1:2, 1:2, ], FUN = sum, DIM = 3.2, INTEGRATE = TRUE), magpie_expand(ref1, a[1:2, 1:2, ]))
+  expect_identical(magpply(a[1:2, 1:2, ], FUN = sum, MARGIN = c(1, 2, 3.1, 3.3)), ref1)
 
   ref2 <- new("magpie",
               .Data = structure(c(9397, 7653, 3475, 3345, 1900),
@@ -22,11 +22,11 @@ test_that("magpply works", {
                                                                       "animal.bird.black", "animal.bird.red",
                                                                       "animal.dog.brown"))))
   expect_error(magpply(a, FUN = mean, DIM = 1, MARGIN = 2:3), "specify either MARGIN or DIM")
-  
+
   ref3 <- new("magpie", .Data = structure(c(2709, 1965), .Dim = c(2L, 1L, 1L),
                                           .Dimnames = list(i = c("AFR", "CPA"),
                                                            d2 = NULL, d3 = NULL)))
-  
-  expect_identical(magpply(round(p[1:2,,]), max, MARGIN = 1), ref3)
-  
+
+  expect_identical(magpply(round(p[1:2, , ]), max, MARGIN = 1), ref3)
+
 })

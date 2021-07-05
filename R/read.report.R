@@ -82,7 +82,10 @@ read.report <- function(file, as.list = TRUE) { # nolint
     names <- sub("#SPLITHERE#", "", names)
     # delete dots if they are aparently not used as dimension separator
     ndots <- nchar(gsub("[^\\.]*", "", names))
-    if (any(ndots != ndots[1])) names <- gsub("\\.", "", names)
+    if (any(ndots != ndots[1])) {
+      names <- gsub("\\.", "p", names)
+      warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
+    }
     # replace weird ° in tables after sub function evaluation
     names        <- sub(pattern = "\U{00B0}C", replacement = "K", x = names, useBytes = TRUE)
     names(names) <- sub(pattern = "\U{00B0}C", replacement = "K", x = names(names), useBytes = TRUE)
@@ -121,17 +124,16 @@ read.report <- function(file, as.list = TRUE) { # nolint
     uglyFormat <-  all(is.na(raw[, dim(raw)[2]]))
     if (uglyFormat) raw <- raw[, -dim(raw)[2]]
 
-    if ("number of items read is not a multiple of the number of columns" %in% names(warnings())) {
-      stop("Inconsistent input data! At least one line is incomplete!")
-    }
-
     # rename from uppercase to lowercase
     if (header & .trim(s[, 1]) == "MODEL") {
       names(raw)[1:5] <- defaultHeader[1:5]
     }
 
     if (!header) {
-      if (dim(raw)[2] == length(defaultHeader)) dimnames(raw)[[2]] <- defaultHeader
+      if (dim(raw)[2] == length(defaultHeader)) {
+        warning("Header is missing. Years are being guessed based on structure!")
+        dimnames(raw)[[2]] <- defaultHeader
+      }
       else stop("Cannot read report. No header given and report has not the standard size!")
     }
 
@@ -179,13 +181,13 @@ read.report <- function(file, as.list = TRUE) { # nolint
   }
 
   if (!as.list) {
-    regions <- Reduce(union, lapply(unlist(output, recursive = FALSE), function(source) {
-      getRegions(source)
+    regions <- Reduce(union, lapply(unlist(output, recursive = FALSE), function(x) {
+      getRegions(x)
     })) # make sure that magpie objects to be merged share the same regions
-    output <- mbind(lapply(unlist(output, recursive = FALSE), function(source) {
-      data <- new.magpie(regions, getYears(source), getNames(source), fill = NA)
-      data[getRegions(source), getYears(source), getNames(source)] <- source[getRegions(source), getYears(source),
-        getNames(source)]
+    output <- mbind(lapply(unlist(output, recursive = FALSE), function(x) {
+      data <- new.magpie(regions, getYears(x), getNames(x), fill = NA)
+      data[getRegions(x), getYears(x), getNames(x)] <- x[getRegions(x), getYears(x),
+        getNames(x)]
       return(data)
     }))
     names(dimnames(output))[3] <- "scenario.model.variable"

@@ -37,7 +37,7 @@
 #' "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
 #' with the only difference that they have a REMIND compatible format, "m"
 #' (binary MAgPIE format "magpie"), "mz" (compressed binary MAgPIE format
-#' "magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif" 
+#' "magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif"
 #' (GEOtiff format) and "grd" (native raster format). If file\_type=NULL
 #' the file ending of the file\_name is used as format. If
 #' format is different to the formats mentioned standard MAgPIE format is
@@ -82,7 +82,7 @@
 #'
 #' @author Jan Philipp Dietrich, Stephen Bi
 #' @seealso \code{"\linkS4class{magpie}"},
-#' \code{\link{read.magpie}},\code{\link{mbind}},\code{\link{write.magpie.ncdf}}
+#' \code{\link{read.magpie}},\code{\link{mbind}}
 #' @examples
 #'
 #' # a <- read.magpie("lpj_yield_ir.csv")
@@ -167,19 +167,19 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       if (nchar(setsCollapsed, type = "bytes") > 0) writeChar(setsCollapsed, zz, eos = NULL)
       close(zz)
       Sys.chmod(filePath, mode)
-    } else if (file_type %in% c("asc","nc","grd","tif")) {
+    } else if (file_type %in% c("asc", "nc", "grd", "tif")) {
       format <- c(asc = "ascii", nc = "CDF", grd = "raster", tif = "GTiff")
       x <- as.RasterBrick(x)
-      if(file_type == "asc") {
-        if(dim(x)[3] != 1) stop("asc does not support multiple year/data layers. Please choose just one!")
+      if (file_type == "asc") {
+        if (dim(x)[3] != 1) stop("asc does not support multiple year/data layers. Please choose just one!")
         x <- x[[1]]
       }
-      raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite=TRUE, ...)
+      raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE, ...)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" | file_type == "cs3r") {
       if (file_type == "cs3r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
-      if (dim(x)[3] != prod(sapply(getItems(x, dim = 3, split = TRUE), length))) {
+      if (dim(x)[3] != prod(sapply(getItems(x, dim = 3, split = TRUE), length))) { # nolint
         stop("Input data seems to be sparse but ", file_type, " does not support sparse data. Please use ",
              sub("3", "4", file_type), " instead!")
       }

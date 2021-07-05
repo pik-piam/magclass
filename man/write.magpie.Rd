@@ -35,7 +35,7 @@ to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
 "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
 with the only difference that they have a REMIND compatible format, "m"
 (binary MAgPIE format "magpie"), "mz" (compressed binary MAgPIE format
-"magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif" 
+"magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif"
 (GEOtiff format) and "grd" (native raster format). If file\_type=NULL
 the file ending of the file\_name is used as format. If
 format is different to the formats mentioned standard MAgPIE format is
@@ -114,7 +114,7 @@ read.magpie/write.magpie functions in other languages): \cr \cr
 }
 \seealso{
 \code{"\linkS4class{magpie}"},
-\code{\link{read.magpie}},\code{\link{mbind}},\code{\link{write.magpie.ncdf}}
+\code{\link{read.magpie}},\code{\link{mbind}}
 }
 \author{
 Jan Philipp Dietrich, Stephen Bi
