@@ -21,15 +21,16 @@
 #' @seealso \code{\link{convergence}}
 #' @examples
 #'
-#' pop <- maxample("pop")
-#' time_interpolate(pop, "y2000", integrate = TRUE)
-#' time_interpolate(pop, c("y1980", "y2000"), integrate = TRUE, extrapolation_type = "constant")
+#' p <- maxample("pop")
+#' time_interpolate(p, "y2000", integrate = TRUE)
+#' time_interpolate(p, c("y1980", "y2000"), integrate = TRUE, extrapolation_type = "constant")
 #' @export time_interpolate
 time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_years = FALSE,  # nolint
                              extrapolation_type = "linear") {                                   # nolint
   if (!is.magpie(dataset)) {
-    stop("Invalid Data format of measured data. Has to be a MAgPIE-object.")
+    stop("Invalid data format of measured data. Has to be a MAgPIE-object.")
   }
+  sets <- getSets(dataset)
   if (all(isYear(interpolated_year, with_y = FALSE))) {
     interpolated_year <- paste("y", interpolated_year, sep = "") # nolint
   } else  {
@@ -100,5 +101,6 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
   }
   dataset <- as.magpie(dataset, spatial = 1, temporal = 2)
   dataset <- dataset[, sort(getYears(dataset)), ]
+  getSets(dataset) <- sets
   return(dataset)
 }
