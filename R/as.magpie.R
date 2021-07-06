@@ -307,7 +307,13 @@ setMethod("as.magpie",
   variable <- as.data.table(tstrsplit(df$variable, "..", fixed = TRUE))
   if (!is.null(temporal)) temporal <- temporal + 2
   if (ncol(variable) == 1) {
-    names(variable) <- "data"
+    if(all(grepl("^[yX][0-9]*$",variable[[1]], perl = TRUE))) {
+      variable[[1]] <- sub("^X", "y", variable[[1]], perl = TRUE)
+      names(variable) <- "year"
+      if (is.null(temporal)) temporal <- 3
+    } else {
+      names(variable) <- "data"
+    }
   } else if (ncol(variable) == 2) {
     names(variable) <- c("year", "data")
     if (is.null(temporal)) temporal <- 3

@@ -10,7 +10,8 @@ read.magpie(
   file_type = NULL,
   as.array = FALSE,
   comment.char = "*",
-  check.names = FALSE
+  check.names = FALSE,
+  ...
 )
 }
 \arguments{
@@ -48,6 +49,10 @@ the file in order to be recognized by read.magpie.}
 \item{check.names}{logical. If TRUE then the names of the variables in the
 data frame are checked to ensure that they are syntactically valid variable
 names. Same functionality as in read.table.}
+
+\item{...}{additional arguments passed to specific read functions (e.g.
+\code{varname} for specifying the variable to be read in from a multi-variable
+NCDF file.)}
 }
 \value{
 \item{x}{MAgPIE-object}

@@ -20,7 +20,7 @@
 copy.magpie <- function(input_file,output_file, round=NULL) {
   in_type  <- tail(strsplit(input_file,'\\.')[[1]],1)
   out_type <- tail(strsplit(output_file,'\\.')[[1]],1)
-  if(in_type==out_type) {
+  if(in_type==out_type && is.null(round)) {
     tmp <- file.copy(input_file, output_file, overwrite=TRUE) 
   } else if(is.null(round)) {
     write.magpie(read.magpie(input_file), output_file)

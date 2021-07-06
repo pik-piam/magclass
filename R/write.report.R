@@ -34,57 +34,49 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
   scenarioCall <- scenario
   modelCall <- model
   if (is.list(x)) {
-    if (is.list(x[[1]])) {
-      for (.scenario in names(x)) {
-        for (.model in names(x[[.scenario]])) {
-          scenario <- ifelse(is.null(scenarioCall), .scenario, scenario)
-          model <- ifelse(is.null(modelCall), .model, model)
-          x[[.scenario]][[.model]] <- write.report(x[[.scenario]][[.model]], file = file, model = model,
-                                                    scenario = scenario, unit = unit, ndigit = ndigit, append = append,
-                                                    skipempty = skipempty, extracols = extracols)
-          append <- TRUE
-        }
+    if (!is.list(x[[1]])) stop("Wrong format. x must be either a list of lists or a MAgPIE object!")
+    if (is.null(file)) stop("file = NULL not supported for lists!")
+    for (.scenario in names(x)) {
+      for (.model in names(x[[.scenario]])) {
+        scenario <- ifelse(is.null(scenarioCall), .scenario, scenario)
+        model <- ifelse(is.null(modelCall), .model, model)
+        write.report(x[[.scenario]][[.model]], file = file, model = model, scenario = scenario, unit = unit,
+                     ndigit = ndigit, append = append, skipempty = skipempty, extracols = extracols)
+        append <- TRUE
       }
-      if (is.null(file)) return(x)
-    } else {
-      stop("Wrong format. x must be either a list of lists or a MAgPIE object! Only single list found!")
     }
   } else {
     if (!is.magpie(x)) stop("Input is not a MAgPIE object!")
     x <- prepareData(x, model = model, scenario = scenario, unit = unit, skipempty = skipempty,
                      ndigit = ndigit, extracols = extracols)
-    if (is.null(file)) {
-      return(x)
-    } else {
-      if (!file.exists(file)) append <- FALSE
-      if (append) {
-        # check header for consistency
-        header <- read.table(file, nrows = 1, sep = ";", stringsAsFactors = FALSE)
-        years1 <- as.numeric(header[sapply(header, is.numeric)]) # nolint
-        years2 <- as.numeric(colnames(x)[!is.na(suppressWarnings(as.numeric(colnames(x))))])
-        union <- sort(union(years1, years2))
-        addycols <- function(data, years) {
-          ycols <- !is.na(suppressWarnings(as.numeric(colnames(data))))
-          tmp <- data[ycols]
-          data <- data[!ycols]
-          data[as.character(sort(years))] <- "N/A"
-          data[names(tmp)] <- tmp
-          return(data)
-        }
-        if (length(union) > length(years1)) {
-          data <- read.table(file, sep = ";", stringsAsFactors = FALSE, header = TRUE, check.names = FALSE)
-          data <- data[-length(data)]
-          write.table(addycols(data, union), file, quote = FALSE, sep = ";", row.names = FALSE,
-                      col.names = TRUE, append = FALSE, eol = ";\n")
-        }
-        if (length(union) > length(years2)) {
-          x <- addycols(as.data.frame(x), union)
-        }
+    if (is.null(file)) return(x)
+    if (!file.exists(file)) append <- FALSE
+    if (append) {
+      # check header for consistency
+      header <- read.table(file, nrows = 1, sep = ";", stringsAsFactors = FALSE)
+      years1 <- as.numeric(header[sapply(header, is.numeric)]) # nolint
+      years2 <- as.numeric(colnames(x)[!is.na(suppressWarnings(as.numeric(colnames(x))))])
+      union <- sort(union(years1, years2))
+      addycols <- function(data, years) {
+        ycols <- !is.na(suppressWarnings(as.numeric(colnames(data))))
+        tmp <- data[ycols]
+        data <- data[!ycols]
+        data[as.character(sort(years))] <- "N/A"
+        data[names(tmp)] <- tmp
+        return(data)
       }
-      x <- x[do.call("order", x[c("Scenario", "Model", "Variable", "Region")]), ]
-      write.table(x, file, quote = FALSE, sep = ";", row.names = FALSE, col.names = !append,
-                  append = append, eol = ";\n")
+      if (length(union) > length(years1)) {
+        data <- read.table(file, sep = ";", stringsAsFactors = FALSE, header = TRUE, check.names = FALSE)
+        data <- data[-length(data)]
+        write.table(addycols(data, union), file, quote = FALSE, sep = ";", row.names = FALSE,
+                    col.names = TRUE, append = FALSE, eol = ";\n")
+      }
+      if (length(union) > length(years2)) {
+        x <- addycols(as.data.frame(x), union)
+      }
     }
+    write.table(x, file, quote = FALSE, sep = ";", row.names = FALSE, col.names = !append,
+                append = append, eol = ";\n")
   }
 }
 
@@ -163,12 +155,12 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
     return(x)
   }
 
+  x <- correctNames(x, name = "Unit", replacement = unit)
   if (!is.null(extracols)) {
     for (i in extracols) {
       x <- correctNames(x, name = i)
     }
   }
-  x <- correctNames(x, name = "Unit", replacement = unit)
   x <- correctNames(x, name = "Region", replacement = NULL)
   x <- correctNames(x, name = "Scenario", replacement = scenario)
   x <- correctNames(x, name = "Model", replacement = model)
@@ -183,6 +175,7 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   x <- cbind(x[1:(3 + nxcol)], Variable = tmp, x[4 + nxcol])
 
   data[is.na(data)] <- "N/A"
-
-  return(cbind(x, data))
+  x <- cbind(x, data)
+  x <- x[do.call("order", x[c("Scenario", "Model", "Variable", "Region")]), ]
+  return(x)
 }

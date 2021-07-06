@@ -51,6 +51,9 @@
 #' @param check.names logical. If TRUE then the names of the variables in the
 #' data frame are checked to ensure that they are syntactically valid variable
 #' names. Same functionality as in read.table.
+#' @param ... additional arguments passed to specific read functions (e.g.
+#' \code{varname} for specifying the variable to be read in from a multi-variable
+#' NCDF file.)
 #' @return \item{x}{MAgPIE-object}
 #' @note
 #'
@@ -81,7 +84,7 @@
 #' @importFrom utils toBibtex
 #' @export
 read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array = FALSE, # nolint
-                        comment.char = "*", check.names = FALSE) {                       # nolint
+                        comment.char = "*", check.names = FALSE, ...) {                  # nolint
 
   .buildFileName <- function(fileName, fileFolder) {
     fileName <- paste0(fileFolder, fileName)
@@ -133,14 +136,12 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
                   check.names = check.names, stringsAsFactors = TRUE)
     readMagpie <- as.magpie(x, tidy = TRUE)
     attr(readMagpie, "comment") <- .readComment(fileName, commentChar = comment.char)
-  } else if (fileType == "asc") {
-    readMagpie <- readMagpieASC(fileName)
-  } else if (fileType == "nc") { # netcdf
-    readMagpie <- readMagpieNCDF4(fileName)
+  } else if (fileType %in% c("asc", "nc", "grd", "tif")) {
+    if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required!")
+    readMagpie <- as.magpie(raster::brick(fileName, ...))
   } else {
     readMagpie <- readMagpieOther(fileName, fileType, comment.char = comment.char, check.names = check.names)
   }
-
   if (as.array) readMagpie <- as.array(readMagpie)[, , ]
   return(readMagpie)
 }
