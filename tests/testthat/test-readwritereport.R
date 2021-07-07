@@ -8,7 +8,7 @@ test_that("read/write report works", {
                         Unit = structure(1L, .Label = "N/A", class = "factor"), `1` = 1),
                    row.names = 1L, class = "data.frame")
   expect_identical(write.report(as.magpie(1)), ref)
-  
+  print(str(write.report(as.magpie(1))))
   expect_error(read.report("bla"), "could not be found")
   f <- tempfile()
   getSets(p) <- c("region", "year", "scenario")
