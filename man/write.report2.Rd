@@ -4,58 +4,16 @@
 \alias{write.report2}
 \title{Write file in report format}
 \usage{
-write.report2(
-  x,
-  file = NULL,
-  model = NULL,
-  scenario = NULL,
-  unit = NULL,
-  ndigit = 4,
-  append = FALSE,
-  skipempty = TRUE,
-  extracols = NULL
-)
+write.report2(...)
 }
 \arguments{
-\item{x}{MAgPIE object or a list of lists with MAgPIE objects as created by
-read.report. In the latter case settings for model and scenario are
-overwritten by the information given in the list.}
-
-\item{file}{file name the object should be written to. If NULL the formatted
-content is returned}
-
-\item{model}{Name of the model which calculated the results}
-
-\item{scenario}{The scenario which was used to get that results.}
-
-\item{unit}{Unit of the data. Only relevant if unit is not already supplied
-in Dimnames (format "name (unit)"). Can be either a single string or a
-vector of strings with a length equal to the number of different data
-elements in the MAgPIE object}
-
-\item{ndigit}{Number of digits the output should have}
-
-\item{append}{Logical which decides whether data should be added to an
-existing file or an existing file should be overwritten}
-
-\item{skipempty}{Determines whether empty entries (all data NA) should be
-written to file or not.}
-
-\item{extracols}{names of dimensions which should appear in the output as additional columns}
+\item{...}{arguments are forwarded to \code{\link{write.report}}}
 }
 \description{
-This function writes the content of a MAgPIE object into a file or returns
-it directly using the reporting format as it is used for many model
-intercomparisons. It is a rewritten version of write.report and will
-probably replace write.report somewhen in the future
-}
-\examples{
-
-write.report2(maxample("pop"))
-
+This function is deprecated, please use \code{\link{write.report}} instead.
 }
 \seealso{
-\code{\link{read.report}}
+\code{\link{write.report}}
 }
 \author{
 Jan Philipp Dietrich

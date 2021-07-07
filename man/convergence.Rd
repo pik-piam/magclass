@@ -53,14 +53,9 @@ a certain time
 }
 \examples{
 
-pop <- maxample("pop") 
-population <- add_columns(pop,"MIX")
-population[,,"MIX"]<-convergence(population[,,"A2"],population[,,"B1"])
-
-
-}
-\seealso{
-\code{\link{lin.convergence}}
+pop <- maxample("pop")
+population <- add_columns(pop, "MIX")
+population[, , "MIX"] <- convergence(population[, , "A2"], population[, , "B1"])
 }
 \author{
 Benjamin Bodirsky, Jan Philipp Dietrich

@@ -16,7 +16,7 @@ getCoords(x, xlab = "x", ylab = "y") <- value
 
 \item{ylab}{label of y-dimension}
 
-\item{value}{coordinates as two column data.frame the data should be set to 
+\item{value}{coordinates as two column data.frame the data should be set to
 (first column = x, second column = y).}
 }
 \value{
@@ -31,9 +31,8 @@ Extracts spatial coordinates of a MAgPIE-object
 }}
 
 \examples{
-  a <- maxample("animal")#'   
-  getCoords(a)
-
+a <- maxample("animal")
+getCoords(a)
 }
 \seealso{
 \code{\link{as.RasterBrick}}, \code{\link{getItems}}, \code{"\linkS4class{magpie}"}

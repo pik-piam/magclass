@@ -34,14 +34,13 @@ Extracts sets of a MAgPIE-object if available
 
 \examples{
 
- a <- new.magpie("GLO.1",2000,c("a.o1","b.o1","a.o2"))
- getSets(a) <- c("reg","cell","t","bla","blub")
- getSets(a)
- 
- getSets(a)["d3.1"] <- "BLA"
- getSets(a,fulldim=FALSE)
+a <- new.magpie("GLO.1", 2000, c("a.o1", "b.o1", "a.o2"))
+ getSets(a) <- c("reg", "cell", "t", "bla", "blub")
  getSets(a)
 
+ getSets(a)["d3.1"] <- "BLA"
+ getSets(a, fulldim = FALSE)
+ getSets(a)
 }
 \seealso{
 \code{\link{getRegions}},

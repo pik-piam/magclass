@@ -14,6 +14,7 @@
 \alias{as.magpie,quitte-method}
 \alias{as.magpie,tbl_df-method}
 \alias{as.magpie,RasterBrick-method}
+\alias{as.magpie,logical-method}
 \alias{as.magpie,RasterLayer-method}
 \alias{as.magpie,RasterStack-method}
 \alias{is.magpie}
@@ -51,13 +52,13 @@ as first data column. In addition an argument \code{tidy=TRUE} can be used
 to indicate that the data.frame structure is following the rules of tidy
 data (last column is the data column all other columns contain dimension
 information). This information will help the conversion. \code{sep} defines
-the dimension separator (default is ".") and \code{replacement} defines how 
+the dimension separator (default is ".") and \code{replacement} defines how
 the separator as a reserved character should be converted in order to not
 mess up with the object (default "_").
-Another available argument for conversions of data.frames and quitte 
+Another available argument for conversions of data.frames and quitte
 objects to magpie is \code{filter} if set to TRUE (default)
 "." (separator) will be replaced withe the \code{replacement} character and
-empty entries will be replaced with a single space. If set to FALSE no filter 
+empty entries will be replaced with a single space. If set to FALSE no filter
 will be applied to the data.}
 }
 \description{
@@ -92,39 +93,41 @@ showClass("magpie")
 pop <- maxample("pop")
 
 # returning PAO and PAS for 2025
-pop["PA",2025,,pmatch="left"]
+pop["PA", 2025, , pmatch = "left"]
 
 # returning CPA for 2025
-pop["PA",2025,,pmatch="right"]
+pop["PA", 2025, , pmatch = "right"]
 
 # returning CPA PAO and PAS for 2025
-pop["PA",2025,,pmatch=TRUE]
+pop["PA", 2025, , pmatch = TRUE]
 
 # returning PAS and 2025
-pop["PAS",2025,]
+pop["PAS", 2025, ]
+
+# return all entries for year 2025
+pop[2025, dim = 2]
 
 # returning everything but values for PAS or values for 2025
-pop["PAS",2025,,invert=TRUE]
+pop["PAS", 2025, , invert = TRUE]
 
 # accessing subdimension via set name
 
 a <- maxample("animal")
-a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"))]
+a[list(country = "NLD", y = "53p25"), , list(species = c("rabbit", "dog"))]
 
-# please note that the list elements act as filter. For instance, the 
+# please note that the list elements act as filter. For instance, the
 # following example will not contain any dogs as the data set does
 # not contain any dogs which are black.
-a[list(country="NLD",y="53p25"),,list(species=c("rabbit","dog"), color="black")]
+a[list(country = "NLD", y = "53p25"), , list(species = c("rabbit", "dog"), color = "black")]
 
 # it is also possible to extract given combinations of subdimensions
 # via a data-frame
-df <- data.frame(getItems(a,3,split=TRUE,full=TRUE))[c(1,3,4),][3:2]
-getItems(a[df],3)
+df <- data.frame(getItems(a, 3, split = TRUE, full = TRUE))[c(1, 3, 4), ][3:2]
+getItems(a[df], 3)
 
 # Unknown dimensions to be added in output!
-df$blub <- paste0("bl",1:dim(df)[1])
-getItems(a[df],3)
-
+df$blub <- paste0("bl", 1:dim(df)[1])
+getItems(a[df], 3)
 }
 \seealso{
 \code{\link{read.magpie}}, \code{\link{write.magpie}},

@@ -25,9 +25,8 @@ removes cell numbers if it is purely regional data)
 }
 \examples{
 
- pop <- maxample("pop")
- a <- clean_magpie(pop)
-
+pop <- maxample("pop")
+a <- clean_magpie(pop)
 }
 \seealso{
 \code{"\linkS4class{magpie}"}

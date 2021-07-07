@@ -30,7 +30,6 @@ Extracts a vector containing the region of each cell of a MAgPIE-object
 
 # a <- read.magpie("example.mz")
 # getRegionList(a)
-
 }
 \seealso{
 \code{\link{getRegions}},\code{\link{getYears}},

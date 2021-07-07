@@ -9,7 +9,7 @@
 \usage{
 ncells(x)
 
-ndata(x, fulldim = FALSE)
+ndata(x)
 
 nregions(x)
 
@@ -17,10 +17,6 @@ nyears(x)
 }
 \arguments{
 \item{x}{A MAgPIE-object}
-
-\item{fulldim}{specifies, how the object is treated. In case of FALSE, it is
-assumed that x is 3 dimensional and dimnames(x)[[3]] is returned. In case of
-TRUE, the dimnames of the real third dimension namesare returned}
 }
 \value{
 \item{value}{The number of cells/years/datasets/regions of \code{x}}
@@ -40,12 +36,11 @@ MAgPIE-object
 
 \examples{
 
-  a <- is.magpie(NULL)
-  ncells(a)
-  nyears(a)
-  ndata(a)
-  nregions(a)
-
+a <- is.magpie(NULL)
+ncells(a)
+nyears(a)
+ndata(a)
+nregions(a)
 }
 \author{
 Jan Philipp Dietrich

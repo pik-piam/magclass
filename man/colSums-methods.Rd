@@ -17,7 +17,7 @@
 
 \item{na.rm}{logical. Should missing values (including NaN) be omitted from the calculations?}
 
-\item{dims}{integer: Which dimensions are regarded as "rows" or "columns" to sum over. For row*, 
+\item{dims}{integer: Which dimensions are regarded as "rows" or "columns" to sum over. For row*,
 the sum or mean is over dimensions dims+1, ...; for col* it is over dimensions 1:dims.}
 
 \item{...}{further arguments passed to other colSums/colMeans methods}

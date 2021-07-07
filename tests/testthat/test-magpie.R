@@ -27,6 +27,30 @@ test_that("multi element subsetting works", {
   expect_equivalent(as.array(p[list(c("EUR", "CPA")), , ]),     a[c(3, 2), , , drop = FALSE])
   expect_equivalent(as.array(p[list(i = c("EUR", "CPA")), , ]),   a[c(3, 2), , , drop = FALSE])
   expect_equivalent(as.array(p[character(0), character(0), character(0)]), a[NULL, NULL, NULL, drop = FALSE])
+  expect_identical(p[, NULL, ], p)
+})
+
+test_that("subsetting via dim argument works", {
+  expect_identical(p[, 1:3, ], p[1:3, dim = 2])
+  expect_identical(p[, , "B1"], p["B1", dim = 3])
+  expect_identical(p[c("FSU", "EUR"), , ], p[c("FSU", "EUR"), dim = 1])
+  expect_error(p[1, 2, dim = 2], "Only single dimension selection allowed")
+  expect_error(p[1, 2, 3, dim = 2], "Only single dimension selection allowed")
+  expect_error(p[1, dim = 1.2], "Invalid dim selection")
+  p3 <- p2 <- p
+  expect_silent(p2[, , "A2"] <- 99)
+  expect_silent(p3["A2", dim = 3] <- 99)
+  expect_identical(p2, p3)
+  expect_silent(p2[c("FSU", "EUR"), , ] <- 42)
+  expect_silent(p3[c("FSU", "EUR"), dim = 1] <- 42)
+  expect_identical(p2, p3)
+  expect_silent(p2[, 2015, ] <- -99)
+  expect_silent(p3[2015, dim = 2] <- -99)
+  expect_identical(p2, p3)
+  expect_error(p3[1, 2, dim = 2] <- 1, "Only single dimension selection allowed")
+  expect_error(p3[1, 2, 3, dim = 2] <- 1, "Only single dimension selection allowed")
+  expect_error(p[1, dim = 1.2] <- 1, "Invalid dim selection")
+
 })
 
 test_that("boolean subsetting works", {
@@ -47,7 +71,7 @@ test_that("error detection works", {
   expect_error(p[, , list(blub = "A2")], "subdimension does not exist")
 
   names(dimnames(p)) <- NULL
-  expect_error(p[, , list(scenario = "A2")], "subdimension does not exist \\(missing set names\\)")
+  expect_error(p[, , list(scenario = "A2")], "subdimension does not exist \\(missing set names\\)") #nolint
 
   dimnames(p)[[3]] <- NULL
   expect_error(p[, , "A2"], "Missing element names")

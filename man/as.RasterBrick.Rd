@@ -20,13 +20,12 @@ Convert magclass object to a RasterBrick object
 \examples{
 
 if (requireNamespace("raster", quietly = TRUE)) {
-   r <- raster::brick(ncols=360,nrows=180, nl=4)
-   r[85:89,176:179] <- (1:20 \%*\% t(1:4))
-   names(r) <- c("y2000..bla","y2001..bla","y2000..blub","y2001..blub")
+   r <- raster::brick(ncols = 360, nrows = 180, nl = 4)
+   r[85:89, 176:179] <- (1:20 \%*\% t(1:4))
+   names(r) <- c("y2000..bla", "y2001..bla", "y2000..blub", "y2001..blub")
    m <- as.magpie(r)
    r2 <- as.RasterBrick(m)
-} 
-
+}
 }
 \seealso{
 \code{\link{getCoords}}
