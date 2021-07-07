@@ -80,7 +80,7 @@ test_that("handling of spatial data works", {
   
   a <- maxample("animal")
   a <- dimSums(a, dim = c(1.3,1.4,2,3))
-  expect_silent(write.magpie(a, file.path(td, "animal.asc")))
+  expect_warning(write.magpie(a, file.path(td, "animal.asc")), "test")
   expect_silent(suppressMessages(copy.magpie(file.path(td, "animal.asc"),
                                              file.path(td, "animal.nc"))))
   expect_silent(asc <- read.magpie(file.path(td,"animal.asc")))            
