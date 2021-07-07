@@ -2,13 +2,8 @@ p <- maxample("pop")
 attr(p, "Metadata") <- NULL
 
 test_that("read/write report works", {
-  ref <- structure(list(Model = structure(1L, .Label = "N/A", class = "factor"), 
-                        Scenario = structure(1L, .Label = "N/A", class = "factor"), 
-                        Region = "World", Variable = structure(1L, .Label = "1", class = "factor"), 
-                        Unit = structure(1L, .Label = "N/A", class = "factor"), `1` = 1),
-                   row.names = 1L, class = "data.frame")
-  expect_identical(write.report(as.magpie(1)), ref)
-  print(str(write.report(as.magpie(1))))
+  ref <- structure(list(Model = "N/A", Scenario = "N/A", Region = "World", Variable = "1",
+                        Unit = "N/A", `1` = 1), row.names = 1L, class = "data.frame")
   expect_error(read.report("bla"), "could not be found")
   f <- tempfile()
   getSets(p) <- c("region", "year", "scenario")
@@ -22,9 +17,9 @@ test_that("read/write report works", {
   expect_identical(names(p3[[1]]), "NA")
 
   d <- tempdir()
-  getSets(p)[3] <- "variable"
   f1 <- file.path(d, "bla1.mif")
   f2 <- file.path(d, "bla2.mif")
+  getSets(p)[3] <- "variable"
   expect_silent(write.report(p, f1, scenario = "A"))
   expect_warning(write.report2(p, f2, scenario = "B"), "Deprecated")
   # capitalize header of f1
@@ -54,7 +49,6 @@ test_that("read/write report works", {
   write.report(p, f)
   expect_warning(p4 <- read.report(f, as.list = FALSE), "Replaced")
   expect_identical(getItems(p4, dim = 3), c("NA.NA.Ap2 (NA)", "NA.NA.B1 (NA)"))
-
   
   # test list format
   p <- maxample("pop")
@@ -93,16 +87,18 @@ test_that("multidim handling works", {
   expect_identical(names(r), c("Model", "Scenario", "Region", "Variable", "Unit", "1995", 
                                "2005"))
   getSets(p)[4] <- "Xtra"
-  ref <- structure(list(Model = structure(c(1L, 1L, 1L, 1L), .Label = "N/A", class = "factor"), 
-                        Scenario = c("A2", "A2", "B1", "B1"), Region = c("AFR", "CPA", "AFR", "CPA"),
-                        Xtra = c("blub", "blub", "blub", "blub"), 
-                        Variable = structure(c(1L, 1L, 1L, 1L), .Label = "N/A", class = "factor"), 
-                        Unit = structure(c(1L, 1L, 1L, 1L), .Label = "N/A", class = "factor"), 
+  ref <- structure(list(Model = c("N/A", "N/A", "N/A", "N/A"),
+                        Scenario = c("A2", "A2", "B1", "B1"),
+                        Region = c("AFR", "CPA", "AFR", "CPA"),
+                        Xtra = c("blub", "blub", "blub", "blub"),
+                        Variable = c("N/A", "N/A", "N/A", "N/A"),
+                        Unit = c("N/A", "N/A", "N/A", "N/A"),
                         `1995` = c(552.6664, 1280.635, 552.6664, 1280.635),
-                        `2005` = c(696.44, 1429.53, 721.85, 1429.26)), row.names = c(1L, 3L, 2L, 4L), class = "data.frame")
+                        `2005` = c(696.44, 1429.53, 721.85, 1429.26)),
+                   row.names = c(1L, 3L, 2L, 4L), class = "data.frame")
   expect_identical(write.report(p[1:2,1:2,], extracols = "Xtra"), ref)
   ref2 <- ref[-4]
-  ref2$Variable <- as.factor("blub")
+  ref2$Variable <- "blub"
   expect_identical(write.report(p[1:2,1:2,]), ref2)
   
   

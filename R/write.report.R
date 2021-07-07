@@ -138,19 +138,16 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
     if (is.null(replacement)) replacement <- "N/A"
     w <- which(tolower(names(x)) == tolower(name))
     if (length(w) == 0) {
-      x <- cbind(replacement, x)
+      x <- cbind(replacement, x, stringsAsFactors = FALSE)
     } else if (length(w) == 1) {
-      x <- cbind(x[w], x[-w])
+      x <- cbind(x[w], x[-w], stringsAsFactors = FALSE)
     } else {
       warning("Found ", name, " more than once! First occurrence will be used")
       w <- w[1]
-      x <- cbind(x[w], x[-w])
+      x <- cbind(x[w], x[-w], stringsAsFactors = FALSE)
     }
-    if (is.factor(x[[1]])) {
-      levels(x[[1]])[levels(x[[1]]) == "NA"] <- "N/A"
-    } else {
-      x[1][x[1] == "NA"] <- "N/A"
-    }
+    if (is.factor(x[[1]])) x[[1]] <- as.character(x[[1]])
+    x[1][x[1] == "NA"] <- "N/A"
     names(x)[1] <- name
     return(x)
   }
@@ -172,7 +169,7 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   } else {
     tmp <- do.call(paste, c(x[(5 + nxcol):length(x)], sep = "."))
   }
-  x <- cbind(x[1:(3 + nxcol)], Variable = tmp, x[4 + nxcol])
+  x <- cbind(x[1:(3 + nxcol)], Variable = tmp, x[4 + nxcol], stringsAsFactors = FALSE)
 
   data[is.na(data)] <- "N/A"
   x <- cbind(x, data)
