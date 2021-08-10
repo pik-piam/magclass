@@ -184,12 +184,14 @@ read.report <- function(file, as.list = TRUE) { # nolint
     regions <- Reduce(union, lapply(unlist(output, recursive = FALSE), function(x) {
       getRegions(x)
     })) # make sure that magpie objects to be merged share the same regions
-    output <- mbind(lapply(unlist(output, recursive = FALSE), function(x) {
+
+    .tmpFunc <- function(x) {
       data <- new.magpie(regions, getYears(x), getNames(x), fill = NA)
-      data[getRegions(x), getYears(x), getNames(x)] <- x[getRegions(x), getYears(x),
-        getNames(x)]
+      data[getRegions(x), getYears(x), getNames(x)] <- x[getRegions(x), getYears(x), getNames(x)]
       return(data)
-    }))
+    }
+
+    output <- mbind(lapply(unlist(output, recursive = FALSE), .tmpFunc))
     names(dimnames(output))[3] <- "scenario.model.variable"
   }
   return(output)

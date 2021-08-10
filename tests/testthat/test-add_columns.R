@@ -13,4 +13,6 @@ test_that("add_columns works", {
              "animal.magpie.brown")
   expect_identical(getItems(a2, dim = 3), items)
   expect_true(all(a2[, , "horse"] == 42))
+  expect_identical(add_columns(a, dim = 3.2, addnm = character(0)), a)
+  expect_identical(add_columns(a, dim = 3.2, addnm = NULL), a)
 })

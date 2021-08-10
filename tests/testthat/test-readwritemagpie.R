@@ -65,28 +65,28 @@ test_that("handling of spatial data works", {
   td <- tempdir()
   md <- magclass:::magclassdata$half_deg
   m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(2000, 2001), fill = c(md$lon, md$lat))
-  m10 <- mbind(m05,m05)
-  getNames(m10) <- c("bla","blub")
+  m10 <- mbind(m05, m05)
+  getNames(m10) <- c("bla", "blub")
   expect_error(write.magpie(m10, file.path(td, "test.nc")), "no support for multiple variables")
   expect_silent(suppressMessages(write.magpie(m05, file.path(td, "test.nc"))))
   expect_silent(m05in <- read.magpie(file.path(td, "test.nc")))
-  getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon","lat")]
-  m05 <- collapseDim(m05, dim = c(1.1,1.2))
-  m05 <- m05[getItems(m05in, dim = 1),,]
+  getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon", "lat")]
+  m05 <- collapseDim(m05, dim = c(1.1, 1.2))
+  m05 <- m05[getItems(m05in, dim = 1), , ]
   getNames(m05in) <- NULL
   getSets(m05in, fulldim = FALSE)[3] <- "data"
-  attr(m05in,".internal.selfref")  <- NULL
+  attr(m05in, ".internal.selfref")  <- NULL
   expect_identical(m05, m05in)
-  
+
   a <- maxample("animal")
-  a <- dimSums(a, dim = c(1.3,1.4,2,3))
+  a <- dimSums(a, dim = c(1.3, 1.4, 2, 3))
   write.magpie(a, file.path(td, "animal.asc"))
   copy.magpie(file.path(td, "animal.asc"), file.path(td, "animal.nc"))
-  asc <- read.magpie(file.path(td,"animal.asc"))
-  expect_silent(anc <- read.magpie(file.path(td,"animal.nc")))   
-  
+  asc <- read.magpie(file.path(td, "animal.asc"))
+  expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
+
   .clean <- function(x) {
-    attr(x,".internal.selfref")  <- NULL
+    attr(x, ".internal.selfref")  <- NULL
     getItems(x, dim = 2) <- NULL
     getItems(x, dim = 3) <- NULL
     return(x)
@@ -140,7 +140,7 @@ test_that("read/write triggers errors and warnings correctly", {
 
   expect_error(write.magpie(as.magpie(1), "bla.nc"), "No coordinates")
   expect_error(write.magpie(a, "blub.nc"), "no support for multiple variables")
-  expect_error(write.magpie(a[,,1], "blub.asc"), "choose just one")
+  expect_error(write.magpie(a[, , 1], "blub.asc"), "choose just one")
 })
 
 test_that("copy.magpie works", {
