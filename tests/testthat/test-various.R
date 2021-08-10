@@ -78,6 +78,7 @@ test_that("getRegions works", {
   expect_identical(getRegions(a), c("NLD", "BEL", "LUX"))
   expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated")
   expect_identical(getRegions(a), "BLA")
+  expect_null(getRegions(dimSums(a, dim = 1)))
 })
 
 test_that("getRegionList works", {

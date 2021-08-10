@@ -24,6 +24,7 @@ getRegions <- function(x) {
   } else {  # region names all have 3 characters -> fast method
     output <- unique(substr(dimnames(x)[[1]], 1, 3))
   }
+  if (length(output) == 0) return(NULL)
   return(output)
 }
 
