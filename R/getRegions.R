@@ -19,13 +19,7 @@
 #' # getRegions(a)
 #' @export
 getRegions <- function(x) {
-  if (sum(substr(dimnames(x)[[1]], 4, 4) != ".") > 0) { # not all regions have 3-character names (use slow method)
-    output <- unique(as.vector(as.matrix(cbind.data.frame(strsplit(dimnames(x)[[1]], "\\."))[1, ])))
-  } else {  # region names all have 3 characters -> fast method
-    output <- unique(substr(dimnames(x)[[1]], 1, 3))
-  }
-  if (length(output) == 0) return(NULL)
-  return(output)
+  return(getItems(x, dim = 1.1))
 }
 
 #' @describeIn getRegions overwrite region names
