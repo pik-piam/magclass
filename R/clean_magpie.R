@@ -22,18 +22,11 @@
 clean_magpie <- function(x, what = "all") { #nolint
   if (!(what %in% c("all", "cells", "sets"))) stop('Unknown setting for argument what ("', what, '")!')
   # remove cell numbers if data is actually regional
-  if (what == "all" | what == "cells") {
-    if (ncells(x) == nregions(x)) {
-      getCells(x) <- getRegions(x)
-      if (!is.null(names(dimnames(x))[[1]])) {
-        if (!is.na(names(dimnames(x))[[1]])) {
-          names(dimnames(x))[[1]] <- sub("\\..*$", "", names(dimnames(x))[[1]])
-        }
-      }
-    }
+  if (any(what %in% c("all", "cells") && ncells(x) == nregions(x))) {
+      getItems(x, dim = 1) <- getItems(x, dim = 1.1, full = TRUE)
   }
   # make sure that all dimensions have names
-  if (what == "all" | what == "sets") {
+  if (any(what %in% c("all", "sets"))) {
 
     if (is.null(names(dimnames(x)))) names(dimnames(x)) <- rep(NA, 3)
 
