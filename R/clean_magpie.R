@@ -23,7 +23,9 @@ clean_magpie <- function(x, what = "all") { #nolint
   if (!(what %in% c("all", "cells", "sets"))) stop('Unknown setting for argument what ("', what, '")!')
   # remove cell numbers if data is actually regional
   if (any(what %in% c("all", "cells") && ncells(x) == nregions(x))) {
-      getItems(x, dim = 1) <- getItems(x, dim = 1.1, full = TRUE)
+      items <- getItems(x, dim = 1.1, full = TRUE)
+      names(items) <- NULL
+      getItems(x, dim = 1) <- items
   }
   # make sure that all dimensions have names
   if (any(what %in% c("all", "sets"))) {
