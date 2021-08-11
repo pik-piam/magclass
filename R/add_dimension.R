@@ -18,6 +18,9 @@
 #' str(add_dimension(a, dim = 2.3, nm = paste0("d", 1:3)))
 #' @export
 add_dimension <- function(x, dim = 3.1, add = "new", nm = "dummy") { # nolint
+  if (add %in% getSets(x, fulldim = TRUE)) {
+    stop("Dimension \"", add, "\" does already exist. Please use a different name!")
+  }
   maindim <- floor(dim)
   subdim  <- as.integer(sub("^.\\.", "", dim))
   if (length(nm) > 1) {
@@ -29,7 +32,7 @@ add_dimension <- function(x, dim = 3.1, add = "new", nm = "dummy") { # nolint
   items[[add]] <- rep(nm, each = dim(x)[maindim] / length(nm))
   reorder <- c(olddims[olddims < subdim], length(items), olddims[olddims >= subdim])
   items <- items[reorder]
-  items <- items[!sapply(items, is.null)] #nolint
+  items <- items[!sapply(items, is.null)] # nolint
   getItems(x, dim = maindim, raw = TRUE) <- apply(as.data.frame(items), 1, paste, collapse = ".")
   getSets(x, fulldim = FALSE)[maindim] <- paste(names(items), collapse = ".")
   return(x)

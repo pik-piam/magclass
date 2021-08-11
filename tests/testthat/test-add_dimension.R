@@ -38,4 +38,6 @@ test_that("add_dimension works", {
                                                            type.species.color = "animal.rabbit.black")))
   expect_identical(add_dimension(a0, dim = 1), ref4)
   expect_identical(add_dimension(a0, dim = 1.2), ref4)
+  p <- maxample("pop")
+  expect_error(add_dimension(p, dim = 3.2, add = "scenario"), "Dimension .* does already exist")
 })
