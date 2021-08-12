@@ -52,5 +52,5 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
   }
 
   for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL
-  return(x)
+  return(clean_magpie(x, what = "sets"))
 }

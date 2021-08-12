@@ -20,4 +20,7 @@ test_that("arguments (dim and keepdim) work", {
   expect_identical(x, collapseDim(x, keepdim = 1:2))
   expect_null(collapseDim(NULL))
 
+  p <- maxample("pop")
+  names(dimnames(p)) <- NULL
+  expect_identical(getSets(collapseDim(p)), c(d1.1 = "region", d2.1 = "year", d3.1 = "data"))
 })
