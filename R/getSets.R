@@ -55,6 +55,7 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
 #' @describeIn getSets replace set names
 #' @export
 "getSets<-" <- function(x, fulldim = TRUE, sep = ".", value) { #nolint
+   # clean x
    x <- clean_magpie(x, what = "sets")
    if (is.null(value)) return(x)
    if (is.null(names(dimnames(x))) || length(value) %in% c(0, 3)) fulldim <- FALSE #nolint
@@ -79,7 +80,15 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
      }
      names(where) <- s2
 
-     if (length(value) != length(s2)) stop("Input length does not agree with the number of sets in x!")
+     if (length(value) != length(s2)) {
+       # clean value
+       oldValue <- value
+       value <- getSets(x, fulldim = TRUE, sep = sep)
+       value[names(oldValue)] <- oldValue
+       if (length(value) != length(s2)) {
+         stop("Input length does not agree with the number of sets in x!")
+       }
+     }
 
      for (i in 1:3) {
       s1[i] <- paste(value[where == i], collapse = sep)

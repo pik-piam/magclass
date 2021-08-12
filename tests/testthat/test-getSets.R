@@ -10,9 +10,13 @@ test_that("sets names can be overwritten", {
   x2 <- x
   expect_silent(getSets(x2) <- NULL)
   expect_identical(x, x2)
-  expect_error(getSets(x) <- 1:2, "length does not agree")
+  expect_error(getSets(x)[6:7] <- 1:2, "length does not agree")
   names(dimnames(x)) <- "bla"
   expect_identical(getSets(x), c(d1.1 = "bla", d2.1 = NA, d3.1 = NA))
   getSets(x) <- c("", "bla", "blub")
   expect_identical(getSets(x), c(d1.1 = NA, d2.1 = "bla", d3.1 = "blub"))
+
+  a <- maxample("animal")
+  getSets(a, fulldim = FALSE)[3] <- "type.species"
+  expect_silent(getSets(a)[3] <- "bla")
 })

@@ -35,7 +35,7 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
   if (is.null(x)) return(NULL)
 
   if (is.null(dim)) {
-    tmp <- sapply(unlist(getItems(x, split = TRUE), recursive = FALSE), length)
+    tmp <- sapply(unlist(getItems(x, split = TRUE), recursive = FALSE), length) # nolint
     dim <- dimCode(names(tmp)[tmp == 1], x)
     if (!is.null(keepdim)) {
       dim <- setdiff(dim, dimCode(keepdim, x))
