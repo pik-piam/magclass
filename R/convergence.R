@@ -40,7 +40,8 @@ convergence <- function(origin, aim, start_year = NULL, end_year = NULL, # nolin
   ### Basic checks ###
   if (!is.magpie(origin)) stop("origin is no magpie object")
 
-  if (is.null(dim(aim))) aim <- as.magpie(array(aim, dim(origin), dimnames(origin)))
+  if (is.null(dim(aim))) aim <- as.magpie(array(aim, dim(origin), dimnames(origin)),
+                                          spatial = 1, temporal = 2)
   if (!is.magpie(aim)) stop("aim is no magpie object")
 
   if (!identical(dimnames(aim)[[1]], dimnames(origin)[[1]])) stop("regions have to be the same")

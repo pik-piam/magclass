@@ -31,4 +31,10 @@ test_that("convergence calculation works", {
  p1000[, , ] <- 1000
  expect_identical(round(convergence(p0, p1000, direction = "down", type = "linear")), ref)
 
+ # test atypical region names in combination with numeric aim
+ p2 <- p[, , 1]
+ getItems(p2, dim = 1) <- paste0(getItems(p2, dim = 1), "XYZ")
+ p20 <- p2
+ p20[, , ] <- 0
+ expect_identical(convergence(p2, 0), convergence(p2, p20))
 })
