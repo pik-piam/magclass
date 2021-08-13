@@ -4,7 +4,7 @@
 \alias{add_dimension}
 \title{add_dimension}
 \usage{
-add_dimension(x, dim = 3.1, add = "new", nm = "dummy")
+add_dimension(x, dim = 3.1, add = NULL, nm = "dummy")
 }
 \arguments{
 \item{x}{MAgPIE object which should be extended.}

@@ -40,4 +40,8 @@ test_that("add_dimension works", {
   expect_identical(add_dimension(a0, dim = 1.2), ref4)
   p <- maxample("pop")
   expect_error(add_dimension(p, dim = 3.2, add = "scenario"), "Dimension .* does already exist")
+
+  expect_silent(p <- add_dimension(p, 3.1))
+  expect_silent(p <- add_dimension(p, 3.2))
+  expect_identical(getSets(p, fulldim = FALSE)[3], "new.new1.scenario")
 })

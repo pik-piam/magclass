@@ -17,8 +17,12 @@
 #' str(add_dimension(a, dim = 3.2))
 #' str(add_dimension(a, dim = 2.3, nm = paste0("d", 1:3)))
 #' @export
-add_dimension <- function(x, dim = 3.1, add = "new", nm = "dummy") { # nolint
-  if (add %in% getSets(x, fulldim = TRUE)) {
+add_dimension <- function(x, dim = 3.1, add = NULL, nm = "dummy") { # nolint
+  if (is.null(add)) {
+    # create non-existing variant of dimension name starting with "new"
+    sets <- getSets(x, fulldim = TRUE)
+    add <- tail(make.unique(c(sets, "new"), sep = ""), 1)
+  } else if (add %in% getSets(x, fulldim = TRUE)) {
     stop("Dimension \"", add, "\" does already exist. Please use a different name!")
   }
   maindim <- floor(dim)
