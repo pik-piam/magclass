@@ -14,6 +14,9 @@ test_that("arguments (dim and keepdim) work", {
   expect_warning(collapseDim(x, dim = 3.2, keepdim = 1:2), "keepdim argument is ignored")
   expect_warning(collapseDim(x, dim = "notthere"), "could not be found")
 
+  x2 <- x
+  names(dimnames(x2))[3] <- "species.species.color"
+  expect_identical(collapseDim(x2),collapseDim(x))
 
   x <- x[, , 1]
   getItems(x, dim = 3) <- NULL
