@@ -120,9 +120,9 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
     xdimnames <- lapply(x[datacols], function(x) return(as.character(unique(x))))
     xdimnames[[length(xdimnames) + 1]] <- colnames(x)[-datacols]
     names(xdimnames) <- NULL
-    tmparr <- array(NA, dim = sapply(xdimnames, length), dimnames = xdimnames) #nolint
+    tmparr <- array(NA, dim = sapply(xdimnames, length), dimnames = xdimnames) # nolint
     for (i in xdimnames[[length(xdimnames)]]) {
-      j <- sapply(cbind(x[datacols], i), as.character) #nolint
+      j <- sapply(cbind(x[datacols], i), as.character) # nolint
       .duplicates_check(j)
       tmparr[j] <- x[, i]
     }
@@ -138,7 +138,26 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
     attr(readMagpie, "comment") <- .readComment(fileName, commentChar = comment.char)
   } else if (fileType %in% c("asc", "nc", "grd", "tif")) {
     if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required!")
-    readMagpie <- as.magpie(raster::brick(fileName, ...))
+    if (fileType == "nc") {
+      if (!requireNamespace("ncdf4", quietly = TRUE)) {
+        stop("The package \"ncdf4\" is required!")
+      }
+      nc <- ncdf4::nc_open(fileName)
+      var <- names(nc[["var"]])
+      vdim <- vapply(nc[["var"]], function(x) return(x$ndim), integer(1))
+      var <- var[vdim > 0]
+      ncdf4::nc_close(nc)
+      tmp <- list()
+      for (v in var) {
+        tmp[[v]] <- raster::brick(fileName, varname = v, ...)
+        name <- sub("^X([0-9]*)$", "y\\1", names(tmp[[v]]), perl = TRUE)
+        if (length(name) == 1 && name == "layer") name <- "y0"
+        names(tmp[[v]]) <- paste0(name, "..", v)
+      }
+      readMagpie <- as.magpie(raster::brick(tmp))
+    } else {
+      readMagpie <- as.magpie(raster::brick(fileName, ...))
+    }
   } else {
     readMagpie <- readMagpieOther(fileName, fileType, comment.char = comment.char, check.names = check.names)
   }
