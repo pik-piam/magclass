@@ -25,7 +25,9 @@
 
 collapseNames <- function(x, collapsedim = NULL, preservedim = NULL) {
   .dimCodeExtra <- function(dim, x) {
+    if (is.null(dim)) return(NULL)
     if (is.character(dim)) return(dimCode(dim, x))
+    if (dim > 3 && round(dim) == 3) return(dim)
     return(dim / 10 + 3)
   }
   if (is.null(collapsedim)) return(collapseDim(x, keepdim = c(1:2, .dimCodeExtra(preservedim, x))))

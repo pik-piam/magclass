@@ -16,7 +16,7 @@ test_that("arguments (dim and keepdim) work", {
 
   x2 <- x
   names(dimnames(x2))[3] <- "species.species.color"
-  expect_identical(collapseDim(x2),collapseDim(x))
+  expect_identical(collapseDim(x2), collapseDim(x))
 
   x <- x[, , 1]
   getItems(x, dim = 3) <- NULL
