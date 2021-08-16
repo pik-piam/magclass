@@ -169,21 +169,21 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       Sys.chmod(filePath, mode)
     } else if (file_type %in% c("asc", "nc", "grd", "tif")) {
       format <- c(asc = "ascii", nc = "CDF", grd = "raster", tif = "GTiff")
-      if(ndata(x) != 1) stop("Currently no support for multiple variables for format ", format,
-                              ". Please store each variable separately.")      
+      if (ndata(x) != 1) stop("Currently no support for multiple variables for format ", format,
+                              ". Please store each variable separately.")
       rx <- as.RasterBrick(x)
       if (file_type == "asc") {
         if (dim(rx)[3] != 1) stop("asc does not support multiple year layers. Please choose just one!")
         rx <- rx[[1]]
-      } 
+      }
       varname <- getItems(x, dim = 3)
       zunit <- ifelse(all(isYear(getYears(x))), "years", "")
       if (is.null(varname)) varname <- "Variable"
-      raster::writeRaster(rx, filename = filePath, format = format[file_type], overwrite = TRUE, 
+      raster::writeRaster(rx, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = "Time", zunit = zunit, varname = varname, ...)
-      if(file_type == "nc" && zunit == "years") {
+      if (file_type == "nc" && zunit == "years") {
         nc <- ncdf4::nc_open(filePath, write = TRUE)
-        ncdf4::ncvar_put(nc, 'Time', getYears(x, as.integer = TRUE))
+        ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
         ncdf4::nc_close(nc)
       }
     } else if (file_type == "rds") {
@@ -224,7 +224,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       Sys.chmod(filePath, mode)
     } else if (file_type == "cs4" | file_type == "cs4r") {
       printCells <- nregions(x) < ncells(x)
-      printRegions <- getRegions(x)[1] != "GLO"
+      printRegions <- (!is.null(getRegions(x)) && getRegions(x)[1] != "GLO")
       printData <- ((ndata(x) > 1) | !is.null(getNames(x)))
 
       output <- as.data.frame(x)
@@ -246,7 +246,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
 
     } else {
       printCells <- nregions(x) < ncells(x)
-      printRegions <- getRegions(x)[1] != "GLO"
+      printRegions <- (!is.null(getRegions(x)) && getRegions(x)[1] != "GLO")
       printData <- ((ndata(x) > 1) | !is.null(getNames(x)))
 
       if (file_type == "cs2b" && ndata(x) == 1) getNames(x) <- NULL
