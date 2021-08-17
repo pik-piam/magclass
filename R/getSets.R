@@ -56,14 +56,14 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
 #' @export
 "getSets<-" <- function(x, fulldim = TRUE, sep = ".", value) { # nolint
    # clean x
+   uncleanSets <- getSets(x)
+   x <- clean_magpie(x, what = "sets")
    if (is.null(value)) return(x)
    if (is.null(names(dimnames(x))) || length(value) %in% c(0, 3)) fulldim <- FALSE # nolint
    if (!fulldim) { # nolint
      names(dimnames(x)) <- value
      return(x)
    } else {
-     uncleanSets <- getSets(x)
-     x <- clean_magpie(x, what = "sets")
      sNow <- getSets(x, fulldim = TRUE)
      if (length(value) != length(sNow)) {
        if (length(value) != length(uncleanSets)) {

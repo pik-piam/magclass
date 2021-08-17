@@ -21,7 +21,7 @@ test_that("sets names can be overwritten", {
   expect_silent(getSets(a)[3] <- "bla")
 })
 
-test_that("handling of duplicate set names work", {
+test_that("handling of faulty set names work", {
   a <- maxample("animal")
   b <- a
   getSets(b, fulldim = FALSE)[3] <- "x.y.z"
@@ -32,4 +32,11 @@ test_that("handling of duplicate set names work", {
   uniqueSets <- make.unique(getSets(b), sep = "")
   getSets(b) <- uniqueSets
   expect_identical(unname(getSets(b)), c(uniqueSets, "data"))
+
+  a <- maxample("animal")
+  b <- a
+  sets <- getSets(a)
+  names(dimnames(b)) <- NULL
+  expect_silent(getSets(b) <- sets)
+  expect_identical(b, a)
 })
