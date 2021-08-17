@@ -27,3 +27,11 @@ test_that("arguments (dim and keepdim) work", {
   names(dimnames(p)) <- NULL
   expect_identical(getSets(collapseDim(p)), c(d1.1 = "region", d2.1 = "year", d3.1 = "data"))
 })
+
+test_that("collapseDim works for misconfigured objects", {
+  a <- maxample("animal")
+  b <- a
+  getSets(b, fulldim = FALSE)[3] <- "x.y"
+  expect_silent(a <- collapseDim(b))
+
+})

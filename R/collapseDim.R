@@ -34,6 +34,8 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
 
   if (is.null(x)) return(NULL)
 
+  x <- clean_magpie(x, what = "sets")
+
   if (is.null(dim)) {
     sets <- getSets(x)
     if (anyDuplicated(sets)) getSets(x) <- make.unique(sets, sep = "")
@@ -55,5 +57,5 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
   }
 
   for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL
-  return(clean_magpie(x, what = "sets"))
+  return(x)
 }

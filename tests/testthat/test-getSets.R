@@ -27,4 +27,9 @@ test_that("handling of duplicate set names work", {
   getSets(b, fulldim = FALSE)[3] <- "x.y.z"
   getSets(b) <- getSets(a)
   expect_identical(b, a)
+
+  getSets(b, fulldim = FALSE)[3] <- "x.y"
+  uniqueSets <- make.unique(getSets(b), sep = "")
+  getSets(b) <- uniqueSets
+  expect_identical(unname(getSets(b)), c(uniqueSets, "data"))
 })
