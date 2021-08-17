@@ -21,6 +21,7 @@ add_columns <- function(x, addnm = "new", dim = 3.1, fill = NA) { #nolint
   if (length(dim) != 1) stop("dim must be a single (sub)dimension!")
   if (length(fill) != 1) stop("fill value must be of length 1")
   if (!dimExists(dim, x)) stop("dim \"", dim, "\" does not exist")
+  x <- clean_magpie(x, what = "sets")
   if (length(addnm) == 0) return(x)
   dim <- dimCode(dim, x)
   add <- add_dimension(dimSums(x, dim = dim), dim = dim, nm = addnm)
