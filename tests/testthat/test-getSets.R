@@ -20,3 +20,11 @@ test_that("sets names can be overwritten", {
   getSets(a, fulldim = FALSE)[3] <- "type.species"
   expect_silent(getSets(a)[3] <- "bla")
 })
+
+test_that("handling of duplicate set names work", {
+  a <- maxample("animal")
+  b <- a
+  getSets(b, fulldim = FALSE)[3] <- "x.y.z"
+  getSets(b) <- getSets(a)
+  expect_identical(b, a)
+})

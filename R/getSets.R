@@ -31,7 +31,7 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
   out <- names(dimnames(x))[drop = FALSE]
   if (is.null(out)) return(NULL)
 
-  if (fulldim == TRUE) { #nolint
+  if (fulldim == TRUE) { # nolint
     tmp <- strsplit(out, split = sep, fixed = TRUE)
     tmp <- lapply(tmp, FUN = function(x) {
                             if (length(x) == 0) x <- NA
@@ -54,46 +54,32 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
 
 #' @describeIn getSets replace set names
 #' @export
-"getSets<-" <- function(x, fulldim = TRUE, sep = ".", value) { #nolint
+"getSets<-" <- function(x, fulldim = TRUE, sep = ".", value) { # nolint
    # clean x
    x <- clean_magpie(x, what = "sets")
    if (is.null(value)) return(x)
-   if (is.null(names(dimnames(x))) || length(value) %in% c(0, 3)) fulldim <- FALSE #nolint
-   if (!fulldim) { #nolint
+   if (is.null(names(dimnames(x))) || length(value) %in% c(0, 3)) fulldim <- FALSE # nolint
+   if (!fulldim) { # nolint
      names(dimnames(x)) <- value
      return(x)
    } else {
-     s1 <- getSets(x, fulldim = FALSE)
-     s2 <- getSets(x, fulldim = TRUE)
-     searchS2 <- paste0("(^|\\.)", s2, "(\\.|$)")
-     where <- sapply(searchS2, grep, s1) #nolint
-     if (is.list(where)) {
-       # duplicates found
-       j <- 1
-       for (i in seq_along(where)) {
-         if (length(where[[i]]) > 1) {
-           where[[i]] <- where[[i]][j]
-           j <- j + 1
-         }
-       }
-       where <- unlist(where)
-     }
-     names(where) <- s2
-
-     if (length(value) != length(s2)) {
+     sNow <- getSets(x, fulldim = TRUE)
+     if (length(value) != length(sNow)) {
        # clean value
        oldValue <- value
        value <- getSets(x, fulldim = TRUE, sep = sep)
        value[names(oldValue)] <- oldValue
-       if (length(value) != length(s2)) {
+       if (length(value) != length(sNow)) {
          stop("Input length does not agree with the number of sets in x!")
        }
      }
 
+     mainDim <- as.integer(substring(names(sNow), 2, 2))
+     sNew <- NULL
      for (i in 1:3) {
-      s1[i] <- paste(value[where == i], collapse = sep)
+      sNew <- c(sNew, paste(value[mainDim == i], collapse = sep))
      }
-     getSets(x, fulldim = FALSE, sep = sep) <- s1
+     getSets(x, fulldim = FALSE, sep = sep) <- sNew
      return(x)
    }
 }

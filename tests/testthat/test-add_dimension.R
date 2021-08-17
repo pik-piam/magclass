@@ -45,3 +45,9 @@ test_that("add_dimension works", {
   expect_silent(p <- add_dimension(p, 3.2))
   expect_identical(getSets(p, fulldim = FALSE)[3], "new.new1.scenario")
 })
+
+test_that("add_dimension works objects with inconsistent set information", {
+  a <- maxample("animal")
+  expect_silent(b <- add_dimension(a))
+  expect_identical(getItems(b, 3.1), "dummy")
+})
