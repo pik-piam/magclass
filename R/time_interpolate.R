@@ -30,6 +30,7 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
   if (!is.magpie(dataset)) {
     stop("Invalid data format of measured data. Has to be a MAgPIE-object.")
   }
+  dataset <- clean_magpie(dataset, what = "sets")
   sets <- getSets(dataset)
   if (all(isYear(interpolated_year, with_y = FALSE))) {
     interpolated_year <- paste("y", interpolated_year, sep = "") # nolint

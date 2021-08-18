@@ -17,5 +17,11 @@ test_that("time interpolate works", {
   expect_true(all(dimSums(p5, dim = 2) - 3 * p[, 1, ] == 0))
   expect_silent(p6 <- time_interpolate(p[, 1, ], c(1900, 1995, 2100), integrate = TRUE))
   expect_identical(p5, p6)
+})
 
+test_that("time interpolate can handle faulty data", {
+  a <- maxample("animal")
+  a <- dimSums(a, dim = c(2.2, 2.3))
+  names(dimnames(a))[3] <- "bla.blub"
+  expect_silent(out <- time_interpolate(a, interpolated_year = c(2012, 2013)))
 })
