@@ -59,7 +59,10 @@ readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names 
     if (!all(temp[1:ncells, which(coltypes == "cell")] == 1:ncells)) coltypes[which(coltypes == "cell")] <- "data"
   }
 
-  if (all(coltypes != "data")) stop("No data column found! (coltypes: ", paste(coltypes, collapse = ", "))
+  if (all(coltypes != "data")) {
+    if (coltypes[length(coltypes)] == "cell") coltypes[length(coltypes)] <- "data"
+    else stop("No data column found! (coltypes: ", paste(coltypes, collapse = ", "))
+  }
 
   if (sum(coltypes == "other") > 1) {
     stop("Invalid format. More than one \"other\" column is not allowed! (coltypes: ", paste(coltypes, collapse = ", "))

@@ -154,3 +154,11 @@ test_that("copy.magpie works", {
   expect_equivalent(read.magpie(file.path(td, "test.mz")), read.magpie(file.path(td, "test3.cs3")))
   expect_identical(round(read.magpie(file.path(td, "test.mz"))), read.magpie(file.path(td, "test4.mz")))
 })
+
+test_that("edge cases work", {
+  td <- tempdir()
+  a <- new.magpie("GLO", 1:10, fill = 1)
+  expect_silent(write.magpie(a, file.path(td, "test.csv")))
+  expect_silent(b <- read.magpie(file.path(td, "test.csv")))
+  expect_equivalent(a, b)
+})
