@@ -34,4 +34,8 @@ test_that("collapseDim works for misconfigured objects", {
   getSets(b, fulldim = FALSE)[3] <- "x.y"
   expect_silent(a <- collapseDim(b))
 
+  p <- maxample("pop")
+  p2 <- p
+  dimnames(p2)[[3]] <- paste0(dimnames(p2)[[3]], ".blub..")
+  expect_identical(collapseDim(p2), p)
 })
