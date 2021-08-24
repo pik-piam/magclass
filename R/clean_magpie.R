@@ -10,7 +10,8 @@
 #' modes are "cells" (removes cell numbers if the data seems to be regional -
 #' this should be used carefully as it might remove cell numbers in some cases
 #' in which they should not be removed), "sets" (making sure that all
-#' dimensions have names) and "all" (performing all available cleaning methods)
+#' dimensions have names), "items" (replace empty elements with single spaces " ")
+#' and "all" (performing all available cleaning methods)
 #' @return The eventually corrected MAgPIE object
 #' @author Jan Philipp Dietrich
 #' @seealso \code{"\linkS4class{magpie}"}
@@ -20,15 +21,18 @@
 #' a <- clean_magpie(pop)
 #' @export clean_magpie
 clean_magpie <- function(x, what = "all") { # nolint
-  if (!(what %in% c("all", "cells", "sets"))) stop('Unknown setting for argument what ("', what, '")!')
+  availableTypes <- c("cells", "items", "sets")
+  if ("all" %in% what) what <- availableTypes
+  if (any(!is.element(what, availableTypes))) stop('Unknown setting for argument what ("', what, '")!')
+
   # remove cell numbers if data is actually regional
-  if (any(what %in% c("all", "cells") && ncells(x) == nregions(x))) {
+  if (is.element("cells", what) && ncells(x) == nregions(x)) {
       items <- getItems(x, dim = 1.1, full = TRUE)
       names(items) <- NULL
       getItems(x, dim = 1) <- items
   }
   # make sure that all dimensions have names
-  if (any(what %in% c("all", "sets"))) {
+  if ("sets" %in% what) {
 
     if (is.null(names(dimnames(x)))) names(dimnames(x)) <- rep(NA, 3)
 
@@ -57,22 +61,26 @@ clean_magpie <- function(x, what = "all") { # nolint
       return(names)
     }
 
-    .fixEmptySubims <- function(x, dim) {
-      if (is.null(dimnames(x)[[dim]])) return(x)
-      pattern <- "(^|\\.)(\\.|$)"
-      while (grepl(pattern, dimnames(x)[[dim]][1])) {
-        dimnames(x)[[dim]] <- gsub(pattern, "\\1 \\2", dimnames(x)[[dim]], perl = TRUE)
-      }
-      return(x)
-    }
-
     names <- names(dimnames(x))
     keys <- c("region", "year", "data")
     for (i in 1:3) {
       names[i] <- .fixNames(names[i], ndim = .countSubdim(dimnames(x)[[i]][1]), key = keys[i])
-      x <- .fixEmptySubims(x, dim = i)
     }
     names(dimnames(x)) <- names
+  }
+
+  if ("items" %in% what) {
+    .fixEmptySubims <- function(x, dim) {
+      if (is.null(dimnames(x)[[dim]])) return(x)
+      pattern <- "(^|\\.)(\\.|$)"
+      while (any(grepl(pattern, dimnames(x)[[dim]]))) {
+        dimnames(x)[[dim]] <- gsub(pattern, "\\1 \\2", dimnames(x)[[dim]], perl = TRUE)
+      }
+      return(x)
+    }
+    for (i in 1:3) {
+      x <- .fixEmptySubims(x, dim = i)
+    }
   }
 
   return(x)

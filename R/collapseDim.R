@@ -34,7 +34,7 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
 
   if (is.null(x)) return(NULL)
 
-  x <- clean_magpie(x, what = "sets")
+  x <- clean_magpie(x, what = c("sets", "items"))
 
   if (is.null(dim)) {
     sets <- getSets(x)
