@@ -7,7 +7,7 @@
 \usage{
 getItems(x, dim = NULL, split = FALSE, full = FALSE)
 
-getItems(x, dim, maindim = NULL, raw = FALSE) <- value
+getItems(x, dim, full = NULL, maindim = NULL, raw = FALSE) <- value
 }
 \arguments{
 \item{x}{MAgPIE object}
