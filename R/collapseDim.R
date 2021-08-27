@@ -39,7 +39,7 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
   if (is.null(dim)) {
     sets <- getSets(x)
     if (anyDuplicated(sets)) getSets(x) <- make.unique(sets, sep = "")
-    tmp <- sapply(unlist(getItems(x, split = TRUE), recursive = FALSE), length) # nolint
+    tmp <- vapply(unlist(getItems(x, split = TRUE), recursive = FALSE), length, integer(1))
     dim <- dimCode(names(tmp)[tmp == 1], x)
     if (anyDuplicated(sets)) getSets(x) <- sets
     if (!is.null(keepdim)) {

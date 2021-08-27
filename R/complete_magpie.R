@@ -26,9 +26,9 @@ complete_magpie <- function(x, fill = NA, dim = 3) { #nolint
     return(sort(apply(grid, 1, paste, collapse = ".")))
   }
   .completeSize <- function(x, dimIn, dim) {
-    .prod <- function(x) return(prod(vapply(x, length, 1)))
+    .prod <- function(x) return(prod(vapply(x, length, integer(1))))
      out <- dimIn
-     out[dim] <- vapply(x[dim], .prod, 1)
+     out[dim] <- vapply(x[dim], .prod, double(1))
      out[out == 0] <- 1
      return(out)
   }
@@ -43,7 +43,7 @@ complete_magpie <- function(x, fill = NA, dim = 3) { #nolint
   }
   out <- new("magpie", array(data = fill, dim = dimOut, dimnames = dimnamesOut))
   dimnamesIn <- dimnames(x)
-  for (i in seq_len(3)) {
+  for (i in 1:3) {
     if (is.null(dimnamesIn[[i]])) dimnamesIn[[i]] <- seq_len(dim(x)[i])
   }
   out[dimnamesIn[[1]], dimnamesIn[[2]], dimnamesIn[[3]]] <- x

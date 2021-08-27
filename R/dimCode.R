@@ -46,9 +46,9 @@ dimCode <- function(dim, x, missing = 0, strict = FALSE, sep = ".") {
       superdim    <- grep(paste0("(\\.|^)", dnames[i], "(\\.|$)"), set)
 
       if (length(superdim) > 1) {
-stop("One or more elements were found more than once in x!")
+        stop("One or more elements were found more than once in x!")
       } else if (length(superdim) == 0) {
-dim[i] <- 0
+        dim[i] <- 0
       } else {
 
         # split in subdims and calculate dimension Code

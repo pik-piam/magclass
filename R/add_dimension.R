@@ -27,7 +27,7 @@ add_dimension <- function(x, dim = 3.1, add = NULL, nm = "dummy") { # nolint
     stop("Dimension \"", add, "\" does already exist. Please use a different name!")
   }
   maindim <- floor(dim)
-  subdim  <- as.integer(sub("^.\\.", "", dim))
+  subdim  <- as.integer(sub("^.\\.", "", as.character(dim)))
   if (length(nm) > 1) {
     expand <- rep(seq_len(dim(x)[maindim]), length(nm))
     x <- x[expand, dim = maindim]

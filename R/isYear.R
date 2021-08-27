@@ -21,7 +21,7 @@ isYear<-function(x, with_y=TRUE)
   if(is.null(x)) return(FALSE)
   if(!is.vector(x)){stop("Year Object is no Vector")}
   return_vector<-rep(TRUE,length(x))
-  for (i in 1:length(x))
+  for (i in seq_along(x))
     {
       if (with_y==FALSE)
         {

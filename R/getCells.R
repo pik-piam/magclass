@@ -27,7 +27,7 @@ getCells <- function(x) {
 
 #' @describeIn getCells set cell names
 #' @export
-"getCells<-" <- function(x, value) { #nolint
+`getCells<-` <- function(x, value) { 
   if (length(value) != ncells(x)) stop("Wrong number of cell names supplied!")
   if (ncells(x) == 0) return(x)
   if (length(value) == 1) value <- list(value)

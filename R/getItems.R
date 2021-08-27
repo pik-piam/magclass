@@ -26,7 +26,7 @@
 #' x <- maxample("pop")
 #' getItems(x, "scenario")
 #' getItems(x, 3.1)
-#' getItems(x, "i") <- paste0("REG", 1:ncells(x))
+#' getItems(x, "i") <- paste0("REG", seq_len(ncells(x)))
 #' getItems(x, "i")
 #' y <- x[, 1, ]
 #' getItems(y, "t") <- NULL

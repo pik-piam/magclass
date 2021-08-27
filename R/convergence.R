@@ -89,16 +89,16 @@ convergence <- function(origin, aim, start_year = NULL, end_year = NULL, # nolin
   pos[pos < 0] <- 0
   pos[pos > 1] <- 1
   if (type == "linear") {
- mix <- pos
+    mix <- pos
   } else if (type == "s") {
- mix <- pos^4 / (0.07 + pos^4) * 1.07
+    mix <- pos^4 / (0.07 + pos^4) * 1.07
   } else if (type == "smooth") {
-mix <- pos^3 / (0.1 + pos^3)
+    mix <- pos^3 / (0.1 + pos^3)
   } else if (type == "decay") {
-mix <- pos / (par + pos) * (par + 1) # nolint
+    mix <- pos / (par + pos) * (par + 1) # nolint
   } else {
-stop("type does not exist")
-}
+    stop("type does not exist")
+  }
   converged <- aim * mix + origin * (1 - mix)
 
   return(converged)

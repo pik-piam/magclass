@@ -24,7 +24,7 @@ getCoords <- function(x, xlab = "x", ylab = "y") {
 
 #' @describeIn getCoords set coordinates
 #' @export
-"getCoords<-" <- function(x, xlab = "x", ylab = "y", value) { #nolint
+`getCoords<-` <- function(x, xlab = "x", ylab = "y", value) { 
   if (is.null(ncol(value)) || ncol(value) != 2) {
     stop("Coordinates supplied in unsupported format (must be a two column data.frame)")
   }

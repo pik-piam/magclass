@@ -35,7 +35,7 @@ fulldim <- function(x, sep = ".") { #nolint
     dimnames[[1]] <- dimnames(x)[[1]]
     dimnames[[2]] <- dimnames(x)[[2]]
     dim <- dim(x)[1:2]
-    for (i in 1:nElemDims) {
+    for (i in seq_len(nElemDims)) {
       dimnames[[i + 2]] <- unique(tmp[, i])
       dim <- c(dim, length(dimnames[[i + 2]]))
     }
