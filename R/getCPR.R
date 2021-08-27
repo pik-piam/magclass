@@ -25,18 +25,18 @@
 #' @export
 
 getCPR <- function(x, dim = 1.1) {
- if (is.magpie(x)) {
-   dim <- dimCode(dim, x)
-   if (length(dim) != 1 && length(unique(floor(dim))) > 1) {
-     stop("Selected subdimensions must belong to the same main dimension!")
+   if (is.magpie(x)) {
+      dim <- dimCode(dim, x)
+      if (length(dim) != 1 && length(unique(floor(dim))) > 1) {
+         stop("Selected subdimensions must belong to the same main dimension!")
+      }
+      items <- getItems(x, dim = dim, full = TRUE)
+   } else if (x == 0.5) {
+      items <- magclassdata$half_deg$region
+   } else {
+      stop("Cannot extract cpr information for x!")
    }
-   items <- getItems(x, dim = dim, full = TRUE)
- } else if (x == 0.5) {
-   items <- magclassdata$half_deg$region
- } else {
-   stop("Cannot extract cpr information for x!")
- }
- table <- table(items)
- names(dimnames(table)) <- NULL
- return(table)
+   table <- table(items)
+   names(dimnames(table)) <- NULL
+   return(table)
 }

@@ -38,6 +38,7 @@ setMethod("as.magpie",
     xdimnames <- dimnames(x)
     xdim <- dim(x)
     x <- array(x[magclassdata$half_deg$lpj_index, , , ], dim = c(dim(x)[1:2], dim(x)[3] * dim(x)[4]))
+    # convert to previous default standard 59199 cells half degree resolution
     dimnames(x) <- list(paste(magclassdata$half_deg$region, 1:59199, sep = "."),
       xdimnames[[2]],
       paste(rep(xdimnames[[3]], xdim[4]), rep(xdimnames[[4]], each = xdim[3]), sep = "."))
@@ -46,7 +47,7 @@ setMethod("as.magpie",
   }
 )
 
-setMethod("as.magpie", #nolint
+setMethod("as.magpie", # nolint
   signature(x = "array"),
   function(x, spatial = NULL, temporal = NULL, unit = "unknown", ...) {
     storeAttributes <- copy.attributes(x, 0)
@@ -91,12 +92,12 @@ setMethod("as.magpie", #nolint
     }
 
     # Write warning when any type (except type "nothing") is found more than once
-    tmp <- lapply(d, length) > 1
-    tmp <- tmp[names(tmp) != "nothing"]
-    if (any(tmp) == TRUE) warning("No clear mapping of dimensions to dimension types. First detected ",
+    nOccurrence <- lapply(d, length) > 1
+    nOccurrence <- nOccurrence[names(nOccurrence) != "nothing"]
+    if (any(nOccurrence) == TRUE) warning("No clear mapping of dimensions to dimension types. First detected ",
       "possibility is used! Please use arguments temporal and spatial to specify",
       " which dimensions are what!")
-    for (i in which(tmp)) {
+    for (i in which(nOccurrence)) {
       d[[i]] <- d[[i]][1]
     }
 
@@ -243,7 +244,7 @@ setMethod("as.magpie",
 
       mandatoryColumns <- c("model", "scenario", "region", "variable", "unit", "period", "value")
       factorColumns    <- c("model", "scenario", "region", "variable", "unit")
-      isQuitte <- all(mandatoryColumns %in% names(x)) && all(sapply(x[factorColumns], is.factor)) && #nolint
+      isQuitte <- all(mandatoryColumns %in% names(x)) && all(vapply(x[factorColumns], is.factor, logical(1))) &&
                   is.numeric(x$value) && (methods::is(x$period, "POSIXct") || is.integer(x$period))
       return(isQuitte)
     }
@@ -307,7 +308,7 @@ setMethod("as.magpie",
   variable <- as.data.table(tstrsplit(df$variable, "..", fixed = TRUE))
   if (!is.null(temporal)) temporal <- temporal + 2
   if (ncol(variable) == 1) {
-    if(all(grepl("^[yX][0-9]*$",variable[[1]], perl = TRUE))) {
+    if (all(grepl("^[yX][0-9]*$", variable[[1]], perl = TRUE))) {
       variable[[1]] <- sub("^X", "y", variable[[1]], perl = TRUE)
       names(variable) <- "year"
       if (is.null(temporal)) temporal <- 3

@@ -214,7 +214,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   dimnames <- dimnames(x)[[dim]]
   if (is.null(dimnames)) stop("Missing element names in dimensions ", dim, "!")
   .countdots <- function(i) {
-    return(nchar(gsub("[^\\.]", "", i))) #nolint
+    return(nchar(gsub("[^\\.]", "", i)))
   }
   if (!is.list(i) && .countdots(i[1]) == .countdots(dimnames[1]) && pmatch == FALSE) {
     # i vector seems to specify the full dimname
