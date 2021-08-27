@@ -18,13 +18,15 @@
 #' @export
 getCoords <- function(x, xlab = "x", ylab = "y") {
   if (!hasCoords(x, xlab, ylab)) stop("No coordinates found in object!")
-  .tmp <- function(x, n) return(as.numeric(sub("p", ".", getItems(x, n, full = TRUE), fixed = TRUE)))
+  .tmp <- function(x, n) {
+    return(as.numeric(sub("p", ".", getItems(x, n, full = TRUE), fixed = TRUE)))
+  }
   return(data.frame(x = .tmp(x, xlab), y = .tmp(x, ylab)))
 }
 
 #' @describeIn getCoords set coordinates
 #' @export
-`getCoords<-` <- function(x, xlab = "x", ylab = "y", value) { 
+`getCoords<-` <- function(x, xlab = "x", ylab = "y", value) { #nolint
   if (is.null(ncol(value)) || ncol(value) != 2) {
     stop("Coordinates supplied in unsupported format (must be a two column data.frame)")
   }

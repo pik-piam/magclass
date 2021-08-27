@@ -21,10 +21,9 @@ Function to find out whether a vector consists of strings in the format
 }
 \examples{
 
-x<-c("1955","y1853","12a4")
-isYear(x, with_y=TRUE)
-isYear(x, with_y=FALSE)
-
+x <- c("1955", "y1853", "12a4")
+isYear(x, with_y = TRUE)
+isYear(x, with_y = FALSE)
 }
 \author{
 Benjamin Bodirsky

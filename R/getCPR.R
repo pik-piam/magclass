@@ -36,7 +36,7 @@ getCPR <- function(x, dim = 1.1) {
  } else {
    stop("Cannot extract cpr information for x!")
  }
- table      <- table(items)
+ table <- table(items)
  names(dimnames(table)) <- NULL
  return(table)
 }

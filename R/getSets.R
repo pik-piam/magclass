@@ -31,7 +31,7 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
   out <- names(dimnames(x))[drop = FALSE]
   if (is.null(out)) return(NULL)
 
-  if (fulldim == TRUE) { # nolint
+  if (fulldim) { #nolint
     tmp <- strsplit(out, split = sep, fixed = TRUE)
     tmp <- lapply(tmp, FUN = function(x) {
                             if (length(x) == 0) x <- NA
@@ -54,7 +54,7 @@ getSets <- function(x, fulldim = TRUE, sep = ".") {
 
 #' @describeIn getSets replace set names
 #' @export
-"getSets<-" <- function(x, fulldim = TRUE, sep = ".", value) { # nolint
+`getSets<-` <- function(x, fulldim = TRUE, sep = ".", value) { #nolint
    # clean x
    uncleanSets <- getSets(x)
    x <- clean_magpie(x, what = "sets")

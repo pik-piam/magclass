@@ -42,7 +42,7 @@ fulldim <- function(x, sep = ".") { #nolint
     tmp <- getSets(x, sep = sep)
     if (length(tmp) == length(dimnames) || is.null(tmp)) {
       names(dimnames) <- tmp
-    } else if (length(tmp) == length(dimnames) + 1 && length(grep(sep, names(dimnames(x))[1], fixed = TRUE))) {
+    } else if (length(tmp) == length(dimnames) + 1 && length(grep(sep, names(dimnames(x))[1], fixed = TRUE)) > 0) {
         names(dimnames) <- c(names(dimnames(x))[1], tmp[3:length(tmp)])
     }
     return(list(dim, dimnames))

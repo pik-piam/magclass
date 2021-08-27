@@ -36,6 +36,9 @@ as.RasterBrick <- function(x, res = NULL) { # nolint
   if (!hasCoords(x) && dimExists(1.2, x)) {
     items <- getItems(x, dim = 1.2)
     if (length(items) == 59199 & all(items == seq_len(59199))) {
+      # special treatment for data with 59199 cells as this
+      # is the originally used 0.5deg resolution in magclass
+      # before it had been generalized
       getCoords(x) <- magclassdata$half_deg[c("lon", "lat")]
     }
   }
