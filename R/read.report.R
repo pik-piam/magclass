@@ -72,7 +72,7 @@ read.report <- function(file, as.list = TRUE) { # nolint
 
   .returnMagpie <- function(tmp, scenario, model) {
 
-    # replace weird ° in tables
+    # replace weird degree symbol in tables
     tmp$Unit      <- sub(pattern = "\U{00B0}C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
     regions <- unique(as.character(tmp$Region))
     names(regions) <- regions
