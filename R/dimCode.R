@@ -58,8 +58,8 @@ dimCode <- function(dim, x, missing = 0, strict = FALSE, sep = ".") {
           subdim   <- grep(paste0("^", dnames[i], "($)"), tmp)
           if (length(subdim) > 1) stop("One or more elements were found more than once or not at all in x!")
         } else {
-subdim <- 0
-}
+          subdim <- 0
+        }
 
         dim[i]   <- as.numeric(superdim + subdim / 10)
       }

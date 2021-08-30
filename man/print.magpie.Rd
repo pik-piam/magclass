@@ -12,7 +12,7 @@
 \item{drop}{argument which controls whether empty dimensions should be
 skipped or not.}
 
-\item{reshape}{agrument that controls tabular representation of nested data
+\item{reshape}{argument that controls tabular representation of nested data
 dimension cross tables, FALSE will reproduce standard print behavior
 any pair of two dimension numbers will create a table for these two dims,
 and loop over the other dimensions}

@@ -102,7 +102,7 @@ read.report <- function(file, as.list = TRUE) { # nolint
         paste(apply(rbind(NULL, unique(coord[duplicates, c(1, 3)])), 1, paste, collapse = "|"),
           collapse = ", "), ")!")
     }
-
+    # suppress warnings from potential NA conversions
     mag[coord] <- suppressWarnings(as.numeric(as.vector(as.matrix(tmp[, yearelems]))))
     names(dimnames(mag)) <- c("region", "year", "variable")
     mag <- as.magpie(mag, spatial = 1, temporal = 2)
@@ -156,10 +156,11 @@ read.report <- function(file, as.list = TRUE) { # nolint
       for (model in models) {
         if (nrow(raw[raw$Model == model & raw$Scenario == scenario, ]) > 0) {
           output[[scenario]][[model]] <- .returnMagpie(raw[raw$Model == model & raw$Scenario == scenario, ],
-            scenario, model)
-          if (!as.list) getNames(output[[scenario]][[model]]) <- paste(scenario, model,
-            getNames(output[[scenario]][[model]]),
-            sep = ".")
+                                                       scenario, model)
+          if (!as.list) {
+            getNames(output[[scenario]][[model]]) <- paste(scenario, model, getNames(output[[scenario]][[model]]),
+                                                           sep = ".")
+          }
         }
       }
     }

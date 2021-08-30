@@ -22,8 +22,10 @@
 #' a <- mbind(pop, pop)
 #' dim(pop)
 #' dim(a)
-#' @export mbind
 #' @importFrom methods new
+#' @importFrom abind abind
+#' @export
+
 mbind <- function(...) { #nolint
   inputs <- list(...)
   if (length(inputs) == 1 & is.list(inputs[[1]])) inputs <- inputs[[1]]
@@ -74,9 +76,6 @@ mbind <- function(...) { #nolint
   if (diffspat & difftemp) stop("Cannot handle objects! Spatial as well as temporal dimensions differ!")
   if (difftemp & diffdata) stop("Cannot handle objects! Data as well as temporal dimensions differ!")
   if (diffdata & diffspat) stop("Cannot handle objects! Data as well as spatial dimensions differ!")
-  if (!diffspat) {
-
-  }
   if (difftemp) {
     if (length(years) != length(unique(years))) stop("Some years occur more than once!",
                                                      " Cannot handle this case!")
