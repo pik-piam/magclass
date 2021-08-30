@@ -87,7 +87,7 @@ magpie_expand_dim <- function(x, ref, dim = 1) { #nolint
   if (anyNA(c(m$.line_ref, m$.line_x))) stop(" Identical set names but different content. Correct set names!")
 
   # reorder m so that dref columns appear first
-  m <- m[union(names(dref)[1:(ncol(dref) - 1)], names(m))]
+  m <- m[union(names(dref)[seq_len((ncol(dref) - 1))], names(m))]
   m <- m[order(m$.line_ref), ]
 
   tmpdim <- dim(x)

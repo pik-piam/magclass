@@ -6,7 +6,7 @@
 #' @param x MAgPIE object
 #' @param drop argument which controls whether empty dimensions should be
 #' skipped or not.
-#' @param reshape agrument that controls tabular representation of nested data
+#' @param reshape argument that controls tabular representation of nested data
 #' dimension cross tables, FALSE will reproduce standard print behavior
 #' any pair of two dimension numbers will create a table for these two dims,
 #' and loop over the other dimensions
@@ -47,7 +47,7 @@ print.magpie <- function(x, drop = TRUE, reshape = FALSE, ...) {
       names(loop)    <- setdiff(names(dims), names(reshape))
 
       header         <- array(dim = 3)
-      names(header)  <- sapply(c(1:3), #nolint
+      names(header)  <- sapply(1:3, #nolint
                                function(dim, i) paste(names(dim[round(dim) == i]), collapse = "."), dim = loop)
 
 
