@@ -44,6 +44,7 @@ The package comes with vignettes describing the basic functionality of the packa
 vignette("magclass-concept")   # Concept behind magclass
 vignette("magclass-expansion") # MAGPIE Class Object Expansion
 vignette("magclass")           # MAGPIE Class Tutorial
+vignette("magclass6")          # magclass 6
 ```
 
 ## Questions / Problems
