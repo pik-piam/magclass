@@ -28,7 +28,7 @@
 #' to file\_name and file\_folder)
 #' @param file_folder folder the file should be written to (alternatively you
 #' can also specify the full path in file\_name - wildcards are supported)
-#' @param file_type Format the data should be stored as. Currently following formats
+#' @param file_type Format the data should be stored as. Currently the following formats
 #' are available: "rds" (default R-data format), "cs2" (cellular standard
 #' MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
 #' "csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE
@@ -118,7 +118,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     if (is.null(comment)) comment <- ""
 
     # expand wildcards
-    filePath <- paste(Sys.glob(dirname(filePath)), basename(filePath), sep = "/")
+    filePath <- file.path(Sys.glob(dirname(filePath)), basename(filePath))
     if (length(filePath) > 1) {
       filePath <- filePath[1]
       warning("file name is ambiguous, only first alternative is used!")
