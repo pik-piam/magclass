@@ -14,7 +14,7 @@
 sizeCheck <- function(dim) {
   if (is.null(getOption("magclass_sizeLimit"))) options(magclass_sizeLimit = 10^9) #nolint
   # estimate new object size and check against size limit
-  if (!is.null(getOption("magclass_sizeLimit")) && getOption("magclass_sizeLimit") > 0) {
+  if (getOption("magclass_sizeLimit") > 0) {
     size <- prod(dim)
     if (size > getOption("magclass_sizeLimit")) {
         stop("magclass object size limit reached! getOption(\"magclass_sizeLimit\")=", getOption("magclass_sizeLimit"))
