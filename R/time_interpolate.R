@@ -35,7 +35,7 @@ time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_
   if (all(isYear(interpolated_year, with_y = FALSE))) {
     interpolated_year <- paste("y", interpolated_year, sep = "") # nolint
   } else  {
-    if (any(isYear(interpolated_year, with_y = TRUE)) == FALSE) {
+    if (!any(isYear(interpolated_year, with_y = TRUE))) {
       stop("year not in the right format")
     }
   }
