@@ -24,7 +24,8 @@
 #' p <- maxample("pop")
 #' time_interpolate(p, "y2000", integrate = TRUE)
 #' time_interpolate(p, c("y1980", "y2000"), integrate = TRUE, extrapolation_type = "constant")
-#' @export time_interpolate
+#' @importFrom abind abind
+#' @export
 time_interpolate <- function(dataset, interpolated_year, integrate_interpolated_years = FALSE,  # nolint
                              extrapolation_type = "linear") {                                   # nolint
   if (!is.magpie(dataset)) {
