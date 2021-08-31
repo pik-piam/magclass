@@ -31,7 +31,6 @@ Extracts regions of a MAgPIE-object
 
 # a <- read.magpie("example.mz")
 # getRegions(a)
-
 }
 \seealso{
 \code{\link{getYears}}, \code{\link{getNames}},

@@ -27,8 +27,8 @@ In order to understand the magclass format it is helpful to know the basic data 
 A matrix is a 2D table (columns and rows) with values in it which all belong to the same variable type (e.g. all numeric or all characters). It can have dimnames giving each row and each column a name.
 
 ```{r, echo = TRUE}
-a <- matrix(1:9, 3, 3, dimnames=list(c("AFR","CPA","EUR"),
-                                     paste0("y",2000:2002)))
+a <- matrix(1:9, 3, 3, dimnames = list(c("AFR", "CPA", "EUR"),
+  paste0("y", 2000:2002)))
 a
 ```
 
@@ -39,10 +39,10 @@ It is very handy for mathematical operations such as matrix multiplications and 
 An array is the extension of a matrix to more than two dimensions. A 2D array is identical to a matrix. As the matrix also the array is a very efficient structure for mathematical operations.
 
 ```{r, echo = TRUE}
-b <- array(1:18, dim=c(3,3,2), 
-           dimnames=list(paste0("y",2000:2002), 
-                         c("AFR","CPA","EUR"), 
-                         c("IndexA","IndexB")))
+b <- array(1:18, dim = c(3, 3, 2),
+  dimnames = list(paste0("y", 2000:2002),
+    c("AFR", "CPA", "EUR"),
+    c("IndexA", "IndexB")))
 b
 ```
 
@@ -73,19 +73,18 @@ as.magpie(b)
 However, that limitation to a 3D-structure does not mean that you are limited to data which only has 3 dimensions. Also data with more than one so-called "data dimension" (a dimension which is neither temporal nor spatial) can be handled:
 
 ```{r, echo = TRUE}
-ar <- array(1:6, c(3,2), list(c("bla","blub","ble"),
-                              c("up","down")))
+ar <- array(1:6, c(3, 2), list(c("bla", "blub", "ble"),
+  c("up", "down")))
 a <- as.magpie(ar)
 head(a)
 
-getNames(a)
+getItems(a, dim = 3)
 
-getNames(a[,,"up"])
+getItems(a[, , "up"], dim = 3)
 
-getNames(a[,,"up",drop=TRUE])
+getItems(a[, , "up", drop = TRUE], dim = 3)
 
-fulldim(a)
-
+getItems(a, dim = 3, split = TRUE)
 ```
 
 If an array has three dimensions and you take in one dimension exactly one element the array will be reduced to an 2D object, whereas the magclass object will always remain as 3D object. In addition to that a lot of checks will be executed when you do calculations with magclass objects that should prevent you from doing unwanted things such as accidentally sum up the wrong numbers if your objects are ordered differently:
@@ -93,14 +92,13 @@ If an array has three dimensions and you take in one dimension exactly one eleme
 ```{r, echo = TRUE}
 c <- as.magpie(b)
 # change order of spatial components
-d <- c[3:1,,]
+d <- c[3:1, , ]
 
 # correct summation based on dimension names:
-c+d
+c + d
 
-#wrong summation (dimension names ignored):
-as.array(c)+as.array(d)
-
+# wrong summation (dimension names ignored):
+as.array(c) + as.array(d)
 ```
 
 This additional comfort and safety is bought with performance meaning that if you are doing calculations which are very resource consuming you might want to convert your magclass object to an array, do your calculations (for which you then have to be very careful) and convert it back to a magclass object.

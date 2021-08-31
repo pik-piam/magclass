@@ -20,9 +20,8 @@ as the order typically should be correct for MAgPIE objects.
 }
 \examples{
 
- pop <- maxample("pop")
- a <- magpiesort(pop)
-
+pop <- maxample("pop")
+a <- magpiesort(pop)
 }
 \seealso{
 \code{"\linkS4class{magpie}"}

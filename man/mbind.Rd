@@ -2,7 +2,6 @@
 % Please edit documentation in R/mbind.R
 \name{mbind}
 \alias{mbind}
-\alias{mbind2}
 \title{mbind}
 \usage{
 mbind(...)
@@ -18,29 +17,20 @@ Merges MAgPIE-objects with identical structure in two dimensions. If data
 differs in the temporal or spatial dimension each year or region/cell must
 appear only once!
 }
-\details{
-mbind2 is a reimplementation from mbind which had the aim to increase its
-overall memory efficiency. However, it is not clear which function is better
-and there are also some changes in behaviour of both functions. Therefore,
-the new version was just added as mbind2 instead of using it as a full
-replacement for mbind.
-}
 \examples{
 
-m <- new.magpie(c("AFR","CPA","EUR"), c(1995,2005),"Data1",fill=c(1,2,3,4,5,6))
-ms <- dimSums(m, dims=1)
+m <- new.magpie(c("AFR", "CPA", "EUR"), c(1995, 2005), "Data1", fill = c(1, 2, 3, 4, 5, 6))
+ms <- dimSums(m, dim = 3.1)
 mbind(m, ms)
-my <- new.magpie(getRegions(m), 2010, getNames(m), fill=c(6,6,4))
+my <- new.magpie(getRegions(m), 2010, getNames(m), fill = c(6, 6, 4))
 mbind(m, my)
-md <- new.magpie(getRegions(m), getYears(m), "Data2", fill=c(7,6,5,7,8,9))
+md <- new.magpie(getRegions(m), getYears(m), "Data2", fill = c(7, 6, 5, 7, 8, 9))
 mbind(m, md)
 
 pop <- maxample("pop")
-a <- mbind(pop,pop)
+a <- mbind(pop, pop)
 dim(pop)
 dim(a)
-
-
 }
 \seealso{
 \code{"\linkS4class{magpie}"}

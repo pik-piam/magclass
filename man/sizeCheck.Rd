@@ -4,24 +4,21 @@
 \alias{sizeCheck}
 \title{sizeCheck}
 \usage{
-sizeCheck(dim, newnames = NULL)
+sizeCheck(dim)
 }
 \arguments{
 \item{dim}{dimensions of the current object as returned by function \code{dim}}
-
-\item{newnames}{a list of new dimensions to be added to the object}
 }
 \description{
 Calculates expected magclass object length and checks that it stays below
-the limit defined with magclass_sizeLimit. This is useful to prevent
-out of memory errors in case of unwanted object expansions
+the limit defined with magclass_sizeLimit (default = 10^9). This is useful
+to prevent out of memory errors in case of unwanted object expansions
 Ignored if \code{getOption("magclass_sizeLimit")} is negative.
 }
 \examples{
 
 pop <- maxample("pop")
-magclass:::sizeCheck(dim(pop),dimnames(pop))
-
+magclass:::sizeCheck(dim(pop))
 }
 \author{
 Jan Philipp Dietrich

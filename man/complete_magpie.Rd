@@ -4,12 +4,15 @@
 \alias{complete_magpie}
 \title{complete_magpie}
 \usage{
-complete_magpie(x, fill = NA)
+complete_magpie(x, fill = NA, dim = 3)
 }
 \arguments{
 \item{x}{MAgPIE object which should be completed.}
 
 \item{fill}{Value that shall be written into the missing entries}
+
+\item{dim}{dimensions in which the completion should take place (1, 2 and/or 3). For
+full completion use \code{1:3}}
 }
 \value{
 The completed MAgPIE object
@@ -20,17 +23,15 @@ magpie object to its real dimensions, so you can apply unwrap.
 }
 \examples{
 
- pop <- maxample("pop")
- a <- complete_magpie(pop)
- b <- add_dimension(a)
- c <- add_dimension(a,nm="dummy2")
- incomplete<-mbind(b[,,1],c)
- d<-complete_magpie(incomplete)
+pop <- maxample("pop")
+complete_magpie(pop)
 
+ani <- maxample("animal")
+complete_magpie(ani)
 }
 \seealso{
 \code{\link{add_dimension}},\code{\link{clean_magpie}}
 }
 \author{
-Benjamin Bodirsky
+Jan Philipp Dietrich, Benjamin Bodirsky
 }

@@ -4,25 +4,25 @@
 \alias{unwrap}
 \title{Unwrap}
 \usage{
-unwrap(x, sep = ".")
+unwrap(x, sep = NULL)
 }
 \arguments{
 \item{x}{A MAgPIE object}
 
-\item{sep}{A character separating joined dimension names}
+\item{sep}{deprecated, please do not use anymore}
 }
 \value{
 An array with the full dimensionality of the original data
 }
 \description{
-Reconstruct the full dimensionality of a MAgPIE object
+Creates a higher dimensional array by separating all subdimensions in
+the third dimension of a MAgPIE object and returning them as
+separate dimension.
 }
 \examples{
 
-  a <- as.magpie(array(1:6,c(3,2),list(c("bla","blub","ble"),c("up","down"))))
-  fulldim(a)
-  unwrap(a)
-
+a <- as.magpie(array(1:6, c(3, 2), list(c("bla", "blub", "ble"), c("up", "down"))))
+unwrap(a)
 }
 \seealso{
 \code{\link{wrap}},\code{\link{fulldim}}

@@ -9,7 +9,7 @@ where(x, plot = NULL)
 \arguments{
 \item{x}{A logical statement with a magpie object}
 
-\item{plot}{depreciated. Use the function whereplot in package luplot.}
+\item{plot}{deprecated. Use the function whereplot in package luplot.}
 }
 \value{
 A list of analysis parameters
@@ -19,14 +19,12 @@ Analysis function for magpie objects
 }
 \examples{
 
- test <- maxample("pop")
- dimnames(test)[[1]]<-c("AFG","DEU","FRA","EGY","IND","IDN","RUS","CHN","USA","YEM")
- where(test>500)
-
+p <- maxample("pop")
+where(p > 500)
 }
 \seealso{
 whereplot in package luplot
 }
 \author{
-Benjamin Leon Bodirsky
+Benjamin Leon Bodirsky, Jan Philipp Dietrich
 }

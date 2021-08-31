@@ -12,9 +12,10 @@
 \item{drop}{argument which controls whether empty dimensions should be
 skipped or not.}
 
-\item{reshape}{agrument that controls tabular representation of nested data dimension cross tables,
-FALSE will reproduce standard print behavior
-any pair of two dimension numbers will create a table for these two dims, and loop over the other dimensions}
+\item{reshape}{argument that controls tabular representation of nested data
+dimension cross tables, FALSE will reproduce standard print behavior
+any pair of two dimension numbers will create a table for these two dims,
+and loop over the other dimensions}
 
 \item{...}{arguments to be passed to or from other methods.}
 }
@@ -26,11 +27,10 @@ print method for MAgPIE objects for conventient display of magpie data.
 }
 \examples{
 
-  pop <- maxample("pop")
-  print(pop)
-  print(pop[,1,], drop=FALSE)
-  print(pop[,1,])
-
+pop <- maxample("pop")
+print(pop)
+print(pop[, 1, ], drop = FALSE)
+print(pop[, 1, ])
 }
 \seealso{
 \code{\link[base]{print}}

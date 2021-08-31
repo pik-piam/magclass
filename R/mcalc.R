@@ -1,11 +1,11 @@
 #' mcalc
-#' 
+#'
 #' Select values from a MAgPIE-object
-#' 
+#'
 #' This functions only work for MAgPIE objects with named dimensions as the
 #' dimension name (set_name) has to be used to indicate in which dimension the
 #' entries should be searched for!
-#' 
+#'
 #' @aliases mcalc mcalc<-
 #' @param x MAgPIE object
 #' @param f A formula describing the calculation that should be performed
@@ -18,37 +18,34 @@
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{mselect}}
 #' @examples
-#' 
-#'  pop <- maxample("pop")
-#'  pop
-#'  mcalc(pop,X12 ~ A2*B1,append=TRUE)
-#'  pop
-#'  mcalc(pop,`Nearly B1` ~ 0.5*A2 + 99.5*B1)
-#'  
-#' 
+#'
+#' pop <- maxample("pop")
+#' pop
+#' mcalc(pop, X12 ~ A2 * B1, append = TRUE)
+#' pop
+#' mcalc(pop, `Nearly B1` ~ 0.5 * A2 + 99.5 * B1)
 #' @export mcalc
 #' @importFrom stats as.formula
-mcalc <- function(x,f,dim=NULL,append=FALSE) {
+mcalc <- function(x, f, dim = NULL, append = FALSE) {
   x <- clean_magpie(x)
   f <- as.formula(f)
   vars <- all.vars(f[[3]])
-  
-  if(is.null(dim)) dim <- getDim(vars,x,fullmatch=FALSE,dimCode=FALSE)
-  if(length(dim)==0) stop("Dimension not provided and automatic detection failed (no match)!")
-  if(length(dim)>1) stop("Dimension not provided and automatic detection failed (multiple matches)!")
-  
-  for(v in vars) {
+
+  if (is.null(dim)) dim <- getDim(vars, x, fullmatch = FALSE, dimCode = FALSE)
+  if (length(dim) == 0) stop("Dimension not provided and automatic detection failed (no match)!")
+  if (length(dim) > 1) stop("Dimension not provided and automatic detection failed (multiple matches)!")
+
+  for (v in vars) {
     l <- list()
     l[dim] <- v
-    tmp <- mselect(x,l,collapseNames=FALSE)
-    getNames(tmp,dim=dim) <- all.vars(f[[2]])
-    assign(v,tmp) 
+    tmp <- mselect(x, l, collapseNames = FALSE)
+    getNames(tmp, dim = dim) <- all.vars(f[[2]])
+    assign(v, tmp)
   }
-  if(append) {
-    assign(as.character(as.list(match.call())$x),mbind(x,eval(f[[3]])),envir =  parent.frame()) 
+  if (append) {
+    assign(as.character(as.list(match.call())$x), mbind(x, eval(f[[3]])), envir =  parent.frame())
   } else {
     out <- eval(f[[3]])
-    out <- updateMetadata(out, x, unit="copy", source="copy", calcHistory="update", description="copy")
     return(out)
   }
 }

@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 5.29.0
-Date: 2021-05-27
+Version: 6.0.0
+Date: 2021-08-31
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -44,8 +44,6 @@ Suggests:
     reshape2,
     data.tree,
     raster,
-    units(>= 0.7.0),
-    udunits2,
     ncdf4,
     covr
 URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.1158580

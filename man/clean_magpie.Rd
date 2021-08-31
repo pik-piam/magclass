@@ -13,7 +13,8 @@ clean_magpie(x, what = "all")
 modes are "cells" (removes cell numbers if the data seems to be regional -
 this should be used carefully as it might remove cell numbers in some cases
 in which they should not be removed), "sets" (making sure that all
-dimensions have names) and "all" (performing all available cleaning methods)}
+dimensions have names), "items" (replace empty elements with single spaces " ")
+and "all" (performing all available cleaning methods)}
 }
 \value{
 The eventually corrected MAgPIE object
@@ -25,9 +26,8 @@ removes cell numbers if it is purely regional data)
 }
 \examples{
 
- pop <- maxample("pop")
- a <- clean_magpie(pop)
-
+pop <- maxample("pop")
+a <- clean_magpie(pop)
 }
 \seealso{
 \code{"\linkS4class{magpie}"}

@@ -4,7 +4,7 @@
 \alias{dimCode}
 \title{dimCode}
 \usage{
-dimCode(dim, x, missing = 0, sep = ".")
+dimCode(dim, x, missing = 0, strict = FALSE, sep = ".")
 }
 \arguments{
 \item{dim}{A vector of dimension numbers or dimension names which should be
@@ -15,6 +15,10 @@ translated}
 \item{missing}{Either a value to which a dimension should be set in case
 that it is not found (default is 0), or "stop" indicating that the function
 should throw an error in these cases.}
+
+\item{strict}{if set to TRUE also properly set dimension names which refer
+to non-existing subdimensions will be treated as missing, otherwise these
+dimension codes will be returned, even if the subdimension does not exist}
 
 \item{sep}{A character separating joined dimension names}
 }
@@ -31,8 +35,7 @@ MAgPIE objects
 \examples{
 
 pop <- maxample("pop")
-dimCode(c("t","scenario","blablub"),pop)
-
+dimCode(c("t", "scenario", "blablub"), pop)
 }
 \seealso{
 \code{\link{mselect}}, \code{\link{getDim}}

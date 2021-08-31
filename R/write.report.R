@@ -1,10 +1,9 @@
 #' Write file in report format
-#' 
+#'
 #' This function writes the content of a MAgPIE object into a file or returns
 #' it directly using the reporting format as it is used for many model
-#' intercomparisons.
-#' 
-#' 
+#' inter-comparisons.
+#'
 #' @param x MAgPIE object or a list of lists with MAgPIE objects as created by
 #' read.report. In the latter case settings for model and scenario are
 #' overwritten by the information given in the list.
@@ -21,156 +20,159 @@
 #' existing file or an existing file should be overwritten
 #' @param skipempty Determines whether empty entries (all data NA) should be
 #' written to file or not.
+#' @param extracols names of dimensions which should appear in the output as additional columns
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{read.report}}
 #' @examples
-#' 
-#' \dontrun{
-#' pop <- maxample("pop")
-#' write.report(pop)
-#' }
-#' 
-#' @export write.report
+#'
+#' write.report(maxample("pop"))
 #' @importFrom utils write.table
-#' 
-write.report <- function(x,file=NULL,model="MAgPIE",scenario="default",unit=NA,ndigit=4,append=FALSE,skipempty=TRUE) {
-  if(is.list(x)) {
-    if(is.list(x[[1]])) {
-      for(scenario in names(x)){
-        for(model in names(x[[scenario]])) {
-          write.report(x[[scenario]][[model]],file=file,model=model,scenario=scenario,unit=unit,ndigit=ndigit,append=append)  
-          append <- TRUE
-        }
-      }  
-    } else {
-      stop("Wrong format. x must be either a list of lists or a MAgPIE object! Only single list found!")
+#' @export
+write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = NULL, ndigit = 4,
+                         append = FALSE, skipempty = TRUE, extracols = NULL) {
+
+  scenarioCall <- scenario
+  modelCall <- model
+  if (is.list(x)) {
+    if (!is.list(x[[1]])) stop("Wrong format. x must be either a list of lists or a MAgPIE object!")
+    if (is.null(file)) stop("file = NULL not supported for lists!")
+    for (.scenario in names(x)) {
+      for (.model in names(x[[.scenario]])) {
+        scenario <- ifelse(is.null(scenarioCall), .scenario, scenario)
+        model <- ifelse(is.null(modelCall), .model, model)
+        write.report(x[[.scenario]][[.model]], file = file, model = model, scenario = scenario, unit = unit,
+                     ndigit = ndigit, append = append, skipempty = skipempty, extracols = extracols)
+        append <- TRUE
+      }
     }
   } else {
-
-    if(!is.magpie(x)) stop("Input is not a MAgPIE object!")
-    dimnames(x)[[1]] <- sub("^GLO(\\.{0,1}[0-9]*)$","World\\1",dimnames(x)[[1]])
-    
-    # If data was read in by read.report there is an attribute $dimnames$scenario.model.variable.
-    # This will be used below to structure the output of write.report exactly like the input.
-    # That means: write.report automatically recognizes models and scenarios and 
-    # does not put it into the data-dimension
-    if (scenario[1] == "default" & length(scenario) == 1 & length(names(attr(x,"dimnames"))) >2) {
-      if (names(attr(x,"dimnames"))[[3]] == "scenario.model.variable") {
-        scenario <- fulldim(x)[[2]]$scenario
-        model <- fulldim(x)[[2]]$model
+    if (!is.magpie(x)) stop("Input is not a MAgPIE object!")
+    x <- prepareData(x, model = model, scenario = scenario, unit = unit, skipempty = skipempty,
+                     ndigit = ndigit, extracols = extracols)
+    if (is.null(file)) return(x)
+    if (!file.exists(file)) append <- FALSE
+    if (append) {
+      # check header for consistency
+      header <- read.table(file, nrows = 1, sep = ";", stringsAsFactors = FALSE)
+      years1 <- as.numeric(header[sapply(header, is.numeric)]) # nolint
+      years2 <- as.numeric(colnames(x)[!is.na(suppressWarnings(as.numeric(colnames(x))))])
+      union <- sort(union(years1, years2))
+      addycols <- function(data, years) {
+        ycols <- !is.na(suppressWarnings(as.numeric(colnames(data))))
+        tmp <- data[ycols]
+        data <- data[!ycols]
+        data[as.character(sort(years))] <- "N/A"
+        data[names(tmp)] <- tmp
+        return(data)
+      }
+      if (length(union) > length(years1)) {
+        data <- read.table(file, sep = ";", stringsAsFactors = FALSE, header = TRUE, check.names = FALSE)
+        data <- data[-length(data)]
+        write.table(addycols(data, union), file, quote = FALSE, sep = ";", row.names = FALSE,
+                    col.names = TRUE, append = FALSE, eol = ";\n")
+      }
+      if (length(union) > length(years2)) {
+        x <- addycols(as.data.frame(x), union)
       }
     }
-
-    if (is.na(unit) & withMetadata()) {
-      unit <- units(x)
-    }
-    unitdef<-unit
-    if (is(unit,"units")) {
-      if (as.numeric(unit)!=1) {
-        unit <- paste(as.character(unit),as.character(units(unit)))
-      }else {
-        unit <- as.character(units(unit))
-      }
-    }
-    ii<-1
-    for (mod in model) {
-      for (scen in scenario) {
-        if (length(fulldim(x)[[2]]) == 5 ) {
-          if (length(strsplit(getNames(x)[1],split="\\.")[[1]]) > 1 
-              & scen %in% unlist(lapply(strsplit(getNames(x),split="\\."),'[[',1))
-              & mod %in% unlist(lapply(strsplit(getNames(x),split="\\."),'[[',2))) {
-            scenmod <- paste(scen,mod,sep=".")
-            if(!any(grepl(scenmod,getNames(x)))) {
-              next()
-            }
-            xtemp<-x[,,scenmod] 
-          } else {
-            xtemp <- x
-          }
-        } else {
-          xtemp<-x           
-        }
-        ndata <- ndata(xtemp)
-        nregions <- nregions(xtemp)
-        nyears <- nyears(xtemp)
-        regions <- getRegions(xtemp)
-        years <- gsub(" ",0,prettyNum(getYears(xtemp,as.integer=TRUE),width=4))
-        if(length(unit)==1) {
-          nelem_with_brackets <- length(grep("\\(*\\)$",getNames(xtemp)))
-          if(nelem_with_brackets==dim(xtemp)[3]) {
-            tmp <- getNames(xtemp)
-            dimnames(xtemp)[[3]] <- sub(" \\(([^\\(]*)\\)($|\\.)","",tmp)
-            unit <- sub("\\)$","",sub(".* \\(","",tmp))
-          } else {
-            if(nelem_with_brackets > 0) warning("Some but not all variable entries provide information in brackets which might be a unit information. To have it detected as unit all entries must provide this information!")
-            unit <- rep(unit,ndata)
-          }
-        }
-        
-        output <- matrix(NA,nregions*ndata,5+nyears)
-        colnames(output) <- c("Model","Scenario","Region","Variable","Unit",years)
-        output[,"Model"] <- mod
-        output[,"Scenario"] <- scen
-        output[,"Region"] <- rep(regions,ndata)
-        
-        for(i in 1:ndata){
-          if (length(fulldim(x)[[2]]) == 5){
-            if (length(strsplit(getNames(xtemp)[i],split="\\.")[[1]]) > 1 
-                & strsplit(getNames(xtemp)[i],split="\\.")[[1]][[1]]==scen 
-                & strsplit(getNames(xtemp)[i],split="\\.")[[1]][[2]]==mod) {
-              output[(i-1)*nregions + 1:nregions,"Variable"] <- strsplit(getNames(xtemp)[i],split="\\.")[[1]][[3]]
-            } else {
-              output[(i-1)*nregions + 1:nregions,"Variable"] <- gsub(".","|",getNames(xtemp)[i],fixed=TRUE)
-            }
-          } else {
-            output[(i-1)*nregions + 1:nregions,"Variable"] <- gsub(".","|",getNames(xtemp)[i],fixed=TRUE)          
-          }
-          output[(i-1)*nregions + 1:nregions,"Unit"] <- unit[i]
-          output[(i-1)*nregions + 1:nregions,5+1:nyears] <- round(xtemp[,,i],ndigit)
-        }
-        
-        if(skipempty) {
-          toskip <- which(rowSums(!is.na(output[,5+(1:nyears),drop=FALSE]))==0)
-          if(length(toskip)>0) output <- output[-toskip,,drop=FALSE]
-        }
-        output[is.na(output)] <- "N/A"
-        output[which(output=="NaN")]<-"N/A"
-        if(is.null(file)) {
-          print(output)
-        } else {
-          if(!file.exists(file)) append <- FALSE
-          if(ii > 1) append <-TRUE
-          if(append) {
-            #check header for consistency
-            header <- read.table(file, nrows = 1, sep = ";", stringsAsFactors = FALSE) 
-            years1 <- as.numeric(header[sapply(header,is.numeric)])
-            years2 <- as.numeric(colnames(output)[!is.na(suppressWarnings(as.numeric(colnames(output))))])
-            union <- sort(union(years1,years2))
-            addycols <- function(data,years) {
-              ycols <- !is.na(suppressWarnings(as.numeric(colnames(data))))
-              tmp <- data[ycols]
-              data <- data[!ycols]
-              data[as.character(sort(years))] <- "N/A"
-              data[names(tmp)] <- tmp 
-              return(data)
-            }
-            if(length(union)>length(years1)) {
-              data <- read.table(file, sep = ";", stringsAsFactors = FALSE, header = TRUE, check.names=FALSE)   
-              data <- data[-length(data)]
-              write.table(addycols(data,union),file,quote=FALSE,sep=";",row.names=FALSE,col.names=TRUE,append=FALSE,eol=";\n")
-            } 
-            if(length(union)>length(years2)) {
-              output <- addycols(as.data.frame(output),union)
-            }
-          }
-          write.table(output,file,quote=FALSE,sep=";",row.names=FALSE,col.names=!append,append=append,eol=";\n")
-          ii<-ii+1
-        }
-        unit<-unitdef
-      }
-    }
-
-    
-
+    write.table(x, file, quote = FALSE, sep = ";", row.names = FALSE, col.names = !append,
+                append = append, eol = ";\n")
   }
+}
+
+prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty = FALSE,
+                        ndigit = 4, extracols = NULL) {
+  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report!")
+  sep <- "."
+  # clean data
+  x <- round(clean_magpie(x, what = "sets"), digits = ndigit)
+  names(dimnames(x))[1] <- "Region"
+  dimnames(x)[[1]] <- sub("^GLO(\\.{0,1}[0-9]*)$", "World\\1", dimnames(x)[[1]])
+  dimnames(x)[[2]] <- substring(dimnames(x)[[2]], 2)
+
+  # check for duplicates and possibly remove duplicates
+  d <- duplicated(as.data.table(getNames(x)))
+  if (any(d)) {
+    warning("Data contains duplicate entries (", paste(getNames(x)[d], collapse = ", "),
+            "), only first found entries will be written to file!")
+    x <- x[, , which(!d)]
+  }
+
+  # convert to data frame
+  x <- reshape2::dcast(reshape2::melt(x, as.is = TRUE, na.rm = skipempty),
+                       eval(parse(text = paste0("...~", names(dimnames(x))[2]))))
+
+  # split data and dimension information
+  data <- x[3:length(x)]
+  x <- x[1:2]
+
+  # split subdimensions
+  colsplit <- function(x, col, sep = ".") {
+    if (all(grepl(sep, x[[col]], fixed = TRUE, useBytes = TRUE))) {
+      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[col]]), split = sep, fixed = TRUE, useBytes = TRUE)),
+                                 ncol = length(x[[col]]))), stringsAsFactors = FALSE)
+      names(tmp) <- strsplit(names(x)[col], split = sep, fixed = TRUE, useBytes = TRUE)[[1]]
+      x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
+    }
+    return(x)
+  }
+  for (i in grep(sep, names(x), fixed = TRUE, useBytes = TRUE)) x <- colsplit(x, i, sep = sep)
+
+  unitsplit <- function(x, col) {
+    w <- grepl("\\(.*\\)", x[[col]])
+    x[[col]][!w] <- paste0(x[[col]][!w], " (N/A)")
+    key <- "(.*?) \\((([^\\|]*))\\)($|\\.)"
+    tmp <- data.frame(sub(key, "\\1", x[[col]]),
+                      sub(key, "\\2", x[[col]]))
+    names(tmp) <- c(names(x)[col], "unit")
+    x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
+    return(x)
+  }
+  for (i in seq_along(x)) {
+    if (!(tolower(names(x)[i]) %in% c("scenario", "model", "region"))) {
+      if (any(grepl(" \\(.*\\)$", x[i]))) x <- unitsplit(x, i)
+    }
+  }
+
+  correctNames <- function(x, name = "Scenario", replacement = NULL) {
+    if (is.null(replacement)) replacement <- "N/A"
+    w <- which(tolower(names(x)) == tolower(name))
+    if (length(w) == 0) {
+      x <- cbind(replacement, x, stringsAsFactors = FALSE)
+    } else if (length(w) == 1) {
+      x <- cbind(x[w], x[-w], stringsAsFactors = FALSE)
+    } else {
+      warning("Found ", name, " more than once! First occurrence will be used")
+      w <- w[1]
+      x <- cbind(x[w], x[-w], stringsAsFactors = FALSE)
+    }
+    if (is.factor(x[[1]])) x[[1]] <- as.character(x[[1]])
+    x[1][x[1] == "NA"] <- "N/A"
+    names(x)[1] <- name
+    return(x)
+  }
+
+  x <- correctNames(x, name = "Unit", replacement = unit)
+  if (!is.null(extracols)) {
+    for (i in extracols) {
+      x <- correctNames(x, name = i)
+    }
+  }
+  x <- correctNames(x, name = "Region", replacement = NULL)
+  x <- correctNames(x, name = "Scenario", replacement = scenario)
+  x <- correctNames(x, name = "Model", replacement = model)
+
+  nxcol <- length(extracols)
+
+  if (length(x) == (4 + nxcol)) {
+    tmp <- "N/A"
+  } else {
+    tmp <- do.call(paste, c(x[(5 + nxcol):length(x)], sep = "."))
+  }
+  x <- cbind(x[1:(3 + nxcol)], Variable = tmp, x[4 + nxcol], stringsAsFactors = FALSE)
+
+  data[is.na(data)] <- "N/A"
+  x <- cbind(x, data)
+  x <- x[do.call("order", x[c("Scenario", "Model", "Variable", "Region")]), ]
+  return(x)
 }

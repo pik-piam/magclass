@@ -4,18 +4,23 @@
 \alias{magpply}
 \title{magpply}
 \usage{
-magpply(X, FUN, MARGIN, ..., integrate = FALSE)
+magpply(X, FUN, MARGIN = NULL, DIM = NULL, ..., INTEGRATE = FALSE)
 }
 \arguments{
 \item{X}{magpie object}
 
 \item{FUN}{function that shall be applied X}
 
-\item{MARGIN}{dimension over which FUN shall be applied (like a loop over that dimension). This dimension will be preserved in the output object}
+\item{MARGIN}{dimension over which FUN shall be applied (like a loop over that dimension).
+This dimension will be preserved in the output object (see also \code{DIM}).}
+
+\item{DIM}{dimension in which FUN shall be applied. This dimension will be missing in the output. DIM and MARGIN
+are opposite ways of expressing the dimensions to be addressed and you must only use one of them with MARGIN
+excluding dimensions from the calculation and DIM including them.}
 
 \item{...}{further parameters passed on to FUN}
 
-\item{integrate}{if TRUE, the output will be filled into an magpie object of the same dimensionality as X}
+\item{INTEGRATE}{if TRUE, the output will be filled into an magpie object of the same dimensionality as X}
 }
 \value{
 magpie object
@@ -26,11 +31,10 @@ apply command for magpieobjects. Very efficient for replacing loops.
 \examples{
 
 pop <- maxample("pop")
-magpply(pop,FUN=sum,MARGIN=2)
-fourdim <- pop * setNames(pop, c("jkk","lk"))
-magpply(fourdim, FUN=sum, MARGIN=c(1,3.1))
-
+magpply(pop, FUN = sum, MARGIN = 2)
+fourdim <- pop * setNames(pop, c("jkk", "lk"))
+magpply(fourdim, FUN = sum, MARGIN = c(1, 3.1))
 }
 \author{
-Benjamin Leon Bodirsky
+Jan Philipp Dietrich, Benjamin Leon Bodirsky
 }

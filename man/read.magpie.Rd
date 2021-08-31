@@ -9,9 +9,9 @@ read.magpie(
   file_folder = "",
   file_type = NULL,
   as.array = FALSE,
-  old_format = FALSE,
   comment.char = "*",
-  check.names = FALSE
+  check.names = FALSE,
+  ...
 )
 }
 \arguments{
@@ -23,7 +23,7 @@ to file\_name and file\_folder)}
 specify the full path in file\_name - wildcards are supported)}
 
 \item{file_type}{format the data is stored in. Currently 13 formats are
-available: "rds" (recommended compressed format), 
+available: "rds" (recommended compressed format),
 "cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
 MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 (alternative multidimensional format compatible to GAMS, in contrast to cs3
@@ -40,9 +40,6 @@ mentioned standard MAgPIE format is assumed.}
 useful for regional or global inputs, but all advantages of the magpie-class
 are lost.}
 
-\item{old_format}{used to read files in old MAgPIE-format (unused space was
-not located at the beginning of the file), will be removed soon.}
-
 \item{comment.char}{character: a character vector of length one containing a
 single character or an empty string. Use "" to turn off the interpretation
 of comments altogether. If a comment is found it will be stored in
@@ -52,6 +49,10 @@ the file in order to be recognized by read.magpie.}
 \item{check.names}{logical. If TRUE then the names of the variables in the
 data frame are checked to ensure that they are syntactically valid variable
 names. Same functionality as in read.table.}
+
+\item{...}{additional arguments passed to specific read functions (e.g.
+\code{varname} for specifying the variable to be read in from a multi-variable
+NCDF file.)}
 }
 \value{
 \item{x}{MAgPIE-object}
@@ -62,11 +63,11 @@ Reads a MAgPIE-file and converts it to a 3D array of the structure
 }
 \details{
 This function reads from 13 different MAgPIE file\_types. "rds" is
-a R-default format for storing R objects."cs2" or "cs2b" is the new standard 
-format for cellular data with or without 
-header and the first columns (year,regiospatial) or only (regiospatial), 
-"csv" is the standard format for regional data with or without header 
-and the first columns (year,region,cellnumber) or only (region,cellnumber). 
+a R-default format for storing R objects."cs2" or "cs2b" is the new standard
+format for cellular data with or without
+header and the first columns (year,regiospatial) or only (regiospatial),
+"csv" is the standard format for regional data with or without header
+and the first columns (year,region,cellnumber) or only (region,cellnumber).
 "cs3" is a format similar to csv and cs2, but with the difference that it supports
 multidimensional data in a format which can be read by GAMS, "put" is a
 newly supported format which is mosty used for the REMIND-MAgPIE coupling.
@@ -83,31 +84,23 @@ have a higher compatibility to other languages. \cr\cr Since library version
 \note{
 The binary MAgPIE formats .m and .mz have the following content/structure
 (you only have to care for that if you want to implement
-read.magpie/write.magpie functions in other languages): \cr \cr 
-[ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr 
-[ nchar_comment | Number of character bytes of the file comment | integer | 4 Byte ] \cr 
-[ nbyte_metadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr 
-[ nchar_sets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr 
-[ nyears | Number of years | integer | 2 Byte ]\cr 
-[ year_list | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr 
-[ ncells | Number of cells | integer | 4 Byte ]\cr 
-[ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr 
-[ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr 
-[ nelem | Total number of data elements | integer | 4 Byte ] \cr 
-[ nchar_data | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
-[ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*nchar_data Byte ] \cr 
-[ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr 
-[ comment | Comment with additional information about the data | character | 1*nchar_comment Byte ] \cr 
-[ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
-[ metadata | serialized metadata information | bytes | 1*nbyte_metadata Byte] \cr
-}
-\examples{
-
-\dontrun{
-a <- read.magpie("lpj_yield_ir.csv")
-write.magpie(a,"lpj_yield_ir.mz")
-}
-
+read.magpie/write.magpie functions in other languages): \cr \cr
+[ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr
+[ ncharComment | Number of character bytes of the file comment | integer | 4 Byte ] \cr
+[ nbyteMetadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr
+[ ncharSets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr
+[ nyears | Number of years | integer | 2 Byte ]\cr
+[ yearList | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr
+[ ncells | Number of cells | integer | 4 Byte ]\cr
+[ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr
+[ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr
+[ nelem | Total number of data elements | integer | 4 Byte ] \cr
+[ ncharData | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
+[ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*ncharData Byte ] \cr
+[ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr
+[ comment | Comment with additional information about the data | character | 1*ncharComment Byte ] \cr
+[ sets | Set names with \\n as delimiter | character | 1*ncharSets Byte] \cr
+[ metadata | serialized metadata information | bytes | 1*nbyteMetadata Byte] \cr
 }
 \seealso{
 \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}

@@ -38,10 +38,9 @@ to the already existing function setNames.
 
 \examples{
 
- a <- as.magpie(1)
+a <- as.magpie(1)
  getCells(a)
- setCells(a,"AFR")
-
+ setCells(a, "AFR")
 }
 \seealso{
 \code{\link{getRegions}}, \code{\link{getNames}},

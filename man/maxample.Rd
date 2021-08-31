@@ -7,7 +7,7 @@
 maxample(data)
 }
 \arguments{
-\item{data}{name of the example data set. Currently available are "pop" (regional population data, 
+\item{data}{name of the example data set. Currently available are "pop" (regional population data,
 previously named "population_magpie") and "animal" (fictional, high-dimensional animal sighting data set).}
 }
 \value{
@@ -18,13 +18,12 @@ A collection of magclass example data sets
 }
 \examples{
 
- p <- maxample("pop")
- str(p)
- 
- a <- maxample("animal")
- str(a)
- fulldim(a)
+p <- maxample("pop")
+str(p)
 
+a <- maxample("animal")
+str(a)
+getItems(a, split = TRUE)
 }
 \author{
 Jan Philipp Dietrich

@@ -10,13 +10,13 @@ collapseNames(x, collapsedim = NULL, preservedim = NULL)
 \item{x}{MAgPIE object}
 
 \item{collapsedim}{If you want to remove the names of particular dimensions
-provide the dimensions here. Since the function only works in the third dimension, 
-you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2). 
+provide the dimensions here. Since the function only works in the third dimension,
+you have to count from there on (e.g. dim = 3.2 refers to collapsedim = 2).
 Alternatively, you can also specify the name of the dimension. Default: NULL.
-CAUTION with parameter collapsedim! You could also force him to remove dimnames, 
+CAUTION with parameter collapsedim! You could also force him to remove dimnames,
 which are NOT the same for each element and so create duplicates in dimnames.}
 
-\item{preservedim}{If you want to remove the name of particular dimensions except some, 
+\item{preservedim}{If you want to remove the name of particular dimensions except some,
 you can specify the dimension(s) to preserve here. See collapsedim for naming convention.
 Note that preservedim will be ignored in the case, of a specified collapsedim}
 }
@@ -24,43 +24,12 @@ Note that preservedim will be ignored in the case, of a specified collapsedim}
 The provided MAgPIE object with collapsed names
 }
 \description{
-This function has been superseded by \code{\link{collapseDim}} which is a 
+This function has been superseded by \code{\link{collapseDim}} which is a
 more generalized version of this function. Please use this one instead!
 }
 \details{
 This function will remove names in the data dimension which are the same for
 each element (meaning that this data dimension contains exactly one element)
-}
-\examples{
-
- x <- new.magpie("GLO",2000,c("bla.a","bla.b"))  
- print(x)
- # An object of class "magpie"
- # , , bla.a
- #      y2000
- # GLO.1    NA
- # , , bla.b
- #      y2000
- # GLO.1    NA
-
- print(collapseNames(x))
- # An object of class "magpie"
- # , , a
- #      y2000
- # GLO.1    NA
- # , , b
- #      y2000
- # GLO.1    NA
-
- print(collapseNames(x), collapseNames = 2)
- # An object of class "magpie"
- # , , bla
- #      y2000
- # GLO.1    NA
- # , , bla
- #      y2000
- # GLO.1    NA
-
 }
 \seealso{
 \code{\link{collapseDim}}, \code{\link{getItems}},

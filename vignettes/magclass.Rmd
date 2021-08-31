@@ -23,15 +23,15 @@ Generation of magpie objects can either be done from scratch, by reading in file
 library(magclass)
 
 # creating a magpie object with 2 regions, 2 years and 2 different values
-m <- new.magpie(cells_and_regions=c("AFR","CPA"),
-                years=c(1995,2000),
-                names=c("bla","blub"),
-                sets=c("region","year","value"),
-                fill=0)
+m <- new.magpie(cells_and_regions = c("AFR", "CPA"),
+  years = c(1995, 2000),
+  names = c("bla", "blub"),
+  sets = c("region", "year", "value"),
+  fill = 0)
 print(m)
 
 # converting a simple vector with one value per region to a magpie object
-v <- c(ENG=10, USA=20, BRA=30, CHN=40, IND=50)
+v <- c(ENG = 10, USA = 20, BRA = 30, CHN = 40, IND = 50)
 m2 <- as.magpie(v)
 str(m2)
 ```
@@ -40,7 +40,7 @@ str(m2)
 In the example above the names were automatically detected as regions, if for some reason the automatic detection fails you can also indicate to what type of dimension the data belongs. Lets assume in the following example, that the names are not representing regions but something else. The argument `spatial=0` indicates the non-existence of a spatial dimension, but it can also be used to point to the spatial dimension in the data.
 
 ```{r, echo = TRUE}
-m3 <- as.magpie(v, spatial=0) 
+m3 <- as.magpie(v, spatial = 0)
 str(m3)
 ```
 
@@ -89,7 +89,7 @@ getNames(pm)
 
 ...and splitted in subdimensions
 ```{r, echo = TRUE}
-getNames(pm,fulldim=TRUE)
+getNames(pm, fulldim = TRUE)
 ```
 
 ...and how many?
@@ -109,7 +109,7 @@ getComment(pm)
 
 let's have a look at the full dimensionality of the object
 ```{r, echo = TRUE}
-fulldim(pm)
+getItems(pm, split = TRUE)
 ```
 
 if this is a bit confusing, this is the condensed version analogous to the standard 3 dim subsetting
@@ -121,21 +121,21 @@ These functions can also be used to manipulate the object:
 
 set a comment
 ```{r, echo = TRUE}
-getComment(pm) <- "This is a comment!" 
+getComment(pm) <- "This is a comment!"
 getComment(pm)
 ```
 ...or alternatively
 ```{r, echo = TRUE}
-pm2 <- setComment(pm,"This is comment for pm2!")
+pm2 <- setComment(pm, "This is comment for pm2!")
 getComment(pm2)
 ```
 rename 1st region in "RRR" 
 ```{r, echo = TRUE}
-getRegions(pm)[1] <- "RRR" 
+getRegions(pm)[1] <- "RRR"
 ```
 rename region set in "zones" 
 ```{r, echo = TRUE}
-getSets(pm)[2] <- "year" 
+getSets(pm)[2] <- "year"
 ```
 
 The other functions such as getYears,... can be used in a similar manner.
@@ -146,21 +146,21 @@ Now that we have had a look into the structure of the object let's extract some 
 
 Return all A2 related data for LAM and the years 2005 and 2015
 ```{r, echo = TRUE}
-pm["LAM",c(2005,2015),"A2"]
+pm["LAM", c(2005, 2015), "A2"]
 ```
 
 Return data for regions which have "AS" in its name (pmatch allows for partial matching of the given search string)
 ```{r, echo = TRUE}
-pm["AS",,,pmatch=TRUE]
+pm["AS", , , pmatch = TRUE]
 ```
 
 If you want to specifically select from one dimension from which you have the dimension name:
 ```{r, echo = TRUE}
-mselect(pm, scenario="B1", i=c("FSU","LAM"))
+mselect(pm, scenario = "B1", i = c("FSU", "LAM"))
 ```
 Or you can use alternatively:
 ```{r, echo = TRUE}
-pm[list(i=c("FSU","LAM")),,list(scenario="B1")]
+pm[list(i = c("FSU", "LAM")), , list(scenario = "B1")]
 ```
 
 
@@ -175,38 +175,38 @@ d <- head(pm)
 
 create a new object with some fancy calculations
 ```{r, echo = TRUE}
-d2 <- d^2+12*d+99/exp(d)
-getNames(d2) <- c("NEWSCEN1","NEWSCEN2")
+d2 <- d^2 + 12 * d + 99 / exp(d)
+getNames(d2) <- c("NEWSCEN1", "NEWSCEN2")
 getSets(d2)[3] <- "newscen"
 d2
 ```
 
 multiply both data sets with each other
 ```{r, echo = TRUE}
-d <- d*d2
+d <- d * d2
 d
 ```
 Because we changed the names of the elements in the data dimension it is assumed that they reflect different dimensions. Therefor the object is blown up in size instead of just having the elements multiplied pairwise with each other as it happens when two objects with identical dimensionality are multiplied with each other:
 
 ```{r, echo = TRUE}
-d2*d2
+d2 * d2
 ```
 
 sum over the data dimension
 ```{r, echo = TRUE}
-dimSums(d,dim=3)
+dimSums(d, dim = 3)
 ```
 ..over the second data dimension only
 ```{r, echo = TRUE}
-dimSums(d,dim=3.2)
+dimSums(d, dim = 3.2)
 ```
 ..or alternatively addressed by name
 ```{r, echo = TRUE}
-dimSums(d,dim="newscen")
+dimSums(d, dim = "newscen")
 ```
 sum over regions and first data dimension
 ```{r, echo = TRUE}
-dimSums(d,dim=c(1,3.1))
+dimSums(d, dim = c(1, 3.1))
 ```
 
 apply a lowpass filter on the data
@@ -216,14 +216,14 @@ lowpass(d)
 
 do a linear interpolation of the data over time (yearly)
 ```{r, echo = TRUE}
-time_interpolate(d,2005:2030)
+time_interpolate(d, 2005:2030)
 ```
 
 split the data, do some calculations and bind it back together
 ```{r, echo = TRUE}
-d1 <- d[,1:3,]*100
-d2 <- d[,4:6,]*(-1)
-dd <- mbind(d1,d2)
+d1 <- d[, 1:3, ] * 100
+d2 <- d[, 4:6, ] * (-1)
+dd <- mbind(d1, d2)
 dd
 ```
 
@@ -235,7 +235,7 @@ d
 
 round the data
 ```{r, echo = TRUE}
-round(d,0)
+round(d, 0)
 ```
 
 

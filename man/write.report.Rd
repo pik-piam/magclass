@@ -7,12 +7,13 @@
 write.report(
   x,
   file = NULL,
-  model = "MAgPIE",
-  scenario = "default",
-  unit = NA,
+  model = NULL,
+  scenario = NULL,
+  unit = NULL,
   ndigit = 4,
   append = FALSE,
-  skipempty = TRUE
+  skipempty = TRUE,
+  extracols = NULL
 )
 }
 \arguments{
@@ -39,19 +40,17 @@ existing file or an existing file should be overwritten}
 
 \item{skipempty}{Determines whether empty entries (all data NA) should be
 written to file or not.}
+
+\item{extracols}{names of dimensions which should appear in the output as additional columns}
 }
 \description{
 This function writes the content of a MAgPIE object into a file or returns
 it directly using the reporting format as it is used for many model
-intercomparisons.
+inter-comparisons.
 }
 \examples{
 
-\dontrun{
-pop <- maxample("pop")
-write.report(pop)
-}
-
+write.report(maxample("pop"))
 }
 \seealso{
 \code{\link{read.report}}

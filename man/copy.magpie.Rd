@@ -11,8 +11,7 @@ copy.magpie(input_file, output_file, round = NULL)
 
 \item{output_file}{copy destination}
 
-\item{round}{number of digits the values should be rounded, if (AND ONLY IF) file 
-format is changed. NULL means no rounding}
+\item{round}{number of digits the values should be rounded. NULL means no rounding}
 }
 \description{
 This function copies MAgPIE-files from one location to another. During the
@@ -22,7 +21,6 @@ copying it is also possible to change the file type (e.g. from 'mz' to
 \examples{
 
 # copy.magpie("bla.csv","blub.mz")
-
 }
 \seealso{
 \code{\link{read.magpie}},\code{\link{write.magpie}}

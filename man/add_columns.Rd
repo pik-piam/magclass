@@ -4,33 +4,34 @@
 \alias{add_columns}
 \title{add_columns}
 \usage{
-add_columns(x, addnm = c("new"), dim = 3.1)
+add_columns(x, addnm = "new", dim = 3.1, fill = NA)
 }
 \arguments{
 \item{x}{MAgPIE object which should be extended.}
 
-\item{addnm}{The new columns within dimension "dim"}
+\item{addnm}{The new elements that should be added to the (sub)dimension}
 
-\item{dim}{The number of the dimension that should be extended}
+\item{dim}{The (sub)dimension to be filled either identified via
+name or dimension code (see \code{\link{dimCode}} for more information)}
+
+\item{fill}{fill value of length 1 for the newly added columns (NA by default)}
 }
 \value{
 The extended MAgPIE object
 }
 \description{
-Function adds new columns to the existing magpie object. The new columns are
-filled with NAs.
+Function adds new columns to the existing magpie object.
 }
 \examples{
-
- pop <- maxample("pop")
- a <- add_columns(pop)
- str(a)
- fulldim(a)
-
+a <- maxample("animal")
+a2 <- add_columns(a, addnm = c("horse", "magpie"), dim = "species", fill = 42)
+getItems(a2, dim = 3)
+getItems(a2, dim = 3, split = TRUE)
+head(a2[, , "magpie"])
 }
 \seealso{
-\code{\link{add_dimension}},\code{\link{mbind}}
+\code{\link{add_dimension}},\code{\link{dimCode}}
 }
 \author{
-Benjamin Bodirsky
+Jan Philipp Dietrich, Benjamin Bodirsky
 }

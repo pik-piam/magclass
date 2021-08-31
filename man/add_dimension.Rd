@@ -4,13 +4,12 @@
 \alias{add_dimension}
 \title{add_dimension}
 \usage{
-add_dimension(x, dim = 3.1, add = "new", nm = "dummy")
+add_dimension(x, dim = 3.1, add = NULL, nm = "dummy")
 }
 \arguments{
 \item{x}{MAgPIE object which should be extended.}
 
-\item{dim}{The dimension number of the new dimension. 4 stands for the
-second name dimension.}
+\item{dim}{The dimension number of the new dimension (e.g. 3.1)}
 
 \item{add}{The name of the new dimension}
 
@@ -25,14 +24,13 @@ with an empty data column with the name "nm".
 }
 \examples{
 
- a <- add_dimension(maxample("pop"))
- str(a)
- fulldim(a)
-
+a <- maxample("animal")
+str(add_dimension(a, dim = 3.2))
+str(add_dimension(a, dim = 2.3, nm = paste0("d", 1:3)))
 }
 \seealso{
 \code{\link{add_columns}},\code{\link{mbind}}
 }
 \author{
-Benjamin Bodirsky
+Jan Philipp Dietrich, Benjamin Bodirsky
 }

@@ -4,24 +4,33 @@
 \alias{getCPR}
 \title{Get cells per region}
 \usage{
-getCPR(x)
+getCPR(x, dim = 1.1)
 }
 \arguments{
 \item{x}{MAgPIE object or a resolution written as numeric (currently only
 data for 0.5 degree resolution is available).}
+
+\item{dim}{Dimension for which the items should be returned. Either number or
+name of dimension or a vector of these (in case of a vector all subimensions
+must belong to the same main dimension!). See \code{\link{dimCode}} for more details.}
 }
 \value{
 cells per region
 }
 \description{
-Counts how many cells each region has and returns it as vector
+Counts how often each element of the provided subdimension exists in the given
+data set. Originally created to count the number of cells in a region (this
+is also where its name originates from) it can now be used to count elements
+of any subdimension via the dim argument.
 }
 \examples{
 
-# a <- read.magpie("example.mz")
-# getCPR(a)
 getCPR(0.5)
-
+a <- maxample("animal")
+getCPR(a, dim = "color")
+getCPR(a, dim = 3.2)
+getCPR(a, dim = "country")
+getCPR(a, dim = c("color", "species"))
 }
 \seealso{
 \code{\link{getRegions}}, \code{\link{read.magpie}},
