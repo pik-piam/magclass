@@ -39,7 +39,7 @@ readMagpieMZ <- function(fileName, compressed) {
     cpr           <- readBin(zz, integer(), nregions, size = 4)
     ncells <- sum(cpr)
     if (any(cpr != 1)) {
-      cellnames   <- paste(rep(regions, cpr), 1:ncells, sep = ".")
+      cellnames   <- paste(rep(regions, cpr), seq_len(ncells), sep = ".")
     } else {
       cellnames   <- regions
     }
