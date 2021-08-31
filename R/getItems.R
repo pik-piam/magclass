@@ -145,7 +145,7 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { # nolint
     }
   } else {
     if (dc == maindim) {
-      if (isFALSE(raw) && dim(x)[maindim] > 1) {
+      if (.isFALSE(raw) && dim(x)[maindim] > 1) {
         stop("Cannot unset dimension names for dimensions with more than 1 element!")
       }
       if (maindim == 1) dimnames(x) <- c(d1 = list(NULL), dimnames(x)[2:3])

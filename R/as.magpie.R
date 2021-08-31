@@ -211,7 +211,7 @@ setMethod("as.magpie",
     if (is.null(datacol)) {
       isNumericlike <- function(x) {
         .tmp <- function(x) return(all(!is.na(suppressWarnings(as.numeric(x[!is.na(x)])))))
-        if (isFALSE(.tmp(x[1]))) return(FALSE)
+        if (.isFALSE(.tmp(x[1]))) return(FALSE)
         return(.tmp(x))
       }
       for (i in dim(x)[2]:1) {

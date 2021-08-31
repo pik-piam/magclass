@@ -302,7 +302,6 @@ setMethod("[", #nolint
     }
     if (!missing(k)) k <- .dimextract(x, k, 3, pmatch = pmatch, invert = invert)
 
-    .isFALSE <- function(x) return(is.logical(x) && length(x) == 1 && !is.na(x) && !x)
     if (!missing(i) && missing(j) && !missing(k) && .isFALSE(k) &&
       .isFALSE(drop) && .isFALSE(pmatch) && .isFALSE(invert)) {
       # there is a weird case in which k is actually missing but is getting the
@@ -386,3 +385,5 @@ setMethod("[<-", #nolint
     }
   }
 )
+
+.isFALSE <- function(x) return(is.logical(x) && length(x) == 1 && !is.na(x) && !x)
