@@ -38,6 +38,7 @@ magpply <- function(X, FUN, MARGIN = NULL, DIM = NULL, ..., INTEGRATE = FALSE) {
   }
   dim <- sort(dimCode(DIM, X), decreasing = TRUE)
   if (any(dim == 0)) stop("Invalid dimension(s) specified")
+  if (length(X) == 0) return(NULL)
   if (INTEGRATE) xIn <- X
   for (d in dim) getItems(X, dim = d, raw = TRUE) <- NULL
   noNames <- which(sapply(dimnames(X), is.null)) # nolint

@@ -49,4 +49,7 @@ test_that("dimSums works", {
   expect_true(all(dimSums(p, dim = 2:3) - rowSums(p) == 0))
   expect_true(all(dimSums(p, dim = 1) / dim(p)[1] - colMeans(p) == 0))
   expect_true(all(magpply(p, mean, dim = 2:3) - rowMeans(p) == 0))
+
+  p0 <- p[, , -1:-2]
+  expect_null(dimSums(p0, dim = 3))
 })
