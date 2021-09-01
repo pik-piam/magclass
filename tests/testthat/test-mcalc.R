@@ -11,3 +11,11 @@ test_that("mcalc works", {
    expect_silent(mcalc(a, `dog2` ~ 2 * dog, append = TRUE))
    expect_identical(a[, , "dog2"], mcalc(a, `dog2` ~ 2 * dog))
 })
+
+test_that("calculations work", {
+   p <- maxample("pop")
+   p1 <- setItems(p[, , 1], dim = 3, NULL)
+   p0 <- p1[, , -1]
+   expect_identical(p0, p1 * p0)
+   expect_identical(p0, p0 * p1)
+})
