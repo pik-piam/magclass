@@ -42,6 +42,7 @@
   }
   m <- list(i = i, j = j, k = k)
   m[lapply(m, length) == 0] <- NULL
+  if (is.null(m$j) && dim(x)[2] > 0) m$j <- -seq_len(dim(x)[2])
   return(m)
 }
 

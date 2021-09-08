@@ -4,6 +4,8 @@ a <- maxample("animal")
 test_that("mselect works", {
   expect_identical(getItems(mselect(a, species = "rabbit"), dim = 3), c("animal.rabbit.black", "animal.rabbit.white"))
   expect_identical(getItems(mselect(a, species = "rabbit", collapseNames = TRUE), dim = 3), c("black", "white"))
+  expect_silent(a2 <- mselect(a, year = 2001))
+  expect_equal(dim(a2)[2], 0)
   names(dimnames(a)) <- NULL
   expect_error(mselect(a, species = "rabbit"), "Dimnames must have names")
   a <- maxample("animal")

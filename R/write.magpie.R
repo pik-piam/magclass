@@ -195,7 +195,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
              sub("3", "4", file_type), " instead!")
       }
       x <- unwrap(x)
-      if (dim(x)[1] == 1 & length(grep("GLO", dimnames(x)[[1]])) == 1) {
+      if (dim(x)[1] == 1 && (is.null(dimnames(x)[[1]]) || length(grep("GLO", dimnames(x)[[1]])) == 1)) {
         dimnames(x)[[1]] <- "TODELETE"
       } else {
         if (nregions(x) == dim(x)[1]) {
@@ -224,7 +224,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       Sys.chmod(filePath, mode)
     } else if (file_type == "cs4" | file_type == "cs4r") {
       printCells <- nregions(x) < ncells(x)
-      printRegions <- (!is.null(getRegions(x)) && getRegions(x)[1] != "GLO")
+      printRegions <- (!is.null(getItems(x, dim = 1.1)) && getItems(x, dim = 1.1)[1] != "GLO")
       printData <- ((ndata(x) > 1) | !is.null(getNames(x)))
 
       output <- as.data.frame(x)
@@ -246,7 +246,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
 
     } else {
       printCells <- nregions(x) < ncells(x)
-      printRegions <- (!is.null(getRegions(x)) && getRegions(x)[1] != "GLO")
+      printRegions <- (!is.null(getItems(x, dim = 1.1)) && getItems(x, dim = 1.1)[1] != "GLO")
       printData <- ((ndata(x) > 1) | !is.null(getNames(x)))
 
       if (file_type == "cs2b" && ndata(x) == 1) getNames(x) <- NULL
