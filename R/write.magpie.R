@@ -167,10 +167,13 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       if (nchar(setsCollapsed, type = "bytes") > 0) writeChar(setsCollapsed, zz, eos = NULL)
       close(zz)
       Sys.chmod(filePath, mode)
-    } else if (file_type %in% c("asc", "nc", "grd", "tif")) {
-      format <- c(asc = "ascii", nc = "CDF", grd = "raster", tif = "GTiff")
-      if (ndata(x) != 1) stop("Currently no support for multiple variables for format ", format,
-                              ". Please store each variable separately.")
+    } else if (file_type %in% c("asc", "grd", "tif")) {
+      if (!requireNamespace("raster", quietly = TRUE)) {
+        stop("The package \"raster\" is required!")
+      }
+      format <- c(asc = "ascii", grd = "raster", tif = "GTiff")
+      if (ndata(x) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
+                              "\". Please store each variable separately.")
       rx <- as.RasterBrick(x)
       if (file_type == "asc") {
         if (dim(rx)[3] != 1) stop("asc does not support multiple year layers. Please choose just one!")
@@ -181,11 +184,31 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       if (is.null(varname)) varname <- "Variable"
       raster::writeRaster(rx, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = "Time", zunit = zunit, varname = varname, ...)
-      if (file_type == "nc" && zunit == "years") {
-        nc <- ncdf4::nc_open(filePath, write = TRUE)
-        ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
-        ncdf4::nc_close(nc)
+    } else if (file_type == "nc") {
+      if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
+        stop("The packages \"ncdf4\" and \"raster\" are required!")
       }
+      .sub <- function(rx, name) {
+        layer <- sub("^.*\\.\\.", "", names(rx))
+        return(rx[[which(layer == name)]])
+      }
+      rx <- as.RasterBrick(x)
+      varnames <- getItems(x, dim = 3)
+      zunit <- ifelse(all(isYear(getYears(x))), "years", "")
+      if (is.null(varnames)) varnames <- "Variable"
+      raster::writeRaster(.sub(rx, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
+                          zname = "Time", zunit = zunit, varname = varnames[1], ...)
+      nc <- ncdf4::nc_open(filePath, write = TRUE)
+      if (zunit == "years") {
+        ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
+      }
+      if (length(varnames) > 1) {
+        for (i in varnames[-1]) {
+          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, "", nc$dim))
+          ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(rx, i)), c(2, 1, 3)))
+        }
+      }
+      ncdf4::nc_close(nc)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" | file_type == "cs3r") {
