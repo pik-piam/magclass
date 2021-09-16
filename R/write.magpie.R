@@ -190,6 +190,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       }
       .sub <- function(rx, name) {
         layer <- sub("^.*\\.\\.", "", names(rx))
+        if (length(unique(layer)) == 1) return(rx)
         return(rx[[which(layer == name)]])
       }
       rx <- as.RasterBrick(x)
