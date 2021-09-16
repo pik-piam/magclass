@@ -145,7 +145,11 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
       nc <- ncdf4::nc_open(fileName)
       var <- names(nc[["var"]])
       vdim <- vapply(nc[["var"]], function(x) return(x$ndim), integer(1))
-      var <- var[vdim > 0]
+      tmpvar <- var[vdim > 0]
+      var <- NULL
+      for (v in tmpvar) {
+        if (length(ncdf4::ncatt_get(nc, v)) > 0) var <- c(var, v)
+      }
       ncdf4::nc_close(nc)
       tmp <- list()
       for (v in var) {
