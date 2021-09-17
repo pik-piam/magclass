@@ -205,7 +205,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
-          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, "", nc$dim))
+          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, "", nc$dim, compression = 9))
           ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(rx, i)), c(2, 1, 3)))
         }
       }
