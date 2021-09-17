@@ -80,8 +80,7 @@
 #' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @importFrom methods is new
-#' @importFrom utils read.csv
-#' @importFrom utils toBibtex
+#' @importFrom utils read.csv capture.output toBibtex
 #' @export
 read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array = FALSE, # nolint
                         comment.char = "*", check.names = FALSE, ...) {                  # nolint
@@ -145,15 +144,15 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
       nc <- ncdf4::nc_open(fileName)
       var <- names(nc[["var"]])
       vdim <- vapply(nc[["var"]], function(x) return(x$ndim), integer(1))
-      tmpvar <- var[vdim > 0]
-      var <- NULL
-      for (v in tmpvar) {
-        if (length(ncdf4::ncatt_get(nc, v)) > 0) var <- c(var, v)
-      }
+      var <- var[vdim > 0]
       ncdf4::nc_close(nc)
       tmp <- list()
       for (v in var) {
-        tmp[[v]] <- raster::brick(fileName, varname = v, ...)
+        warning <- capture.output(tmp[[v]] <- raster::brick(fileName, varname = v, ...))
+        if (length(warning) > 0) {
+          tmp[[v]] <- NULL
+          next
+        }
         name <- sub("^X([0-9]*)$", "y\\1", names(tmp[[v]]), perl = TRUE)
         if (length(name) == 1 && name == "layer") name <- "y0"
         names(tmp[[v]]) <- paste0(name, "..", v)
