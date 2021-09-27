@@ -197,15 +197,16 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       varnames <- getItems(x, dim = 3)
       zunit <- ifelse(all(isYear(getYears(x))), "years", "")
       if (is.null(varnames)) varnames <- "Variable"
+      if (is.null(comment)) comment <- ""
       raster::writeRaster(.sub(rx, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], ...)
+                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = comment, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
         ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
-          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, "", nc$dim, compression = 9))
+          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, comment, nc$dim, compression = 9))
           ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(rx, i)), c(2, 1, 3)))
         }
       }
