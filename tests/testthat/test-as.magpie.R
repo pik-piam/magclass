@@ -33,6 +33,15 @@ test_that("special cases work", {
   m2 <- as.magpie(a)
   expect_equal(unname(getSets(m2)), attr(a, "sets"))
 
+  bla <- data.frame(from = c("bla", "blub"), to = c("ble", "blo"), stringsAsFactors = FALSE)
+  bla2 <- data.frame(from = c("bla", "blub"), to = c("ble", "blo"), stringsAsFactors = TRUE)
+  blaExpect <- new("magpie",
+                   .Data = structure(c("ble", "blo"),
+                                     .Dim = c(1L, 1L, 2L),
+                                     .Dimnames = list(region = "GLO", year = NULL,
+                                                      from = c("bla", "blub"))))
+  expect_identical(as.magpie(bla), blaExpect)
+  expect_identical(as.magpie(bla2), blaExpect)
 })
 
 test_that("underscores are preserved", {
