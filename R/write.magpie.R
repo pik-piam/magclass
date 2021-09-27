@@ -198,14 +198,14 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       zunit <- ifelse(all(isYear(getYears(x))), "years", "")
       if (is.null(varnames)) varnames <- "Variable"
       if (is.null(comment)) {
-       unit <- "not specified" 
+       unit <- "not specified"
       } else {
-        indicators = substring(text = comment,first = 1, last=regexpr(pattern = ": ",text = comment)-1)
-        units = substring(text = comment,first = (regexpr(pattern = ": ",text = comment)+2))
-        if(!any(indicators=="unit")) { 
-          unit="not specified"
+        indicators <- substring(text = comment, first = 1, last = regexpr(pattern = ": ", text = comment) - 1)
+        units <- substring(text = comment, first = (regexpr(pattern = ": ", text = comment) + 2))
+        if (!any(indicators == "unit")) {
+          unit <- "not specified"
         } else {
-          unit <- units[which(indicators=="unit")]
+          unit <- units[which(indicators == "unit")]
         }
       }
       raster::writeRaster(.sub(rx, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
