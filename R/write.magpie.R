@@ -80,7 +80,7 @@
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
 #' [ metadata | serialized metadata information (currently not in use) | bytes | 1*nbyte_metadata Byte] \cr
 #'
-#' @author Jan Philipp Dietrich, Stephen Bi
+#' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 #' @seealso \code{"\linkS4class{magpie}"},
 #' \code{\link{read.magpie}},\code{\link{mbind}}
 #' @examples
@@ -197,15 +197,26 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       varnames <- getItems(x, dim = 3)
       zunit <- ifelse(all(isYear(getYears(x))), "years", "")
       if (is.null(varnames)) varnames <- "Variable"
+      if (is.null(comment)) {
+       unit <- "not specified"
+      } else {
+        indicators <- substring(text = comment, first = 1, last = regexpr(pattern = ": ", text = comment) - 1)
+        units <- substring(text = comment, first = (regexpr(pattern = ": ", text = comment) + 2))
+        if (!any(indicators == "unit")) {
+          unit <- "not specified"
+        } else {
+          unit <- units[which(indicators == "unit")]
+        }
+      }
       raster::writeRaster(.sub(rx, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], ...)
+                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
         ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
-          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, "", nc$dim, compression = 9))
+          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, unit, nc$dim, compression = 9))
           ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(rx, i)), c(2, 1, 3)))
         }
       }

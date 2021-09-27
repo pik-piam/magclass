@@ -117,5 +117,5 @@ read.magpie/write.magpie functions in other languages): \cr \cr
 \code{\link{read.magpie}},\code{\link{mbind}}
 }
 \author{
-Jan Philipp Dietrich, Stephen Bi
+Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
 }
