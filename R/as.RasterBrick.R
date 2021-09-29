@@ -45,9 +45,10 @@ as.RasterBrick <- function(x, res = NULL) { # nolint
   xy <- getCoords(x)
   if (is.null(res)) res <- .guessRes(xy)
   out <- raster::brick(ncols = 360 / res, nrows = 180 / res, nl = nyears(x) * ndata(x))
-  m   <- wrap(x, list(1, 2:3), sep = "..")
-  names(out) <- colnames(m)
+  m   <- wrap(as.array(x), list(1, 2:3), sep = "..")
+  layerNames <- colnames(m)
   colnames(m) <- NULL
-  out[raster::cellFromXY(out, xy)] <- m
+  raster::values(out)[raster::cellFromXY(out, xy), ] <- m
+  names(out) <- layerNames
   return(out)
 }
