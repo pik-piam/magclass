@@ -10,3 +10,6 @@ CHANGES:
 - removed `old_dim_convention` function
 - deprecated `getRegionList` (use `getItems` instead)
 - replaced `write.report` with `write.report2` and deprecated `write.report2` 
+
+NOTE:
+- this upload tries to fix the ifelse test problem on the windows r-devel test machine. Since the windows r-devel test machine did not complain (neither for the old nor the new version) the fix is an educated test and only the submission will show whether it properly addresses the problem. 
