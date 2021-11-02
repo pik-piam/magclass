@@ -86,6 +86,8 @@ getItems <- function(x, dim = NULL, split = FALSE, full = FALSE) { # nolint
   if (!is.null(maindim)) {
     if (!(maindim %in% 1:3)) stop("Unsupported maindim (can only be 1, 2 or 3!)")
     if (dc == 0) {
+      # make sure that number of set names aggres with number of sub-dimensions
+      x <- clean_magpie(x, what = "sets", maindim = maindim)
       dc <- maindim + 0.99999
     } else {
       if (floor(dc) != maindim) stop("Specified dimension (dim) found in main dimension different to maindim!")

@@ -4,7 +4,7 @@
 \alias{clean_magpie}
 \title{MAgPIE-Clean}
 \usage{
-clean_magpie(x, what = "all")
+clean_magpie(x, what = "all", maindim = 1:3)
 }
 \arguments{
 \item{x}{MAgPIE object which should be cleaned.}
@@ -15,6 +15,8 @@ this should be used carefully as it might remove cell numbers in some cases
 in which they should not be removed), "sets" (making sure that all
 dimensions have names), "items" (replace empty elements with single spaces " ")
 and "all" (performing all available cleaning methods)}
+
+\item{maindim}{main dimension(s)  the cleaning should get applied to.}
 }
 \value{
 The eventually corrected MAgPIE object

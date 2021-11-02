@@ -12,6 +12,7 @@
 #' in which they should not be removed), "sets" (making sure that all
 #' dimensions have names), "items" (replace empty elements with single spaces " ")
 #' and "all" (performing all available cleaning methods)
+#' @param maindim main dimension(s)  the cleaning should get applied to.
 #' @return The eventually corrected MAgPIE object
 #' @author Jan Philipp Dietrich
 #' @seealso \code{"\linkS4class{magpie}"}
@@ -20,7 +21,7 @@
 #' pop <- maxample("pop")
 #' a <- clean_magpie(pop)
 #' @export clean_magpie
-clean_magpie <- function(x, what = "all") { # nolint
+clean_magpie <- function(x, what = "all", maindim = 1:3) { # nolint
   availableTypes <- c("cells", "items", "sets")
   if ("all" %in% what) what <- availableTypes
   if (any(!is.element(what, availableTypes))) stop('Unknown setting for argument what ("', what, '")!')
@@ -63,7 +64,8 @@ clean_magpie <- function(x, what = "all") { # nolint
 
     names <- names(dimnames(x))
     keys <- c("region", "year", "data")
-    for (i in 1:3) {
+
+    for (i in maindim) {
       names[i] <- .fixNames(names[i], ndim = .countSubdim(dimnames(x)[[i]][1]), key = keys[i])
     }
     names(dimnames(x)) <- names
@@ -78,7 +80,7 @@ clean_magpie <- function(x, what = "all") { # nolint
       }
       return(x)
     }
-    for (i in 1:3) {
+    for (i in maindim) {
       x <- .fixEmptySubims(x, dim = i)
     }
   }
