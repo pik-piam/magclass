@@ -17,6 +17,13 @@ test_that("getItems works for missing dimnames", {
 
 pop <- maxample("pop")
 
+test_that("getItems replacement works in case of incorrect set names", {
+  getItems(pop, dim = 1, raw = TRUE) <- paste0(getItems(pop, dim = 1), ".", 1:10)
+  value <- paste0("x", 1:10)
+  getItems(pop, dim = "x", maindim = 1) <- value
+  expect_identical(getItems(pop, "x"), value)
+})
+
 test_that("getItems can add and replace (sub)dimensions and separators are replaced with commas", {
   x <- pop
   expect_silent(getItems(x, "j", maindim = 1) <- 1:dim(x)[1])
