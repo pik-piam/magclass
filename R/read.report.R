@@ -186,12 +186,12 @@ read.report <- function(file, as.list = TRUE) { # nolint
 
   if (!as.list) {
     regions <- Reduce(union, lapply(unlist(output, recursive = FALSE), function(x) {
-      getRegions(x)
+      getItems(x, dim = 1.1)
     })) # make sure that magpie objects to be merged share the same regions
 
     .tmpFunc <- function(x) {
       data <- new.magpie(regions, getYears(x), getNames(x), fill = NA)
-      data[getRegions(x), getYears(x), getNames(x)] <- x[getRegions(x), getYears(x), getNames(x)]
+      data[getItems(x, dim = 1.1), getYears(x), getNames(x)] <- x[getItems(x, dim = 1.1), getYears(x), getNames(x)]
       return(data)
     }
 
