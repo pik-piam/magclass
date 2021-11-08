@@ -74,6 +74,7 @@ read.report <- function(file, as.list = TRUE) { # nolint
 
     # replace weird degree symbol in tables
     tmp$Unit      <- sub(pattern = "\U{00B0}C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
+    tmp$Unit      <- sub(pattern = "\xb0C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
     regions <- unique(as.character(tmp$Region))
     names(regions) <- regions
     years <- sub("X", "y", grep("^X[0-9]{4}$", dimnames(tmp)[[2]], value = TRUE))
@@ -88,7 +89,9 @@ read.report <- function(file, as.list = TRUE) { # nolint
     }
     # replace weird ° in tables after sub function evaluation
     names        <- sub(pattern = "\U{00B0}C", replacement = "K", x = names, useBytes = TRUE)
+    names        <- sub(pattern = "\xb0C", replacement = "K", x = names, useBytes = TRUE)
     names(names) <- sub(pattern = "\U{00B0}C", replacement = "K", x = names(names), useBytes = TRUE)
+    names(names) <- sub(pattern = "\xb0C", replacement = "K", x = names(names), useBytes = TRUE)
     mag <- new.magpie(sub("ZZZZZZGLO", "GLO", (sort(sub("GLO", "ZZZZZZGLO", regions)))), years, names)
     yearelems <- grep("^X[0-9]{4}$", dimnames(tmp)[[2]])
     regions[order(sub("GLO", "ZZZZZZGLO", regions))] <- dimnames(mag)[[1]]
