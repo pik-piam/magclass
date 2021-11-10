@@ -73,8 +73,8 @@ read.report <- function(file, as.list = TRUE) { # nolint
   .returnMagpie <- function(tmp, scenario, model) {
 
     # replace weird degree symbol in tables
-    tmp$Unit      <- sub(pattern = "\U{00B0}C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
-    tmp$Unit      <- sub(pattern = "\260C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
+    tmp$Unit <- enc2utf8(tmp$Unit)
+    tmp$Unit <- sub(pattern = "\U{00B0}C", replacement = "K", x = tmp$Unit, useBytes = TRUE) # nolint
     regions <- unique(as.character(tmp$Region))
     names(regions) <- regions
     years <- sub("X", "y", grep("^X[0-9]{4}$", dimnames(tmp)[[2]], value = TRUE))
@@ -88,10 +88,10 @@ read.report <- function(file, as.list = TRUE) { # nolint
       warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
     }
     # replace weird ° in tables after sub function evaluation
-    names        <- sub(pattern = "\U{00B0}C", replacement = "K", x = names, useBytes = TRUE)
-    names        <- sub(pattern = "\260C", replacement = "K", x = names, useBytes = TRUE)
+    names <- enc2utf8(names)
+    names <- sub(pattern = "\U{00B0}C", replacement = "K", x = names, useBytes = TRUE)
+    names(names) <- enc2utf8(names(names))
     names(names) <- sub(pattern = "\U{00B0}C", replacement = "K", x = names(names), useBytes = TRUE)
-    names(names) <- sub(pattern = "\260C", replacement = "K", x = names(names), useBytes = TRUE)
     mag <- new.magpie(sub("ZZZZZZGLO", "GLO", (sort(sub("GLO", "ZZZZZZGLO", regions)))), years, names)
     yearelems <- grep("^X[0-9]{4}$", dimnames(tmp)[[2]])
     regions[order(sub("GLO", "ZZZZZZGLO", regions))] <- dimnames(mag)[[1]]
