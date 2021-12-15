@@ -22,7 +22,7 @@
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc
 #'
-#' @param x MAgPIE-object
+#' @param x magclass or RasterBrick object. RasterBrick works only with file_types "nc", "asc", "grd" and "tif".
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
 #' to file\_name and file\_folder)
@@ -99,7 +99,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     mode <- as.character(777 - as.integer(as.character(umask)))
   }
   if (is.null(x)) x <- as.magpie(numeric(0))
-  if (is.magpie(x)) {
+  if (is.magpie(x) | class(x)  == "RasterBrick") {
     years <- !(is.null(dimnames(x)[[2]]))
 
     # if file-type is not mentioned file-ending is used as file-type
@@ -172,17 +172,28 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         stop("The package \"raster\" is required!")
       }
       format <- c(asc = "ascii", grd = "raster", tif = "GTiff")
-      if (ndata(x) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
-                              "\". Please store each variable separately.")
-      rx <- as.RasterBrick(x)
-      if (file_type == "asc") {
-        if (dim(rx)[3] != 1) stop("asc does not support multiple year layers. Please choose just one!")
-        rx <- rx[[1]]
+      if (is.magpie(x)) {
+        if (ndata(x) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
+                                "\". Please store each variable separately.")
+        varname <- getItems(x, dim = 3)
+        zunit <- ifelse(all(isYear(getYears(x))), "years", "")
+        x <- as.RasterBrick(x)
+      } else if (class(x) == "RasterBrick") {
+        tmp <- names(x)
+        tmp <- strsplit(tmp,"\\..")
+        years <- sort(unique(unlist(lapply(tmp,function(x) x[1]))))
+        varname <- sort(unique(unlist(lapply(tmp,function(x) x[2]))))
+        zunit <- ifelse(all(isYear(years)), "years", "")
+        years <- as.numeric(gsub("y","",years))
+        if (length(varname) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
+                                "\". Please store each variable separately.")
       }
-      varname <- getItems(x, dim = 3)
-      zunit <- ifelse(all(isYear(getYears(x))), "years", "")
+      if (file_type == "asc") {
+        if (dim(x)[3] != 1) stop("asc does not support multiple year layers. Please choose just one!")
+        x <- x[[1]]
+      }
       if (is.null(varname)) varname <- "Variable"
-      raster::writeRaster(rx, filename = filePath, format = format[file_type], overwrite = TRUE,
+      raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = "Time", zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
       if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
@@ -193,9 +204,19 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         if (length(unique(layer)) == 1) return(rx)
         return(rx[[which(layer == name)]])
       }
-      rx <- as.RasterBrick(x)
-      varnames <- getItems(x, dim = 3)
-      zunit <- ifelse(all(isYear(getYears(x))), "years", "")
+      if (is.magpie(x)) {
+        varnames <- getItems(x, dim = 3)
+        zunit <- ifelse(all(isYear(getYears(x))), "years", "")
+        years <- getYears(x, as.integer = TRUE)
+        x <- as.RasterBrick(x)
+      } else if (class(x) == "RasterBrick") {
+        tmp <- names(x)
+        tmp <- strsplit(tmp,"\\..")
+        years <- sort(unique(unlist(lapply(tmp,function(x) x[1]))))
+        varnames <- sort(unique(unlist(lapply(tmp,function(x) x[2]))))
+        zunit <- ifelse(all(isYear(years)), "years", "")
+        years <- as.numeric(gsub("y","",years))
+      }
       if (is.null(varnames)) varnames <- "Variable"
       if (is.null(comment)) {
        unit <- "not specified"
@@ -208,16 +229,16 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
           unit <- units[which(indicators == "unit")]
         }
       }
-      raster::writeRaster(.sub(rx, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
+      raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
                           compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
-        ncdf4::ncvar_put(nc, "Time", getYears(x, as.integer = TRUE))
+        ncdf4::ncvar_put(nc, "Time", years)
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
           nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, unit, nc$dim, compression = 9))
-          ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(rx, i)), c(2, 1, 3)))
+          ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(x, i)), c(2, 1, 3)))
         }
       }
       ncdf4::nc_close(nc)

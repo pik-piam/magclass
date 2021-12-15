@@ -17,7 +17,7 @@ write.magpie(
 )
 }
 \arguments{
-\item{x}{MAgPIE-object}
+\item{x}{magclass or RasterBrick object. RasterBrick works only with file_types "nc", "asc", "grd" and "tif".}
 
 \item{file_name}{file name including file ending (wildcards are supported).
 Optionally also the full path can be specified here (instead of splitting it
