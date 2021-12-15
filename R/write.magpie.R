@@ -22,7 +22,9 @@
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc
 #'
-#' @param x magclass or RasterBrick object. RasterBrick works only with file_types "nc", "asc", "grd" and "tif".
+#' @param x a magclass object. An exception is that formats written via the raster package 
+#' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have 
+#' been previously created from a magclass object via as.RasterBrick)
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
 #' to file\_name and file\_folder)
@@ -99,12 +101,15 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     mode <- as.character(777 - as.integer(as.character(umask)))
   }
   if (is.null(x)) x <- as.magpie(numeric(0))
-  if (is.magpie(x) | class(x)  == "RasterBrick") {
+  if (is.magpie(x) || class(x) == "RasterBrick") {
     years <- !(is.null(dimnames(x)[[2]]))
 
     # if file-type is not mentioned file-ending is used as file-type
     if (is.null(file_type)) {
       file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint
+    }
+    if (class(x) == "RasterBrick" && !file_type %in% c("nc", "asc", "grd", "tif")) {
+      stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
     }
     if (!file_folder == "") {
       filePath <- paste(file_folder, file_name, sep = "/")
@@ -113,7 +118,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       filePath <- file_name # nolint
     }
 
-    # look for comment/addtitional information
+    # look for comment/additional information
     if (is.null(comment) & !is.null(attr(x, "comment"))) comment <- attr(x, "comment")
     if (is.null(comment)) comment <- ""
 
@@ -184,7 +189,6 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         years <- sort(unique(unlist(lapply(tmp,function(x) x[1]))))
         varname <- sort(unique(unlist(lapply(tmp,function(x) x[2]))))
         zunit <- ifelse(all(isYear(years)), "years", "")
-        years <- as.numeric(gsub("y","",years))
         if (length(varname) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
                                 "\". Please store each variable separately.")
       }
