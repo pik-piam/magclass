@@ -108,7 +108,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     if (is.null(file_type)) {
       file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint
     }
-    if (class(x) == "RasterBrick" && !file_type %in% c("nc", "asc", "grd", "tif")) {
+    if (class(x) == "RasterBrick" && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
       stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
     }
     if (!file_folder == "") {
