@@ -157,7 +157,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
         if (length(name) == 1 && name == "layer") name <- "y0"
         names(tmp[[v]]) <- paste0(name, "..", v)
       }
-      readMagpie <- as.magpie(raster::brick(tmp))
+      readMagpie <- as.magpie(raster::stack(tmp))
     } else {
       readMagpie <- as.magpie(raster::brick(fileName, ...))
     }
