@@ -22,8 +22,8 @@
 #' data column. In the case that more than one year and data column is supplied
 #' several files are written with the structure filename_year_datacolumn.asc
 #'
-#' @param x a magclass object. An exception is that formats written via the raster package 
-#' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have 
+#' @param x a magclass object. An exception is that formats written via the raster package
+#' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
 #' been previously created from a magclass object via as.RasterBrick)
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
@@ -113,8 +113,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     }
     if (!file_folder == "") {
       filePath <- paste(file_folder, file_name, sep = "/")
-    }
-    else {
+    } else {
       filePath <- file_name # nolint
     }
 
@@ -185,9 +184,9 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         x <- as.RasterBrick(x)
       } else if (class(x) == "RasterBrick") {
         tmp <- names(x)
-        tmp <- strsplit(tmp,"\\..")
-        years <- sort(unique(unlist(lapply(tmp,function(x) x[1]))))
-        varname <- sort(unique(unlist(lapply(tmp,function(x) x[2]))))
+        tmp <- strsplit(tmp, "\\..")
+        years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
+        varname <- sort(unique(unlist(lapply(tmp, function(x) x[2]))))
         zunit <- ifelse(all(isYear(years)), "years", "")
         if (length(varname) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
                                 "\". Please store each variable separately.")
@@ -215,11 +214,11 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         x <- as.RasterBrick(x)
       } else if (class(x) == "RasterBrick") {
         tmp <- names(x)
-        tmp <- strsplit(tmp,"\\..")
-        years <- sort(unique(unlist(lapply(tmp,function(x) x[1]))))
-        varnames <- sort(unique(unlist(lapply(tmp,function(x) x[2]))))
+        tmp <- strsplit(tmp, "\\..")
+        years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
+        varnames <- sort(unique(unlist(lapply(tmp, function(x) x[2]))))
         zunit <- ifelse(all(isYear(years)), "years", "")
-        years <- as.numeric(gsub("y","",years))
+        years <- as.numeric(gsub("y", "", years))
       }
       if (is.null(varnames)) varnames <- "Variable"
       if (is.null(comment)) {
@@ -237,7 +236,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
                           compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
-        ncdf4::ncvar_put(nc, "Time", years)
+        try(ncdf4::ncvar_put(nc, "Time", years), silent = TRUE)
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
