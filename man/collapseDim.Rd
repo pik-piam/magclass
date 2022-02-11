@@ -30,6 +30,15 @@ each element (meaning that this data dimension contains exactly one element)
 or, if forced, remove any other subdimension. It is a generalized version
 of the function \code{\link{collapseNames}}
 }
+\note{
+This function has some similarities to \code{\link{dimReduce}}, but
+serves a different purpose. While \code{\link{collapseDim}} only removes
+dimensions which contain only a single element or which it is
+specifically told to remove, \code{\link{dimReduce}} looks whether the
+entries of a multi-entry dimension are all the same and removes dimensions
+for which this is the case. In some cases both will lead to the same result
+but in many other cases the results will differ.
+}
 \examples{
 
 x <- new.magpie(c("GLO.1", "GLO.2"), 2000, c("bla.a", "bla.b"))
