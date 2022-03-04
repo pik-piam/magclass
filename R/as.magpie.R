@@ -227,8 +227,15 @@ setMethod("as.magpie",
       if (datacol == dim(x)[2]) return(tidy2magpie(x, ...))
       x[[datacol - 1]] <- as.factor(x[[datacol - 1]])
     }
-    if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required")
-    out <- copy.attributes(x, tidy2magpie(suppressMessages(reshape2::melt(x)), ...))
+
+    helper <- suppressWarnings(data.table::setDF(data.table::melt(data.table::as.data.table(x))))
+    # The warning that is suppressed above is:
+    #  In melt.data.table(data.table::as.data.table(x)) :
+    #   id.vars and measure.vars are internally guessed when both are 'NULL'. All non-numeric/integer/logical type
+    #   columns are considered id.vars, which in this case are columns {...}. Consider providing at least one of
+    #   'id' or 'measure' vars in future.
+
+    out <- copy.attributes(x, tidy2magpie(suppressMessages((helper)), ...))
     return(out)
   }
 )
