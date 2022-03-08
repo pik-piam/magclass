@@ -82,7 +82,6 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
 
 prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty = FALSE,
                         ndigit = 4, extracols = NULL) {
-  if (!requireNamespace("reshape2", quietly = TRUE)) stop("The package reshape2 is required for write.report!")
   sep <- "."
   # clean data
   x <- round(clean_magpie(x, what = "sets"), digits = ndigit)
@@ -98,9 +97,9 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
     x <- x[, , which(!d)]
   }
 
-  # convert to data frame
-  x <- reshape2::dcast(reshape2::melt(x, as.is = TRUE, na.rm = skipempty),
-                       eval(parse(text = paste0("...~", names(dimnames(x))[2]))))
+  # convert to data.table, reshape and convert to data.frame
+  x <- data.table::setDF(data.table::dcast(data.table::as.data.table(x, na.rm = skipempty),
+                                           eval(parse(text = paste0("...~", names(dimnames(x))[2])))))
 
   # split data and dimension information
   data <- x[3:length(x)]
