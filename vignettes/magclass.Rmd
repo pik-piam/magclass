@@ -82,8 +82,16 @@ getItems(pm, dim = 1)
 
 Which scenarios?
 ```{r, echo = TRUE}
+getItems(pm, dim = 3)
+```
+
+`getItems` as well as most of the other functions allow to select a dimension either via its dimension code (as done in the previous example), or via its dimension name:
+
+```{r, echo = TRUE}
 getItems(pm, dim = "scenario")
 ```
+
+In terms of readability it is recommended to use the dimension name where possible, but one has to keep in mind that sometimes the dimension name might not be well defined and vary from case to case. In these instances it is safer to use the dimension code.
 
 What are the sets (dimensions names) of the data?
 ```{r, echo = TRUE}
