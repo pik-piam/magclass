@@ -28,10 +28,8 @@ With the updated auto expansion calculation, which previously have led to an err
 Creating two magpie objects with different world regions:
 ```{r, echo = TRUE}
 library(magclass)
-
-#
 a <- b <- maxample("pop")
-getRegions(b)[1] <- "AAA"
+getItems(b, dim = 1)[1] <- "AAA"
 ```
 
 The multiplication for auto expand version 1 (magclass < 5.0) failed, but the same calculation with auto expand version 2.1 (magclass >= 5.0) works:
@@ -82,8 +80,8 @@ options(magclass_expand_version = 2.1) # default setting for magclass >= 5.0
 
 a <- b <- maxample("pop")
 
-getRegions(a)[1] <- "AAA"
-getRegions(b)[1] <- "BBB"
+getItems(a, dim = 1)[1] <- "AAA"
+getItems(b, dim = 1)[1] <- "BBB"
 
 options(magclass_setMatching = FALSE)
 head(a * b)
