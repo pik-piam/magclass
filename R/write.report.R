@@ -117,16 +117,6 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   }
   for (i in grep(sep, names(x), fixed = TRUE, useBytes = TRUE)) x <- colsplit(x, i, sep = sep)
 
-  unitsplit <- function(x, col) {
-    w <- grepl("\\(.*\\)", x[[col]])
-    x[[col]][!w] <- paste0(x[[col]][!w], " (N/A)")
-    key <- "(.*?) \\((([^\\|]*))\\)($|\\.)"
-    tmp <- data.frame(sub(key, "\\1", x[[col]]),
-                      sub(key, "\\2", x[[col]]))
-    names(tmp) <- c(names(x)[col], "unit")
-    x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
-    return(x)
-  }
   for (i in seq_along(x)) {
     if (!(tolower(names(x)[i]) %in% c("scenario", "model", "region"))) {
       if (any(grepl(" \\(.*\\)$", x[i]))) x <- unitsplit(x, i)
@@ -174,4 +164,33 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   x <- cbind(x, data)
   x <- x[do.call("order", x[c("Scenario", "Model", "Variable", "Region")]), ]
   return(x)
+}
+
+unitsplit <- function(x, col) {
+  col_splitted <- data.frame(t(sapply(x[[col]], varNameSplitUnit, USE.NAMES=FALSE)))
+  names(col_splitted) <- c(names(x)[col], "unit")
+  x <- cbind(col_splitted, x[setdiff(seq_len(ncol(x)), col)])
+  return(x)
+}
+
+varNameSplitUnit <- function(varName) {
+  # For varNames of the form
+  # a|long|thing (actually)|with|stuff (for real) (unit)
+  # we want to extract only the unit
+  # split on | (and reassemble later) to make sure we only operate on the last part
+  splittedComponents <- unlist(strsplit(varName, "|", fixed=TRUE))
+  last <- splittedComponents[length(splittedComponents)]
+  # group 1: greedy everything
+  # separator: a space
+  # group 2: unit, surrounded by () which are not part of the group
+  pattern <- '^(.+) \\((.*)\\)$'
+  if (!grepl(pattern, last)) {
+    # no unit
+    return(c(varName, "N/A"))
+  }
+  lastWithoutUnit <- sub(pattern, '\\1', last)
+  splittedComponents[length(splittedComponents)] <- lastWithoutUnit
+  varNameWithoutUnit <- paste(splittedComponents, collapse='|')
+  unit <- sub(pattern, '\\2', last)
+  return(c(varNameWithoutUnit, unit))
 }
