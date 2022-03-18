@@ -167,9 +167,9 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 }
 
 unitsplit <- function(x, col) {
-  col_splitted <- data.frame(t(sapply(x[[col]], varNameSplitUnit, USE.NAMES=FALSE)))
-  names(col_splitted) <- c(names(x)[col], "unit")
-  x <- cbind(col_splitted, x[setdiff(seq_len(ncol(x)), col)])
+  colSplitted <- data.frame(t(sapply(x[[col]], varNameSplitUnit, USE.NAMES = FALSE)))
+  names(colSplitted) <- c(names(x)[col], "unit")
+  x <- cbind(colSplitted, x[setdiff(seq_len(ncol(x)), col)])
   return(x)
 }
 
@@ -178,19 +178,19 @@ varNameSplitUnit <- function(varName) {
   # a|long|thing (actually)|with|stuff (for real) (unit)
   # we want to extract only the unit
   # split on | (and reassemble later) to make sure we only operate on the last part
-  splittedComponents <- unlist(strsplit(varName, "|", fixed=TRUE))
+  splittedComponents <- unlist(strsplit(varName, "|", fixed = TRUE))
   last <- splittedComponents[length(splittedComponents)]
   # group 1: greedy everything
   # separator: a space
   # group 2: unit, surrounded by () which are not part of the group
-  pattern <- '^(.+) \\((.*)\\)$'
+  pattern <- "^(.+) \\((.*)\\)$"
   if (!grepl(pattern, last)) {
     # no unit
     return(c(varName, "N/A"))
   }
-  lastWithoutUnit <- sub(pattern, '\\1', last)
+  lastWithoutUnit <- sub(pattern, "\\1", last)
   splittedComponents[length(splittedComponents)] <- lastWithoutUnit
-  varNameWithoutUnit <- paste(splittedComponents, collapse='|')
-  unit <- sub(pattern, '\\2', last)
+  varNameWithoutUnit <- paste(splittedComponents, collapse = "|")
+  unit <- sub(pattern, "\\2", last)
   return(c(varNameWithoutUnit, unit))
 }
