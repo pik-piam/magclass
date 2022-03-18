@@ -15,11 +15,6 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 # magclass vs other data-classes
 
-```{r, echo = TRUE, message = FALSE}
-# load magclass package
-library(magclass)
-```
-
 In order to understand the magclass format it is helpful to know the basic data structures in R:
 
 ## dataclass: matrix
@@ -48,7 +43,7 @@ b
 
 ## dataclass: dataframe
 
-A dataframe is similar in its structure to a matrix but has quite different advantages and disadvantages. As the matrix also the data frame is only two dimensional. The major difference between matrices and dataframes is that dataframes allow for different variable types per column. That means that one column can contain characters describing the data whereas another column can contain the values itself. Having this extension it is much easier to store higher dimensional data in it, as you can always use a structure in which each column except the last represent one dimension and the last dimension contains the data itself. However, you loose the ability to perform fast mathematical operations on it. In addition the higher flexibility means that you can store the same data in very different ways, making it often hard to predict how the data frame will look like.
+A dataframe is similar in its structure to a matrix but has quite different advantages and disadvantages. As the matrix also the data frame is only two dimensional. The major difference between matrices and dataframes is that dataframes allow for different variable types per column. That means that one column can contain characters describing the data whereas another column can contain the values itself. Having this extension it is much easier to store higher dimensional data in it, as you can always use a structure in which each column except the last represent one dimension and the last dimension contains the data itself. The higher flexibility means that you can store the same data in very different ways, making it often hard to predict how the data frame will look like.
 
 ```{r, echo = TRUE}
 library(magclass)
@@ -110,4 +105,4 @@ Having everybody working with the same functions can also lower the number of bu
 
 But why use magclass objects as this standard class for all functions and not something else as for instance data frames?
 
-The main argument is that magclass objects are much more standardized than the default data classes in R. It is always clear that the first dimension contains the spatial information, the second dimension contains temporal information and the third dimension contains the data. This makes it much easier to develop generic plots because it is clear how the data has to be accessed. 
+The main argument is that magclass objects are more standardized than the default data classes in R. It is always clear that the first dimension contains the spatial information, the second dimension contains temporal information and the third dimension contains the data. This makes it easier to develop generic plots because it is clear how the data has to be accessed. 

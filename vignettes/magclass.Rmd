@@ -46,7 +46,7 @@ str(m3)
 
 ## Accessing magpie objects
 
-For the following a example data set containing population data is used. For convenience we will just shorten its name:
+For the following a example data set containing population data is used.
 
 ```{r, echo = TRUE}
 pm <- maxample("pop")
@@ -70,32 +70,28 @@ Show the last elements:
 tail(pm)
 ```
 
-Which regions are in the data and how many?
+Which elements are there?
 ```{r, echo = TRUE}
-getRegions(pm)
-nregions(pm)
+getItems(pm)
 ```
 
-Which years and how many?
+Which spatial elements are there?
 ```{r, echo = TRUE}
-getYears(pm)
-nyears(pm)
+getItems(pm, dim = 1)
 ```
 
-Which data elements?
+Which scenarios?
 ```{r, echo = TRUE}
-getNames(pm)
+getItems(pm, dim = 3)
 ```
 
-...and splitted in subdimensions
+`getItems` as well as most of the other functions allow to select a dimension either via its dimension code (as done in the previous example), or via its dimension name:
+
 ```{r, echo = TRUE}
-getNames(pm, fulldim = TRUE)
+getItems(pm, dim = "scenario")
 ```
 
-...and how many?
-```{r, echo = TRUE}
-ndata(pm)
-```
+In terms of readability it is recommended to use the dimension name where possible, but one has to keep in mind that sometimes the dimension name might not be well defined and vary from case to case. In these instances it is safer to use the dimension code.
 
 What are the sets (dimensions names) of the data?
 ```{r, echo = TRUE}
@@ -107,14 +103,20 @@ are there any comments which come with the data?
 getComment(pm)
 ```
 
-let's have a look at the full dimensionality of the object
+let's have a look at a higher dimensional object
+
 ```{r, echo = TRUE}
-getItems(pm, split = TRUE)
+a <- maxample("animal")
 ```
 
-if this is a bit confusing, this is the condensed version analogous to the standard 3 dim subsetting
+what is the full dimensionality of this object?
 ```{r, echo = TRUE}
-dimnames(pm)
+getItems(a)
+```
+
+...split in sub-dimensions
+```{r, echo = TRUE}
+getItems(a, split = TRUE)
 ```
 
 These functions can also be used to manipulate the object:
@@ -131,14 +133,12 @@ getComment(pm2)
 ```
 rename 1st region in "RRR" 
 ```{r, echo = TRUE}
-getRegions(pm)[1] <- "RRR"
+getItems(pm, dim = 1)[1] <- "RRR"
 ```
 rename region set in "zones" 
 ```{r, echo = TRUE}
 getSets(pm)[2] <- "year"
 ```
-
-The other functions such as getYears,... can be used in a similar manner.
 
 ### Subsets
 
@@ -176,7 +176,7 @@ d <- head(pm)
 create a new object with some fancy calculations
 ```{r, echo = TRUE}
 d2 <- d^2 + 12 * d + 99 / exp(d)
-getNames(d2) <- c("NEWSCEN1", "NEWSCEN2")
+getItems(d2, dim = 3) <- c("NEWSCEN1", "NEWSCEN2")
 getSets(d2)[3] <- "newscen"
 d2
 ```
@@ -216,7 +216,7 @@ lowpass(d)
 
 do a linear interpolation of the data over time (yearly)
 ```{r, echo = TRUE}
-time_interpolate(d, 2005:2030)
+time_interpolate(d[, , 1], 2005:2030)
 ```
 
 split the data, do some calculations and bind it back together

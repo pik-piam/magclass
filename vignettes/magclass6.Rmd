@@ -28,7 +28,7 @@ There are some function in magclass building on the old standard of having exact
 Functionality can now be found in the new function `getItems` which allows to return elements of (sub-)dimensions in various ways:
 
 ```{r, echo = TRUE}
-library(magclass) # nolint
+library(magclass)
 a <- maxample("animal")
 p <- maxample("pop")
 ```
