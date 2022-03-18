@@ -167,7 +167,7 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 }
 
 unitsplit <- function(x, col) {
-  colSplitted <- data.frame(t(sapply(x[[col]], varNameSplitUnit, USE.NAMES = FALSE)))
+  colSplitted <- data.frame(t(matrix(unlist(lapply(x[[col]], varNameSplitUnit)), nrow = 2)))
   names(colSplitted) <- c(names(x)[col], "unit")
   x <- cbind(colSplitted, x[setdiff(seq_len(ncol(x)), col)])
   return(x)
