@@ -118,9 +118,10 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   for (i in grep(sep, names(x), fixed = TRUE, useBytes = TRUE)) x <- colsplit(x, i, sep = sep)
 
   for (i in seq_along(x)) {
-    if (!(tolower(names(x)[i]) %in% c("scenario", "model", "region"))) {
-      if (any(grepl(" \\(.*\\)$", x[[i]]))) x <- unitsplit(x, i)
-    }
+    if (tolower(names(x)[i]) %in% c("scenario", "model", "region")) next
+    if (class(x[[i]]) != "character") next
+    if (!any(grepl(" \\(.*\\)$", x[[i]]))) next
+    x <- unitsplit(x, i)
   }
 
   correctNames <- function(x, name = "Scenario", replacement = NULL) {
@@ -167,6 +168,22 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 }
 
 unitsplit <- function(x, col) {
+  # group 1: greedy everything
+  # separator: a space
+  # group 2: unit, surrounded by () which are not part of the group
+  # the unit may not contain "|"
+  # the end of the string
+  pattern <- "^(.*) \\(([^|]*)\\)$"
+  varName <- sub(pattern, "\\1", x[[col]])
+  unit <- sub(pattern, "\\2", x[[col]])
+  unit[grep(pattern, x[[col]], invert=TRUE)] <- "N/A"
+  tmp <- data.frame(varName, unit)
+  names(tmp) <- c(names(x)[col], "unit")
+  x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
+  return(x)
+}
+
+unitsplit2 <- function(x, col) {
   colSplitted <- data.frame(t(matrix(unlist(lapply(x[[col]], varNameSplitUnit)), nrow = 2)))
   names(colSplitted) <- c(names(x)[col], "unit")
   x <- cbind(colSplitted, x[setdiff(seq_len(ncol(x)), col)])
