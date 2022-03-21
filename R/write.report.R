@@ -176,7 +176,7 @@ unitsplit <- function(x, col) {
   pattern <- "^(.*) \\(([^|]*)\\)$"
   varName <- sub(pattern, "\\1", x[[col]])
   unit <- sub(pattern, "\\2", x[[col]])
-  unit[grep(pattern, x[[col]], invert=TRUE)] <- "N/A"
+  unit[grep(pattern, x[[col]], invert = TRUE)] <- "N/A"
   tmp <- data.frame(varName, unit)
   names(tmp) <- c(names(x)[col], "unit")
   x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
