@@ -159,20 +159,18 @@ test_that("unitsplit works with braces", {
   expect_identical(unitsplit(df, 4), expected)
 })
 
-test_that("varNameSplitUnit handles all cases", {
-  expect_identical(
-    varNameSplitUnit("length"),
-    c("length", "N/A"))
-  expect_identical(
-    varNameSplitUnit("length (m)"),
-    c("length", "m"))
-  expect_identical(
-    varNameSplitUnit("carpet (the good one)|length"),
-    c("carpet (the good one)|length", "N/A"))
-  expect_identical(
-    varNameSplitUnit("carpet (the good one)|length (US) (inch)"),
-    c("carpet (the good one)|length (US)", "inch"))
-  expect_identical(
-    varNameSplitUnit("carpet (the good one)|make (as given) ()"),
-    c("carpet (the good one)|make (as given)", ""))
+test_that("unitsplit handles all cases", {
+  wrapper <- function(inputstr) {
+    df <- data.frame(c(inputstr))
+    splitted <- unitsplit(df, 1)
+    return(c(splitted[[1]], splitted[[2]]))
+  }
+  expect_identical(wrapper("length"), c("length", "N/A"))
+  expect_identical(wrapper("length (m)"), c("length", "m"))
+  expect_identical(wrapper("carpet (the good one)|length"),
+                   c("carpet (the good one)|length", "N/A"))
+  expect_identical(wrapper("carpet (the good one)|length (US) (inch)"),
+                   c("carpet (the good one)|length (US)", "inch"))
+  expect_identical(wrapper("carpet (the good one)|make (as given) ()"),
+                   c("carpet (the good one)|make (as given)", ""))
 })
