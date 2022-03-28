@@ -117,20 +117,11 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   }
   for (i in grep(sep, names(x), fixed = TRUE, useBytes = TRUE)) x <- colsplit(x, i, sep = sep)
 
-  unitsplit <- function(x, col) {
-    w <- grepl("\\(.*\\)", x[[col]])
-    x[[col]][!w] <- paste0(x[[col]][!w], " (N/A)")
-    key <- "(.*?) \\((([^\\|]*))\\)($|\\.)"
-    tmp <- data.frame(sub(key, "\\1", x[[col]]),
-                      sub(key, "\\2", x[[col]]))
-    names(tmp) <- c(names(x)[col], "unit")
-    x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
-    return(x)
-  }
   for (i in seq_along(x)) {
-    if (!(tolower(names(x)[i]) %in% c("scenario", "model", "region"))) {
-      if (any(grepl(" \\(.*\\)$", x[i]))) x <- unitsplit(x, i)
-    }
+    if (tolower(names(x)[i]) %in% c("scenario", "model", "region")) next
+    if (class(x[[i]]) != "character") next
+    if (!any(grepl(" \\(.*\\)$", x[[i]]))) next
+    x <- unitsplit(x, i)
   }
 
   correctNames <- function(x, name = "Scenario", replacement = NULL) {
@@ -173,5 +164,21 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   data[is.na(data)] <- "N/A"
   x <- cbind(x, data)
   x <- x[do.call("order", x[c("Scenario", "Model", "Variable", "Region")]), ]
+  return(x)
+}
+
+unitsplit <- function(x, col) {
+  # group 1: greedy everything
+  # separator: a space
+  # group 2: unit, surrounded by () which are not part of the group
+  # the unit may not contain "|"
+  # the end of the string
+  pattern <- "^(.*) \\(([^|]*)\\)$"
+  varName <- sub(pattern, "\\1", x[[col]])
+  unit <- sub(pattern, "\\2", x[[col]])
+  unit[grep(pattern, x[[col]], invert = TRUE)] <- "N/A"
+  tmp <- data.frame(varName, unit)
+  names(tmp) <- c(names(x)[col], "unit")
+  x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
   return(x)
 }

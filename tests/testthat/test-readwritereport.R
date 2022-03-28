@@ -98,9 +98,79 @@ test_that("multidim handling works", {
                    row.names = c(1L, 3L, 2L, 4L), class = "data.frame")
   expect_identical(write.report(p[1:2, 1:2, ], extracols = "Xtra"), ref)
   ref2 <- ref[-4]
-  ref2$Variable <- "blub" #nolint
+  ref2$Variable <- "blub" # nolint
   expect_identical(write.report(p[1:2, 1:2, ]), ref2)
+})
 
+test_that("read/write report works with braces", {
+  f <- tempfile()
+  foo <- new.magpie("DEU", c(2015, 2020),
+                    "Emissions|CO2|Energy|Demand|Transportation (w/ bunkers) (Mt CO2/yr)",
+                    fill = 0)
+  foo["DEU", 2020, "Emissions|CO2|Energy|Demand|Transportation (w/ bunkers) (Mt CO2/yr)"] <- 10
+  expect_silent(write.report(foo, f))
+  df <- read.csv(f, sep = ";")
+  expect_identical(df$Unit, "Mt CO2/yr")
+})
 
+test_that("simple unitsplit works", {
+  df <- data.frame(
+    Model = c("REMIND", "REMIND", "REMIND"),
+    Scenario = c("everything nice", "everything awful", "middle of the road"),
+    Region = c("GLO", "GLO", "GLO"),
+    Data = c("floor covering|textile|carpet|red|length (m)",
+             "floor covering|textile|carpet|red|length - for our american friends (inch)",
+             "floor covering|textile|carpet|red|length (cm)"),
+    check.names = FALSE
+  )
+  expected <- data.frame(
+    Data = c("floor covering|textile|carpet|red|length",
+             "floor covering|textile|carpet|red|length - for our american friends",
+             "floor covering|textile|carpet|red|length"),
+    unit = c("m", "inch", "cm"),
+    Model = c("REMIND", "REMIND", "REMIND"),
+    Scenario = c("everything nice", "everything awful", "middle of the road"),
+    Region = c("GLO", "GLO", "GLO"),
+    check.names = FALSE
+  )
+  expect_identical(unitsplit(df, 4), expected)
+})
 
+test_that("unitsplit works with braces", {
+  df <- data.frame(
+    Model = c("REMIND", "REMIND", "REMIND"),
+    Scenario = c("everything nice", "everything awful", "middle of the road"),
+    Region = c("GLO", "GLO", "GLO"),
+    Data = c("floor covering|textile|carpet|red|length (m)",
+             "floor covering|textile|carpet|red|length (for our american friends) (inch)",
+             "floor covering|textile|carpet|red|length (cm)"),
+    check.names = FALSE
+  )
+  expected <- data.frame(
+    Data = c("floor covering|textile|carpet|red|length",
+             "floor covering|textile|carpet|red|length (for our american friends)",
+             "floor covering|textile|carpet|red|length"),
+    unit = c("m", "inch", "cm"),
+    Model = c("REMIND", "REMIND", "REMIND"),
+    Scenario = c("everything nice", "everything awful", "middle of the road"),
+    Region = c("GLO", "GLO", "GLO"),
+    check.names = FALSE
+  )
+  expect_identical(unitsplit(df, 4), expected)
+})
+
+test_that("unitsplit handles all cases", {
+  wrapper <- function(inputstr) {
+    df <- data.frame(c(inputstr))
+    splitted <- unitsplit(df, 1)
+    return(c(splitted[[1]], splitted[[2]]))
+  }
+  expect_identical(wrapper("length"), c("length", "N/A"))
+  expect_identical(wrapper("length (m)"), c("length", "m"))
+  expect_identical(wrapper("carpet (the good one)|length"),
+                   c("carpet (the good one)|length", "N/A"))
+  expect_identical(wrapper("carpet (the good one)|length (US) (inch)"),
+                   c("carpet (the good one)|length (US)", "inch"))
+  expect_identical(wrapper("carpet (the good one)|make (as given) ()"),
+                   c("carpet (the good one)|make (as given)", ""))
 })
