@@ -194,9 +194,9 @@ unitsplit <- function(x, col) {
   # Note that if the pattern does not match (e.g. because the value in question does not contain a unit), sub will not
   # replace anything, effectively passing everything through unchanged to varName and unit. That's correct for varName,
   # but for the unit, we have to overwrite non-matches with "N/A".
-  varName <- sub(pattern, "\\1", x[[col]], perl=TRUE)
-  unit <- sub(pattern, "\\3", x[[col]], perl=TRUE)
-  unit[grep(pattern, x[[col]], invert = TRUE, perl=TRUE)] <- "N/A"
+  varName <- sub(pattern, "\\1", x[[col]], perl = TRUE)
+  unit <- sub(pattern, "\\3", x[[col]], perl = TRUE)
+  unit[grep(pattern, x[[col]], invert = TRUE, perl = TRUE)] <- "N/A"
   tmp <- data.frame(varName, unit)
   names(tmp) <- c(names(x)[col], "unit")
   x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
