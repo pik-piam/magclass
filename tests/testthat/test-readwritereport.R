@@ -178,9 +178,9 @@ test_that("unitsplit handles all cases", {
   expect_identical(wrapper("Price|Agriculture (with cows)|Corn|Index (Index (2020 = 1))"),
                    c("Price|Agriculture (with cows)|Corn|Index", "Index (2020 = 1)"))
   expect_identical(wrapper("Price|Agriculture|Corn|Index (based on 2020) ((1 + 2) / (6 - 3))"),
-                   c("Price|Agriculture|Corn|Index (based on 2020) ", "(1 + 2) / (6 - 3)"))
+                   c("Price|Agriculture|Corn|Index (based on 2020)", "(1 + 2) / (6 - 3)"))
   expect_identical(wrapper("Price|Agriculture|Corn|Index (based on 2020 (-;) ((1 + 2) / (6 - 3))"),
-                   c("Price|Agriculture|Corn|Index (based on 2020 (-;) ", "(1 + 2) / (6 - 3)"))
+                   c("Price|Agriculture|Corn|Index (based on 2020 (-;)", "(1 + 2) / (6 - 3)"))
   expect_identical(wrapper("Price|Agriculture|Corn|Index (based on 2020 :-)) ((1 + 2) / (6 - 3))"),
-                   c("Price|Agriculture|Corn|Index (based on 2020 :-)) ", "(1 + 2) / (6 - 3)"))
+                   c("Price|Agriculture|Corn|Index (based on 2020 :-))", "(1 + 2) / (6 - 3)"))
 })
