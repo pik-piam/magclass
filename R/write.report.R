@@ -168,15 +168,35 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 }
 
 unitsplit <- function(x, col) {
-  # group 1: greedy everything
-  # separator: a space
-  # group 2: unit, surrounded by () which are not part of the group
-  # the unit may not contain "|"
-  # the end of the string
-  pattern <- "^(.*) \\(([^|]*)\\)$"
-  varName <- sub(pattern, "\\1", x[[col]])
-  unit <- sub(pattern, "\\2", x[[col]])
-  unit[grep(pattern, x[[col]], invert = TRUE)] <- "N/A"
+  # structure of this regex (flavor: PCRE2):
+  # '^' start of the string
+  # '(?P<varname>…)' a named capture group for the varname. It contains:
+  #   '.*' greedy everything
+  # ' ' separator: a space
+  # '(?P<recurse>…)' a named capture group for recursion to match balanced parentheses in the unit. It contains:
+  #   '\\(' a literal opening parenthesis
+  #   '(?P<unit>…)' a named capture group for the unit. It contains:
+  #      '(?>…)*' an atomic non-capturing group which is repeated zero or more times. It contains:
+  #          `[^()|]` any character which is neither a parenthesis or the pipe symbol
+  #          `|` or
+  #          `(?P>recurse)` a match for the named capture group "recurse".
+  #          As the named capture group "recurse" contains exactly one literal opening and closing parenthesis, this
+  #          recursion makes sure that parentheses in the unit are always balanced - if a parenthesis needs to be
+  #          matched, we have to repeat the whole "recurse" capture group, and therefore, we need exactly one literal
+  #          opening and closing parenthesis (or another recursion).
+  #   '\\)' a literal closing parenthesis
+  # '$' end of the string
+  # If you have to understand the regex, I can warmly recommend putting it into https://regex101.com/ or a similar
+  # service. Just replace all '\\' by '\', double backslashes are an R thing.
+  pattern <- "^(?P<varname>.*) (?P<recurse>\\((?P<unit>(?>[^()|]|(?P>recurse))*)\\))$"
+  # Even though we use named capture groups in the pattern, we can't use names in the replacement, because sub() only
+  # supports numbered replacements. \\1 is the named capture group "varname", \\3 is the named capture group "unit".
+  # Note that if the pattern does not match (e.g. because the value in question does not contain a unit), sub will not
+  # replace anything, effectively passing everything through unchanged to varName and unit. That's correct for varName,
+  # but for the unit, we have to overwrite non-matches with "N/A".
+  varName <- sub(pattern, "\\1", x[[col]], perl = TRUE)
+  unit <- sub(pattern, "\\3", x[[col]], perl = TRUE)
+  unit[grep(pattern, x[[col]], invert = TRUE, perl = TRUE)] <- "N/A"
   tmp <- data.frame(varName, unit)
   names(tmp) <- c(names(x)[col], "unit")
   x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
