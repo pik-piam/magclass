@@ -13,7 +13,7 @@ write.magpie(
   comment = NULL,
   comment.char = "*",
   mode = NULL,
-  zname = NULL,
+  zname = "Time",
   ...
 )
 }

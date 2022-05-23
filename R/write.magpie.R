@@ -93,7 +93,7 @@
 #' @importFrom utils write.csv write.table
 #' @export
 write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, append = FALSE, comment = NULL, # nolint
-                         comment.char = "*", mode = NULL, zname = NULL,...) {       # nolint
+                         comment.char = "*", mode = NULL, zname = "Time",...) {       # nolint
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -183,7 +183,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         varname <- getItems(x, dim = 3)
         zunit <- ifelse(all(isYear(getYears(x))), "years", "")
         x <- as.RasterBrick(x)
-      } else if (class(x) == "RasterBrick") {
+      } else if (inherits(x, "RasterBrick")) {
         tmp <- names(x)
         tmp <- strsplit(tmp, "\\..")
         years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
@@ -197,11 +197,10 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         x <- x[[1]]
       }
       if (is.null(varname)) varname <- "Variable"
-      zname <- if(!is.null(zname)) zname else "Time"
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
-      zname <- if(!is.null(zname)) zname else "Time"
+
       if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
         stop("The packages \"ncdf4\" and \"raster\" are required!")
       }
@@ -215,7 +214,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         zunit <- ifelse(all(isYear(getYears(x))), "years", "")
         years <- getYears(x, as.integer = TRUE)
         x <- as.RasterBrick(x)
-      } else if (class(x) == "RasterBrick") {
+      } else if (inherits(x, "RasterBrick")) {
         tmp <- names(x)
         tmp <- strsplit(tmp, "\\..")
         years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
