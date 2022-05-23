@@ -59,6 +59,7 @@
 #' full access for user, read access for group and no acess for anybody else).
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
+#' @param zname Time variable for the writeRaster function
 #' @param ... additional arguments passed to specific write functions
 #' @note
 #'
@@ -92,7 +93,7 @@
 #' @importFrom utils write.csv write.table
 #' @export
 write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, append = FALSE, comment = NULL, # nolint
-                         comment.char = "*", mode = NULL, ...) {       # nolint
+                         comment.char = "*", mode = NULL, zname = NULL,...) {       # nolint
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -196,9 +197,11 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         x <- x[[1]]
       }
       if (is.null(varname)) varname <- "Variable"
+      zname <- if(!is.null(zname)) zname else "Time"
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
-                          zname = "Time", zunit = zunit, varname = varname, ...)
+                          zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
+      zname <- if(!is.null(zname)) zname else "Time"
       if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
         stop("The packages \"ncdf4\" and \"raster\" are required!")
       }
@@ -233,7 +236,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         }
       }
       raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = unit, ...)
+                          compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
         try(ncdf4::ncvar_put(nc, "Time", years), silent = TRUE)
