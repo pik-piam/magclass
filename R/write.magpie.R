@@ -59,6 +59,7 @@
 #' full access for user, read access for group and no acess for anybody else).
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
+#' @param zname Time variable for the writeRaster function
 #' @param ... additional arguments passed to specific write functions
 #' @note
 #'
@@ -92,7 +93,7 @@
 #' @importFrom utils write.csv write.table
 #' @export
 write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, append = FALSE, comment = NULL, # nolint
-                         comment.char = "*", mode = NULL, ...) {       # nolint
+                         comment.char = "*", mode = NULL, zname = "Time",...) {       # nolint
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -182,7 +183,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         varname <- getItems(x, dim = 3)
         zunit <- ifelse(all(isYear(getYears(x))), "years", "")
         x <- as.RasterBrick(x)
-      } else if (class(x) == "RasterBrick") {
+      } else if (inherits(x, "RasterBrick")) {
         tmp <- names(x)
         tmp <- strsplit(tmp, "\\..")
         years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
@@ -197,8 +198,9 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       }
       if (is.null(varname)) varname <- "Variable"
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
-                          zname = "Time", zunit = zunit, varname = varname, ...)
+                          zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
+
       if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
         stop("The packages \"ncdf4\" and \"raster\" are required!")
       }
@@ -212,7 +214,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         zunit <- ifelse(all(isYear(getYears(x))), "years", "")
         years <- getYears(x, as.integer = TRUE)
         x <- as.RasterBrick(x)
-      } else if (class(x) == "RasterBrick") {
+      } else if (inherits(x, "RasterBrick")) {
         tmp <- names(x)
         tmp <- strsplit(tmp, "\\..")
         years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
@@ -233,7 +235,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         }
       }
       raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                          compression = 9, zname = "Time", zunit = zunit, varname = varnames[1], varunit = unit, ...)
+                          compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
         try(ncdf4::ncvar_put(nc, "Time", years), silent = TRUE)

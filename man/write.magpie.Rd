@@ -13,6 +13,7 @@ write.magpie(
   comment = NULL,
   comment.char = "*",
   mode = NULL,
+  zname = "Time",
   ...
 )
 }
@@ -61,6 +62,8 @@ number (e.g. "777" means full access for user, group and all, "750" means
 full access for user, read access for group and no acess for anybody else).
 Set to NULL system defaults will be used. Access codes are identical to the
 codes used in unix function chmod.}
+
+\item{zname}{Time variable for the writeRaster function}
 
 \item{...}{additional arguments passed to specific write functions}
 }

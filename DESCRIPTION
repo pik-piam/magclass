@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.3.0
-Date: 2022-03-31
+Version: 6.3.2
+Date: 2022-05-23
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -14,9 +14,9 @@ Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de"
              person("Christoph", "Bertram", email = "bertram@pik-potsdam.de", role = "ctb"),
              person("Anastasis", "Giannousakis", email = "giannou@pik-potsdam.de", role = "ctb"),
              person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),
-             person("Ina", "Neher", role = "ctb"),	
-             person("Michaja", "Pehl", email = "pehl@pik-potsdam.de", role = "ctb"),	
-             person("Anselm", "Schultes", role = "ctb"),	
+             person("Ina", "Neher", role = "ctb"),
+             person("Michaja", "Pehl", email = "pehl@pik-potsdam.de", role = "ctb"),
+             person("Anselm", "Schultes", role = "ctb"),
              person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "ctb"),
              person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
              person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
@@ -32,12 +32,10 @@ Depends:
     methods,
 Imports:
     stats,
-    sp,
-    maptools,
     abind,
     data.table,
     forcats
-Suggests: 
+Suggests:
     testthat,
     knitr,
     rmarkdown,
@@ -49,5 +47,5 @@ BugReports: https://github.com/pik-piam/magclass/issues
 License: LGPL-3 | file LICENSE
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 VignetteBuilder: knitr
