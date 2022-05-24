@@ -238,7 +238,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
                           compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
-        try(ncdf4::ncvar_put(nc, "Time", years), silent = TRUE)
+        try(ncdf4::ncvar_put(nc, zname, years), silent = TRUE)
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
