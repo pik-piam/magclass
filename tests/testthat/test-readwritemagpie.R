@@ -1,5 +1,3 @@
-context("Read/Write Test")
-
 test_that("read/write does not affect content", {
   mag <- maxample("pop")
   names(dimnames(mag)) <- NULL

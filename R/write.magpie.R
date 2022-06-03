@@ -234,15 +234,20 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
           unit <- units[which(indicators == "unit")]
         }
       }
-      raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                          compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
+      # raster is using partial matching resulting in a warning if warnPartialMatchDollar is set
+      suppressSpecificWarnings({
+        raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
+                            compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
+      }, "partial match of 'group' to 'groups'", fixed = TRUE)
       nc <- ncdf4::nc_open(filePath, write = TRUE)
       if (zunit == "years") {
         try(ncdf4::ncvar_put(nc, zname, years), silent = TRUE)
       }
       if (length(varnames) > 1) {
         for (i in varnames[-1]) {
-          nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, unit, nc$dim, compression = 9))
+          suppressSpecificWarnings({
+            nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, unit, nc$dim, compression = 9))
+          }, "partial match of 'group' to 'groups'", fixed = TRUE)
           ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(x, i)), c(2, 1, 3)))
         }
       }
