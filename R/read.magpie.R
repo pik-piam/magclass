@@ -143,12 +143,14 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
       }
       nc <- ncdf4::nc_open(fileName)
       var <- names(nc[["var"]])
-      vdim <- vapply(nc[["var"]], function(x) return(x$ndim), integer(1))
+      vdim <- vapply(nc[["var"]], function(x) return(x$ndims), integer(1))
       var <- var[vdim > 0]
       ncdf4::nc_close(nc)
       tmp <- list()
       for (v in var) {
-        warning <- capture.output(tmp[[v]] <- raster::brick(fileName, varname = v, ...))
+        suppressSpecificWarnings({
+          warning <- capture.output(tmp[[v]] <- raster::brick(fileName, varname = v, ...))
+        }, "partial match of 'group' to 'groups'", fixed = TRUE)
         if (length(warning) > 0) {
           tmp[[v]] <- NULL
           next
