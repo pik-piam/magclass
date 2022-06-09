@@ -1,8 +1,8 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.3.4
-Date: 2022-06-03
+Version: 6.4.0
+Date: 2022-06-09
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
              person("Markus", "Bonsch", role = "aut"),
@@ -31,17 +31,18 @@ Depends:
     R(>= 2.10.0),
     methods,
 Imports:
-    stats,
     abind,
     data.table,
-    forcats
+    forcats,
+    stats
 Suggests:
-    testthat,
-    knitr,
-    rmarkdown,
-    raster,
-    ncdf4,
     covr,
+    knitr,
+    ncdf4,
+    raster,
+    rmarkdown,
+    testthat,
+    tibble,
     withr
 URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.1158580
 BugReports: https://github.com/pik-piam/magclass/issues
