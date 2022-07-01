@@ -28,7 +28,7 @@
 #' write.report(maxample("pop"))
 #' @importFrom utils write.table
 #' @export
-write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = NULL, ndigit = 4,
+write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = NULL, ndigit = 4, # nolint
                          append = FALSE, skipempty = TRUE, extracols = NULL) {
 
   scenarioCall <- scenario
@@ -119,7 +119,7 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 
   for (i in seq_along(x)) {
     if (tolower(names(x)[i]) %in% c("scenario", "model", "region")) next
-    if (class(x[[i]]) != "character") next
+    if (!inherits(x[[i]], "character")) next
     if (!any(grepl(" \\(.*\\)$", x[[i]]))) next
     x <- unitsplit(x, i)
   }
@@ -197,7 +197,7 @@ unitsplit <- function(x, col) {
   varName <- sub(pattern, "\\1", x[[col]], perl = TRUE)
   unit <- sub(pattern, "\\3", x[[col]], perl = TRUE)
   unit[grep(pattern, x[[col]], invert = TRUE, perl = TRUE)] <- "N/A"
-  tmp <- data.frame(varName, unit)
+  tmp <- data.frame(varName, unit, stringsAsFactors = FALSE)
   names(tmp) <- c(names(x)[col], "unit")
   x <- cbind(tmp, x[setdiff(seq_len(ncol(x)), col)])
   return(x)

@@ -102,14 +102,14 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     mode <- as.character(777 - as.integer(as.character(umask)))
   }
   if (is.null(x)) x <- as.magpie(numeric(0))
-  if (is.magpie(x) || class(x) == "RasterBrick") {
+  if (is.magpie(x) || inherits(x, "RasterBrick")) {
     years <- !(is.null(dimnames(x)[[2]]))
 
     # if file-type is not mentioned file-ending is used as file-type
     if (is.null(file_type)) {
       file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint
     }
-    if (class(x) == "RasterBrick" && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
+    if (inherits(x, "RasterBrick") && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
       stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
     }
     if (!file_folder == "") {
@@ -119,8 +119,9 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     }
 
     # look for comment/additional information
-    if (is.null(comment) & !is.null(attr(x, "comment"))) comment <- attr(x, "comment")
+    if (is.null(comment) && !is.null(attr(x, "comment"))) comment <- attr(x, "comment")
     if (is.null(comment)) comment <- ""
+    comment <- unlist(strsplit(comment, "\n"))
 
     # expand wildcards
     filePath <- file.path(Sys.glob(dirname(filePath)), basename(filePath))
@@ -129,7 +130,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       warning("file name is ambiguous, only first alternative is used!")
     }
 
-    if (append & file.exists(filePath)) {
+    if (append && file.exists(filePath)) {
       x2 <- read.magpie(filePath)
       x <- mbind(x2, x)
     }
@@ -254,7 +255,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       ncdf4::nc_close(nc)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
-    } else if (file_type == "cs3" | file_type == "cs3r") {
+    } else if (file_type == "cs3" || file_type == "cs3r") {
       if (file_type == "cs3r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
       if (dim(x)[3] != prod(sapply(getItems(x, dim = 3, split = TRUE), length))) { # nolint
         stop("Input data seems to be sparse but ", file_type, " does not support sparse data. Please use ",
@@ -288,7 +289,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       write.csv(x, file = zz, quote = FALSE, row.names = FALSE)
       close(zz)
       Sys.chmod(filePath, mode)
-    } else if (file_type == "cs4" | file_type == "cs4r") {
+    } else if (file_type == "cs4" || file_type == "cs4r") {
       printCells <- nregions(x) < ncells(x)
       printRegions <- (!is.null(getItems(x, dim = 1.1)) && getItems(x, dim = 1.1)[1] != "GLO")
       printData <- ((ndata(x) > 1) | !is.null(getNames(x)))
@@ -318,8 +319,8 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       if (file_type == "cs2b" && ndata(x) == 1) getNames(x) <- NULL
 
       # non-cellular data
-      if (!printCells & (!printData | !years | !printRegions)) {
-        if (file_type == "csvr" | file_type == "cs2r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
+      if (!printCells && (!printData || !years || !printRegions)) {
+        if (file_type == "csvr" || file_type == "cs2r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
         if (!printData) {
           output <-  array(x, dim = dim(x)[1:2], dimnames = list(dimnames(x)[[1]], dimnames(x)[[2]]))
           output <- aperm(output)
@@ -339,7 +340,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
           output <-  array(x, dim = dim(x)[c(1, 3)], dimnames = list(dimnames(x)[[1]], dimnames(x)[[3]]))
           header <- !is.null(dimnames(output)[[2]])
           if (printRegions) output <- cbind(substring(dimnames(x)[[1]], 1, 3), output)
-          if (header & !printRegions) {
+          if (header && !printRegions) {
             output <- t(output)
             header <- FALSE
             output <- cbind(dimnames(x)[[3]], output)
@@ -350,14 +351,14 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
           output <- cbind(dimnames(x)[[2]], output)
           dimnames(output)[[2]][1] <- "dummy"
         }
-        if (header & printRegions) dimnames(output)[[2]][1] <- "dummy"
+        if (header && printRegions) dimnames(output)[[2]][1] <- "dummy"
         zz <- file(filePath, open = "w")
         if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
         write.table(output, zz, sep = ",", col.names = header, row.names = FALSE, quote = FALSE)
         close(zz)
         Sys.chmod(filePath, mode)
       } else {
-        if (file_type == "csvr" | file_type == "cs2r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
+        if (file_type == "csvr" || file_type == "cs2r") dimnames(x)[[2]] <- sub("y", "", dimnames(x)[[2]])
         if (file_type %in% c("cs2", "cs2b", "cs2r")) printRegions <- FALSE
         output <- array(NA, c(dim(x)[1] * dim(x)[2], dim(x)[3] + printRegions + printCells + years))
         output[, (1 + printRegions + printCells + years):dim(output)[2]] <- as.vector(as.matrix(x))
@@ -371,7 +372,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
           if (file_type %in% c("cs2", "cs2b", "cs2r")) {
             output[, 1 + printRegions + years] <- rep(gsub(".", "_", dimnames(x)[[1]], fixed = TRUE), dim(x)[2])
           } else {
-            output[, 1 + printRegions + years] <- rep(1:dim(x)[1], dim(x)[2])
+            output[, 1 + printRegions + years] <- rep(seq_len(dim(x)[1]), dim(x)[2])
           }
         }
         if (!is.null(dimnames(x)[[3]])) {

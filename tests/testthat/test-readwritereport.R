@@ -1,5 +1,5 @@
 p <- maxample("pop")
-attr(p, "Metadata") <- NULL
+attr(p, "Metadata") <- NULL # nolint
 
 test_that("read/write report works", {
   ref <- structure(list(Model = "N/A", Scenario = "N/A", Region = "World", Variable = "1",
@@ -109,7 +109,7 @@ test_that("read/write report works with braces", {
                     fill = 0)
   foo["DEU", 2020, "Emissions|CO2|Energy|Demand|Transportation (w/ bunkers) (Mt CO2/yr)"] <- 10
   expect_silent(write.report(foo, f))
-  df <- read.csv(f, sep = ";")
+  df <- read.csv(f, sep = ";", stringsAsFactors = FALSE)
   expect_identical(df$Unit, "Mt CO2/yr")
 })
 
@@ -121,7 +121,8 @@ test_that("simple unitsplit works", {
     Data = c("floor covering|textile|carpet|red|length (m)",
              "floor covering|textile|carpet|red|length - for our american friends (inch)",
              "floor covering|textile|carpet|red|length (cm)"),
-    check.names = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   expected <- data.frame(
     Data = c("floor covering|textile|carpet|red|length",
@@ -131,7 +132,8 @@ test_that("simple unitsplit works", {
     Model = c("REMIND", "REMIND", "REMIND"),
     Scenario = c("everything nice", "everything awful", "middle of the road"),
     Region = c("GLO", "GLO", "GLO"),
-    check.names = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   expect_identical(unitsplit(df, 4), expected)
 })
@@ -144,7 +146,8 @@ test_that("unitsplit works with braces", {
     Data = c("floor covering|textile|carpet|red|length (m)",
              "floor covering|textile|carpet|red|length (for our american friends) (inch)",
              "floor covering|textile|carpet|red|length (cm)"),
-    check.names = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   expected <- data.frame(
     Data = c("floor covering|textile|carpet|red|length",
@@ -154,14 +157,15 @@ test_that("unitsplit works with braces", {
     Model = c("REMIND", "REMIND", "REMIND"),
     Scenario = c("everything nice", "everything awful", "middle of the road"),
     Region = c("GLO", "GLO", "GLO"),
-    check.names = FALSE
+    check.names = FALSE,
+    stringsAsFactors = FALSE
   )
   expect_identical(unitsplit(df, 4), expected)
 })
 
 test_that("unitsplit handles all cases", {
   wrapper <- function(inputstr) {
-    df <- data.frame(c(inputstr))
+    df <- data.frame(c(inputstr), stringsAsFactors = FALSE)
     splitted <- unitsplit(df, 1)
     return(c(splitted[[1]], splitted[[2]]))
   }
