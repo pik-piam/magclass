@@ -119,7 +119,7 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
 
   for (i in seq_along(x)) {
     if (tolower(names(x)[i]) %in% c("scenario", "model", "region")) next
-    if (class(x[[i]]) != "character") next
+    if (!inherits(x[[i]], "character")) next
     if (!any(grepl(" \\(.*\\)$", x[[i]]))) next
     x <- unitsplit(x, i)
   }
