@@ -18,7 +18,9 @@ rev=1 creates columns with the predefined names Cell, Region, Year, Data1,
 Data2,... and Value, rev=2 uses the set names of the MAgPIE object for
 naming and adds an attribute "dimtype" to the data.frame which contains
 information about the types of the different columns (spatial, temporal,
-data or value).}
+data or value), rev=3 orders and renames columns according to IAMC template conventions:
+"model","scenario","region","variable","unit","period","value".
+In addition, xy coordinates are added if the data is at grid cell level.}
 }
 \description{
 ~~ Methods for function \code{as.data.frame} ~~
