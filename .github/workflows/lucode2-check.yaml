@@ -57,7 +57,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Cache R libraries
-        uses: actions/cache@v3
+        uses: pat-s/always-upload-cache@v3
         with:
           path: /usr/local/lib/R/
           key: ${{ runner.os }}-usr-local-lib-R-${{ hashFiles('DESCRIPTION') }}
