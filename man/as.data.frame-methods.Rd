@@ -8,7 +8,7 @@
 \alias{as.data.frame,magpie-method}
 \title{~~ Methods for Function as.data.frame ~~}
 \usage{
-\S4method{as.data.frame}{magpie}(x, rev = 1)
+\S4method{as.data.frame}{magpie}(x, rev = 1, raw = FALSE)
 }
 \arguments{
 \item{x}{A MAgPIE-object}
@@ -18,7 +18,13 @@ rev=1 creates columns with the predefined names Cell, Region, Year, Data1,
 Data2,... and Value, rev=2 uses the set names of the MAgPIE object for
 naming and adds an attribute "dimtype" to the data.frame which contains
 information about the types of the different columns (spatial, temporal,
-data or value).}
+data or value), rev=3 is identical to rev=2 except that characters are
+not being converted to factors (stringsAsFactors = FALSE).}
+
+\item{raw}{Logical to control whether years beginning with "y" should be
+converted to integers (without "y") and coordinates should be converted to
+numerics. If set to raw columns are returned as they are in the initial
+object.}
 }
 \description{
 ~~ Methods for function \code{as.data.frame} ~~
@@ -34,7 +40,12 @@ Cell, Region, Year, Data1, Data2,... and Value } }
 
 pop <- maxample("pop")
 head(as.data.frame(pop))
-head(as.data.frame(pop,rev=2))
+head(as.data.frame(pop, rev = 2))
+
+a <- maxample("animal")
+head(as.data.frame(a, rev = 3))
+head(as.data.frame(a, rev = 3, raw = TRUE))
+attr(as.data.frame(a, rev = 3), "dimtype")
 
 }
 \keyword{methods}
