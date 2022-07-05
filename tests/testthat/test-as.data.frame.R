@@ -18,11 +18,12 @@ test_that("years is not converted if conversion to int fails", {
 
 test_that("data.frame conversion works", {
   a <- maxample("animal")
+  getItems(a, "x")[2] <- "-6p25"
   expect_silent(a2 <- as.data.frame(a, rev = 2))
   expect_silent(a3 <- as.data.frame(a, rev = 3))
   expect_silent(a3r <- as.data.frame(a, rev = 3, raw = TRUE))
 
-  ea2 <- structure(list(x = c(5.75, 6.25), y = c(53.25, 53.25),
+  ea2 <- structure(list(x = c(5.75, -6.25), y = c(53.25, 53.25),
                         country = structure(c(1L, 1L), .Label = c("NLD", "BEL", "LUX"), class = "factor"),
                         cell = c(14084L, 14113L), year = c(2000L, 2000L),
                         month = structure(c(1L, 1L), .Label = c("april", "may", "june", "august"), class = "factor"),
@@ -33,7 +34,7 @@ test_that("data.frame conversion works", {
                                                        ".temp3", ".data1", ".data2", ".data3", ".value"),
                    row.names = 1:2, class = "data.frame")
 
-  ea3 <- structure(list(x = c(5.75, 6.25), y = c(53.25, 53.25), country = c("NLD", "NLD"),
+  ea3 <- structure(list(x = c(5.75, -6.25), y = c(53.25, 53.25), country = c("NLD", "NLD"),
                         cell = c(14084L, 14113L), year = c(2000L, 2000L),
                         month = c("april", "april"), day = c(20L, 20L),
                         type = c("animal", "animal"), species = c("rabbit", "rabbit"),
@@ -42,7 +43,7 @@ test_that("data.frame conversion works", {
                                ".temp3", ".data1", ".data2", ".data3", ".value"),
                    row.names = 1:2, class = "data.frame")
 
-  ea3r <- structure(list(x = c("5p75", "6p25"), y = c("53p25", "53p25"), country = c("NLD", "NLD"),
+  ea3r <- structure(list(x = c("5p75", "-6p25"), y = c("53p25", "53p25"), country = c("NLD", "NLD"),
                          cell = c(14084L, 14113L), year = c("y2000", "y2000"), month = c("april", "april"),
                          day = c(20L, 20L), type = c("animal", "animal"), species = c("rabbit", "rabbit"),
                          color = c("black", "black"), .value = c(0, 0)),

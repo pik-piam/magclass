@@ -113,7 +113,7 @@ asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) {
           x[[i]] <- substring(x[[i]], 2)
         }
         # convert coordinates
-        if (grepl("^[0-9]+p[0-9]+", x[[i]][1]) && all(grepl("^[0-9]+p[0-9]+", x[[i]]))) {
+        if (grepl("^-?[0-9]+p-?[0-9]+", x[[i]][1]) && all(grepl("^-?[0-9]+p-?[0-9]+", x[[i]]))) {
           x[[i]] <- sub("p", ".", x[[i]])
         }
       }
