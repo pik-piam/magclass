@@ -79,13 +79,13 @@ setMethod("as.data.frame",
   }
 )
 
-asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) {
+asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) { # nolint
   x <- clean_magpie(x, what = "sets")
   if (any(dim(x) == 0)) {
     return(data.frame())
-  } else {
-    x <- as.data.frame(as.table(x), stringsAsFactors = FALSE)
   }
+  dimnames <- dimnames(x)
+  x <- as.data.frame(as.table(x), stringsAsFactors = FALSE)
   names(x)[4] <- ".value"
   what <- ".value"
   types <- c(".spat", ".temp", ".data")
@@ -100,6 +100,8 @@ asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) {
         x <- cbind(x[1:(i - 1)], tmp, x[(i + 1):length(x)])
       }
       what <- c(paste0(types[i], seq_len(dim(tmp)[2])), what)
+    } else if (is.null(dimnames[[i]])) {
+      x <- x[-i]
     } else {
       what <- c(paste0(types[i], 1), what)
     }

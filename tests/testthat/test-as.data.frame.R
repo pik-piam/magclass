@@ -55,4 +55,21 @@ test_that("data.frame conversion works", {
   expect_identical(head(a3, n = 2), ea3)
   expect_identical(head(a3r, n = 2), ea3r)
 
+  # test removal of empty dimensions
+  b <- a[, 1, 1]
+  getItems(b, dim = 2) <- NULL
+
+  eb3 <- structure(list(x = c(5.75, -6.25, 6.75, 4.75, 5.75, -6.25), y = c(53.25, 53.25, 53.25, 52.75, 52.75, 52.75),
+                        country = c("NLD", "NLD", "NLD", "NLD", "NLD", "NLD"),
+                        cell = c(14084L, 14113L, 14141L, 14040L, 14083L, 14112L),
+                        type = c("animal", "animal", "animal", "animal", "animal", "animal"),
+                        species = c("rabbit", "rabbit", "rabbit", "rabbit", "rabbit", "rabbit"),
+                        color = c("black", "black", "black", "black", "black", "black"),
+                        .value = c(0, 0, 8, 3, 4, 3)),
+                   dimtype = c(".spat1", ".spat2", ".spat3", ".spat4", ".data1", ".data2", ".data3", ".value"),
+                   row.names = c(NA, 6L), class = "data.frame")
+
+  expect_silent(b3 <- as.data.frame(b, rev = 3))
+  expect_identical(head(b3), eb3)
+
 })
