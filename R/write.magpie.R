@@ -35,8 +35,8 @@
 #' MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
 #' "csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE
 #' data, compatible to GAMS), "cs4" (alternative multidimensional format compatible
-#' to GAMS, in contrast to cs3 it can also handle sparse data), "csvr", "cs2r",
-#' "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
+#' to GAMS, in contrast to cs3 it can also handle sparse data), "cs5" (more generalized version of cs4),
+#' "csvr", "cs2r", "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
 #' with the only difference that they have a REMIND compatible format, "m"
 #' (binary MAgPIE format "magpie"), "mz" (compressed binary MAgPIE format
 #' "magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif"
@@ -310,6 +310,22 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
       close(zz)
       Sys.chmod(filePath, mode)
+    } else if (file_type == "cs5") {
+      output <- as.data.frame(x, rev = 3, raw = TRUE)
+
+      .formatMeta <- function(meta, commentChar) {
+        out <- NULL
+        for (n in names(meta)) {
+          out <- c(out, paste0(commentChar, "META ", n, ": ", paste(meta[[n]], collapse = ", ")))
+        }
+        return(out)
+      }
+
+      zz <- file(filePath, open = "w")
+      if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
+      writeLines(.formatMeta(attributes(output)[c("names", "dimtype")], comment.char), zz)
+      write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
+      close(zz)
 
     } else {
       printCells <- nregions(x) < ncells(x)
