@@ -20,6 +20,16 @@ test_that("read/write does not affect content", {
     unlink(tmpfile)
   }
 
+  bi <- maxample("bilateral")
+  for (ext in c(".m", ".mz", ".rds", ".cs5")) {
+    tmpfile <- tempfile(fileext = ext)
+    write.magpie(bi, tmpfile)
+    bi2 <- round(read.magpie(tmpfile), 4)
+    expect_equivalent(bi, bi2)
+    unlink(tmpfile)
+  }
+
+
   m2 <- mag
   getCells(m2) <- paste0("AFR.", 1:10)
   tmpfile <- tempfile(fileext = ".cs3")
