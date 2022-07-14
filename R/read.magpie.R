@@ -32,7 +32,8 @@
 #' "cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
 #' MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
 #' (alternative multidimensional format compatible to GAMS, in contrast to cs3
-#' it can also handle sparse data), "csvr", "cs2r", "cs3r" and "cs4r" which are
+#' it can also handle sparse data), "cs5" (more generalized version of cs4),
+#' "csvr", "cs2r", "cs3r" and "cs4r" which are
 #' the same formats as the previous mentioned ones with the only difference
 #' that they have a REMIND compatible format, "m" (binary MAgPIE format
 #' "magpie"), "mz" (compressed binary MAgPIE format "magpie zipped") "put"
@@ -101,7 +102,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
   .getFileType <- function(fileType, fileName) {
     # if file-type is not mentioned file-ending is used as file-type
     fileType <- ifelse(is.null(fileType), tail(strsplit(fileName, "\\.")[[1]], 1), fileType)
-    allowedTypes <- c("rds", "m", "mz", "csv", "cs2", "cs2b", "cs3", "cs4", "csvr", "cs2r", "cs3r",
+    allowedTypes <- c("rds", "m", "mz", "csv", "cs2", "cs2b", "cs3", "cs4", "cs5", "csvr", "cs2r", "cs3r",
                       "cs4r", "put", "asc", "nc")
     if (!(fileType %in% allowedTypes)) stop("Unknown file type: ", fileType)
     return(fileType)
@@ -113,7 +114,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
   } else if (fileType == "rds") {
     readMagpie <- readRDS(fileName)
     if (!is.magpie(readMagpie)) stop("File does not contain a magpie object!")
-  } else if (fileType == "cs3" | fileType == "cs3r") {
+  } else if (fileType %in% c("cs3", "cs3r")) {
     x <- read.csv(fileName, comment.char = comment.char, check.names = check.names, stringsAsFactors = TRUE)
     datacols <- grep("^dummy\\.?[0-9]*$", colnames(x))
     xdimnames <- lapply(x[datacols], function(x) return(as.character(unique(x))))
@@ -130,11 +131,32 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
       getCells(readMagpie) <- sub("_", ".", getCells(readMagpie))
     }
     attr(readMagpie, "comment") <- .readComment(fileName, commentChar = comment.char)
-  } else if (fileType == "cs4" | fileType == "cs4r") {
+  } else if (fileType %in% c("cs4", "cs4r")) {
     x <- read.csv(fileName, comment.char = comment.char, header = FALSE,
                   check.names = check.names, stringsAsFactors = TRUE)
     readMagpie <- as.magpie(x, tidy = TRUE)
     attr(readMagpie, "comment") <- .readComment(fileName, commentChar = comment.char)
+  } else if (fileType == "cs5") {
+    .metaExtract <- function(fileName, commentChar) {
+      comment <- .readComment(fileName, commentChar = commentChar)
+      m <- grep("^META ", comment)
+      metadata <- comment[m]
+      comment <- comment[-m]
+      pattern <- "^META (.*?):(.*)$"
+      mNames <- sub(pattern, "\\1", metadata)
+      mData  <- strsplit(sub(pattern, "\\2", metadata), ", ")
+      names(mData) <- mNames
+      return(list(comment = comment, metadata = mData))
+    }
+    m <- .metaExtract(fileName, comment.char)
+    x <- read.csv(fileName, comment.char = comment.char, header = FALSE,
+                  check.names = check.names, stringsAsFactors = FALSE)
+    colnames(x) <- m$metadata$names
+    readMagpie <- as.magpie(x, tidy = TRUE,
+                            spatial = grep(".spat", m$metadata$dimtype, fixed = TRUE),
+                            temporal = grep(".temp", m$metadata$dimtype, fixed = TRUE),
+                            data = grep(".data", m$metadata$dimtype, fixed = TRUE))
+    attr(readMagpie, "comment") <- m$comment
   } else if (fileType %in% c("asc", "nc", "grd", "tif")) {
     if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required!")
     if (fileType == "nc") {

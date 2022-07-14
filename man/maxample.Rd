@@ -8,7 +8,8 @@ maxample(data)
 }
 \arguments{
 \item{data}{name of the example data set. Currently available are "pop" (regional population data,
-previously named "population_magpie") and "animal" (fictional, high-dimensional animal sighting data set).}
+previously named "population_magpie"), "animal" (fictional, high-dimensional animal sighting data set)
+and "bilateral" (fictional, bilateral trade cost data set).}
 }
 \value{
 the chosen example data set

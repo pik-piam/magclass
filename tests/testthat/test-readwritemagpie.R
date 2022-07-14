@@ -3,7 +3,7 @@ test_that("read/write does not affect content", {
   names(dimnames(mag)) <- NULL
   getNames(mag) <- c("A2-A", "B1-A")
   getComment(mag) <- "This is a comment"
-  for (ext in c(".csv", ".cs3", ".cs3r", ".cs4", ".cs4r")) {
+  for (ext in c(".csv", ".cs3", ".cs3r", ".cs4", ".cs4r", ".cs5")) {
     tmpfile <- tempfile(fileext = ext)
     write.magpie(mag, tmpfile)
     mag2 <- read.magpie(tmpfile)
@@ -20,13 +20,23 @@ test_that("read/write does not affect content", {
     unlink(tmpfile)
   }
 
+  bi <- maxample("bilateral")
+  for (ext in c(".m", ".mz", ".rds", ".cs5")) {
+    tmpfile <- tempfile(fileext = ext)
+    write.magpie(bi, tmpfile)
+    bi2 <- round(read.magpie(tmpfile), 4)
+    expect_equivalent(bi, bi2)
+    unlink(tmpfile)
+  }
+
+
   m2 <- mag
   getCells(m2) <- paste0("AFR.", 1:10)
   tmpfile <- tempfile(fileext = ".cs3")
   expect_silent(write.magpie(m2, tmpfile))
   expect_silent(in2 <- read.magpie(tmpfile))
   names(dimnames(in2)) <- NULL
-  attr(m2, "Metadata") <- NULL
+  attr(m2, "Metadata") <- NULL # nolint
   expect_equal(in2, m2)
   unlink(tmpfile)
 
@@ -47,7 +57,7 @@ test_that("read supports older formats", {
   expect_silent(a <- read.magpie(f1))
   ref1 <- new("magpie", .Data = structure(552.666381835938, .Dim = c(1L, 1L, 1L),
                                           .Dimnames = list(i = "AFR", t = "y1995", scenario = "A2")))
-  attr(ref1, "FileFormatVersion") <- 4
+  attr(ref1, "FileFormatVersion") <- 4 # nolint
   expect_equal(a, ref1)
 
   f2 <- system.file("extdata", "testdata", "oldformat2.mz", package = "magclass")
@@ -55,7 +65,7 @@ test_that("read supports older formats", {
   ref2 <- new("magpie", .Data = structure(c(552.666381835938, 1280.63500976562), .Dim = c(2L, 1L, 1L),
                                           .Dimnames = list(i.j = c("AFR.1", "AFR.2"),
                                                            t = "y1995", scenario = "A2")))
-  attr(ref2, "FileFormatVersion") <- 4
+  attr(ref2, "FileFormatVersion") <- 4 # nolint
   expect_equal(a2, ref2)
 })
 
@@ -74,7 +84,7 @@ test_that("handling of spatial data works", {
   m05 <- m05[getItems(m05in, dim = 1), , ]
   getNames(m05in) <- NULL
   getSets(m05in, fulldim = FALSE)[3] <- "data"
-  attr(m05in, ".internal.selfref")  <- NULL
+  attr(m05in, ".internal.selfref")  <- NULL # nolint
   expect_identical(m05, m05in)
 
   a <- maxample("animal")
@@ -85,7 +95,7 @@ test_that("handling of spatial data works", {
   expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
 
   .clean <- function(x) {
-    attr(x, ".internal.selfref")  <- NULL
+    attr(x, ".internal.selfref")  <- NULL # nolint
     getItems(x, dim = 2) <- NULL
     getItems(x, dim = 3) <- NULL
     return(x)
