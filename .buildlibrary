@@ -1,8 +1,8 @@
-ValidationKey: '12471550'
+ValidationKey: '12490737'
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
 - is.na\(\) applied to non-\(list or vector\) of type 'closure'
 AcceptedNotes: unable to verify current time
 AutocreateReadme: yes
-allowLinterWarnings: yes
+allowLinterWarnings: no
