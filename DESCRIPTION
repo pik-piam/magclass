@@ -1,7 +1,7 @@
 Package: magclass
 Type: Package
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.5.0
+Version: 6.5.1
 Date: 2022-07-14
 Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
              person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
@@ -33,7 +33,6 @@ Depends:
 Imports:
     abind,
     data.table,
-    forcats,
     stats
 Suggests:
     covr,

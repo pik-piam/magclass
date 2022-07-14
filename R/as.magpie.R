@@ -1,5 +1,4 @@
 #' @importFrom methods new setGeneric
-#' @importFrom forcats fct_explicit_na
 #' @importFrom data.table as.data.table tstrsplit melt
 
 #' @exportMethod as.magpie
@@ -75,7 +74,9 @@ setMethod("as.magpie", # nolint
         if (is.null(temporal)) {
           if (is.temporal(dimnames(x)[[i]])) d$temporal <- c(d$temporal, i) # temporal information
         }
-      } else if (dim(x)[i] == 1) d$nothing <- c(d$nothing, i)   # dimension with no content
+      } else if (dim(x)[i] == 1) {
+        d$nothing <- c(d$nothing, i)   # dimension with no content
+      }
     }
 
     if (!is.null(spatial)) {
@@ -214,7 +215,7 @@ setMethod("as.magpie",
         if (.isFALSE(.tmp(x[1]))) return(FALSE)
         return(.tmp(x))
       }
-      for (i in dim(x)[2]:1) {
+      for (i in rev(seq_len(dim(x)[2]))) {
         if (!is.factor(x[[i]]) && isNumericlike(x[[i]]) && !is.temporal(x[[i]])) {
           datacol <- i
         } else {
@@ -274,7 +275,7 @@ setMethod("as.magpie",
       x <- x[names(x) != i]
     }
     # remove NA columns and <NA> columns that have been replaced by forcats::fct_explicit_na()
-    naString <- formals(fct_explicit_na)[["na_level"]]
+    naString <- "(Missing)"
     x <- x[colSums(!(naString == x | is.na(x))) != 0]
 
     # put value column as last column
