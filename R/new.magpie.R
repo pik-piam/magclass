@@ -14,7 +14,7 @@
 #' @param sort Bolean. Decides, wheher output should be sorted or not.
 #' @param sets A vector of dimension names. See \code{\link{getSets}} for more
 #' information.
-#' @param unit A character which sets the MAgPIE object's unit field in its metadata atrribute
+#' @param unit deprecated
 #' @return an empty magpie object filled with fill, with the given dimnames
 #' @author Benjamin Bodirsky, Jan Philipp Dietrich
 #' @seealso \code{\link{as.magpie}}
@@ -26,11 +26,12 @@
 #' @export new.magpie
 #' @importFrom methods new
 new.magpie <- function(cells_and_regions = "GLO", years = NULL, names = NULL, # nolint
-                       fill = NA, sort = FALSE, sets = NULL, unit = "unknown") {
+                       fill = NA, sort = FALSE, sets = NULL, unit = NULL) {
+  if (!is.null(unit)) warning("Argument \"unit\" is deprecated and will be ignored!")
   ncells <- length(cells_and_regions)
   nyears <- ifelse(is.null(years), 1, length(years))
   ndata  <- ifelse(is.null(names), 1, length(names))
-  if (all(!grepl("\\.", cells_and_regions)) & !is.null(cells_and_regions)) {
+  if (all(!grepl("\\.", cells_and_regions)) && !is.null(cells_and_regions)) {
     if (all(is.numeric(cells_and_regions))) {
       cells_and_regions <- paste("GLO", cells_and_regions, sep = ".") # nolint
     }

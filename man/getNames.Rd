@@ -36,9 +36,9 @@ consistent to the already existing function setNames.
 }
 \section{Functions}{
 \itemize{
-\item \code{getNames<-}: set names
-}}
+\item \code{getNames(x, dim = NULL) <- value}: set names
 
+}}
 \examples{
 
 a <- as.magpie(1)

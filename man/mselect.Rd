@@ -35,9 +35,9 @@ entries should be searched for!
 }
 \section{Functions}{
 \itemize{
-\item \code{mselect<-}: replace values in magpie object
-}}
+\item \code{mselect(x, ...) <- value}: replace values in magpie object
 
+}}
 \examples{
 
 pop <- maxample("pop")

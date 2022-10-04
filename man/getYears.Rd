@@ -37,11 +37,11 @@ to the already existing function setNames.
 }
 \section{Functions}{
 \itemize{
-\item \code{getYears<-}: rename years
+\item \code{getYears(x) <- value}: rename years
 
-\item \code{setYears}: set years
+\item \code{setYears()}: set years
+
 }}
-
 \examples{
 
  a <- as.magpie(1)

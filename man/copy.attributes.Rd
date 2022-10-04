@@ -40,9 +40,13 @@ This function copies attributes from one object and assigns them to another.
 }
 \section{Functions}{
 \itemize{
-\item \code{copy.attributes<-}: assign attributes from object "value"
-}}
+\item \code{copy.attributes(
+  to,
+  delete = c("names", "row.names", "class", "dim", "dimnames"),
+  delete2 = NULL
+) <- value}: assign attributes from object "value"
 
+}}
 \examples{
 
 from <- array(12)

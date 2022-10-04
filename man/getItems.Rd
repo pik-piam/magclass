@@ -40,9 +40,9 @@ Extract items of a given (sub-)dimension of a MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{getItems<-}: set dimension names
-}}
+\item \code{getItems(x, dim, full = NULL, maindim = NULL, raw = FALSE) <- value}: set dimension names
 
+}}
 \examples{
 x <- maxample("pop")
 getItems(x, "scenario")

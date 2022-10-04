@@ -27,11 +27,11 @@ Extracts the comment from a MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{getComment<-}: set comment
+\item \code{getComment(x) <- value}: set comment
 
-\item \code{setComment}: set comment
+\item \code{setComment()}: set comment
+
 }}
-
 \examples{
 
  a <- as.magpie(1)

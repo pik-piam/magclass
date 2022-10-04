@@ -29,9 +29,9 @@ Extracts sets of a MAgPIE-object if available
 }
 \section{Functions}{
 \itemize{
-\item \code{getSets<-}: replace set names
-}}
+\item \code{getSets(x, fulldim = TRUE, sep = ".") <- value}: replace set names
 
+}}
 \examples{
 
 a <- new.magpie("GLO.1", 2000, c("a.o1", "b.o1", "a.o2"))

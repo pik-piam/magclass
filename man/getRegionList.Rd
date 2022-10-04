@@ -23,9 +23,9 @@ Extracts a vector containing the region of each cell of a MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{getRegionList<-}: set region names
-}}
+\item \code{getRegionList(x) <- value}: set region names
 
+}}
 \examples{
 
 # a <- read.magpie("example.mz")
