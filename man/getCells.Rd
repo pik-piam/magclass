@@ -31,11 +31,11 @@ to the already existing function setNames.
 }
 \section{Functions}{
 \itemize{
-\item \code{getCells<-}: set cell names
+\item \code{getCells(x) <- value}: set cell names
 
-\item \code{setCells}: set cell names
+\item \code{setCells()}: set cell names
+
 }}
-
 \examples{
 
 a <- as.magpie(1)

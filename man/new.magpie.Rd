@@ -11,7 +11,7 @@ new.magpie(
   fill = NA,
   sort = FALSE,
   sets = NULL,
-  unit = "unknown"
+  unit = NULL
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ further specified}
 \item{sets}{A vector of dimension names. See \code{\link{getSets}} for more
 information.}
 
-\item{unit}{A character which sets the MAgPIE object's unit field in its metadata atrribute}
+\item{unit}{deprecated}
 }
 \value{
 an empty magpie object filled with fill, with the given dimnames

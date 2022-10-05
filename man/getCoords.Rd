@@ -27,9 +27,9 @@ Extracts spatial coordinates of a MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{getCoords<-}: set coordinates
-}}
+\item \code{getCoords(x, xlab = "x", ylab = "y") <- value}: set coordinates
 
+}}
 \examples{
 a <- maxample("animal")
 getCoords(a)

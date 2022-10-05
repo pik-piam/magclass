@@ -1,35 +1,42 @@
-Package: magclass
 Type: Package
+Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.5.1
-Date: 2022-07-14
-Authors@R: c(person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = c("aut","cre")),
-             person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = "aut"),
-             person("Markus", "Bonsch", role = "aut"),
-             person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"),
-             person("Stephen", "Bi", role = "aut"),
-             person("Kristine", "Karstens", email = "karstens@pik-potsdam.de", role = "aut"),
-             person("Debbora", "Leip", email = "leip@pik-potsdam.de", role = "aut"),
-             person("Lavinia", "Baumstark", email = "lavinia@pik-potsdam.de", role = "ctb"),
-             person("Christoph", "Bertram", email = "bertram@pik-potsdam.de", role = "ctb"),
-             person("Anastasis", "Giannousakis", email = "giannou@pik-potsdam.de", role = "ctb"),
-             person("David", "Klein", email = "dklein@pik-potsdam.de", role = "ctb"),
-             person("Ina", "Neher", role = "ctb"),
-             person("Michaja", "Pehl", email = "pehl@pik-potsdam.de", role = "ctb"),
-             person("Anselm", "Schultes", role = "ctb"),
-             person("Miodrag", "Stevanovic", email = "miodrag@pik-potsdam.de", role = "ctb"),
-             person("Xiaoxi", "Wang", email = "wang@pik-potsdam.de", role = "ctb"),
-             person("Felicitas", "Beier", email = "beier@pik-potsdam.de", role = "ctb"))
-Description: Data class for increased interoperability working with spatial-
-    temporal data together with corresponding functions and methods (conversions,
-    basic calculations and basic data manipulation). The class distinguishes
-    between spatial, temporal and other dimensions to facilitate the development
-    and interoperability of tools build for it. Additional features are name-based
-    addressing of data and internal consistency checks (e.g. checking for the right
-    data order in calculations).
+Version: 6.5.2
+Date: 2022-10-04
+Authors@R: c(
+    person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre")),
+    person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = "aut"),
+    person("Markus", "Bonsch", role = "aut"),
+    person("Florian", "Humpenoeder", , "humpenoeder@pik-potsdam.de", role = "aut"),
+    person("Stephen", "Bi", role = "aut"),
+    person("Kristine", "Karstens", , "karstens@pik-potsdam.de", role = "aut"),
+    person("Debbora", "Leip", , "leip@pik-potsdam.de", role = "aut"),
+    person("Lavinia", "Baumstark", , "lavinia@pik-potsdam.de", role = "ctb"),
+    person("Christoph", "Bertram", , "bertram@pik-potsdam.de", role = "ctb"),
+    person("Anastasis", "Giannousakis", , "giannou@pik-potsdam.de", role = "ctb"),
+    person("David", "Klein", , "dklein@pik-potsdam.de", role = "ctb"),
+    person("Ina", "Neher", role = "ctb"),
+    person("Michaja", "Pehl", , "pehl@pik-potsdam.de", role = "ctb"),
+    person("Anselm", "Schultes", role = "ctb"),
+    person("Miodrag", "Stevanovic", , "miodrag@pik-potsdam.de", role = "ctb"),
+    person("Xiaoxi", "Wang", , "wang@pik-potsdam.de", role = "ctb"),
+    person("Felicitas", "Beier", , "beier@pik-potsdam.de", role = "ctb")
+  )
+Description: Data class for increased interoperability working with
+    spatial- temporal data together with corresponding functions and
+    methods (conversions, basic calculations and basic data manipulation).
+    The class distinguishes between spatial, temporal and other dimensions
+    to facilitate the development and interoperability of tools build for
+    it. Additional features are name-based addressing of data and internal
+    consistency checks (e.g. checking for the right data order in
+    calculations).
+License: LGPL-3 | file LICENSE
+URL: https://github.com/pik-piam/magclass,
+    https://doi.org/10.5281/zenodo.1158580
+BugReports: https://github.com/pik-piam/magclass/issues
 Depends:
-    R(>= 2.10.0),
-    methods,
+    R (>= 2.10.0),
+    methods
 Imports:
     abind,
     data.table,
@@ -43,10 +50,8 @@ Suggests:
     testthat,
     tibble,
     withr
-URL: https://github.com/pik-piam/magclass, https://doi.org/10.5281/zenodo.1158580
-BugReports: https://github.com/pik-piam/magclass/issues
-License: LGPL-3 | file LICENSE
-LazyData: true
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
-RoxygenNote: 7.2.0
-VignetteBuilder: knitr
+LazyData: true
+RoxygenNote: 7.2.1

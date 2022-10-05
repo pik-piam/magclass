@@ -27,13 +27,13 @@ MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{ndata}: count datasets
+\item \code{ndata()}: count datasets
 
-\item \code{nregions}: count regions
+\item \code{nregions()}: count regions
 
-\item \code{nyears}: count years
+\item \code{nyears()}: count years
+
 }}
-
 \examples{
 
 a <- is.magpie(NULL)

@@ -24,9 +24,9 @@ Extracts regions of a MAgPIE-object
 }
 \section{Functions}{
 \itemize{
-\item \code{getRegions<-}: overwrite region names
-}}
+\item \code{getRegions(x) <- value}: overwrite region names
 
+}}
 \examples{
 
 # a <- read.magpie("example.mz")
