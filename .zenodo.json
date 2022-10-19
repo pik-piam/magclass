@@ -1,7 +1,7 @@
 {
   "title": "magclass: Data Class and Tools for Handling Spatial-Temporal Data",
-  "version": "6.5.2",
-  "description": "<p>Data class for increased interoperability working with spatial-\n    temporal data together with corresponding functions and methods (conversions,\n    basic calculations and basic data manipulation). The class distinguishes\n    between spatial, temporal and other dimensions to facilitate the development\n    and interoperability of tools build for it. Additional features are name-based\n    addressing of data and internal consistency checks (e.g. checking for the right\n    data order in calculations).<\/p>",
+  "version": "6.6.0",
+  "description": "<p>Data class for increased interoperability working with\n    spatial-temporal data together with corresponding functions and\n    methods (conversions, basic calculations and basic data manipulation).\n    The class distinguishes between spatial, temporal and other dimensions\n    to facilitate the development and interoperability of tools build for\n    it. Additional features are name-based addressing of data and internal\n    consistency checks (e.g. checking for the right data order in\n    calculations).<\/p>",
   "creators": [
     {
       "name": "Dietrich, Jan Philipp"
@@ -53,6 +53,12 @@
     },
     {
       "name": "Beier, Felicitas"
+    },
+    {
+      "name": "Pflüger, Mika"
+    },
+    {
+      "name": "Richters, Oliver"
     }
   ]
 }
