@@ -245,7 +245,6 @@ setMethod("as.magpie",
   signature(x = "quitte"),
   function(x, sep = ".", replacement = "_", filter = TRUE, ...) {
     isQuitte <- function(x) {
-
       # object is formally defined as quitte but it has to
       # be checked whether it follows all structural
       # rules of a quitte object
@@ -302,16 +301,25 @@ setMethod("as.magpie",
 
 
 .raster2magpie <- function(x, unit = "unknown", temporal = NULL) {
-  if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for raster conversions!")
-  # na.rm = TRUE seems to remove all cells in which at least one layer has an NA. Hence, use na.rm = FALSE
-  # and remove all cells which have NAs in ALL layers afterwards!
-  df <- as.data.frame(x, na.rm = FALSE)
-  df <- df[rowSums(!is.na(df)) != 0, , drop = FALSE]
+  if (inherits(x, "SpatRaster")) {
+    if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required for raster conversions!")
+    df <- as.data.frame(x, na.rm = TRUE, xy = TRUE)
+    df$x <- sub(".", "p", df$x, fixed = TRUE)
+    df$y <- sub(".", "p", df$y, fixed = TRUE)
+  } else {
+    if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for raster conversions!")
+    # na.rm = TRUE seems to remove all cells in which at least one layer has an NA. Hence, use na.rm = FALSE
+    # and remove all cells which have NAs in ALL layers afterwards!
+    df <- as.data.frame(x, na.rm = FALSE)
+    df <- df[rowSums(!is.na(df)) != 0, , drop = FALSE]
 
-  co <- raster::coordinates(x)[as.integer(rownames(df)), ]
-  co <- matrix(sub(".", "p", co, fixed = TRUE), ncol = 2)
-  colnames(co) <- c("x", "y")
-  df <- as.data.table(cbind(co, df))
+    co <- raster::coordinates(x)[as.integer(rownames(df)), ]
+    co <- matrix(sub(".", "p", co, fixed = TRUE), ncol = 2)
+    colnames(co) <- c("x", "y")
+    df <- cbind(co, df)
+  }
+
+  df <- as.data.table(df)
   df <- melt(df, id.vars = c("x", "y"))
   variable <- as.data.table(tstrsplit(df$variable, "..", fixed = TRUE))
   if (!is.null(temporal)) temporal <- temporal + 2
@@ -353,4 +361,11 @@ setMethod("as.magpie",
   function(x, unit = "unknown", temporal = NULL, ...) {
     return(.raster2magpie(x, unit = unit, temporal = temporal))
   }
+)
+
+setMethod("as.magpie",
+          signature(x = "SpatRaster"),
+          function(x, unit = "unknown", temporal = NULL, ...) {
+            return(.raster2magpie(x, unit = unit, temporal = temporal))
+          }
 )
