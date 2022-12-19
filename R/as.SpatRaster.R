@@ -27,7 +27,7 @@ as.SpatRaster <- function(x, res = NULL) { # nolint: object_name_linter
 
   .guessRes <- function(xy) {
     .tmp <- function(x) {
-      return(suppressWarnings(min(diff(sort(unique(x))))))
+      return(min(diff(sort(unique(x)))))
     }
     guess <- min(.tmp(xy[[1]]), .tmp(xy[[2]]))
     if (is.infinite(guess)) guess <- 0.5
