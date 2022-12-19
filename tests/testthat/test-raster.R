@@ -1,5 +1,3 @@
-context("Raster conversion tests")
-
 skip_if_not_installed("terra")
 
 test_that("terra convertion does not alter data", {

@@ -1,11 +1,11 @@
 #' as.SpatRaster
 #'
-#' Convert magclass object to a  object
+#' Convert magclass object to a SpatRaster object. Requires the terra package.
 #'
 #'
 #' @param x MAgPIE object
 #' @param res spatial data resolution. If not provided it will be guessed.
-#' @return A  object
+#' @return A SpatRaster object
 #' @author Jan Philipp Dietrich
 #' @seealso \code{\link{getCoords}}
 #' @examples
@@ -22,7 +22,7 @@
 #' @export
 
 
-as.SpatRaster <- function(x, res = NULL) { # nolint
+as.SpatRaster <- function(x, res = NULL) { # nolint: object_name_linter
   if (!is.magpie(x)) stop("Input is not a magpie object")
   if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required!")
 
@@ -47,11 +47,11 @@ as.SpatRaster <- function(x, res = NULL) { # nolint
   xy <- getCoords(x)
   if (is.null(res)) res <- .guessRes(xy)
 
-  m   <- wrap(as.array(x), list(1, 2:3), sep = "..")
+  m <- wrap(as.array(x), list(1, 2:3), sep = "..")
   xyz <- cbind(xy, m)
 
   target <- terra::rast(ncols = 360 / res, nrows = 180 / res, nlyrs = nyears(x) * ndata(x))
   out <- terra::rast(xyz, crs = terra::crs(target))
-  names(out) <-  colnames(m)
+  names(out) <- colnames(m)
   return(out)
 }

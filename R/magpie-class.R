@@ -238,7 +238,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   pmatch2 <- ifelse(pmatch == TRUE | pmatch == "left", "[^.]*", "")
 
   if (!is.list(i)) i <- list(i)
-  elems <- 1:dim(x)[dim] # nolint: seq_linter
+  elems <- seq_len(dim(x)[dim])
   if (!is.null(names(i))) {
     if (is.null(names(dimnames(x))[dim])) stop("subdimension does not exist (missing set names)!")
     nameOrder <- strsplit(names(dimnames(x))[dim], ".", fixed = TRUE)[[1]]
@@ -297,7 +297,7 @@ setMethod("[", #nolint
         return(j)
       }
       j <- .addY(j, dim(x)[2])
-      if (is.null(j)) j <- 1:dim(x)[2] # nolint: seq_linter
+      if (is.null(j)) j <- seq_len(dim(x)[2])
       j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
     }
     if (!missing(k)) k <- .dimextract(x, k, 3, pmatch = pmatch, invert = invert)
@@ -355,7 +355,7 @@ setMethod("[<-", #nolint
     if (!missing(j)) {
       if (is.factor(j)) j <- as.character(j)
       if (is.numeric(j) & any(j > dim(x)[2])) j <- paste("y", j, sep = "")
-      else if (is.null(j)) j <- 1:dim(x)[2] # nolint: seq_linter
+      else if (is.null(j)) j <- seq_len(dim(x)[2])
       else if ((is.character(j) || is.list(j)) && grepl(".", dimnames(x)[[2]][1], fixed = TRUE)) {
         j <- .dimextract(x, j, 2, pmatch = pmatch)
       }
@@ -369,9 +369,9 @@ setMethod("[<-", #nolint
       return(x)
     } else {
       if (is.magpie(value)) {
-        if (missing(i)) ii <- 1:dim(x)[1] else ii <- i # nolint: seq_linter
-        if (missing(j)) jj <- 1:dim(x)[2] else jj <- j # nolint: seq_linter
-        if (missing(k)) kk <- 1:dim(x)[3] else kk <- k # nolint: seq_linter
+        if (missing(i)) ii <- seq_len(dim(x)[1]) else ii <- i
+        if (missing(j)) jj <- seq_len(dim(x)[2]) else jj <- j
+        if (missing(k)) kk <- seq_len(dim(x)[3]) else kk <- k
         value <- magpie_expand(value, x[ii, jj, kk])
       } else if (length(value) != length(x@.Data[i, j, k]) & length(value) != 1) {
         # dangerous writing of value as order might be wrong!
