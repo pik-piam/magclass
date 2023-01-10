@@ -13,6 +13,7 @@
 #' as.magpie,numeric-method as.magpie,NULL-method as.magpie,quitte-method
 #' as.magpie,tbl_df-method as.magpie,RasterBrick-method as.magpie,logical-method
 #' as.magpie,RasterLayer-method as.magpie,RasterStack-method as.magpie,SpatRaster-method
+#' as.magpie,LPJmLData-method
 #' is.magpie [,magpie-method [,magpie,ANY,ANY-method [<-,magpie,ANY,ANY-method
 #' [<-,magpie-method Ops,magpie,magpie-method Ops,magpie,numeric-method Ops,numeric,magpie-method
 #' ifelse,magpie-method is.na,magpie-method is.nan,magpie-method

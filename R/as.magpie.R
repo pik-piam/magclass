@@ -46,6 +46,26 @@ setMethod("as.magpie",
   }
 )
 
+setMethod("as.magpie",
+          signature(x = "LPJmLData"),
+          function(x) {
+            if (!requireNamespace("lpjmlkit", quietly = TRUE)) {
+              stop("The package \"lpjmlkit\" is required for LPJmLData conversions!")
+            }
+            y <- lpjmlkit::transform(x, to = c("cell", "time"))
+            y <- lpjmlkit::as_array(y)
+            if (!is.null(x$grid)) {
+              grid <- paste0(sub(".", "p", x$grid$data[, 1], fixed = TRUE), ".",
+                             sub(".", "p", x$grid$data[, 2], fixed = TRUE))
+              names(grid) <- rownames(x$grid$data)
+              dimnames(y)[[1]] <- paste0(grid[dimnames(y)[[1]]], ".", dimnames(y)[[1]])
+              names(dimnames(y))[1] <- c("x.y.cell")
+            }
+            out <- new("magpie", y)
+            return(out)
+          }
+)
+
 setMethod("as.magpie", # nolint
   signature(x = "array"),
   function(x, spatial = NULL, temporal = NULL, unit = "unknown", ...) {
