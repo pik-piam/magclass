@@ -120,9 +120,19 @@ test_that("getYear works", {
 
 test_that("sizeCheck works", {
   limit <- getOption("magclass_sizeLimit")
+  withr::defer(options(magclass_sizeLimit = limit))
+
+  # passing magpie objects instead of magpie object dimensions
+  expect_error(magclass:::sizeCheck(p),
+               "Numeric vector of dimension sizes expected.")
+
+  # passing magpie object dimensions
+  expect_null(magclass:::sizeCheck(dim(p)))
+
+  # passing too large magpie object dimensions
   options(magclass_sizeLimit = 1)
-  on.exit(options(magclass_sizeLimit = limit))
-  expect_error(magclass:::sizeCheck(p), "object size limit reached")
+  expect_error(magclass:::sizeCheck(dim(p)),
+               "magclass object size .* exceeds limit")
 })
 
 test_that("log methods work", {
