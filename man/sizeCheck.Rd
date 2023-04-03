@@ -16,9 +16,12 @@ to prevent out of memory errors in case of unwanted object expansions
 Ignored if \code{getOption("magclass_sizeLimit")} is negative.
 }
 \examples{
-
 pop <- maxample("pop")
 magclass:::sizeCheck(dim(pop))
+
+\dontrun{
+magclass:::sizeCheck(c(6765L, 10946L, 17711L))
+}
 }
 \author{
 Jan Philipp Dietrich
