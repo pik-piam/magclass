@@ -27,7 +27,7 @@ collapseNames <- function(x, collapsedim = NULL, preservedim = NULL) {
   .dimCodeExtra <- function(dim, x) {
     if (is.null(dim)) return(NULL)
     if (is.character(dim)) return(dimCode(dim, x))
-    if (dim > 3 && round(dim) == 3) return(dim)
+    if (all(dim > 3 & round(dim) == 3)) return(dim)
     # convert old dim convention in collapseNames (just specificantion of
     # sub-dimension) to new convention (maindim.subdim)
     return(dim / 10 + 3)

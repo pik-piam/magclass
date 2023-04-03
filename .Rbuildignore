@@ -14,3 +14,5 @@ cran-comments.md
 ^tests/.lintr$
 ^vignettes/.lintr$
 ^Makefile$
+^.*\CITATION.cff$
+^CRAN-SUBMISSION$

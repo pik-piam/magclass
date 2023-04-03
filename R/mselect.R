@@ -1,9 +1,16 @@
 .mselectSupport <- function(search, where, ndim, names) {
   search <- escapeRegex(search)
-  search <- paste0("(", paste(search, collapse = "|"), ")")
-  search <- paste0("^", paste(rep("[^\\.]*\\.", where - 1), collapse = ""), search,
-    paste(rep("\\.[^\\.]*", ndim - where), collapse = ""), "$")
-  return(names[grep(search, names)])
+  matches <- NULL
+  while (length(search) > 0) {
+    end <- min(length(search), 1000)
+    subsearch <- search[1:end]
+    search <- search[-(1:end)]
+    subsearch <- paste0("(", paste(subsearch, collapse = "|"), ")")
+    subsearch <- paste0("^", paste(rep("[^\\.]*\\.", where - 1), collapse = ""), subsearch,
+                     paste(rep("\\.[^\\.]*", ndim - where), collapse = ""), "$")
+    matches <- union(matches, grep(subsearch, names))
+  }
+  return(names[sort(matches)])
 }
 
 .mselectCoords <- function(x, ...) {

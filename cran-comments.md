@@ -1,15 +1,26 @@
 CHANGES:
-- removed experimental metadata code (stored in magclass version with tag "metadata" for later reintegration)
-- added tests so that the package has now >90% unit test line coverage
-- fixed coding style issues
-- deprecated function `fulldim` and removed it from all functions in magclass where it had been used. 
-- dimSums as well as magpply, `add_columns`, `add_dimension` and `getCPR` work now for all (sub-dimension)
-- `getItems` can now be used to replace values or even remove dimensions and it supports named vectors (to define element-wise what should be substituted with what)
-- `read.magpie` and `write.magpie` have been streamlined (e.g. ncdf support is no longer coupled to 59199 cells) which might lead to slightly different behavior than before in some instances 
-- added `dim` argument for magclass subsetting (e.g. `x[1, dim = 2]` which is identical to `x[,1,]` - useful for generalization of functions that should act on all main dimensions)
-- removed `old_dim_convention` function
-- deprecated `getRegionList` (use `getItems` instead)
-- replaced `write.report` with `write.report2` and deprecated `write.report2` 
+- removed dependency on `maptools`
+- added SpatRaster support (terra)
+- various smaller tweaks and fixes
 
-NOTE:
-- this upload tries to fix the ifelse test problem on the windows r-devel test machine. Since the windows r-devel test machine did not complain (neither for the old nor the new version) the fix is an educated test and only the submission will show whether it properly addresses the problem. 
+## Test environments
+* local R installation, R 4.1.2
+* rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC
+* rhub Windows Server 2022, R-devel, 64 bit
+* rhub Fedora Linux, R-devel, clang, gfortran
+
+## R CMD check results
+
+Rhub Windows devel: 
+
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
+  
+Rhub Fedora Linux:
+
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: no command 'tidy' found  
+
+
+To my understanding the issue on Rhub Windows devel seems to be a problem with the local MikTex installation on the server as it does not occur on other test machines and as I could not reproduce the problem myself. In addition, there are no direct calls to miktex so that the temporary directory seems to be created by some other tools. Similarly, the issue on Fedora seems to be a problem of the test machine unrelated to the package.

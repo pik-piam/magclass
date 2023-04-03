@@ -3,7 +3,7 @@
 #' Reads a MAgPIE-file and converts it to a 3D array of the structure
 #' (cells,years,datacolumn)
 #'
-#' This function reads from 13 different MAgPIE file\_types. "rds" is
+#' This function reads from 13 different MAgPIE file_types. "rds" is
 #' a R-default format for storing R objects."cs2" or "cs2b" is the new standard
 #' format for cellular data with or without
 #' header and the first columns (year,regiospatial) or only (regiospatial),
@@ -24,9 +24,9 @@
 #'
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
-#' to file\_name and file\_folder)
+#' to file_name and file_folder)
 #' @param file_folder folder the file is located in (alternatively you can also
-#' specify the full path in file\_name - wildcards are supported)
+#' specify the full path in file_name - wildcards are supported)
 #' @param file_type format the data is stored in. Currently 13 formats are
 #' available: "rds" (recommended compressed format),
 #' "cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
@@ -38,8 +38,8 @@
 #' that they have a REMIND compatible format, "m" (binary MAgPIE format
 #' "magpie"), "mz" (compressed binary MAgPIE format "magpie zipped") "put"
 #' (format used primarily for the REMIND-MAgPIE coupling) and "asc",
-#' (ASCII-Grid format as used by ArcGis) . If file\_type=NULL the file ending
-#' of the file\_name is used as format. If format is different to the formats
+#' (ASCII-Grid format as used by ArcGis) . If file_type=NULL the file ending
+#' of the file_name is used as format. If format is different to the formats
 #' mentioned standard MAgPIE format is assumed.
 #' @param as.array Should the input be transformed to an array? This can be
 #' useful for regional or global inputs, but all advantages of the magpie-class

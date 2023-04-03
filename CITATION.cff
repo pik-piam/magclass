@@ -1,0 +1,68 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'magclass: Data Class and Tools for Handling Spatial-Temporal Data'
+version: 6.8.2
+date-released: '2023-04-03'
+abstract: Data class for increased interoperability working with spatial-temporal
+  data together with corresponding functions and methods (conversions, basic calculations
+  and basic data manipulation). The class distinguishes between spatial, temporal
+  and other dimensions to facilitate the development and interoperability of tools
+  build for it. Additional features are name-based addressing of data and internal
+  consistency checks (e.g. checking for the right data order in calculations).
+authors:
+- family-names: Dietrich
+  given-names: Jan Philipp
+  email: dietrich@pik-potsdam.de
+- family-names: Bodirsky
+  given-names: Benjamin Leon
+  email: bodirsky@pik-potsdam.de
+- family-names: Bonsch
+  given-names: Markus
+- family-names: Humpenoeder
+  given-names: Florian
+  email: humpenoeder@pik-potsdam.de
+- family-names: Bi
+  given-names: Stephen
+- family-names: Karstens
+  given-names: Kristine
+  email: karstens@pik-potsdam.de
+- family-names: Leip
+  given-names: Debbora
+  email: leip@pik-potsdam.de
+- family-names: Baumstark
+  given-names: Lavinia
+  email: lavinia@pik-potsdam.de
+- family-names: Bertram
+  given-names: Christoph
+  email: bertram@pik-potsdam.de
+- family-names: Giannousakis
+  given-names: Anastasis
+  email: giannou@pik-potsdam.de
+- family-names: Klein
+  given-names: David
+  email: dklein@pik-potsdam.de
+- family-names: Neher
+  given-names: Ina
+- family-names: Pehl
+  given-names: Michaja
+  email: pehl@pik-potsdam.de
+- family-names: Schultes
+  given-names: Anselm
+- family-names: Stevanovic
+  given-names: Miodrag
+  email: miodrag@pik-potsdam.de
+- family-names: Wang
+  given-names: Xiaoxi
+  email: wang@pik-potsdam.de
+- family-names: Beier
+  given-names: Felicitas
+  email: beier@pik-potsdam.de
+- family-names: Pflüger
+  given-names: Mika
+- family-names: Richters
+  given-names: Oliver
+license: LGPL-3.0
+repository-code: https://github.com/pik-piam/magclass
+doi: 10.5281/zenodo.1158580
+
