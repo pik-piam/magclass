@@ -76,7 +76,7 @@ test_that("handling of spatial data works", {
   m10 <- mbind(m05, m05)
   getNames(m10) <- c("bla", "blub")
   expect_error(write.magpie(m10, file.path(td, "test.grd")), "no support for multiple variables")
-  expect_silent(write.magpie(m10, file.path(td, "test.nc")))
+  expect_no_warning(write.magpie(m10, file.path(td, "test.nc")))
   expect_silent(write.magpie(m05, file.path(td, "test.nc")))
   expect_silent(m05in <- read.magpie(file.path(td, "test.nc")))
   getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon", "lat")]

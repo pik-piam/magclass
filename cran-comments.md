@@ -1,7 +1,6 @@
 CHANGES:
-- removed dependency on `maptools`
-- added SpatRaster support (terra)
-- various smaller tweaks and fixes
+- This should fix a transition test error which randomly occurs on some of the CRAN test systems but
+could not be reproduced by me on any other systems, including the ones available via rhub
 
 ## Test environments
 * local R installation, R 4.1.2
