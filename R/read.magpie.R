@@ -142,7 +142,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
       m <- grep("^META ", comment)
       metadata <- comment[m]
       comment <- comment[-m]
-      pattern <- "^META (.*?):(.*)$"
+      pattern <- "^META (.*?): (.*)$"
       mNames <- sub(pattern, "\\1", metadata)
       mData  <- strsplit(sub(pattern, "\\2", metadata), ", ")
       names(mData) <- mNames
