@@ -1,8 +1,8 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.8.2
-Date: 2023-04-03
+Version: 6.8.3
+Date: 2023-04-04
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre")),
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = "aut"),
@@ -53,7 +53,7 @@ Suggests:
     raster,
     rmarkdown,
     terra,
-    testthat,
+    testthat (>= 3.1.5),
     tibble,
     withr
 Additional_repositories: https://pik-piam.r-universe.dev

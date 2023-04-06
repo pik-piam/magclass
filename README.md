@@ -1,6 +1,6 @@
 # Data Class and Tools for Handling Spatial-Temporal Data
 
-R package **magclass**, version **6.8.2**
+R package **magclass**, version **6.8.3**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/magclass)](https://cran.r-project.org/package=magclass) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158580.svg)](https://doi.org/10.5281/zenodo.1158580) [![R build status](https://github.com/pik-piam/magclass/workflows/check/badge.svg)](https://github.com/pik-piam/magclass/actions) [![codecov](https://codecov.io/gh/pik-piam/magclass/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/magclass) [![r-universe](https://pik-piam.r-universe.dev/badges/magclass)](https://pik-piam.r-universe.dev/builds)
 
@@ -56,7 +56,7 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **magclass** in publications use:
 
-Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip D (2023). _magclass: Data Class and Tools for Handling Spatial-Temporal Data_. doi: 10.5281/zenodo.1158580 (URL: https://doi.org/10.5281/zenodo.1158580), R package version 6.8.2, <URL: https://github.com/pik-piam/magclass>.
+Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip D (2023). _magclass: Data Class and Tools for Handling Spatial-Temporal Data_. doi: 10.5281/zenodo.1158580 (URL: https://doi.org/10.5281/zenodo.1158580), R package version 6.8.3, <URL: https://github.com/pik-piam/magclass>.
 
 A BibTeX entry for LaTeX users is
 
@@ -65,7 +65,7 @@ A BibTeX entry for LaTeX users is
   title = {magclass: Data Class and Tools for Handling Spatial-Temporal Data},
   author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens and Debbora Leip},
   year = {2023},
-  note = {R package version 6.8.2},
+  note = {R package version 6.8.3},
   doi = {10.5281/zenodo.1158580},
   url = {https://github.com/pik-piam/magclass},
 }
