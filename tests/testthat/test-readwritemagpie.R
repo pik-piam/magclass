@@ -4,15 +4,17 @@ test_that("read/write does not affect content", {
   getNames(mag) <- c("A2-A", "B1-A")
   getComment(mag) <- "This is a comment"
   for (ext in c(".csv", ".cs3", ".cs3r", ".cs4", ".cs4r", ".cs5")) {
-    tmpfile <- tempfile(fileext = ext)
+    tmpfile <- withr::local_tempfile(fileext = ext)
     write.magpie(mag, tmpfile)
     mag2 <- read.magpie(tmpfile)
     names(dimnames(mag2)) <- NULL
+    expect_identical(names(dimnames(mag)), names(dimnames(mag2)))
     expect_equivalent(mag, mag2)
     unlink(tmpfile)
   }
+
   for (ext in c(".m", ".mz", ".rds")) {
-    tmpfile <- tempfile(fileext = ext)
+    tmpfile <- withr::local_tempfile(fileext = ext)
     write.magpie(mag, tmpfile)
     mag2 <- read.magpie(tmpfile)
     expect_equivalent(mag, mag2)
@@ -22,7 +24,7 @@ test_that("read/write does not affect content", {
 
   bi <- maxample("bilateral")
   for (ext in c(".m", ".mz", ".rds", ".cs5")) {
-    tmpfile <- tempfile(fileext = ext)
+    tmpfile <- withr::local_tempfile(fileext = ext)
     write.magpie(bi, tmpfile)
     bi2 <- round(read.magpie(tmpfile), 4)
     expect_equivalent(bi, bi2)
@@ -32,7 +34,7 @@ test_that("read/write does not affect content", {
 
   m2 <- mag
   getCells(m2) <- paste0("AFR.", 1:10)
-  tmpfile <- tempfile(fileext = ".cs3")
+  tmpfile <- withr::local_tempfile(fileext = ".cs3")
   expect_silent(write.magpie(m2, tmpfile))
   expect_silent(in2 <- read.magpie(tmpfile))
   names(dimnames(in2)) <- NULL
@@ -41,7 +43,7 @@ test_that("read/write does not affect content", {
   unlink(tmpfile)
 
   m3 <- setCells(mag[1, , ], "GLO")
-  tmpfile <- tempfile(fileext = ".cs2r")
+  tmpfile <- withr::local_tempfile(fileext = ".cs2r")
   write.magpie(m3, tmpfile)
   mag3 <- read.magpie(tmpfile)
   names(dimnames(mag3)) <- NULL
@@ -50,6 +52,12 @@ test_that("read/write does not affect content", {
 
   expect_error(write.magpie(1), "Input is not in MAgPIE-format")
 
+  mag <- maxample("pop")
+  tmpfile <- withr::local_tempfile(fileext = ".cs5")
+  write.magpie(mag, tmpfile)
+  mag2 <- read.magpie(tmpfile)
+  expect_identical(names(dimnames(mag)), names(dimnames(mag2)))
+  unlink(tmpfile)
 })
 
 test_that("read supports older formats", {
@@ -107,7 +115,7 @@ test_that("handling of spatial data works", {
 
 test_that("read/write conserves cell naming", {
   p <- new.magpie(c("AFR.2", "CPA.3", "AFR.1", "CPA.4"), fill = 0)
-  tmpfile <- tempfile(fileext = ".mz")
+  tmpfile <- withr::local_tempfile(fileext = ".mz")
   write.magpie(p, tmpfile)
   p2 <- read.magpie(tmpfile)
   expect_identical(getCells(p), getCells(p2))
@@ -142,7 +150,7 @@ test_that("read/write triggers errors and warnings correctly", {
   unlink(path1)
   unlink(path2)
 
-  tmpfile <- tempfile(fileext = ".rds")
+  tmpfile <- withr::local_tempfile(fileext = ".rds")
   saveRDS(1, tmpfile)
   expect_error(read.magpie(tmpfile), "does not contain a magpie object")
   unlink(tmpfile)
