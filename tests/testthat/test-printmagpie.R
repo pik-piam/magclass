@@ -24,5 +24,4 @@ test_that("reshape can table subdims, other dims will be printed in header", {
 test_that("everything else works", {
   expect_warning(capture.output(print(pop, drop = FALSE, reshape = 1:2)), "Execute with reshape=FALSE")
   expect_warning(capture.output(print(pop, reshape = c(2.3, 2.1))), "Call print again with reshape=FALSE")
-
 })
