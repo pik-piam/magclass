@@ -18,8 +18,9 @@ str.magpie <- function(object, ...) {
   cat(" @ .Data: ")
   utils::str(c(object@.Data)) # c() is important here to strip attributes
   attrib <- attributes(object)
+  attrib <- attrib[setdiff(names(attrib), c("class", "dim"))]
   cat(paste(utils::capture.output({
-    utils::str(attrib[setdiff(names(attrib), c("class", "dim"))])
+    utils::str(attrib)
   })[-1], collapse = "\n"))
   cat("\n")
   return(invisible(NULL))
