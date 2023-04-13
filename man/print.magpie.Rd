@@ -20,7 +20,7 @@ and loop over the other dimensions}
 \item{...}{arguments to be passed to or from other methods.}
 }
 \value{
-print displays the given MAgPIE object on screen.
+Invisibly, the MAgPIE object x.
 }
 \description{
 print method for MAgPIE objects for conventient display of magpie data.

@@ -86,4 +86,5 @@ print.magpie <- function(x, drop = TRUE, reshape = FALSE, ...) {
     warning("reshape option can just be used with drop=TRUE. Execute with reshape=FALSE:")
     print.magpie(x = x, drop = drop, reshape = FALSE, ...)
   }
+  return(invisible(x))
 }
