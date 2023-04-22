@@ -42,12 +42,8 @@ to enforce them.}
 \item \code{NA}: keep row names.
 \item A string: the name of a new column. Existing rownames are transferred
 into this column and the \code{row.names} attribute is deleted.
-No name repair is applied to the new column name, even if \code{x} already contains
-a column of that name.
-Use \code{as_tibble(rownames_to_column(...))} to safeguard against this case.
-}
-
-Read more in \link[tibble]{rownames}.}
+Read more in \link[tibble]{rownames}.
+}}
 }
 \value{
 A tibble object
