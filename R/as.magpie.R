@@ -354,15 +354,16 @@ setMethod("as.magpie",
 
   # check for additional spatial identifiers
   if (is.null(spatial)) {
-    # if there are ".." in the name everything else must be spatial
-    if (any(grepl("..", names(x), fixed = TRUE))) {
-      spatial <- grep("..", names(x), fixed = TRUE, invert = TRUE, value = TRUE)
-    }
+    # select all layers with a leading dot in its name as spatial dimension
+    spatial <- grep("^\\.", names(x), value = TRUE)
   } else {
     if (all(is.integer(spatial))) {
       spatial <- names(x)[spatial]
     }
   }
+  names(df) <- sub("^\\.", "", names(df))
+  spatial  <- sub("^\\.", "", spatial)
+
   idVars <- c(spatial, idVars)
 
   if (length(idVars) == 0) {

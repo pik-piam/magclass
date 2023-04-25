@@ -30,6 +30,9 @@ as.SpatVector <- function(x) { # nolint: object_name_linter
     stop("x must have an attribute geometry containing the polygon structure in WKT format!")
   }
   out <- terra::vect(attr(x, "geometry"), crs = attr(x, "crs"))
-  terra::values(out) <- as.data.frame(magclass::wrap(as.array(x), list(1, 2:3), sep = ".."))
+  spatDims <- getItems(x, dim = 1, split = TRUE, full = TRUE)
+  names(spatDims) <- paste0(".", names(spatDims))
+  data <- as.data.frame(magclass::wrap(as.array(x), list(1, 2:3), sep = ".."))
+  terra::values(out) <- cbind(spatDims, data)
   return(out)
 }
