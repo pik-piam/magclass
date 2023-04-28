@@ -2,7 +2,8 @@
 #' @importFrom data.table as.data.table tstrsplit melt
 
 #' @exportMethod as.magpie
-setGeneric("as.magpie", function(x, ...) standardGeneric("as.magpie"))
+setGeneric(
+  "as.magpie", function(x, ...) standardGeneric("as.magpie"))
 
 setMethod("as.magpie", signature(x = "magpie"), function(x) return(x))
 
@@ -320,12 +321,23 @@ setMethod("as.magpie",
 )
 
 
-.raster2magpie <- function(x, unit = "unknown", temporal = NULL) {
+.raster2magpie <- function(x, unit = "unknown", temporal = NULL, spatial = NULL) {
+  geometry <- NULL
+  idVars <- NULL
+  crs <- NULL
   if (inherits(x, "SpatRaster")) {
     if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required for raster conversions!")
     df <- as.data.frame(x, na.rm = TRUE, xy = TRUE)
     df$x <- sub(".", "p", df$x, fixed = TRUE)
     df$y <- sub(".", "p", df$y, fixed = TRUE)
+    idVars <- c("x", "y")
+    crs <- terra::crs(x)
+  } else if (inherits(x, "SpatVector")) {
+    if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required for raster conversions!")
+    df <- as.data.frame(x, geom = "WKT")
+    geometry <- df$geometry
+    df$geometry <- NULL
+    crs <- terra::crs(x)
   } else {
     if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required for raster conversions!")
     # na.rm = TRUE seems to remove all cells in which at least one layer has an NA. Hence, use na.rm = FALSE
@@ -337,28 +349,57 @@ setMethod("as.magpie",
     co <- matrix(sub(".", "p", co, fixed = TRUE), ncol = 2)
     colnames(co) <- c("x", "y")
     df <- cbind(co, df)
+    idVars <- c("x", "y")
+  }
+
+  # check for additional spatial identifiers
+  if (is.null(spatial)) {
+    # select all layers with a leading dot in its name as spatial dimension
+    spatial <- grep("^\\.", names(x), value = TRUE)
+  } else {
+    if (all(is.integer(spatial))) {
+      spatial <- names(x)[spatial]
+    }
+  }
+  names(df) <- sub("^\\.", "", names(df))
+  spatial  <- sub("^\\.", "", spatial)
+
+  idVars <- c(spatial, idVars)
+
+  if (length(idVars) == 0) {
+    df <- cbind(id = df[[1]], df)
+    idVars <- "id"
   }
 
   df <- as.data.table(df)
-  df <- melt(df, id.vars = c("x", "y"))
+  df <- melt(df, id.vars = idVars)
   variable <- as.data.table(tstrsplit(df$variable, "..", fixed = TRUE))
-  if (!is.null(temporal)) temporal <- temporal + 2
+  if (!is.null(temporal)) temporal <- temporal + length(idVars)
   if (ncol(variable) == 1) {
     if (all(grepl("^[yX][0-9]*$", variable[[1]], perl = TRUE))) {
       variable[[1]] <- sub("^X", "y", variable[[1]], perl = TRUE)
       names(variable) <- "year"
-      if (is.null(temporal)) temporal <- 3
+      if (is.null(temporal)) temporal <- length(idVars) + 1
     } else {
       names(variable) <- "data"
     }
   } else if (ncol(variable) == 2) {
     names(variable) <- c("year", "data")
-    if (is.null(temporal)) temporal <- 3
+    if (is.null(temporal)) temporal <- length(idVars) + 1
   } else {
     stop("Reserved dimension separator \"..\" occurred more than once in layer names! Cannot convert raster object")
   }
-  df <- cbind(df[, 1:2], variable, df[, 4])
-  out <- tidy2magpie(df, spatial = 1:2, temporal = temporal)
+  df <- as.data.frame(df)
+  baseDims <- which(!(colnames(df) %in% c("variable", "value")))
+  df <- cbind(df[, baseDims, drop = FALSE], variable, df[, "value", drop = FALSE])
+  out <- tidy2magpie(df, spatial = idVars, temporal = temporal)
+  if (!is.null(geometry)) {
+    names(geometry) <- getItems(out, dim = 1)
+    attr(out, "geometry") <- geometry
+  }
+  if (!is.null(crs)) {
+    attr(out, "crs") <- crs
+  }
   return(out)
 }
 
@@ -387,5 +428,12 @@ setMethod("as.magpie",
           signature(x = "SpatRaster"),
           function(x, unit = "unknown", temporal = NULL, ...) {
             return(.raster2magpie(x, unit = unit, temporal = temporal))
+          }
+)
+
+setMethod("as.magpie",
+          signature(x = "SpatVector"),
+          function(x, unit = "unknown", temporal = NULL, spatial = NULL, ...) {
+            return(.raster2magpie(x, unit = unit, temporal = temporal, spatial = spatial))
           }
 )

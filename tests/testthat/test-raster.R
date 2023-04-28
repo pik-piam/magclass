@@ -21,6 +21,13 @@ test_that("terra convertion does not alter data", {
         expect_equal(r[[names(r)]], terra::extend(r2[[names(r)]], terra::ext(r)))
         m2 <- as.magpie(r2)
         expect_identical(m, m2)
+        v <- terra::as.polygons(r)
+        m3 <- as.magpie(v)
+        v2 <- as.SpatVector(m3)
+        m4 <- as.magpie(v2)
+        expect_equal(m3, m4)
+        v3 <- as.SpatVector(m4)
+        expect_equal(v2, v3)
       }
     }
   }
