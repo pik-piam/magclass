@@ -227,12 +227,12 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       if (is.null(comment)) {
        unit <- "not specified"
       } else {
-        indicators <- substring(text = comment, first = 1, last = regexpr(pattern = ": ", text = comment) - 1)
-        units <- substring(text = comment, first = (regexpr(pattern = ": ", text = comment) + 2))
-        if (!any(indicators == "unit")) {
-          unit <- "not specified"
+        indicators <- sub(":.*$", "", comment)
+        units <- sub("^.*: ", "", comment)
+        if (any(grepl("unit", indicators))) {
+          unit <- units[grep("unit", indicators)]
         } else {
-          unit <- units[which(indicators == "unit")]
+          unit <- "not specified"
         }
       }
       # raster is using partial matching resulting in a warning if warnPartialMatchDollar is set
