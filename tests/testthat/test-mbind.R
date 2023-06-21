@@ -1,4 +1,3 @@
-
 a  <- maxample("animal")
 p  <- maxample("pop")
 attr(p, "Metadata") <- NULL # nolint: object_name_linter # nolint: linter_name_linter
@@ -25,4 +24,74 @@ test_that("mbind works", {
     getItems(p0, dim = i) <- NULL
     expect_null(getItems(mbind(p0, p0), dim = i))
   }
+})
+
+test_that("mbind checks duplicated dimensions", {
+  skip_if_not_installed("withr")
+
+  namesA <- c("foo", "bar")
+  namesB <- c("foo|bar", "foo|baz", "foo|+|baz", "foo|++|bar", "foobar")
+  magpieA <- new.magpie(names = namesA)
+  magpieB <- new.magpie(names = namesB)
+
+  withr::with_options(
+    # no checking of duplicates
+    new = list(MAGPIE_MBIND_DUPLICATES = NULL),
+    code = {
+      expect_no_condition(
+        object = mbind(magpieA, magpieA[, , namesA[-1]]))
+
+      expect_no_condition(
+        object = mbind(magpieB[, , namesB[-1]], magpieB[, , namesB[1]]))
+    })
+
+  withr::with_options(
+    # duplicates generate a warning
+    new = list(MAGPIE_MBIND_DUPLICATES = "warning"),
+    code = {
+      expect_warning(
+        object = mbind(magpieA, magpieA[, , namesA[-1]]),
+        regexp = "mbind introduced duplicated dimnames")
+
+      expect_no_warning(
+        object = mbind(magpieB[, , namesB[-1]], magpieB[, , namesB[1]]))
+    })
+
+  withr::with_options(
+    # duplicates including pluses generate a warning
+    new = list(MAGPIE_MBIND_DUPLICATES = "warning_remove-plus"),
+    code = {
+      expect_warning(
+        object = mbind(magpieA, magpieA[, , namesA[-1]]),
+        regexp = "mbind introduced duplicated dimnames")
+
+      expect_warning(
+        object = mbind(magpieB[, , namesB[-1]], magpieB[, , namesB[1]]),
+        regexp = "mbind introduced duplicated dimnames")
+    })
+
+  withr::with_options(
+    # duplicates generate an error
+    new = list(MAGPIE_MBIND_DUPLICATES = "stop"),
+    code = {
+      expect_error(
+        object = mbind(magpieA, magpieA[, , namesA[-1]]),
+        regexp = "mbind would introduce duplicated dimnames")
+
+      expect_no_error(
+        object = mbind(magpieB[, , namesB[-1]], magpieB[, , namesB[1]]))
+    })
+
+  withr::with_options(
+    # duplicates including pluses generate an error
+    new = list(MAGPIE_MBIND_DUPLICATES = "stop_remove-plus"),
+    code = {
+      expect_error(
+        object = mbind(magpieA, magpieA[, , namesA[-1]]),
+        regexp = "mbind would introduce duplicated dimnames")
+
+      expect_error(
+        object = mbind(magpieB[, , namesB[-1]], magpieB[, , namesB[1]]),
+        regexp = "mbind would introduce duplicated dimnames")
+    })
 })

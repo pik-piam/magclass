@@ -4,9 +4,19 @@
 #' differs in the temporal or spatial dimension each year or region/cell must
 #' appear only once!
 #'
+#' `mbind()` checks the R option `MAGPIE_MBIND_DUPLICATES`, which should have
+#' the format `'<reaction>_<filter>'`.  If <reaction> is either `'warning'` or
+#' `'stop'`, `mbind()` will raise a warning or an error when it introduces
+#' duplicates in the third dimension of the resulting `magpie` object.  If
+#' <filter> is set to `'remove-plus'`, it will check for duplicates disregarding
+#' `'|+'` components in the names (as are used for REMIND output variables).
+#' This is intended for debugging purposes.  See also the examples.
+#'
+#' @md
 #' @param ... MAgPIE objects or a list of MAgPIE objects that should be merged.
 #' @return The merged MAgPIE object
 #' @author Jan Philipp Dietrich, Misko Stevanovic
+#'
 #' @seealso \code{"\linkS4class{magpie}"}
 #' @examples
 #'
@@ -22,6 +32,12 @@
 #' a <- mbind(pop, pop)
 #' dim(pop)
 #' dim(a)
+#'
+#' \dontrun{
+#' options(MAGPIE_MBIND_DUPLICATES = "warning_remove-plus")
+#' mbind(new.magpie(names = 'foo|bar'), new.magpie(names = 'foo|+|bar'))
+#' }
+#'
 #' @importFrom methods new
 #' @importFrom abind abind
 #' @export
@@ -97,6 +113,44 @@ mbind <- function(...) { #nolint
     }
   }
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
+
+  # check for introduced duplicates in third dimension, if option is set ----
+  duplicatesOption <- strsplit(
+    x = getOption("MAGPIE_MBIND_DUPLICATES", default = ""), split = "_",
+    fixed = TRUE)[[1]]
+
+  if (duplicatesOption[1] %in% c("warning", "stop")) {
+    .stripPlus <- function(x) {
+      gsub("\\|\\++", "", x)
+    }
+
+    .allMatches <- function(x, y) {
+      unlist(lapply(x, function(x) {
+        paste(rev(sort(y[x == .stripPlus(y)])), collapse = ", ")
+      }))
+    }
+
+    testNames <- outputNames <- getNames(output)
+
+    if (isTRUE("remove-plus" == duplicatesOption[2]))
+      testNames <- .stripPlus(outputNames)
+
+    duplicates <- rle(sort(testNames))
+    duplicates <- duplicates[["values"]][1 != duplicates[["lengths"]]]
+
+    if (isTRUE("remove-plus" == duplicatesOption[2]))
+      duplicates <- paste0("  ", .allMatches(duplicates, outputNames))
+
+    if (length(duplicates)) {
+      if (isTRUE("warning" == duplicatesOption[1]))
+        warning(paste(c("mbind introduced duplicated dimnames: ", duplicates),
+                      collapse = "\n"))
+
+      if (isTRUE("stop" == duplicatesOption[1]))
+        stop(paste(c("mbind would introduce duplicated dimnames: ", duplicates),
+                   collapse = "\n"))
+    }
+  }
 
   return(output)
 }
