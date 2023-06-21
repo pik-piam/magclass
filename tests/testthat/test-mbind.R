@@ -1,7 +1,7 @@
 
 a  <- maxample("animal")
 p  <- maxample("pop")
-attr(p, "Metadata") <- NULL
+attr(p, "Metadata") <- NULL # nolint: object_name_linter # nolint: linter_name_linter
 
 test_that("mbind works", {
   expect_identical(mbind(p, p), p[, , c(1:2, 1:2)])
