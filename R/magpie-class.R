@@ -308,12 +308,7 @@ setMethod("[", # nolint
     if (length(sys.call(-1)) == 3) {
       return(x@.Data[i])
     }
-    if (!missing(k) && .isFALSE(k)) {
-      # still need to handle weird k=FALSE case separately
-      x@.Data <- x@.Data[i, j, , drop = FALSE]
-    } else {
-      x@.Data <- x@.Data[i, j, k, drop = FALSE]
-    }
+    x@.Data <- x@.Data[i, j, k, drop = FALSE]
     if (drop) x <- collapseNames(x)
     return(x)
   }
