@@ -359,7 +359,7 @@ setMethod("[<-", # nolint
       if (is.character(k) || is.list(k)) k <- .dimextract(x, k, 3, pmatch = pmatch)
     }
     # if [] contains only 1 argument, the number of elements in sys.call(-1)
-    # is 4. This indicates that it is a vectorised call of the form x[i]
+    # is 4. This indicates that it is a vectorised call of the form x[i] <- value
     if (length(sys.call(which = -1)) == 4) {
       x@.Data[i] <- value
       return(x)
