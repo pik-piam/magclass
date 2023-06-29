@@ -52,6 +52,7 @@ Suggests:
     quitte,
     raster,
     rmarkdown,
+    sf,
     terra,
     testthat (>= 3.1.5),
     tibble,
