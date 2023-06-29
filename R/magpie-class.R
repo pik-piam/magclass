@@ -369,11 +369,10 @@ setMethod("[<-", # nolint
       if (missing(j)) jj <- seq_len(dim(x)[2]) else jj <- j
       if (missing(k)) kk <- seq_len(dim(x)[3]) else kk <- k
       value <- magpie_expand(value, x[ii, jj, kk])
-    } else if (length(value) != length(x@.Data[i, j, k]) & length(value) != 1) {
+    } else if (length(value) != length(x@.Data[i, j, k]) && length(value) != 1) {
       # dangerous writing of value as order might be wrong!
       stop("Replacement does not work! Different replacement length!")
-    } else if (length(value) != 1 && !is.null(getOption("magclass.verbosity")) &&
-               getOption("magclass.verbosity") > 1) {
+    } else if (length(value) != 1 && getOption("magclass.verbosity", default = 0) > 1) {
       message("NOTE ([<-): Dangerous replacement! As replacement value is not",
         " an MAgPIE object name checking is deactivated!\n")
     }
