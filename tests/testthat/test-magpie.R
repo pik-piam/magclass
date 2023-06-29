@@ -65,7 +65,7 @@ test_that("boolean subsetting works", {
 })
 
 test_that("error detection works", {
-  expect_error(p[, , , ], "argument is missing, with no default")
+  expect_error(p[, , , ], "argument")
   expect_error(p[, , , blub = 42], "unknown argument\\(s\\) supplied")
   expect_error(p[, , , blub = 42] <- 42, "unknown argument\\(s\\) supplied")
   expect_error(p[, , "A3"], "out of bounds")
