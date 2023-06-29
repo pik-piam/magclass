@@ -273,7 +273,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
 setMethod("[", # nolint
   signature(x = "magpie"),
   function(x, i, j, k, ..., pmatch = FALSE, invert = FALSE, dim = NULL, drop = FALSE) {
-    if (length(list(...)) > 0) {
+    if (...length() > 0) {
       stop("unknown argument(s) supplied!")
     }
     if (!is.null(dim)) {
@@ -305,6 +305,8 @@ setMethod("[", # nolint
       j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
     }
     if (!missing(k)) k <- .dimextract(x, k, 3, pmatch = pmatch, invert = invert)
+    # if [] contains only 1 argument, the number of elements in sys.call(-1)
+    # is 3. This indicates that it is a vectorised call of the form x[i]
     if (length(sys.call(-1)) == 3) {
       return(x@.Data[i])
     }
@@ -318,7 +320,7 @@ setMethod("[", # nolint
 setMethod("[<-", # nolint
   signature(x = "magpie"),
   function(x, i, j, k, ..., pmatch = FALSE, dim = NULL, value) {
-    if (length(list(...)) > 0) {
+    if (...length() > 0) {
       stop("unknown argument(s) supplied!")
     }
     if (!is.null(dim)) {
@@ -356,6 +358,8 @@ setMethod("[<-", # nolint
       if (is.factor(k)) k <- as.character(k)
       if (is.character(k) || is.list(k)) k <- .dimextract(x, k, 3, pmatch = pmatch)
     }
+    # if [] contains only 1 argument, the number of elements in sys.call(-1)
+    # is 4. This indicates that it is a vectorised call of the form x[i]
     if (length(sys.call(which = -1)) == 4) {
       x@.Data[i] <- value
       return(x)
