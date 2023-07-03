@@ -117,7 +117,7 @@
 
 setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
 
-.mselectDF <- function(x, df) { #nolint
+.mselectDF <- function(x, df) { # nolint
   if (is.null(names(dimnames(x)))) stop("Dimnames must have names in order to use mselect!")
 
   dims <- dimCode(names(df), x)
@@ -139,9 +139,9 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     " Mixtures across main dimensions are not allowed!")
 
   sdims <- as.integer(substring(dims, 3))
-  maxdim <- nchar(gsub("[^\\.]", "", names(dimnames(x))[maindim])) + 1 #nolint
+  maxdim <- nchar(gsub("[^\\.]", "", names(dimnames(x))[maindim])) + 1 # nolint
   if (nrow(df) == 1) df[1, ] <- escapeRegex(df[1, ])
-  if (nrow(df) > 1) df <- data.frame(sapply(df, escapeRegex)) #nolint
+  if (nrow(df) > 1) df <- data.frame(sapply(df, escapeRegex)) # nolint
   dmissing <- which(!(1:maxdim %in% sdims))
   sdims <- c(sdims, dmissing)
   for (d in dmissing) df <- cbind(df, "[^\\.]*")
@@ -191,7 +191,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   return(x)
 }
 
-.dimextract <- function(x, i, dim, pmatch = FALSE, invert = FALSE) { #nolint
+.dimextract <- function(x, i, dim, pmatch = FALSE, invert = FALSE) { # nolint
 
   if (is.magpie(i) && is.logical(i)) {
     # check whether input is a 1D magpie object
@@ -270,9 +270,12 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
 }
 
 #' @exportMethod [
-setMethod("[", #nolint
+setMethod("[", # nolint
   signature(x = "magpie"),
-  function(x, i, j, k, drop = FALSE, pmatch = FALSE, invert = FALSE, dim = NULL) {
+  function(x, i, j, k, ..., pmatch = FALSE, invert = FALSE, dim = NULL, drop = FALSE) {
+    if (...length() > 0) {
+      stop("unknown argument(s) supplied!")
+    }
     if (!is.null(dim)) {
       if (!is.element(dim, 1:3)) stop("Invalid dim selection (allowed: 1, 2 or 3)")
       if (!missing(j) || (!missing(k) && !is.null(k) && k != FALSE)) {
@@ -302,38 +305,28 @@ setMethod("[", #nolint
       j <- .dimextract(x, j, 2, pmatch = pmatch, invert = invert)
     }
     if (!missing(k)) k <- .dimextract(x, k, 3, pmatch = pmatch, invert = invert)
-
-    if (!missing(i) && missing(j) && !missing(k) && .isFALSE(k) &&
-      .isFALSE(drop) && .isFALSE(pmatch) && .isFALSE(invert)) {
-      # there is a weird case in which k is actually missing but is getting the
-      # value of the next argument in line (drop)
-      # this one is catched via .isFALSE(k)
-      # in addition non-default settings for drop, pmatch and invert indicate that object should still be
-      # returned as magpie object (and not as numeric as the following line will do)
+    # if [] contains only 1 argument, the number of elements in sys.call(-1)
+    # is 3. This indicates that it is a vectorised call of the form x[i]
+    if (length(sys.call(-1)) == 3) {
       return(x@.Data[i])
     }
-    if (!missing(k) && .isFALSE(k)) {
-      # still need to handle weird k=FALSE case separately
-      x@.Data <- x@.Data[i, j, , drop = FALSE]
-    } else {
-      x@.Data <- x@.Data[i, j, k, drop = FALSE]
-    }
+    x@.Data <- x@.Data[i, j, k, drop = FALSE]
     if (drop) x <- collapseNames(x)
     return(x)
   }
 )
 
 #' @exportMethod [<-
-setMethod("[<-", #nolint
+setMethod("[<-", # nolint
   signature(x = "magpie"),
-  function(x, i, j, k, value, pmatch = FALSE, dim = NULL) {
+  function(x, i, j, k, ..., pmatch = FALSE, dim = NULL, value) {
+    if (...length() > 0) {
+      stop("unknown argument(s) supplied!")
+    }
     if (!is.null(dim)) {
       if (!is.element(dim, 1:3)) stop("Invalid dim selection (allowed: 1, 2 or 3)")
       if (!missing(j) || (!missing(k) && !missing(value))) {
         stop("Only single dimension selection allowed when dim is set!")
-      }
-      if (missing(value) && !missing(k)) {
-        value <- k
       }
       if (dim == 1) {
         x[i, , , pmatch = pmatch] <- value
@@ -365,26 +358,26 @@ setMethod("[<-", #nolint
       if (is.factor(k)) k <- as.character(k)
       if (is.character(k) || is.list(k)) k <- .dimextract(x, k, 3, pmatch = pmatch)
     }
-    if (missing(value)) {
-      x@.Data[i] <- k
-      return(x)
-    } else {
-      if (is.magpie(value)) {
-        if (missing(i)) ii <- seq_len(dim(x)[1]) else ii <- i
-        if (missing(j)) jj <- seq_len(dim(x)[2]) else jj <- j
-        if (missing(k)) kk <- seq_len(dim(x)[3]) else kk <- k
-        value <- magpie_expand(value, x[ii, jj, kk])
-      } else if (length(value) != length(x@.Data[i, j, k]) & length(value) != 1) {
-        # dangerous writing of value as order might be wrong!
-        stop("Replacement does not work! Different replacement length!")
-      } else if (length(value) != 1 && !is.null(getOption("magclass.verbosity")) &&
-                 getOption("magclass.verbosity") > 1) {
-        message("NOTE ([<-): Dangerous replacement! As replacement value is not",
-          " an MAgPIE object name checking is deactivated!\n")
-      }
-      x@.Data[i, j, k] <- value
+    # if [] contains only 1 argument, the number of elements in sys.call(-1)
+    # is 4. This indicates that it is a vectorised call of the form x[i] <- value
+    if (length(sys.call(which = -1)) == 4) {
+      x@.Data[i] <- value
       return(x)
     }
+    if (is.magpie(value)) {
+      if (missing(i)) ii <- seq_len(dim(x)[1]) else ii <- i
+      if (missing(j)) jj <- seq_len(dim(x)[2]) else jj <- j
+      if (missing(k)) kk <- seq_len(dim(x)[3]) else kk <- k
+      value <- magpie_expand(value, x[ii, jj, kk])
+    } else if (length(value) != length(x@.Data[i, j, k]) && length(value) != 1) {
+      # dangerous writing of value as order might be wrong!
+      stop("Replacement does not work! Different replacement length!")
+    } else if (length(value) != 1 && getOption("magclass.verbosity", default = 0) > 1) {
+      message("NOTE ([<-): Dangerous replacement! As replacement value is not",
+        " an MAgPIE object name checking is deactivated!\n")
+    }
+    x@.Data[i, j, k] <- value
+    return(x)
   }
 )
 

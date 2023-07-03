@@ -65,13 +65,16 @@ test_that("boolean subsetting works", {
 })
 
 test_that("error detection works", {
+  expect_error(p[, , , ], "argument")
+  expect_error(p[, , , blub = 42], "unknown argument\\(s\\) supplied")
+  expect_error(p[, , , blub = 42] <- 42, "unknown argument\\(s\\) supplied")
   expect_error(p[, , "A3"], "out of bounds")
   expect_error(p[, , list("A3")], "out of bounds")
   expect_error(p[, , list(scenario = "A3")], "out of bounds")
   expect_error(p[, , list(blub = "A2")], "subdimension does not exist")
 
   names(dimnames(p)) <- NULL
-  expect_error(p[, , list(scenario = "A2")], "subdimension does not exist \\(missing set names\\)") #nolint
+  expect_error(p[, , list(scenario = "A2")], "subdimension does not exist \\(missing set names\\)") # nolint
 
   dimnames(p)[[3]] <- NULL
   expect_error(p[, , "A2"], "Missing element names")
@@ -152,11 +155,11 @@ test_that("data.frame subsetting works", {
   expect_identical(getItems(a[df[3:2][w, ]], 3), getItems(a, 3)[w])
 
   # Unknown dimensions to be added in output!
-  df$blub <- paste0("bl", 1:dim(df)[1])
+  df$blub <- paste0("bl", seq_len(dim(df)[1]))
   expect_identical(getItems(a[df[w, ]], 3), paste(getItems(a, 3), df$blub, sep = ".")[w])
 
   df2 <- df
-  df2$ble <- paste0("ble", 1:dim(df2)[1])
+  df2$ble <- paste0("ble", seq_len(dim(df2)[1]))
   expect_identical(getItems(a[df2[w, ]], 3), paste(getItems(a, 3), df2$blub, df2$ble, sep = ".")[w])
 
   # subselections work
