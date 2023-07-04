@@ -18,7 +18,15 @@ test_that("terra convertion does not alter data", {
         expect_equal(ndata(m), j)
         expect_equal(nyears(m), t)
         r2 <- as.SpatRaster(m)
-        expect_equal(r[[names(r)]], terra::extend(r2[[names(r)]], terra::ext(r)))
+        noTime <- function(a) {
+          terra::time(a) <- NULL
+          return(a)
+        }
+        # comparing times does not work here, so compare separately
+        expect_equal(noTime(r), noTime(terra::extend(r2[[names(r)]], terra::ext(r))))
+        if (t > 1) {
+          expect_equal(terra::time(r2), rep_len(1900 + 1:t, terra::nlyr(r)))
+        }
         m2 <- as.magpie(r2)
         expect_identical(m, m2)
         v <- terra::as.polygons(r)

@@ -54,5 +54,8 @@ as.SpatRaster <- function(x, res = NULL) { # nolint: object_name_linter
   target <- terra::rast(ncols = 360 / res, nrows = 180 / res, nlyrs = nyears(x) * ndata(x))
   out <- terra::rast(xyz, crs = terra::crs(target))
   names(out) <- colnames(m)
+  if (all(grepl("^y[0-9]+\\.\\.", names(out)))) {
+    terra::time(out, tstep = "years") <- as.integer(substr(names(out), 2, 5))
+  }
   return(out)
 }
