@@ -245,6 +245,12 @@ setMethod("as.magpie",
       }
     }
     if (!is.null(datacol)) {
+      if (is.character(datacol)) {
+        datacol <- which(colnames(x) == datacol)
+        if (length(datacol) != 1) {
+          stop("datacol does not clearly match one column name.")
+        }
+      }
       if (datacol == 1) return(copy.attributes(x, as.magpie(as.matrix(x), ...)))
       if (datacol == dim(x)[2]) return(tidy2magpie(x, ...))
       x[[datacol - 1]] <- as.factor(x[[datacol - 1]])
