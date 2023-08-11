@@ -179,3 +179,28 @@ test_that("edge cases work", {
   expect_silent(b <- read.magpie(file.path(td, "test.csv")))
   expect_equivalent(a, b)
 })
+
+test_that("writeMagpieNC works", {
+  md <- magclassdata$half_deg
+  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(1000, 1001), fill = c(md$lon, md$lat))
+  m10 <- mbind(m05, m05)
+  getNames(m10) <- c("bla", "blub")
+
+  tmpfile <- withr::local_tempfile(fileext = ".nc")
+  writeMagpieNC(m10, tmpfile)
+  m10in <- readMagpieNC(tmpfile)
+
+  getCoords(m10) <- magclass:::magclassdata$half_deg[c("lon", "lat")]
+
+  getSortedCoords <- function(m) {
+    xy <- getCoords(m)
+    xy <- xy[order(xy$x, xy$y), ]
+    rownames(xy) <- NULL
+    return(xy)
+  }
+  expect_identical(getSortedCoords(m10), getSortedCoords(m10in))
+
+  m10 <- collapseDim(m10, dim = c(1.1, 1.2))
+  m10 <- m10[getItems(m10in, dim = 1), , ]
+  expect_identical(m10, m10in)
+})

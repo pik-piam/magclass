@@ -190,8 +190,10 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
         varname <- sort(unique(unlist(lapply(tmp, function(x) x[2]))))
         zunit <- ifelse(all(isYear(years)), "years", "")
-        if (length(varname) != 1) stop("Currently no support for multiple variables for file type \"", file_type,
-                                "\". Please store each variable separately.")
+        if (length(varname) != 1) {
+          stop("Currently no support for multiple variables for file type \"", file_type,
+               "\". Please store each variable separately.")
+        }
       }
       if (file_type == "asc") {
         if (dim(x)[3] != 1) stop("asc does not support multiple year layers. Please choose just one!")
@@ -225,7 +227,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       }
       if (is.null(varnames)) varnames <- "Variable"
       if (is.null(comment)) {
-       unit <- "not specified"
+        unit <- "not specified"
       } else {
         indicators <- sub(":.*$", "", comment)
         units <- sub("^.*: ", "", comment)

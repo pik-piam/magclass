@@ -18,10 +18,19 @@ test_that("terra convertion does not alter data", {
         expect_equal(ndata(m), j)
         expect_equal(nyears(m), t)
         r2 <- as.SpatRaster(m)
+
+        if (is.null(getItems(m, 2))) {
+          expect_error(as.SpatRasterDataset(m), "grepl.+ not (all )?TRUE")
+        } else {
+          srd <- as.SpatRasterDataset(m)
+          expect_identical(names(srd), getItems(m, 3))
+        }
+
         noTime <- function(a) {
           terra::time(a) <- NULL
           return(a)
         }
+
         # comparing times does not work here, so compare separately
         expect_equal(noTime(r), noTime(terra::extend(r2[[names(r)]], terra::ext(r))))
         if (t > 1) {
