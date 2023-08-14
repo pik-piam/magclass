@@ -16,7 +16,7 @@ A SpatRasterDataset object
 Convert magclass object to a SpatRasterDataset object. Requires the terra package.
 }
 \details{
-Calls \code{\link{as.SpatRaster}} and then \code{\link{toolSpatRasterToDataset}}.
+Calls \code{\link{as.SpatRaster}} and then \code{\link{spatRasterToDataset}}.
 }
 \author{
 Pascal Sauer

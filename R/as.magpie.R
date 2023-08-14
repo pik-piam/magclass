@@ -431,12 +431,6 @@ setMethod("as.magpie",
 )
 
 setMethod("as.magpie",
-          signature(x = "SpatRasterDataset"),
-          function(x, unit = "unknown", temporal = NULL, ...) {
-            return(.raster2magpie(x, unit = unit, temporal = temporal))
-          })
-
-setMethod("as.magpie",
           signature(x = "SpatRaster"),
           function(x, unit = "unknown", temporal = NULL, ...) {
             return(.raster2magpie(x, unit = unit, temporal = temporal))

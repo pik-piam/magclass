@@ -4,14 +4,27 @@
 \alias{writeMagpieNC}
 \title{writeMagpieNC}
 \usage{
-writeMagpieNC(x, filename, overwrite = TRUE, ..., compression = 4)
+writeMagpieNC(
+  x,
+  filename,
+  overwrite = TRUE,
+  zname = "time",
+  ...,
+  compression = 4
+)
 }
 \arguments{
 \item{x}{a magpie object}
 
 \item{filename}{the name of the NetCDF file to be created}
 
+\item{overwrite}{whether to overwrite an existing file}
+
+\item{zname}{the name of the time dimension}
+
 \item{...}{additional arguments passed to terra::writeCDF}
+
+\item{compression}{the compression level to be used (1 = no compression, 9 = maximum compression)}
 }
 \value{
 invisibly the SpatRasterDataset created in the process of writing the NetCDF file

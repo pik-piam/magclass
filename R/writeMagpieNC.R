@@ -7,7 +7,10 @@
 #'
 #' @param x a magpie object
 #' @param filename the name of the NetCDF file to be created
+#' @param overwrite whether to overwrite an existing file
+#' @param zname the name of the time dimension
 #' @param ... additional arguments passed to terra::writeCDF
+#' @param compression the compression level to be used (1 = no compression, 9 = maximum compression)
 #' @return invisibly the SpatRasterDataset created in the process of writing the NetCDF file
 #' @author Pascal Sauer
 #' #export
