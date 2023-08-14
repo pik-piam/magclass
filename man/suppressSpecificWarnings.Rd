@@ -25,5 +25,5 @@ warnings if they match the given pattern.
 \code{\link{suppressWarnings}}
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

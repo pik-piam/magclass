@@ -8,7 +8,7 @@
 #'
 #' @param object MAgPIE object
 #' @param ... arguments to be passed to or from other methods.
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @seealso \code{\link[utils]{str}}
 #' @examples
 #' str(maxample("pop"))
