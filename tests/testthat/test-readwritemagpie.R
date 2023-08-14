@@ -180,7 +180,7 @@ test_that("edge cases work", {
   expect_equivalent(a, b)
 })
 
-test_that("writeMagpieNC works", {
+test_that("write/readMagpieNC works", {
   md <- magclassdata$half_deg
   m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(1000, 1001), fill = c(md$lon, md$lat))
   m10 <- mbind(m05, m05)

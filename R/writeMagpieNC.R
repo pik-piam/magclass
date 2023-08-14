@@ -10,6 +10,7 @@
 #' @param ... additional arguments passed to terra::writeCDF
 #' @return invisibly the SpatRasterDataset created in the process of writing the NetCDF file
 #' @author Pascal Sauer
+#' #export
 writeMagpieNC <- function(x, filename, overwrite = TRUE, ..., compression = 4) {
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("The package \"terra\" is required!")

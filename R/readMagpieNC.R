@@ -8,6 +8,7 @@
 #' @param filename the name of the NetCDF file to be read
 #' @return the newly created magpie object
 #' @author Pascal Sauer
+#' @export
 readMagpieNC <- function(filename) {
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("The package \"terra\" is required!")
