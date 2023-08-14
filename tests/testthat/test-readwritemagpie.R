@@ -182,7 +182,7 @@ test_that("edge cases work", {
 
 test_that("write/readMagpieNC works", {
   md <- magclassdata$half_deg
-  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(1000, 1001), fill = c(md$lon, md$lat))
+  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = 1000:1001, fill = c(md$lon, md$lat))
   m10 <- mbind(m05, m05)
   getNames(m10) <- c("bla", "blub")
 

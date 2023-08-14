@@ -13,6 +13,7 @@ readMagpieNC <- function(filename) {
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("The package \"terra\" is required!")
   }
+  # the time dimension works as intended, so this warning can be ignored
   x <- terra::sds(filename)
   x <- do.call(rbind, lapply(names(x), function(name) {
     years <- terra::time(x[name])

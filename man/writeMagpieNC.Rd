@@ -25,4 +25,5 @@ it is using the packages ncdf4 and raster, while this function uses terra.
 }
 \author{
 Pascal Sauer
+#export
 }

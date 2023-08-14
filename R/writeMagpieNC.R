@@ -11,10 +11,21 @@
 #' @return invisibly the SpatRasterDataset created in the process of writing the NetCDF file
 #' @author Pascal Sauer
 #' #export
-writeMagpieNC <- function(x, filename, overwrite = TRUE, ..., compression = 4) {
+writeMagpieNC <- function(x, filename, overwrite = TRUE, zname = "time", ..., compression = 4) {
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("The package \"terra\" is required!")
   }
-  return(invisible(terra::writeCDF(as.SpatRasterDataset(x), filename, overwrite = overwrite,
-                                   ..., compression = compression)))
+  spatRasterDataset <- as.SpatRasterDataset(x)
+  # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
+  suppressSpecificWarnings({
+    terra::writeCDF(spatRasterDataset, filename, overwrite = overwrite,
+                    ..., compression = compression)
+  }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
+
+  # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
+  nc <- ncdf4::nc_open(filename, write = TRUE)
+  ncdf4::ncatt_put(nc, zname, "axis", "T")
+  ncdf4::nc_close(nc)
+
+  return(invisible(spatRasterDataset))
 }
