@@ -21,7 +21,7 @@ writeMagpieNC <- function(x, filename, overwrite = TRUE, zname = "time", ..., co
   spatRasterDataset <- as.SpatRasterDataset(x)
   # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
   suppressSpecificWarnings({
-    terra::writeCDF(spatRasterDataset, filename, overwrite = overwrite,
+    terra::writeCDF(spatRasterDataset, filename, overwrite = overwrite, zname = zname,
                     ..., compression = compression)
   }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
 
