@@ -1,26 +1,38 @@
 #' Write MAgPIE-object to file
 #'
-#' Writes a MAgPIE-3D-array (cells,years,datacolumn) to a file in one of three
-#' MAgPIE formats (standard, "magpie", "magpie zipped")
+#' Writes a magpie object to a file. The file type is determined by the filename extension.
+#' The written file can be read again using \code{\link{read.magpie}}.
 #'
-#' This function can write 13 different MAgPIE file_types. "cs2" is the new
-#' standard format for cellular data with or without header and the first
-#' columns (year,regiospatial) or only (regiospatial), "cs2b" is identical to
-#' "cs2" except that it will suppress the data name if it has only 1 element
-#' in the data dimension. "csv" is the standard format for regional
-#' data with or without header and the first columns (year,region,cellnumber)
-#' or only (region,cellnumber), "cs3" is another csv format which is
+#' This function supports writing the following file types:
+#' \itemize{
+#' \item "cs2" is the new standard format for cellular data with or without header
+#' and the first columns (year,regiospatial) or only (regiospatial)
+#' \item "cs2b" is identical to "cs2" except that it will suppress the data name
+#' if it has only 1 element in the data dimension.
+#' \item "csv" is the standard format for regional data with or without header and
+#' the first columns (year,region,cellnumber) or only (region,cellnumber)
+#' \item "cs3" is another csv format which is
 #' specifically designed for multidimensional data for usage in GAMS.
-#' All these variants are written without further specification. "rds" is
-#' a R-default format for storing R objects.
-#' "magpie" (.m) and "magpie zipped" (.mz) are new formats developed to allow a
-#' less storage intensive management of MAgPIE-data. The only difference
+#' \item "cs4" alternative multidimensional format compatible to GAMS, in contrast
+#' to cs3 it can also handle sparse data
+#' \item "csvr", "cs2r", "cs3r", "cs4r" which are the same formats as the ones
+#' previously explained with the only difference that they have a REMIND
+#' compatible format
+#' \item "cs5" a more generalized version of cs4
+#' \item "rds" is an R-default format for storing R objects
+#' \item "m" (magpie) and "mz" (magpie zipped) are new formats developed to allow
+#' a less storage intensive management of MAgPIE-data. The only difference
 #' between both formats is that .mz is gzipped whereas .m is not compressed. So
 #' .mz needs less memory, whereas .m might have a higher compatibility to other
-#' languages. "asc" is the ASCII grid format. "nc" is the netCDF format.  It
-#' can only be applied for half degree data and writes one file per year per
-#' data column. In the case that more than one year and data column is supplied
-#' several files are written with the structure filename_year_datacolumn.asc
+#' languages
+#' \item "asc" is the ASCII grid format. It can only be applied for gridded data
+#' and writes one file per year per data column. In the case that more than
+#' one year and data column is supplied several files are written with the
+#' structure filename_year_datacolumn.asc
+#' \item "tif" is the  GEOtiff format for gridded data.
+#' \item "grd" is the native raster format for gridded data.
+#' \item "nc" is the netCDF format for gridded data.
+#' }
 #'
 #' @param x a magclass object. An exception is that formats written via the raster package
 #' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
@@ -30,21 +42,11 @@
 #' to file_name and file_folder)
 #' @param file_folder folder the file should be written to (alternatively you
 #' can also specify the full path in file_name - wildcards are supported)
-#' @param file_type Format the data should be stored as. Currently the following formats
-#' are available: "rds" (default R-data format), "cs2" (cellular standard
-#' MAgPIE format), "cs2b" (cellular standard MAgPIE format with suppressed header ndata=1),
-#' "csv" (regional standard MAgPIE format), "cs3" (Format for multidimensional MAgPIE
-#' data, compatible to GAMS), "cs4" (alternative multidimensional format compatible
-#' to GAMS, in contrast to cs3 it can also handle sparse data), "cs5" (more generalized version of cs4),
-#' "csvr", "cs2r", "cs3r" and "cs4r" which are the same formats as the previous mentioned ones
-#' with the only difference that they have a REMIND compatible format, "m"
-#' (binary MAgPIE format "magpie"), "mz" (compressed binary MAgPIE format
-#' "magpie zipped"), "asc" (ASCII grid format), "nc" (netCDF format), "tif"
-#' (GEOtiff format) and "grd" (native raster format). If file_type=NULL
-#' the file ending of the file_name is used as format. If
-#' format is different to the formats mentioned standard MAgPIE format is
-#' assumed. Please be aware that the file_name is independent of the
-#' file_type you choose here, so no additional file ending will be added!
+#' @param file_type Format the data should be stored as. If file_type=NULL
+#' the file ending of the file_name is used as format. See detailed
+#' description for a list of available file types. Please be aware that the
+#' file_name is independent of the file_type you choose here, so no additional
+#' file ending will be added!
 #' @param append Decides whether an existing file should be overwritten (FALSE)
 #' or the data should be added to it (TRUE). Append = TRUE only works if the
 #' existing data can be combined with the new data using the mbind function
@@ -83,14 +85,14 @@
 #' [ sets | Set names with \\n as delimiter | character | 1*nchar_sets Byte] \cr
 #' [ metadata | serialized metadata information (currently not in use) | bytes | 1*nbyte_metadata Byte] \cr
 #'
-#' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
+#' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer
 #' @seealso \code{"\linkS4class{magpie}"},
 #' \code{\link{read.magpie}},\code{\link{mbind}}
 #' @examples
-#'
-#' # a <- read.magpie("lpj_yield_ir.csv")
-#' # write.magpie(a,"lpj_yield_ir.mz")
-#' @importFrom utils write.csv write.table
+#' pop <- maxample("pop")
+#' path <- tempfile(fileext = ".mz")
+#' write.magpie(pop, path)
+#' pop2 <- read.magpie(path)
 #' @export
 write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, append = FALSE, comment = NULL, # nolint
                          comment.char = "*", mode = NULL, zname = "Time",...) {       # nolint
@@ -288,7 +290,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       dimnames(x)[[2]] <- c(gsub("[^,]*(,|$)", "dummy\\1", x[1, 1]), header)
       zz <- file(filePath, open = "w")
       if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
-      write.csv(x, file = zz, quote = FALSE, row.names = FALSE)
+      utils::write.csv(x, file = zz, quote = FALSE, row.names = FALSE)
       close(zz)
       Sys.chmod(filePath, mode)
     } else if (file_type == "cs4" || file_type == "cs4r") {
@@ -309,7 +311,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       }
       zz <- file(filePath, open = "w")
       if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
-      write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
+      utils::write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
       close(zz)
       Sys.chmod(filePath, mode)
     } else if (file_type == "cs5") {
@@ -326,7 +328,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
       zz <- file(filePath, open = "w")
       if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
       writeLines(.formatMeta(attributes(output)[c("names", "dimtype")], comment.char), zz)
-      write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
+      utils::write.table(output, file = zz, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = ",")
       close(zz)
 
     } else {
@@ -372,7 +374,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         if (header && printRegions) dimnames(output)[[2]][1] <- "dummy"
         zz <- file(filePath, open = "w")
         if (any(comment != "")) writeLines(paste(comment.char, comment, sep = ""), zz)
-        write.table(output, zz, sep = ",", col.names = header, row.names = FALSE, quote = FALSE)
+        utils::write.table(output, zz, sep = ",", col.names = header, row.names = FALSE, quote = FALSE)
         close(zz)
         Sys.chmod(filePath, mode)
       } else {
@@ -401,7 +403,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
         }
         zz <- file(filePath, open = "w")
         if (any(comment != "")) writeLines(paste0(comment.char, comment, sep = ""), zz)
-        write.table(output, zz, sep = ",", col.names = header, row.names = FALSE, quote = FALSE)
+        utils::write.table(output, zz, sep = ",", col.names = header, row.names = FALSE, quote = FALSE)
         close(zz)
         Sys.chmod(filePath, mode)
       }
