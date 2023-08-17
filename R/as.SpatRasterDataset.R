@@ -8,6 +8,6 @@
 #' @return A SpatRasterDataset object
 #' @author Pascal Sauer
 #' @export
-as.SpatRasterDataset <- function(...) { # nolint: object_name_linter
+as.SpatRasterDataset <- function(...) { # nolint: object_name_linter.
   return(spatRasterToDataset(as.SpatRaster(...)))
 }

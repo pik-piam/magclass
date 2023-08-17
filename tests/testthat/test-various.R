@@ -1,7 +1,7 @@
 a <- maxample("animal")
-attr(a, "Metadata") <- NULL  # nolint: object_name_linter
+attr(a, "Metadata") <- NULL  # nolint: object_name_linter.
 p <- maxample("pop")
-attr(p, "Metadata") <- NULL  # nolint: object_name_linter
+attr(p, "Metadata") <- NULL  # nolint: object_name_linter.
 
 
 test_that("getComment works", {
@@ -26,12 +26,12 @@ test_that("Incorrect inputs are properly detected", {
 
 test_that("magpiesort works", {
   expect_error(magpiesort(1), "not a MAgPIE object")
-  expect_identical(magpiesort(a[, dim(a)[2]:1, ]), magpiesort(a)) # nolint: seq_linter
+  expect_identical(magpiesort(a[, dim(a)[2]:1, ]), magpiesort(a)) # nolint: seq_linter.
   expect_identical(getItems(magpiesort(a), dim = 1),
                    getItems(magpiesort(a[, , NULL]), dim = 1))
   expect_identical(getItems(magpiesort(a[1, , ]), dim = 2),
                    getItems(magpiesort(a[NULL, , ]), dim = 2))
-  expect_identical(magpiesort(p), magpiesort(p[dim(p)[1]:1, , ])) # nolint: seq_linter
+  expect_identical(magpiesort(p), magpiesort(p[dim(p)[1]:1, , ])) # nolint: seq_linter.
 })
 
 test_that("(un)wrap works", {
@@ -75,21 +75,23 @@ test_that("getCells works", {
 
 test_that("getRegions works", {
   a <- collapseDim(a, dim = c("x", "y"))
-  expect_identical(getRegions(a), c("NLD", "BEL", "LUX")) # nolint: undesirable_function_linter
-  expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated") # nolint: undesirable_function_linter
-  expect_identical(getRegions(a), "BLA") # nolint: undesirable_function_linter
+  expect_identical(getRegions(a), c("NLD", "BEL", "LUX")) # nolint: undesirable_function_linter.
+  expect_warning(getRegions(a) <- rep("BLA", ncells(a)), "deprecated") # nolint: undesirable_function_linter.
+  expect_identical(getRegions(a), "BLA") # nolint: undesirable_function_linter.
   a0 <- dimSums(a, dim = 1)
-  expect_null(getRegions(a0)) # nolint: undesirable_function_linter
-  expect_equal(nregions(a0), 1) # nolint: undesirable_function_linter
+  expect_null(getRegions(a0)) # nolint: undesirable_function_linter.
+  expect_equal(nregions(a0), 1) # nolint: undesirable_function_linter.
 })
 
 test_that("getRegionList works", {
   a <- collapseDim(a, dim = c("x", "y"))
-  expect_warning(rl <- getRegionList(a), "deprecated") # nolint: undesirable_function_linter
+  expect_warning(rl <- getRegionList(a), "deprecated") # nolint: undesirable_function_linter.
   expect_identical(rl, as.factor(getItems(a, dim = "country", full = TRUE)))
-  expect_error(suppressWarnings(getRegionList(a) <- "GLO"), "Lengths of RegionLists do not agree") # nolint: undesirable_function_linter
-  expect_warning(getRegionList(a) <- rep("GLO", dim(a)[1]), "deprecated") # nolint: undesirable_function_linter
-  expect_identical(suppressWarnings(getRegionList(a)), as.factor(rep("GLO", dim(a)[1]))) # nolint: undesirable_function_linter
+  expect_error(suppressWarnings(getRegionList(a) <- "GLO"), # nolint: undesirable_function_linter.
+               "Lengths of RegionLists do not agree")
+  expect_warning(getRegionList(a) <- rep("GLO", dim(a)[1]), "deprecated") # nolint: undesirable_function_linter.
+  expect_identical(suppressWarnings(getRegionList(a)), # nolint: undesirable_function_linter.
+                   as.factor(rep("GLO", dim(a)[1])))
 })
 
 test_that("rounding works", {

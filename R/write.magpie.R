@@ -94,8 +94,11 @@
 #' write.magpie(pop, path)
 #' pop2 <- read.magpie(path)
 #' @export
-write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, append = FALSE, comment = NULL, # nolint
-                         comment.char = "*", mode = NULL, zname = "Time",...) {       # nolint
+write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
+                         file_name, file_folder = "", file_type = NULL, # nolint: object_name_linter.
+                         append = FALSE, comment = NULL,
+                         comment.char = "*", # nolint: object_name_linter.
+                         mode = NULL, zname = "Time", ...) {
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -109,7 +112,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
 
     # if file-type is not mentioned file-ending is used as file-type
     if (is.null(file_type)) {
-      file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint
+      file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint: object_name_linter.
     }
     if (inherits(x, "RasterBrick") && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
       stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
@@ -117,7 +120,7 @@ write.magpie <- function(x, file_name, file_folder = "", file_type = NULL, appen
     if (!file_folder == "") {
       filePath <- paste(file_folder, file_name, sep = "/")
     } else {
-      filePath <- file_name # nolint
+      filePath <- file_name
     }
 
     # look for comment/additional information
