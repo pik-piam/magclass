@@ -414,5 +414,7 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
   } else {
     stop("Input is not in MAgPIE-format!")
   }
-  if (!is.null(mode)) Sys.umask(umask)
+  if (!is.null(mode)) {
+    Sys.umask(umask)
+  }
 }
