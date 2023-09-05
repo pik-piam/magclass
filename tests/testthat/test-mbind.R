@@ -1,7 +1,7 @@
 
 a  <- maxample("animal")
 p  <- maxample("pop")
-attr(p, "Metadata") <- NULL
+attr(p, "Metadata") <- NULL # nolint: object_name_linter
 
 test_that("mbind works", {
   expect_identical(mbind(p, p), p[, , c(1:2, 1:2)])
@@ -19,6 +19,7 @@ test_that("mbind works", {
   expect_error(mbind(p[1:3, 2:4, ], p), "Cannot handle")
   expect_error(mbind(p[, 1:3, 1], p), "Cannot handle")
   expect_error(mbind(p[1:3, , 1], p), "Cannot handle")
+  expect_error(suppressWarnings(mbind(p[, , c(1, 1)])), "Invalid object")
 
   for (i in 1:3) {
     p0 <- p[1, dim = i]
