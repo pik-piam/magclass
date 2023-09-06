@@ -28,7 +28,7 @@
 
 mbind <- function(...) { #nolint
   inputs <- list(...)
-  if (length(inputs) == 1 & is.list(inputs[[1]])) inputs <- inputs[[1]]
+  if (length(inputs) == 1 && is.list(inputs[[1]])) inputs <- inputs[[1]]
   # Remove NULL elements from list
   for (i in rev(seq_along(inputs))) {
     if (is.null(inputs[[i]])) {
@@ -42,6 +42,9 @@ mbind <- function(...) { #nolint
   # if all inputs are NULL, return NULL
   if (0 == length(inputs))
     return(NULL)
+
+  # store total number of elements to ensure that they remain unchanged
+  nElems <- sum(vapply(inputs, length, integer(1)))
 
   cells <- NULL
   elems <- NULL
@@ -63,9 +66,9 @@ mbind <- function(...) { #nolint
     years <- c(years, getYears(inputs[[i]]))
     elems <- c(elems, getNames(inputs[[i]]))
     cells <- c(cells, getCells(inputs[[i]]))
-    if (!diffspat & ncells(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][getCells(inputs[[1]]), , ]
-    if (!difftemp & nyears(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][, getYears(inputs[[1]]), ]
-    if (!diffdata &  ndata(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][, , getNames(inputs[[1]])]
+    if (!diffspat && ncells(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][getCells(inputs[[1]]), , ]
+    if (!difftemp && nyears(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][, getYears(inputs[[1]]), ]
+    if (!diffdata &&  ndata(inputs[[1]]) > 1) inputs[[i]] <- inputs[[i]][, , getNames(inputs[[1]])]
   }
 
   if (!(length(grep(".", cells, fixed = TRUE)) %in% c(0, length(cells)))) {
@@ -73,9 +76,9 @@ mbind <- function(...) { #nolint
          " data objects! Cannot handle this case!")
   }
 
-  if (diffspat & difftemp) stop("Cannot handle objects! Spatial as well as temporal dimensions differ!")
-  if (difftemp & diffdata) stop("Cannot handle objects! Data as well as temporal dimensions differ!")
-  if (diffdata & diffspat) stop("Cannot handle objects! Data as well as spatial dimensions differ!")
+  if (diffspat && difftemp) stop("Cannot handle objects! Spatial as well as temporal dimensions differ!")
+  if (difftemp && diffdata) stop("Cannot handle objects! Data as well as temporal dimensions differ!")
+  if (diffdata && diffspat) stop("Cannot handle objects! Data as well as spatial dimensions differ!")
   if (difftemp) {
     if (length(years) != length(unique(years))) stop("Some years occur more than once!",
                                                      " Cannot handle this case!")
@@ -98,5 +101,8 @@ mbind <- function(...) { #nolint
   }
   names(dimnames(output)) <- names(dimnames(inputs[[1]]))
 
+  if (length(output) != nElems) {
+    stop("Invalid object (number of values changed during mbind). Does the data contain duplicates?")
+  }
   return(output)
 }
