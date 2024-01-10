@@ -47,6 +47,16 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
     }
   } else {
     if (!is.magpie(x)) stop("Input is not a MAgPIE object!")
+
+    if (all(is.na(x)) && isTRUE(skipempty)) {
+      msg <- "magclass object contains only NAs, returning empty data table."
+      if (!is.null(file)) {
+        msg <- paste0(msg, " No file was written.")
+      }
+      message(msg)
+      return(data.table::data.table())
+    }
+
     x <- prepareData(x, model = model, scenario = scenario, unit = unit, skipempty = skipempty,
                      ndigit = ndigit, extracols = extracols)
     if (is.null(file)) return(x)
@@ -82,6 +92,7 @@ write.report <- function(x, file = NULL, model = NULL, scenario = NULL, unit = N
 
 prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty = FALSE,
                         ndigit = 4, extracols = NULL) {
+
   sep <- "."
   # clean data
   x <- round(clean_magpie(x, what = "sets"), digits = ndigit)

@@ -112,3 +112,13 @@ test_that("read/write report works with braces", {
   df <- read.csv(f, sep = ";", stringsAsFactors = FALSE)
   expect_identical(df$Unit, "Mt CO2/yr")
 })
+
+test_that("write report does not crash with only NAs", {
+  f <- tempfile()
+  foo <- new.magpie("DEU", c(2015, 2020),
+                    "Emissions|CO2|Energy|Demand|Transportation (w/ bunkers) (Mt CO2/yr)",
+                    fill = NA)
+  expect_identical(write.report(foo, f), data.table::data.table())
+  expect_message(write.report(foo, f),
+                 "magclass object contains only NAs, returning empty data table. No file was written.")
+})
