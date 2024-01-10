@@ -66,7 +66,7 @@
 #' @export read.report
 #' @importFrom utils read.table
 #'
-read.report <- function(file, as.list = TRUE) { # nolint
+read.report <- function(file, as.list = TRUE, ignoreSeparatorWarning = FALSE) { # nolint
 
   .trim <- function(a) return(gsub("(^ +)|( +$)", "", as.character(a)))
 
@@ -85,7 +85,9 @@ read.report <- function(file, as.list = TRUE) { # nolint
     ndots <- nchar(gsub("[^\\.]*", "", names))
     if (any(ndots != ndots[1])) {
       names <- gsub("\\.", "p", names)
-      warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
+      if (!ignoreSeparatorWarning) {
+        warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
+      }
     }
     # replace weird ° in tables after sub function evaluation
     names <- enc2utf8(names)
