@@ -19,12 +19,8 @@ test_that("terra conversion does not alter data", {
         expect_equal(nyears(m), t)
         r2 <- as.SpatRaster(m)
 
-        if (is.null(getItems(m, 2))) {
-          expect_error(as.SpatRasterDataset(m), "grepl.+ not (all )?TRUE")
-        } else {
-          srd <- as.SpatRasterDataset(m)
-          expect_identical(names(srd), getItems(m, 3))
-        }
+        srd <- as.SpatRasterDataset(m)
+        expect_identical(names(srd), getItems(m, 3))
 
         noTime <- function(a) {
           terra::time(a) <- NULL
@@ -52,7 +48,7 @@ test_that("terra conversion does not alter data", {
 
 skip_if_not_installed("raster")
 
-test_that("raster convertion does not alter data", {
+test_that("raster conversion does not alter data", {
   expect_error(as.RasterBrick(1), "not a magpie object")
   for (i in c(0.5, 2)) {
     for (j in c(1, 4)) {
