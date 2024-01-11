@@ -61,7 +61,7 @@
 #' full access for user, read access for group and no acess for anybody else).
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
-#' @param zname Time variable for the writeRaster function
+#' @param zname name of the time variable for raster files like nc, asc, grd and tif
 #' @param ... additional arguments passed to specific write functions
 #' @note
 #'
@@ -98,7 +98,7 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
                          file_name, file_folder = "", file_type = NULL, # nolint: object_name_linter.
                          append = FALSE, comment = NULL,
                          comment.char = "*", # nolint: object_name_linter.
-                         mode = NULL, zname = "Time", ...) {
+                         mode = NULL, zname = "time", ...) {
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -208,56 +208,24 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
+      if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("terra", quietly = TRUE)) {
+        stop("The packages \"ncdf4\" and \"terra\" are required!")
+      }
+      spatRasterDataset <- as.SpatRasterDataset(x)
 
-      if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("raster", quietly = TRUE)) {
-        stop("The packages \"ncdf4\" and \"raster\" are required!")
+      if (zname != "time") {
+        warning("zname != 'time' is discouraged, as terra will not recognize it as time dimension")
       }
-      .sub <- function(rx, name) {
-        layer <- sub("^.*\\.\\.", "", names(rx))
-        if (length(unique(layer)) == 1) return(rx)
-        return(rx[[which(layer == name)]])
-      }
-      if (is.magpie(x)) {
-        varnames <- getItems(x, dim = 3)
-        zunit <- ifelse(all(isYear(getYears(x))), "years", "")
-        years <- getYears(x, as.integer = TRUE)
-        x <- as.RasterBrick(x)
-      } else if (inherits(x, "RasterBrick")) {
-        tmp <- names(x)
-        tmp <- strsplit(tmp, "\\..")
-        years <- sort(unique(unlist(lapply(tmp, function(x) x[1]))))
-        varnames <- sort(unique(unlist(lapply(tmp, function(x) x[2]))))
-        zunit <- ifelse(all(isYear(years)), "years", "")
-        years <- as.numeric(gsub("y", "", years))
-      }
-      if (is.null(varnames)) varnames <- "Variable"
-      if (is.null(comment)) {
-        unit <- "not specified"
-      } else {
-        indicators <- sub(":.*$", "", comment)
-        units <- sub("^.*: ", "", comment)
-        if (any(grepl("unit", indicators))) {
-          unit <- units[grep("unit", indicators)]
-        } else {
-          unit <- "not specified"
-        }
-      }
-      # raster is using partial matching resulting in a warning if warnPartialMatchDollar is set
+      # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
       suppressSpecificWarnings({
-        raster::writeRaster(.sub(x, varnames[1]), filename = filePath, format = "CDF", overwrite = TRUE,
-                            compression = 9, zname = zname, zunit = zunit, varname = varnames[1], varunit = unit, ...)
-      }, "partial match of 'group' to 'groups'", fixed = TRUE)
+        terra::writeCDF(spatRasterDataset, filePath, overwrite = TRUE, zname = zname, ...)
+      }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
+
+      # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
       nc <- ncdf4::nc_open(filePath, write = TRUE)
-      if (zunit == "years") {
-        try(ncdf4::ncvar_put(nc, zname, years), silent = TRUE)
-      }
-      if (length(varnames) > 1) {
-        for (i in varnames[-1]) {
-          suppressSpecificWarnings({
-            nc <- ncdf4::ncvar_add(nc, ncdf4::ncvar_def(i, unit, nc$dim, compression = 9))
-          }, "partial match of 'group' to 'groups'", fixed = TRUE)
-          ncdf4::ncvar_put(nc, i, aperm(as.array(.sub(x, i)), c(2, 1, 3)))
-        }
+      # nc will not have time dim when x had no time dimension
+      if (zname %in% names(nc$dim)) {
+        ncdf4::ncatt_put(nc, zname, "axis", "T")
       }
       ncdf4::nc_close(nc)
     } else if (file_type == "rds") {

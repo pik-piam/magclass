@@ -1,6 +1,6 @@
 skip_if_not_installed("terra")
 
-test_that("terra convertion does not alter data", {
+test_that("terra conversion does not alter data", {
   expect_error(as.SpatRaster(1), "not a magpie object")
   for (i in c(0.5, 2)) {
     for (j in c(1, 4)) {

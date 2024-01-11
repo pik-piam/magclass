@@ -36,8 +36,8 @@
 #' @author Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer
 #' @seealso \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 #' @export
-read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array = FALSE, # nolint: object_name_linter.
-                        comment.char = "*", check.names = FALSE, ...) { # nolint: object_name_linter.
+read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint: object_name_linter, cyclocomp_linter.
+                        as.array = FALSE, comment.char = "*", check.names = FALSE, ...) { # nolint: object_name_linter.
 
   .buildFileName <- function(fileName, fileFolder) {
     fileName <- paste0(fileFolder, fileName)
@@ -111,31 +111,30 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, as.array 
                             data = grep(".data", m$metadata$dimtype, fixed = TRUE))
     attr(readMagpie, "comment") <- m$comment
   } else if (fileType %in% c("asc", "nc", "grd", "tif")) {
-    if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required!")
     if (fileType == "nc") {
-      if (!requireNamespace("ncdf4", quietly = TRUE)) {
-        stop("The package \"ncdf4\" is required!")
+      if (!requireNamespace("terra", quietly = TRUE)) {
+        stop("The package \"terra\" is required!")
       }
-      nc <- ncdf4::nc_open(fileName)
-      var <- names(nc[["var"]])
-      vdim <- vapply(nc[["var"]], function(x) return(x$ndims), integer(1))
-      var <- var[vdim > 0]
-      ncdf4::nc_close(nc)
-      tmp <- list()
-      for (v in var) {
-        suppressSpecificWarnings({
-          warning <- utils::capture.output(tmp[[v]] <- raster::brick(fileName, varname = v, ...))
-        }, "partial match of 'group' to 'groups'", fixed = TRUE)
-        if (length(warning) > 0) {
-          tmp[[v]] <- NULL
-          next
-        }
-        name <- sub("^X([0-9]*)$", "y\\1", names(tmp[[v]]), perl = TRUE)
-        if (length(name) == 1 && name == "layer") name <- "y0"
-        names(tmp[[v]]) <- paste0(name, "..", v)
+
+      x <- terra::rast(fileName)
+      if (all(grepl("Time=[0-9]+", names(x)))) {
+        names(x) <- sub("(.+)_Time=([0-9]+)", "y\\2..\\1", names(x))
+      } else if (all(grepl("_", names(x)))) {
+        names(x) <- vapply(names(x), function(n) {
+          parts <- strsplit(n, "_")[[1]] # e.g. "AFR_3" where 3 means the third entry in terra::time(x)
+          year <- terra::time(x)[as.integer(parts[2])]
+          if (is.na(year)) {
+            year <- as.integer(parts[2])
+          }
+          return(paste0("y", year, "..", parts[1]))
+        }, character(1))
       }
-      readMagpie <- as.magpie(raster::stack(tmp))
+
+      readMagpie <- clean_magpie(as.magpie(x))
     } else {
+      if (!requireNamespace("raster", quietly = TRUE)) {
+        stop("The package \"raster\" is required!")
+      }
       readMagpie <- as.magpie(raster::brick(fileName, ...))
     }
   } else {

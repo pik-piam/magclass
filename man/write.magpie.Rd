@@ -13,7 +13,7 @@ write.magpie(
   comment = NULL,
   comment.char = "*",
   mode = NULL,
-  zname = "Time",
+  zname = "time",
   ...
 )
 }
@@ -53,7 +53,7 @@ full access for user, read access for group and no acess for anybody else).
 Set to NULL system defaults will be used. Access codes are identical to the
 codes used in unix function chmod.}
 
-\item{zname}{Time variable for the writeRaster function}
+\item{zname}{name of the time variable for raster files like nc, asc, grd and tif}
 
 \item{...}{additional arguments passed to specific write functions}
 }
