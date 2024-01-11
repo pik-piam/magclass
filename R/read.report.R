@@ -86,7 +86,7 @@ read.report <- function(file, as.list = TRUE, ignoreSeparatorWarning = FALSE) { 
     if (any(ndots != ndots[1])) {
       names <- gsub("\\.", "p", names)
       if (!ignoreSeparatorWarning) {
-        warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
+        warning("Replaced all \".\" with \"p\" to prevent misinterpretation as dim separator")
       }
     }
     # replace weird ° in tables after sub function evaluation
