@@ -1,8 +1,8 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.12.1
-Date: 2024-01-10
+Version: 6.13.0
+Date: 2024-01-11
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre")),
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = "aut"),
@@ -11,6 +11,7 @@ Authors@R: c(
     person("Stephen", "Bi", role = "aut"),
     person("Kristine", "Karstens", , "karstens@pik-potsdam.de", role = "aut"),
     person("Debbora", "Leip", , "leip@pik-potsdam.de", role = "aut"),
+    person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = "aut"),
     person("Lavinia", "Baumstark", , "lavinia@pik-potsdam.de", role = "ctb"),
     person("Christoph", "Bertram", , "bertram@pik-potsdam.de", role = "ctb"),
     person("Anastasis", "Giannousakis", , "giannou@pik-potsdam.de", role = "ctb"),
@@ -52,7 +53,6 @@ Suggests:
     quitte,
     raster,
     rmarkdown,
-    sf,
     terra,
     testthat (>= 3.1.5),
     tibble,

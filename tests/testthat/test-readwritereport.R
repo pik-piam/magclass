@@ -109,7 +109,7 @@ test_that("read/write report works with braces", {
                     fill = 0)
   foo["DEU", 2020, "Emissions|CO2|Energy|Demand|Transportation (w/ bunkers) (Mt CO2/yr)"] <- 10
   expect_silent(write.report(foo, f))
-  df <- read.csv(f, sep = ";", stringsAsFactors = FALSE)
+  df <- utils::read.csv(f, sep = ";", stringsAsFactors = FALSE)
   expect_identical(df$Unit, "Mt CO2/yr")
 })
 
