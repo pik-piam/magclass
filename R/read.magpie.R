@@ -131,6 +131,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
       }
 
       readMagpie <- clean_magpie(as.magpie(x))
+      attr(readMagpie, "crs") <- NULL
     } else {
       if (!requireNamespace("raster", quietly = TRUE)) {
         stop("The package \"raster\" is required!")

@@ -211,6 +211,9 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
       if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("terra", quietly = TRUE)) {
         stop("The packages \"ncdf4\" and \"terra\" are required!")
       }
+      if (is.null(getItems(x, 3))) {
+        getItems(x, 3) <- "Variable"
+      }
       spatRasterDataset <- as.SpatRasterDataset(x)
 
       if (zname != "time") {
