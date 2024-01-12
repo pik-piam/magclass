@@ -1,35 +1,33 @@
-
 readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names = FALSE) {  # nolint
-
   sep <- ifelse(fileType == "put", "\t", ",")
   # check for header
-  temp <- read.csv(fileName, nrow = 1, header = FALSE, sep = sep, comment.char = comment.char,
-                   check.names = check.names, stringsAsFactors = TRUE)
+  temp <- utils::read.csv(fileName, nrow = 1, header = FALSE, sep = sep, comment.char = comment.char,
+                          check.names = check.names, stringsAsFactors = TRUE)
 
   # check for numeric elements in first row, which means a missing header
   header <- !any(sapply(temp, is.numeric)) #nolint
 
-  temp <- read.csv(fileName, header = header, sep = sep, comment.char = comment.char,
-                   check.names = check.names, stringsAsFactors = TRUE)
+  temp <- utils::read.csv(fileName, header = header, sep = sep, comment.char = comment.char,
+                          check.names = check.names, stringsAsFactors = TRUE)
 
   # analyse column content
   coltypes <- rep("data", dim(temp)[2])
-  for (column in 1:dim(temp)[2]) {
-    if (sum(coltypes == "year") == 0 &
-        length(grep("^(y[0-9]{4}|[0-2][0-9]{3})$", temp[, column])) == dim(temp)[1]) {
+  for (column in seq_len(dim(temp)[2])) {
+    if (sum(coltypes == "year") == 0 &&
+          length(grep("^(y[0-9]{4}|[0-2][0-9]{3})$", temp[, column])) == dim(temp)[1]) {
       coltypes[column] <- "year"
-    } else if (sum(coltypes == "region") == 0 & sum(coltypes == "regiospatial") == 0 &
-               length(grep("^[A-Z]{3}$", temp[, column])) == dim(temp)[1]) {
+    } else if (sum(coltypes == "region") == 0 && sum(coltypes == "regiospatial") == 0 &&
+                 length(grep("^[A-Z]{3}$", temp[, column])) == dim(temp)[1]) {
       coltypes[column] <- "region"
-    } else if (sum(coltypes == "regiospatial") == 0 & sum(coltypes == "region") == 0 &
-               length(grep("^[A-Z]{3}_[0-9]+$", temp[, column])) == dim(temp)[1]) {
+    } else if (sum(coltypes == "regiospatial") == 0 && sum(coltypes == "region") == 0 &&
+                 length(grep("^[A-Z]{3}_[0-9]+$", temp[, column])) == dim(temp)[1]) {
       coltypes[column] <- "regiospatial"
     } else if (!is.numeric(temp[1, column])) {
       coltypes[column] <- "other"
     } else if (sum(coltypes == "cell") == 0 && all(!is.na(temp[, column])) && all(temp[, column] != 0) &&
-               length(temp[, column]) %% max(temp[, column]) == 0 &&
-               suppressWarnings(try(all(unique(temp[, column]) == 1:max(temp[, column])), silent = TRUE) == TRUE)) {
-          coltypes[column] <- "cell"
+                 length(temp[, column]) %% max(temp[, column]) == 0 &&
+                 suppressWarnings(try(all(unique(temp[, column]) == 1:max(temp[, column])), silent = TRUE) == TRUE)) {
+      coltypes[column] <- "cell"
     }
   }
 
@@ -45,9 +43,9 @@ readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names 
     if (dimnames(temp)[[2]][which(coltypes == "cell")] == "iteration") {
       temp[, which(coltypes == "cell")] <- paste("iter", format(temp[, which(coltypes == "cell")]), sep = "")
       coltypes[which(coltypes == "cell")] <- "other"
-    } else if (header & !(dimnames(temp)[[2]][which(coltypes == "cell")] %in%
-                          c("dummy", "dummy.1", "dummy.2", "dummy.3", "", " ",
-                            "cell", "cells", "Cell", "Cells"))) {
+    } else if (header && !(dimnames(temp)[[2]][which(coltypes == "cell")] %in%
+                             c("dummy", "dummy.1", "dummy.2", "dummy.3", "", " ",
+                               "cell", "cells", "Cell", "Cells"))) {
       coltypes[which(coltypes == "cell")] <- "data"
     }
   }
@@ -165,29 +163,29 @@ readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names 
   dimnames(output)[[2]] <- yearnames
   dimnames(output)[[3]] <- elemnames
 
-  if (any(coltypes == "other") & (headertype == "other" | headertype == "none")) {
+  if (any(coltypes == "other") && (headertype == "other" || headertype == "none")) {
     counter <- 0
     for (other.elem in othernames) {
       output[, , (1:sum(coltypes == "data")) + counter] <- array(as.vector(
-        as.matrix(temp[which(temp[, which(coltypes == "other")] == other.elem),
-                       which(coltypes == "data")])), c(ncells, nyears, sum(coltypes == "data")))
+        as.matrix(temp[which(temp[, which(coltypes == "other")] == other.elem), which(coltypes == "data")])
+      ), c(ncells, nyears, sum(coltypes == "data")))
       counter <- counter + sum(coltypes == "data")
     }
-  } else if (!any(coltypes == "other") & headertype == "region") {
+  } else if (!any(coltypes == "other") && headertype == "region") {
     for (i in seq_along(cellnames)) {
       output[i, , 1] <- temp[, which(coltypes == "data")[i]]
     }
-  } else if (!any(coltypes == "other") & headertype == "year") {
+  } else if (!any(coltypes == "other") && headertype == "year") {
     for (year in yearnames) {
       output[, year, 1] <- temp[, year]
     }
-  } else if (any(coltypes == "other") & headertype == "region") {
+  } else if (any(coltypes == "other") && headertype == "region") {
     for (i in seq_along(cellnames)) {
       for (elem in elemnames) {
         output[i, , elem] <- temp[which(temp[, which(coltypes == "other")] == elem), which(coltypes == "data")[i]]
       }
     }
-  } else if (any(coltypes == "other") & headertype == "year") {
+  } else if (any(coltypes == "other") && headertype == "year") {
     for (year in yearnames) {
       for (elem in elemnames) {
         output[, year, elem] <- temp[which(temp[, which(coltypes == "other")] == elem), year]

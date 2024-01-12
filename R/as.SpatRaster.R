@@ -21,7 +21,7 @@
 #' @export
 
 
-as.SpatRaster <- function(x, res = NULL) { # nolint: object_name_linter
+as.SpatRaster <- function(x, res = NULL) { # nolint: object_name_linter.
   if (!is.magpie(x)) stop("Input is not a magpie object")
   if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required!")
 

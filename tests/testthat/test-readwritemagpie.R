@@ -87,29 +87,28 @@ test_that("handling of spatial data works", {
   expect_no_warning(write.magpie(m10, file.path(td, "test.nc")))
   expect_silent(write.magpie(m05, file.path(td, "test.nc")))
   expect_silent(m05in <- read.magpie(file.path(td, "test.nc")))
+
   getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon", "lat")]
   m05 <- collapseDim(m05, dim = c(1.1, 1.2))
   m05 <- m05[getItems(m05in, dim = 1), , ]
   getNames(m05in) <- NULL
   getSets(m05in, fulldim = FALSE)[3] <- "data"
-  attr(m05in, ".internal.selfref")  <- NULL # nolint
   expect_identical(m05, m05in)
 
   a <- maxample("animal")
   a <- dimSums(a, dim = c(1.3, 1.4, 2, 3))
   write.magpie(a, file.path(td, "animal.asc"))
-  copy.magpie(file.path(td, "animal.asc"), file.path(td, "animal.nc"))
   asc <- read.magpie(file.path(td, "animal.asc"))
-  expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
+  attr(asc, ".internal.selfref")  <- NULL # nolint
+  getItems(asc, dim = 2) <- NULL
+  getItems(asc, dim = 3) <- NULL
+  expect_identical(asc, a)
 
-  .clean <- function(x) {
-    attr(x, ".internal.selfref")  <- NULL # nolint
-    getItems(x, dim = 2) <- NULL
-    getItems(x, dim = 3) <- NULL
-    return(x)
-  }
-  expect_identical(.clean(asc), a)
-  expect_identical(.clean(anc), a)
+  write.magpie(a, file.path(td, "animal.nc"))
+  expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
+  getItems(anc, dim = 3) <- NULL
+  getSets(anc) <- c("x", "y", "d2", "d3")
+  expect_identical(anc, a)
 })
 
 

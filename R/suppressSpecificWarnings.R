@@ -9,7 +9,7 @@
 #' as a regular expression. Passed to \code{\link{grepl}}.
 #' @return The result of evaluating expr.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #' @seealso \code{\link{suppressWarnings}}
 suppressSpecificWarnings <- function(expr, regularExpr, fixed = FALSE) {
   withCallingHandlers(expr, warning = function(m) {

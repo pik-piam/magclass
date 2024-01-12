@@ -26,5 +26,5 @@ str(maxample("pop"))
 \code{\link[utils]{str}}
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }

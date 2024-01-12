@@ -2,8 +2,7 @@
 #' @importFrom data.table as.data.table tstrsplit melt
 
 #' @exportMethod as.magpie
-setGeneric(
-  "as.magpie", function(x, ...) standardGeneric("as.magpie"))
+setGeneric("as.magpie", function(x, ...) standardGeneric("as.magpie"))
 
 setMethod("as.magpie", signature(x = "magpie"), function(x) return(x))
 
@@ -40,8 +39,8 @@ setMethod("as.magpie",
     x <- array(x[magclassdata$half_deg$lpj_index, , , ], dim = c(dim(x)[1:2], dim(x)[3] * dim(x)[4]))
     # convert to previous default standard 59199 cells half degree resolution
     dimnames(x) <- list(paste(magclassdata$half_deg$region, 1:59199, sep = "."),
-      xdimnames[[2]],
-      paste(rep(xdimnames[[3]], xdim[4]), rep(xdimnames[[4]], each = xdim[3]), sep = "."))
+                        xdimnames[[2]],
+                        paste(rep(xdimnames[[3]], xdim[4]), rep(xdimnames[[4]], each = xdim[3]), sep = "."))
     out <- new("magpie", x)
     return(out)
   }
@@ -64,8 +63,7 @@ setMethod("as.magpie",
             }
             out <- new("magpie", y)
             return(out)
-          }
-)
+          })
 
 setMethod("as.magpie", # nolint
   signature(x = "array"),
@@ -116,9 +114,11 @@ setMethod("as.magpie", # nolint
     # Write warning when any type (except type "nothing") is found more than once
     nOccurrence <- lapply(d, length) > 1
     nOccurrence <- nOccurrence[names(nOccurrence) != "nothing"]
-    if (any(nOccurrence) == TRUE) warning("No clear mapping of dimensions to dimension types. First detected ",
-      "possibility is used! Please use arguments temporal and spatial to specify",
-      " which dimensions are what!")
+    if (any(nOccurrence) == TRUE) {
+      warning("No clear mapping of dimensions to dimension types. First detected ",
+              "possibility is used! Please use arguments temporal and spatial to specify",
+              " which dimensions are what!")
+    }
     for (i in which(nOccurrence)) {
       d[[i]] <- d[[i]][1]
     }
@@ -200,18 +200,16 @@ setMethod("as.magpie", # nolint
 )
 
 setMethod("as.magpie",
-  signature(x = "numeric"),
-  function(x, unit = "unknown", ...) {
-    return(copy.attributes(x, as.magpie(as.array(x), ...)))
-  }
-)
+          signature(x = "numeric"),
+          function(x, unit = "unknown", ...) {
+            return(copy.attributes(x, as.magpie(as.array(x), ...)))
+          })
 
 setMethod("as.magpie",
           signature(x = "logical"),
           function(x, unit = "unknown", ...) {
             return(copy.attributes(x, as.magpie(as.array(x), ...)))
-          }
-)
+          })
 
 setMethod("as.magpie",
   signature(x = "NULL"),
@@ -278,8 +276,10 @@ setMethod("as.magpie",
 
       mandatoryColumns <- c("model", "scenario", "region", "variable", "unit", "period", "value")
       factorColumns    <- c("model", "scenario", "region", "variable", "unit")
-      isQuitte <- all(mandatoryColumns %in% names(x)) && all(vapply(x[factorColumns], is.factor, logical(1))) &&
-                  is.numeric(x$value) && (methods::is(x$period, "POSIXct") || is.integer(x$period))
+      isQuitte <- (all(mandatoryColumns %in% names(x)) &&
+                     all(vapply(x[factorColumns], is.factor, logical(1))) &&
+                     is.numeric(x$value) &&
+                     (methods::is(x$period, "POSIXct") || is.integer(x$period)))
       return(isQuitte)
     }
 
@@ -434,12 +434,10 @@ setMethod("as.magpie",
           signature(x = "SpatRaster"),
           function(x, unit = "unknown", temporal = NULL, ...) {
             return(.raster2magpie(x, unit = unit, temporal = temporal))
-          }
-)
+          })
 
 setMethod("as.magpie",
           signature(x = "SpatVector"),
           function(x, unit = "unknown", temporal = NULL, spatial = NULL, ...) {
             return(.raster2magpie(x, unit = unit, temporal = temporal, spatial = spatial))
-          }
-)
+          })
