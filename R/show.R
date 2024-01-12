@@ -8,7 +8,7 @@
 #' @docType methods
 #' @param object A MAgPIE-object
 #' @keywords methods
-#' @author Pascal Führlich
+#' @author Pascal Sauer
 #'
 #' @exportMethod show
 methods::setMethod("show", methods::signature(object = "magpie"), function(object) {

@@ -23,7 +23,7 @@
 #' }
 #' @export
 
-as.SpatVector <- function(x) { # nolint: object_name_linter
+as.SpatVector <- function(x) { # nolint: object_name_linter.
   if (!is.magpie(x)) stop("Input is not a magpie object")
   if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required!")
   if (is.null(attr(x, "geometry"))) {

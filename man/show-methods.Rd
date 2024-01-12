@@ -18,6 +18,6 @@ Show a magpie object by calling the default show method, print, or str,
 depending on options("magclass_show_func").
 }
 \author{
-Pascal Führlich
+Pascal Sauer
 }
 \keyword{methods}

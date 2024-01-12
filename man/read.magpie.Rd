@@ -22,20 +22,10 @@ to file_name and file_folder)}
 \item{file_folder}{folder the file is located in (alternatively you can also
 specify the full path in file_name - wildcards are supported)}
 
-\item{file_type}{format the data is stored in. Currently 13 formats are
-available: "rds" (recommended compressed format),
-"cs2" & "cs2b" (cellular standard MAgPIE format), "csv" (regional standard
-MAgPIE format), "cs3" (multidimensional format compatible to GAMS), "cs4"
-(alternative multidimensional format compatible to GAMS, in contrast to cs3
-it can also handle sparse data), "cs5" (more generalized version of cs4),
-"csvr", "cs2r", "cs3r" and "cs4r" which are
-the same formats as the previous mentioned ones with the only difference
-that they have a REMIND compatible format, "m" (binary MAgPIE format
-"magpie"), "mz" (compressed binary MAgPIE format "magpie zipped") "put"
-(format used primarily for the REMIND-MAgPIE coupling) and "asc",
-(ASCII-Grid format as used by ArcGis) . If file_type=NULL the file ending
+\item{file_type}{format the data is stored in. If file_type=NULL the file ending
 of the file_name is used as format. If format is different to the formats
-mentioned standard MAgPIE format is assumed.}
+mentioned standard MAgPIE format is assumed. See \code{\link{write.magpie}}
+for a list of supported file formats.}
 
 \item{as.array}{Should the input be transformed to an array? This can be
 useful for regional or global inputs, but all advantages of the magpie-class
@@ -63,49 +53,14 @@ Reads a MAgPIE-file and converts it to a 3D array of the structure
 (cells,years,datacolumn)
 }
 \details{
-This function reads from 13 different MAgPIE file_types. "rds" is
-a R-default format for storing R objects."cs2" or "cs2b" is the new standard
-format for cellular data with or without
-header and the first columns (year,regiospatial) or only (regiospatial),
-"csv" is the standard format for regional data with or without header
-and the first columns (year,region,cellnumber) or only (region,cellnumber).
-"cs3" is a format similar to csv and cs2, but with the difference that it supports
-multidimensional data in a format which can be read by GAMS, "put" is a
-newly supported format which is mosty used for the REMIND-MAgPIE coupling.
-This format is only partly supported at the moment.  "asc" is the AsciiGrid
-format (for example used for Arc Gis data).  "nc" is the netCDF format (only
-"nc" files written by write.magpie can be read).  All these variants are
-read without further specification. "magpie" (.m) and "magpie zipped" (.mz)
-are new formats developed to allow a less storage intensive management of
-MAgPIE-data. The only difference between both formats is that .mz is gzipped
-whereas .m is not compressed. So .mz needs less memory, whereas .m might
-have a higher compatibility to other languages. \cr\cr Since library version
-1.4 read.magpie can also read regional or global MAgPIE csv-files.
+See \code{\link{write.magpie}} for a list of supported file formats.
 }
 \note{
-The binary MAgPIE formats .m and .mz have the following content/structure
-(you only have to care for that if you want to implement
-read.magpie/write.magpie functions in other languages): \cr \cr
-[ FileFormatVersion | Current file format version number (currently 6) | integer | 2 Byte ] \cr
-[ ncharComment | Number of character bytes of the file comment | integer | 4 Byte ] \cr
-[ nbyteMetadata | Number of bytes of the serialized metadata | integer | 4 Byte ] \cr
-[ ncharSets | Number of characters bytes of all regionnames + 2 delimiter | integer | 2 Byte] \cr
-[ nyears | Number of years | integer | 2 Byte ]\cr
-[ yearList | All years of the dataset (0, if year is not present) | integer | 2*nyears Byte ] \cr
-[ ncells | Number of cells | integer | 4 Byte ]\cr
-[ nchar_cell | Number of characters bytes of all regionnames + (nreg-1) for delimiters | integer | 4 Byte ] \cr
-[ cells | Cell names saved as cell1\\cell2 (\\n is the delimiter) | character | 1*nchar_cell Byte ] \cr
-[ nelem | Total number of data elements | integer | 4 Byte ] \cr
-[ ncharData | Number of char. bytes of all datanames + (ndata - 1) for delimiters | integer | 4 Byte ] \cr
-[ datanames | Names saved in the format data1\\ndata2 (\\n as del.) | character | 1*ncharData Byte ] \cr
-[ data | Data of the MAgPIE array in vectorized form | numeric | 4*nelem Byte ] \cr
-[ comment | Comment with additional information about the data | character | 1*ncharComment Byte ] \cr
-[ sets | Set names with \\n as delimiter | character | 1*ncharSets Byte] \cr
-[ metadata | serialized metadata information | bytes | 1*nbyteMetadata Byte] \cr
+See \code{\link{write.magpie}} for the detailed structure of binary MAgPIE formats .m and .mz.
 }
 \seealso{
 \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 }
 \author{
-Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder
+Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer
 }
