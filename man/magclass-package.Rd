@@ -14,6 +14,15 @@ and interoperability of tools build for it. Additional features are name-based
 addressing of data and internal consistency checks (e.g. checking for the 
 right data order in calculations).
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/pik-piam/magclass}
+  \item \doi{10.5281/zenodo.1158580}
+  \item Report bugs at \url{https://github.com/pik-piam/magclass/issues}
+}
+
+}
 \author{
 Maintainer: Jan Philipp Dietrich <dietrich@pik-potsdam.de>
 }
