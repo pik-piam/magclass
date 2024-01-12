@@ -10,6 +10,8 @@
 #' merge all information in one MAgPIE object (still under development and
 #' works currently only if the entries for the different models and scenarios
 #' have exactly the same regions and years).
+#' @param showSeparatorWarning Boolean (default value TRUE) that decides whether the warning
+#' about the replacement of dots in variable names is displayed (default value) or not.
 #'
 #' @details
 #'
@@ -66,7 +68,7 @@
 #' @export read.report
 #' @importFrom utils read.table
 #'
-read.report <- function(file, as.list = TRUE) { # nolint
+read.report <- function(file, as.list = TRUE, showSeparatorWarning = TRUE) { # nolint
 
   .trim <- function(a) return(gsub("(^ +)|( +$)", "", as.character(a)))
 
@@ -85,7 +87,9 @@ read.report <- function(file, as.list = TRUE) { # nolint
     ndots <- nchar(gsub("[^\\.]*", "", names))
     if (any(ndots != ndots[1])) {
       names <- gsub("\\.", "p", names)
-      warning("Replaced some \".\" with \"p\" to prevent misinterpretation as dim separator")
+      if (showSeparatorWarning) {
+        warning("Replaced all \".\" with \"p\" to prevent misinterpretation as dim separator")
+      }
     }
     # replace weird ° in tables after sub function evaluation
     names <- enc2utf8(names)
