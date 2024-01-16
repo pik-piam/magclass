@@ -3,16 +3,26 @@
 \docType{package}
 \name{magclass-package}
 \alias{magclass-package}
+\alias{_PACKAGE}
 \alias{magclass}
 \title{Data Class and Tools for Handling Spatial-Temporal Data}
 \description{
-Data class for increased interoperability working with spatial-temporal 
-data together with corresponding functions and methods (conversions, 
+Data class for increased interoperability working with spatial-temporal
+data together with corresponding functions and methods (conversions,
 basic calculations and basic data manipulation). The class distinguishes
 between spatial, temporal and other dimensions to facilitate the development
 and interoperability of tools build for it. Additional features are name-based
-addressing of data and internal consistency checks (e.g. checking for the 
+addressing of data and internal consistency checks (e.g. checking for the
 right data order in calculations).
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/pik-piam/magclass}
+  \item \doi{10.5281/zenodo.1158580}
+  \item Report bugs at \url{https://github.com/pik-piam/magclass/issues}
+}
+
 }
 \author{
 Maintainer: Jan Philipp Dietrich <dietrich@pik-potsdam.de>

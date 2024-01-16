@@ -119,15 +119,17 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
       x <- terra::rast(fileName)
       if (all(grepl("Time=[0-9]+", names(x)))) {
         names(x) <- sub("(.+)_Time=([0-9]+)", "y\\2..\\1", names(x))
-      } else if (all(grepl("_", names(x)))) {
-        names(x) <- vapply(names(x), function(n) {
-          parts <- strsplit(n, "_")[[1]] # e.g. "AFR_3" where 3 means the third entry in terra::time(x)
-          year <- terra::time(x)[as.integer(parts[2])]
-          if (is.na(year)) {
-            year <- as.integer(parts[2])
-          }
-          return(paste0("y", year, "..", parts[1]))
-        }, character(1))
+      } else {
+        parts <- strsplit(names(x), "_")
+        lastParts <- vapply(parts, function(p) p[length(p)], character(1))
+        timeIndices <- suppressSpecificWarnings(as.numeric(lastParts), "NAs introduced by coercion")
+
+        terraTime <- terra::time(x)
+
+        if (all(!is.na(terraTime)) && all(timeIndices %in% seq_along(terraTime))) {
+          names(x) <- paste0("y", terraTime[timeIndices], "..",
+                             vapply(parts, function(p) paste0(p[-length(p)], collapse = "_"), character(1)))
+        }
       }
 
       readMagpie <- clean_magpie(as.magpie(x))
