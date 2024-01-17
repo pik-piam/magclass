@@ -4,7 +4,7 @@
 \alias{read.report}
 \title{Read file in report format}
 \usage{
-read.report(file, as.list = TRUE)
+read.report(file, as.list = TRUE, showSeparatorWarning = TRUE)
 }
 \arguments{
 \item{file}{file name the object should be read from.}
@@ -13,6 +13,9 @@ read.report(file, as.list = TRUE)
 merge all information in one MAgPIE object (still under development and
 works currently only if the entries for the different models and scenarios
 have exactly the same regions and years).}
+
+\item{showSeparatorWarning}{Boolean (default value TRUE) that decides whether the warning
+about the replacement of dots in variable names is displayed (default value) or not.}
 }
 \description{
 This function reads the content of a reporting file (a file in the model

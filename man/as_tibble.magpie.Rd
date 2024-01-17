@@ -4,7 +4,7 @@
 \alias{as_tibble.magpie}
 \title{magpie method for tibble::as_tibble}
 \usage{
-as_tibble.magpie(
+\method{as_tibble}{magpie}(
   x,
   ...,
   .rows = NULL,
