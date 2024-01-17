@@ -126,7 +126,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
 
         terraTime <- terra::time(x)
 
-        if (any(is.na(terraTime))) {
+        if (any(is.na(terraTime)) && requireNamespace("ncdf4", quietly = TRUE)) {
           nc <- ncdf4::nc_open(fileName)
           withr::defer(ncdf4::nc_close(nc))
           if ("time" %in% names(nc$dim)) {
