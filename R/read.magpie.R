@@ -126,9 +126,28 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
 
         terraTime <- terra::time(x)
 
-        if (all(!is.na(terraTime)) && all(timeIndices %in% seq_along(terraTime))) {
+        if (any(is.na(terraTime))) {
+          nc <- ncdf4::nc_open(fileName)
+          withr::defer(ncdf4::nc_close(nc))
+          if ("time" %in% names(nc$dim)) {
+            terraTime <- rep_len(nc$dim$time$vals, terra::nlyr(x))
+            if (terra::nlyr(x) %% nc$dim$time$len != 0) {
+              warning("Found ", terra::nlyr(x), " layers, but ",
+                      nc$dim$time$len, " time steps. Now using ",
+                      terraTime)
+            }
+          }
+        }
+        if (any(is.na(terraTime))) {
+          warning("Could not read time information from file. Falling back to enumerating.")
+          terraTime <- seq_along(terraTime)
+        }
+
+        if (all(timeIndices %in% seq_along(terraTime))) {
           names(x) <- paste0("y", terraTime[timeIndices], "..",
                              vapply(parts, function(p) paste0(p[-length(p)], collapse = "_"), character(1)))
+        } else {
+          names(x) <- paste0("y", terraTime, "..", names(x))
         }
       }
 
