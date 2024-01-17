@@ -138,15 +138,11 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
             }
           }
         }
-        if (any(is.na(terraTime))) {
-          warning("Could not read time information from file. Falling back to enumerating.")
-          terraTime <- seq_along(terraTime)
-        }
 
         if (all(timeIndices %in% seq_along(terraTime))) {
           names(x) <- paste0("y", terraTime[timeIndices], "..",
                              vapply(parts, function(p) paste0(p[-length(p)], collapse = "_"), character(1)))
-        } else {
+        } else if (all(!is.na(terraTime))) {
           names(x) <- paste0("y", terraTime, "..", names(x))
         }
       }
