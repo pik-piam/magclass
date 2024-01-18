@@ -333,7 +333,8 @@ setMethod("as.magpie",
   crs <- NULL
   if (inherits(x, "SpatRaster")) {
     if (!requireNamespace("terra", quietly = TRUE)) stop("The package \"terra\" is required for raster conversions!")
-    df <- as.data.frame(x, na.rm = TRUE, xy = TRUE)
+    df <- as.data.frame(x, xy = TRUE)
+    df <- df[rowSums(is.na(df)) != ncol(df), ] # remove rows with all NAs
     df$x <- sub(".", "p", df$x, fixed = TRUE)
     df$y <- sub(".", "p", df$y, fixed = TRUE)
     idVars <- c("x", "y")

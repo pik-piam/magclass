@@ -119,15 +119,32 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
       x <- terra::rast(fileName)
       if (all(grepl("Time=[0-9]+", names(x)))) {
         names(x) <- sub("(.+)_Time=([0-9]+)", "y\\2..\\1", names(x))
-      } else if (all(grepl("_", names(x)))) {
-        names(x) <- vapply(names(x), function(n) {
-          parts <- strsplit(n, "_")[[1]] # e.g. "AFR_3" where 3 means the third entry in terra::time(x)
-          year <- terra::time(x)[as.integer(parts[2])]
-          if (is.na(year)) {
-            year <- as.integer(parts[2])
+      } else {
+        parts <- strsplit(names(x), "_")
+        lastParts <- vapply(parts, function(p) p[length(p)], character(1))
+        timeIndices <- suppressSpecificWarnings(as.numeric(lastParts), "NAs introduced by coercion")
+
+        terraTime <- terra::time(x)
+
+        if (any(is.na(terraTime)) && requireNamespace("ncdf4", quietly = TRUE)) {
+          nc <- ncdf4::nc_open(fileName)
+          withr::defer(ncdf4::nc_close(nc))
+          if ("time" %in% names(nc$dim)) {
+            terraTime <- rep_len(nc$dim$time$vals, terra::nlyr(x))
+            if (terra::nlyr(x) %% nc$dim$time$len != 0) {
+              warning("Found ", terra::nlyr(x), " layers, but ",
+                      nc$dim$time$len, " time steps. Now using ",
+                      terraTime)
+            }
           }
-          return(paste0("y", year, "..", parts[1]))
-        }, character(1))
+        }
+
+        if (all(timeIndices %in% seq_along(terraTime))) {
+          names(x) <- paste0("y", terraTime[timeIndices], "..",
+                             vapply(parts, function(p) paste0(p[-length(p)], collapse = "_"), character(1)))
+        } else if (all(!is.na(terraTime))) {
+          names(x) <- paste0("y", terraTime, "..", names(x))
+        }
       }
 
       readMagpie <- clean_magpie(as.magpie(x))
