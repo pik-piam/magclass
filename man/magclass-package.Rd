@@ -3,7 +3,6 @@
 \docType{package}
 \name{magclass-package}
 \alias{magclass-package}
-\alias{_PACKAGE}
 \alias{magclass}
 \title{Data Class and Tools for Handling Spatial-Temporal Data}
 \description{
