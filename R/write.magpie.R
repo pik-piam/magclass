@@ -214,15 +214,27 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
       if (is.null(getItems(x, 3))) {
         getItems(x, 3) <- "Variable"
       }
-      spatRasterDataset <- as.SpatRasterDataset(x)
+
+      # if (getOption("tifFirst", FALSE)) {
+      # spatRasterDataset <- as.SpatRaster(x)
+      # tempTif <- withr::local_tempfile(fileext = ".tif")
+      # terra::writeRaster(spatRasterDataset, tempTif)
+      # spatRasterDataset <- terra::sds(tempTif)
+      # } else {
+      # spatRasterDataset <- as.SpatRasterDataset(x)
+      # }
 
       if (zname != "time") {
         warning("zname != 'time' is discouraged, as terra will not recognize it as time dimension")
       }
       # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
-      suppressSpecificWarnings({
-        terra::writeCDF(spatRasterDataset, filePath, overwrite = TRUE, zname = zname, ...)
-      }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
+      # suppressSpecificWarnings({
+      #   terra::writeCDF(spatRasterDataset, filePath, overwrite = TRUE, zname = zname, ...)
+      # }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
+
+      spatRaster <- as.SpatRaster(x)
+
+      suppressWarnings(terra::writeRaster(spatRaster, filePath, overwrite = TRUE, ...))
 
       # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
       nc <- ncdf4::nc_open(filePath, write = TRUE)

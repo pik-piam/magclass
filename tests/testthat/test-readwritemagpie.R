@@ -91,7 +91,7 @@ test_that("handling of spatial data works", {
   getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon", "lat")]
   m05 <- collapseDim(m05, dim = c(1.1, 1.2))
   m05 <- m05[getItems(m05in, dim = 1), , ]
-  getNames(m05in) <- NULL
+  # getNames(m05in) <- NULL
   getSets(m05in, fulldim = FALSE)[3] <- "data"
   expect_identical(m05, m05in)
 
