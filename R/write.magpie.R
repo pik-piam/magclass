@@ -234,7 +234,9 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
 
       spatRaster <- as.SpatRaster(x)
 
-      suppressWarnings(terra::writeRaster(spatRaster, filePath, overwrite = TRUE, ...))
+      suppressSpecificWarnings({
+        terra::writeRaster(spatRaster, filePath, overwrite = TRUE, ...)
+      }, "consider writeCDF to write ncdf files")
 
       # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
       nc <- ncdf4::nc_open(filePath, write = TRUE)
