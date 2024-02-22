@@ -25,15 +25,6 @@ as.RasterBrick <- function(x, res = NULL) { # nolint
   if (!is.magpie(x)) stop("Input is not a magpie object")
   if (!requireNamespace("raster", quietly = TRUE)) stop("The package \"raster\" is required!")
 
-  .guessRes <- function(xy) {
-    .tmp <- function(x) {
-      return(suppressWarnings(min(diff(sort(unique(x))))))
-    }
-    guess <- min(.tmp(xy[[1]]), .tmp(xy[[2]]))
-    if (is.infinite(guess)) guess <- 0.5
-    return(guess)
-  }
-
   if (!hasCoords(x) && dimExists(1.2, x)) {
     items <- getItems(x, dim = 1.2)
     if (length(items) == 59199 && all(items == seq_len(59199))) {
@@ -44,7 +35,7 @@ as.RasterBrick <- function(x, res = NULL) { # nolint
     }
   }
   xy <- getCoords(x)
-  if (is.null(res)) res <- .guessRes(xy)
+  if (is.null(res)) res <- guessResolution(xy)
   out <- raster::brick(ncols = 360 / res, nrows = 180 / res, nl = nyears(x) * ndata(x))
   m   <- wrap(as.array(x), list(1, 2:3), sep = "..")
   layerNames <- colnames(m)

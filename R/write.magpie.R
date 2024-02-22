@@ -62,6 +62,7 @@
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
 #' @param zname name of the time variable for raster files like nc, asc, grd and tif
+#' @param unit unit of the data to be written, only used for nc files
 #' @param ... additional arguments passed to specific write functions
 #' @note
 #'
@@ -98,7 +99,7 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
                          file_name, file_folder = "", file_type = NULL, # nolint: object_name_linter.
                          append = FALSE, comment = NULL,
                          comment.char = "*", # nolint: object_name_linter.
-                         mode = NULL, zname = "time", ...) {
+                         mode = NULL, zname = "time", unit = "", ...) {
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -208,35 +209,16 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
-      if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("terra", quietly = TRUE)) {
-        stop("The packages \"ncdf4\" and \"terra\" are required!")
+      if (!hasCoords(x) && dimExists(1.2, x)) {
+        items <- getItems(x, dim = 1.2)
+        if (length(items) == 59199 && all(items == seq_len(59199))) {
+          # special treatment for data with 59199 cells as this
+          # is the originally used 0.5deg resolution in magclass
+          # before it had been generalized
+          getCoords(x) <- magclassdata$half_deg[c("lon", "lat")]
+        }
       }
-      if (is.null(getItems(x, 3))) {
-        getItems(x, 3) <- "Variable"
-      }
-
-      # if (getOption("tifFirst", FALSE)) {
-      spatRaster <- as.SpatRaster(x)
-      tempTif <- withr::local_tempfile(fileext = ".tif")
-      terra::writeRaster(spatRaster, tempTif)
-      spatRaster <- spatRasterToDataset(terra::rast(tempTif))
-      names(spatRaster) <- getItems(x, 3)
-
-      if (zname != "time") {
-        warning("zname != 'time' is discouraged, as terra will not recognize it as time dimension")
-      }
-      # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
-      suppressSpecificWarnings({
-        terra::writeCDF(spatRaster, filePath, overwrite = TRUE, zname = zname, ...)
-      }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
-
-      # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
-      nc <- ncdf4::nc_open(filePath, write = TRUE)
-      # nc will not have time dim when x had no time dimension
-      if (zname %in% names(nc$dim)) {
-        ncdf4::ncatt_put(nc, zname, "axis", "T")
-      }
-      ncdf4::nc_close(nc)
+      writeNC(x, file_name, unit = unit, zname = zname)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" || file_type == "cs3r") {
