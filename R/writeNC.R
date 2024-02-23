@@ -11,7 +11,7 @@
 #' @author Pascal Sauer
 #' @export
 writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
-                    lonCoords = NULL, latCoords = NULL, res = NULL, zname = "time") {
+                    res = NULL, zname = "time") {
   if (!requireNamespace("ncdf4", quietly = TRUE)) {
     stop("The ncdf4 package is required to write netCDF files, please install it.")
   }
@@ -19,28 +19,10 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
   stopifnot(is.character(filename), is.character(unit), ...length() == 0)
 
   # magclass objects are sparse, fill gaps with NA
-  if (is.null(lonCoords) || is.null(latCoords)) {
-    xy <- getCoords(x)
-    if (is.null(res)) {
-      res <- guessResolution(xy)
-    }
-    lonCoords <- if (is.null(lonCoords)) seq(min(xy$x), max(xy$x), res) else lonCoords
-    latCoords <- if (is.null(latCoords)) seq(max(xy$y), min(xy$y), -res) else latCoords
-  } else if (!is.null(res)) {
-    warning("res is ignored, because both lonCoords and latCoords were passed explicitly.")
-  }
-
-  coords <- expand.grid(x = lonCoords, y = latCoords)
-  coords <- paste0(coords$x, "|", coords$y)
-  coords <- gsub("\\.", "p", coords)
-  coords <- sub("\\|", ".", coords)
-
-  getItems(x, 1, raw = TRUE) <- paste0(getItems(x, "x", full = TRUE), ".", getItems(x, "y", full = TRUE))
-  names(dimnames(x))[1] <- "x.y"
-
-  extended <- new.magpie(coords, getItems(x, 2), getItems(x, 3))
-  extended[getItems(x, 1), , ] <- x
-  x <- extended
+  # TODO check if skipping extension is possible and performance advantage
+  coords <- getCoords(x)
+  x <- extend(x, xRange = c(min(coords$x), max(coords$x)), yRange = c(max(coords$y), min(coords$y)), res = res)
+  coords <- getCoords(x)
 
   if (zname != "time") {
     message("terra will not recognize zname != 'time' as time dimension")
@@ -51,8 +33,8 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
   }
 
   # create netCDF file
-  dimVars <- list(ncdf4::ncdim_def("lon", "degrees_east", lonCoords),
-                  ncdf4::ncdim_def("lat", "degrees_north", latCoords))
+  dimVars <- list(ncdf4::ncdim_def("lon", "degrees_east", unique(coords$x)),
+                  ncdf4::ncdim_def("lat", "degrees_north", unique(coords$y)))
   if (!is.null(getItems(x, 2))) {
     dimVars <- c(dimVars, list(ncdf4::ncdim_def(zname, "years since 0", getYears(x, as.integer = TRUE), unlim = TRUE)))
   }
