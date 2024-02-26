@@ -1,7 +1,7 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.14.0
+Version: 6.14.9001
 Date: 2024-02-26
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre")),
