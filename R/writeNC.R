@@ -19,7 +19,6 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
   stopifnot(is.character(filename), is.character(unit), ...length() == 0)
 
   # magclass objects are sparse, fill gaps with NA
-  # TODO check if skipping extension is possible and performance advantage
   coords <- getCoords(x)
   x <- extend(x, xRange = c(min(coords$x), max(coords$x)), yRange = c(max(coords$y), min(coords$y)), res = res)
   coords <- getCoords(x)
