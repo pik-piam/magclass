@@ -14,7 +14,6 @@ write.magpie(
   comment.char = "*",
   mode = NULL,
   zname = "time",
-  unit = "",
   ...
 )
 }
@@ -42,7 +41,8 @@ existing data can be combined with the new data using the mbind function}
 
 \item{comment}{Vector of strings: Optional comment giving additional
 information about the data. If different to NULL this will overwrite the
-content of attr(x,"comment")}
+content of attr(x,"comment"). For nc files the unit can be passed
+with e.g. 'comment = "unit: kg"'.}
 
 \item{comment.char}{character: a character vector of length one containing a
 single character or an empty string. Use "" to turn off the interpretation
@@ -55,8 +55,6 @@ Set to NULL system defaults will be used. Access codes are identical to the
 codes used in unix function chmod.}
 
 \item{zname}{name of the time variable for raster files like nc, asc, grd and tif}
-
-\item{unit}{unit of the data to be written, only used for nc files}
 
 \item{...}{additional arguments passed to specific write functions}
 }

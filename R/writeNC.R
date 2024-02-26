@@ -16,7 +16,10 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     stop("The ncdf4 package is required to write netCDF files, please install it.")
   }
   # fail immediately if arguments are not set
-  stopifnot(is.character(filename), is.character(unit), ...length() == 0)
+  stopifnot(is.character(filename), is.character(unit))
+  if (!(...length() == 0 || all(...names() == "verbose"))) {
+    stop("Unknown argument passed to writeNC: ", paste(...names(), collapse = ", "))
+  }
 
   # magclass objects are sparse, fill gaps with NA
   coords <- getCoords(x)

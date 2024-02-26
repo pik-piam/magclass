@@ -52,7 +52,8 @@
 #' existing data can be combined with the new data using the mbind function
 #' @param comment Vector of strings: Optional comment giving additional
 #' information about the data. If different to NULL this will overwrite the
-#' content of attr(x,"comment")
+#' content of attr(x,"comment"). For nc files the unit can be passed
+#' with e.g. 'comment = "unit: kg"'.
 #' @param comment.char character: a character vector of length one containing a
 #' single character or an empty string. Use "" to turn off the interpretation
 #' of comments altogether.
@@ -62,7 +63,6 @@
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
 #' @param zname name of the time variable for raster files like nc, asc, grd and tif
-#' @param unit unit of the data to be written, only used for nc files
 #' @param ... additional arguments passed to specific write functions
 #' @note
 #'
@@ -99,7 +99,7 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
                          file_name, file_folder = "", file_type = NULL, # nolint: object_name_linter.
                          append = FALSE, comment = NULL,
                          comment.char = "*", # nolint: object_name_linter.
-                         mode = NULL, zname = "time", unit = "", ...) {
+                         mode = NULL, zname = "time", ...) {
   umask <- Sys.umask()
   if (!is.null(mode)) {
     umaskMode <- as.character(777 - as.integer(mode))
@@ -218,7 +218,18 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
           getCoords(x) <- magclassdata$half_deg[c("lon", "lat")]
         }
       }
-      writeNC(x, file_name, unit = unit, zname = zname)
+      if (is.null(comment)) {
+        unit <- ""
+      } else {
+        indicators <- sub(":.*$", "", comment)
+        units <- sub("^.*: ", "", comment)
+        if (any(grepl("unit", indicators))) {
+          unit <- units[grep("unit", indicators)]
+        } else {
+          unit <- ""
+        }
+      }
+      writeNC(x, file_name, unit = unit, zname = zname, ...)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" || file_type == "cs3r") {

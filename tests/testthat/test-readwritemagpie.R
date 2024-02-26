@@ -108,7 +108,11 @@ test_that("handling of spatial data works", {
   getItems(asc, dim = 3) <- NULL
   expect_identical(asc, a)
 
-  write.magpie(a, file.path(td, "animal.nc"))
+  expect_error({
+    write.magpie(a, file.path(td, "animal.nc"), unknownArg = TRUE, blabla = 1)
+  }, "Unknown argument passed to writeNC: unknownArg, blabla")
+
+  write.magpie(a, file.path(td, "animal.nc"), verbose = FALSE)
   expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
   getItems(anc, dim = 3) <- NULL
   getSets(anc) <- c("x", "y", "d2", "d3")
