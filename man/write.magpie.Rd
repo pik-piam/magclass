@@ -14,6 +14,7 @@ write.magpie(
   comment.char = "*",
   mode = NULL,
   zname = "time",
+  unit = "",
   ...
 )
 }
@@ -54,6 +55,8 @@ Set to NULL system defaults will be used. Access codes are identical to the
 codes used in unix function chmod.}
 
 \item{zname}{name of the time variable for raster files like nc, asc, grd and tif}
+
+\item{unit}{unit of the data to be written, only used for nc files}
 
 \item{...}{additional arguments passed to specific write functions}
 }
