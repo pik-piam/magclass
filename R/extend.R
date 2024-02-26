@@ -20,9 +20,6 @@ extend <- function(x,
          "Try changing res, xRange or yRange.")
   }
 
-  # reorder first dim of x to match order in coords
-  posInCoords <- match(sparseCoords, coords)
-
   subdims1 <- getSets(x)[grep("^d1\\.", names(getSets(x)))]
   notCoords <- subdims1[!subdims1 %in% c("x", "y")]
 
@@ -37,7 +34,12 @@ extend <- function(x,
 
   getSets(extended) <- getSets(x)
 
+  posInCoords <- match(sparseCoords, coords)
+
+  # fill subdims for dim 1 other than x and y (e.g. country code) if they were set in x
   dimnames(extended)[[1]][posInCoords] <- getItems(x, 1)
+
+  # fill extended with data from x where available
   extended[posInCoords, , ] <- x
 
   return(extended)
