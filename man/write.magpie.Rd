@@ -19,7 +19,7 @@ write.magpie(
 }
 \arguments{
 \item{x}{a magclass object. An exception is that formats written via the raster package
-(currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
+(currently "asc", "grd" and "tif") also accept RasterBrick objects which have
 been previously created from a magclass object via as.RasterBrick)}
 
 \item{file_name}{file name including file ending (wildcards are supported).

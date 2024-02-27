@@ -36,7 +36,7 @@
 #' }
 #'
 #' @param x a magclass object. An exception is that formats written via the raster package
-#' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
+#' (currently "asc", "grd" and "tif") also accept RasterBrick objects which have
 #' been previously created from a magclass object via as.RasterBrick)
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
@@ -117,8 +117,8 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
     if (is.null(file_type)) {
       file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint: object_name_linter.
     }
-    if (inherits(x, "RasterBrick") && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
-      stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
+    if (inherits(x, "RasterBrick") && !(file_type %in% c("asc", "grd", "tif"))) {
+      stop("RasterBrick format is only allowed for file types: asc, grd and tif")
     }
     if (!file_folder == "") {
       filePath <- paste(file_folder, file_name, sep = "/")
