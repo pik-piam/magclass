@@ -1,4 +1,19 @@
-guessResolution <- function(xy) {
+#' guessResolution
+#'
+#' Guess the resolution of the given magpie object/coordinates by looking at the minimum
+#' difference between unique sorted values. Fall back to 0.5 if guess is infinite.
+#'
+#' @param x A magpie object or the coordinates of a magpie object (the result
+#' of \code{\link{getCoords}})
+#' @return The guessed resolution of the data
+#' @author Jan Philipp Dietrich, Pascal Sauer
+#' @export
+guessResolution <- function(x) {
+  if (is.magpie(x)) {
+    xy <- getCoords(x)
+  } else {
+    xy <- x
+  }
   .tmp <- function(x) {
     return(min(diff(sort(unique(x)))))
   }

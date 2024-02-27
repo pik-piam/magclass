@@ -31,7 +31,8 @@
 #' structure filename_year_datacolumn.asc
 #' \item "tif" is the  GEOtiff format for gridded data.
 #' \item "grd" is the native raster format for gridded data.
-#' \item "nc" is the netCDF format for gridded data.
+#' \item "nc" is the netCDF format for gridded data. Check ?magclass::writeNC
+#' for more details on how nc files are written.
 #' }
 #'
 #' @param x a magclass object. An exception is that formats written via the raster package
@@ -63,7 +64,8 @@
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
 #' @param zname name of the time variable for raster files like nc, asc, grd and tif
-#' @param ... additional arguments passed to specific write functions
+#' @param ... additional arguments passed to specific write functions.
+#' Check ?magclass::writeNC for available arguments when writing nc files.
 #' @note
 #'
 #' The binary MAgPIE formats .m and .mz have the following content/structure
@@ -229,7 +231,7 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
           unit <- ""
         }
       }
-      writeNC(x, file_name, unit = unit, zname = zname, ...)
+      writeNC(x = x, filename = file_name, unit = unit, zname = zname, ...)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" || file_type == "cs3r") {

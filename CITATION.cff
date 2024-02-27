@@ -3,7 +3,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 title: 'magclass: Data Class and Tools for Handling Spatial-Temporal Data'
 version: 6.14.0
-date-released: '2024-02-26'
+date-released: '2024-02-27'
 abstract: Data class for increased interoperability working with spatial-temporal
   data together with corresponding functions and methods (conversions, basic calculations
   and basic data manipulation). The class distinguishes between spatial, temporal

@@ -1,10 +1,23 @@
+#' extend
+#'
+#' Extend a magpie object to a dense grid based on the given xRange, yRange and resolution.
+#' This is e.g. required when writing netCDF files. Extending a sparse magpie object to a dense grid
+#' requires much more memory, so use with caution.
+#'
+#' @param x A magpie object
+#' @param xRange Range of x coordinates, in ascending order when writing to netCDF
+#' @param yRange Range of y coordinates, in descending order when writing to netCDF
+#' @param res Resolution of the data, if not provided it will be guessed
+#' @return An extended magpie object with the same data as x and gaps filled with NA
+#' @author Pascal Sauer
+#' @export
 extend <- function(x,
                    xRange = c(-179.75, 179.75),
                    yRange = c(89.75, -89.75),
                    res = NULL) {
   stopifnot(length(xRange) == 2, length(yRange) == 2)
   if (is.null(res)) {
-    res <- guessResolution(getCoords(x))
+    res <- guessResolution(x)
   }
   coords <- expand.grid(x = seq(xRange[1], xRange[2], if (xRange[1] < xRange[2]) res else -res),
                         y = seq(yRange[1], yRange[2], if (yRange[1] < yRange[2]) res else -res))

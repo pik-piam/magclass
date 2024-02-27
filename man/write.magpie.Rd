@@ -56,7 +56,8 @@ codes used in unix function chmod.}
 
 \item{zname}{name of the time variable for raster files like nc, asc, grd and tif}
 
-\item{...}{additional arguments passed to specific write functions}
+\item{...}{additional arguments passed to specific write functions.
+Check ?magclass::writeNC for available arguments when writing nc files.}
 }
 \description{
 Writes a magpie object to a file. The file type is determined by the filename extension.
@@ -91,7 +92,8 @@ one year and data column is supplied several files are written with the
 structure filename_year_datacolumn.asc
 \item "tif" is the  GEOtiff format for gridded data.
 \item "grd" is the native raster format for gridded data.
-\item "nc" is the netCDF format for gridded data.
+\item "nc" is the netCDF format for gridded data. Check ?magclass::writeNC
+for more details on how nc files are written.
 }
 }
 \note{

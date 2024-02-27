@@ -2,7 +2,7 @@ test_that("extend works", {
   animal <- maxample("animal")
   # shuffle first dim to ensure order does not matter
   animal <- animal[sample(seq_along(getItems(animal, 1))), , ]
-  expect_identical(guessResolution(getCoords(animal)), 0.5)
+  expect_identical(guessResolution(animal), 0.5)
 
   x <- extend(animal)
   expectedCoords <- expand.grid(x = seq(-179.75, 179.75, 0.5),

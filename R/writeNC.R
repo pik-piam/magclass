@@ -9,7 +9,6 @@
 #' @param res Resolution of the data, if not provided it will be guessed
 #' @param zname Name of the z dimension in the netCDF file
 #' @author Pascal Sauer
-#' @export
 writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
                     res = NULL, zname = "time") {
   if (!requireNamespace("ncdf4", quietly = TRUE)) {
