@@ -31,11 +31,12 @@
 #' structure filename_year_datacolumn.asc
 #' \item "tif" is the  GEOtiff format for gridded data.
 #' \item "grd" is the native raster format for gridded data.
-#' \item "nc" is the netCDF format for gridded data.
+#' \item "nc" is the netCDF format for gridded data. Check ?magclass::writeNC
+#' for more details on how nc files are written.
 #' }
 #'
 #' @param x a magclass object. An exception is that formats written via the raster package
-#' (currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
+#' (currently "asc", "grd" and "tif") also accept RasterBrick objects which have
 #' been previously created from a magclass object via as.RasterBrick)
 #' @param file_name file name including file ending (wildcards are supported).
 #' Optionally also the full path can be specified here (instead of splitting it
@@ -52,7 +53,8 @@
 #' existing data can be combined with the new data using the mbind function
 #' @param comment Vector of strings: Optional comment giving additional
 #' information about the data. If different to NULL this will overwrite the
-#' content of attr(x,"comment")
+#' content of attr(x,"comment"). For nc files the unit can be passed
+#' with e.g. 'comment = "unit: kg"'.
 #' @param comment.char character: a character vector of length one containing a
 #' single character or an empty string. Use "" to turn off the interpretation
 #' of comments altogether.
@@ -62,7 +64,8 @@
 #' Set to NULL system defaults will be used. Access codes are identical to the
 #' codes used in unix function chmod.
 #' @param zname name of the time variable for raster files like nc, asc, grd and tif
-#' @param ... additional arguments passed to specific write functions
+#' @param ... additional arguments passed to specific write functions.
+#' Check ?magclass::writeNC for available arguments when writing nc files.
 #' @note
 #'
 #' The binary MAgPIE formats .m and .mz have the following content/structure
@@ -114,8 +117,8 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
     if (is.null(file_type)) {
       file_type <- tail(strsplit(file_name, "\\.")[[1]], 1) # nolint: object_name_linter.
     }
-    if (inherits(x, "RasterBrick") && !(file_type %in% c("nc", "asc", "grd", "tif"))) {
-      stop("RasterBrick format is only allowed for file types: nc, asc, grd and tif")
+    if (inherits(x, "RasterBrick") && !(file_type %in% c("asc", "grd", "tif"))) {
+      stop("RasterBrick format is only allowed for file types: asc, grd and tif")
     }
     if (!file_folder == "") {
       filePath <- paste(file_folder, file_name, sep = "/")
@@ -208,29 +211,27 @@ write.magpie <- function(x, # nolint: object_name_linter, cyclocomp_linter.
       raster::writeRaster(x, filename = filePath, format = format[file_type], overwrite = TRUE,
                           zname = zname, zunit = zunit, varname = varname, ...)
     } else if (file_type == "nc") {
-      if (!requireNamespace("ncdf4", quietly = TRUE) || !requireNamespace("terra", quietly = TRUE)) {
-        stop("The packages \"ncdf4\" and \"terra\" are required!")
+      if (!hasCoords(x) && dimExists(1.2, x)) {
+        items <- getItems(x, dim = 1.2)
+        if (length(items) == 59199 && all(items == seq_len(59199))) {
+          # special treatment for data with 59199 cells as this
+          # is the originally used 0.5deg resolution in magclass
+          # before it had been generalized
+          getCoords(x) <- magclassdata$half_deg[c("lon", "lat")]
+        }
       }
-      if (is.null(getItems(x, 3))) {
-        getItems(x, 3) <- "Variable"
+      if (is.null(comment)) {
+        unit <- ""
+      } else {
+        indicators <- sub(":.*$", "", comment)
+        units <- sub("^.*: ", "", comment)
+        if (any(grepl("unit", indicators))) {
+          unit <- units[grep("unit", indicators)]
+        } else {
+          unit <- ""
+        }
       }
-      spatRasterDataset <- as.SpatRasterDataset(x)
-
-      if (zname != "time") {
-        warning("zname != 'time' is discouraged, as terra will not recognize it as time dimension")
-      }
-      # terra::writeCDF does not set the "axis" attribute for the time dimension, which triggers a warning
-      suppressSpecificWarnings({
-        terra::writeCDF(spatRasterDataset, filePath, overwrite = TRUE, zname = zname, ...)
-      }, paste0("GDAL Message 1: dimension #0 (", zname, ") is not a Time or Vertical dimension."), fixed = TRUE)
-
-      # set the "axis" attribute to "T" for the time dimension to prevent further warnings when reading the file
-      nc <- ncdf4::nc_open(filePath, write = TRUE)
-      # nc will not have time dim when x had no time dimension
-      if (zname %in% names(nc$dim)) {
-        ncdf4::ncatt_put(nc, zname, "axis", "T")
-      }
-      ncdf4::nc_close(nc)
+      writeNC(x = x, filename = file_name, unit = unit, zname = zname, ...)
     } else if (file_type == "rds") {
       saveRDS(object = x, file = filePath, ...)
     } else if (file_type == "cs3" || file_type == "cs3r") {

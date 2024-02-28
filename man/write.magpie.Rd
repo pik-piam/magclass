@@ -19,7 +19,7 @@ write.magpie(
 }
 \arguments{
 \item{x}{a magclass object. An exception is that formats written via the raster package
-(currently "nc", "asc", "grd" and "tif") also accept RasterBrick objects which have
+(currently "asc", "grd" and "tif") also accept RasterBrick objects which have
 been previously created from a magclass object via as.RasterBrick)}
 
 \item{file_name}{file name including file ending (wildcards are supported).
@@ -41,7 +41,8 @@ existing data can be combined with the new data using the mbind function}
 
 \item{comment}{Vector of strings: Optional comment giving additional
 information about the data. If different to NULL this will overwrite the
-content of attr(x,"comment")}
+content of attr(x,"comment"). For nc files the unit can be passed
+with e.g. 'comment = "unit: kg"'.}
 
 \item{comment.char}{character: a character vector of length one containing a
 single character or an empty string. Use "" to turn off the interpretation
@@ -55,7 +56,8 @@ codes used in unix function chmod.}
 
 \item{zname}{name of the time variable for raster files like nc, asc, grd and tif}
 
-\item{...}{additional arguments passed to specific write functions}
+\item{...}{additional arguments passed to specific write functions.
+Check ?magclass::writeNC for available arguments when writing nc files.}
 }
 \description{
 Writes a magpie object to a file. The file type is determined by the filename extension.
@@ -90,7 +92,8 @@ one year and data column is supplied several files are written with the
 structure filename_year_datacolumn.asc
 \item "tif" is the  GEOtiff format for gridded data.
 \item "grd" is the native raster format for gridded data.
-\item "nc" is the netCDF format for gridded data.
+\item "nc" is the netCDF format for gridded data. Check ?magclass::writeNC
+for more details on how nc files are written.
 }
 }
 \note{

@@ -78,22 +78,26 @@ test_that("read supports older formats", {
 })
 
 test_that("handling of spatial data works", {
-  td <- tempdir()
+  td <- withr::local_tempdir()
+
   md <- magclass:::magclassdata$half_deg
-  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(2000, 2001), fill = c(md$lon, md$lat))
+  m05 <- new.magpie(paste0(md$region, ".", seq_len(dim(md)[1])), years = c(2000, 2001),
+                    names = "nctest", fill = c(md$lon, md$lat))
   m10 <- mbind(m05, m05)
-  getNames(m10) <- c("bla", "blub")
-  expect_error(write.magpie(m10, file.path(td, "test.grd")), "no support for multiple variables")
-  expect_no_warning(write.magpie(m10, file.path(td, "test.nc")))
+
   expect_silent(write.magpie(m05, file.path(td, "test.nc")))
   expect_silent(m05in <- read.magpie(file.path(td, "test.nc")))
 
-  getCoords(m05) <- magclass:::magclassdata$half_deg[c("lon", "lat")]
-  m05 <- collapseDim(m05, dim = c(1.1, 1.2))
+  getCoords(m05) <- md[c("lon", "lat")]
+  getItems(m05, "region") <- NULL
+  getItems(m05, "region1") <- NULL
   m05 <- m05[getItems(m05in, dim = 1), , ]
-  getNames(m05in) <- NULL
-  getSets(m05in, fulldim = FALSE)[3] <- "data"
+
   expect_identical(m05, m05in)
+
+  getNames(m10) <- c("bla", "blub")
+  expect_error(write.magpie(m10, file.path(td, "test.grd")), "no support for multiple variables")
+  expect_no_warning(write.magpie(m10, file.path(td, "test.nc")))
 
   a <- maxample("animal")
   a <- dimSums(a, dim = c(1.3, 1.4, 2, 3))
@@ -104,7 +108,11 @@ test_that("handling of spatial data works", {
   getItems(asc, dim = 3) <- NULL
   expect_identical(asc, a)
 
-  write.magpie(a, file.path(td, "animal.nc"))
+  expect_error({
+    write.magpie(a, file.path(td, "animal.nc"), unknownArg = TRUE, blabla = 1)
+  }, "Unknown argument passed to writeNC: unknownArg, blabla")
+
+  write.magpie(a, file.path(td, "animal.nc"), verbose = FALSE)
   expect_silent(anc <- read.magpie(file.path(td, "animal.nc")))
   getItems(anc, dim = 3) <- NULL
   getSets(anc) <- c("x", "y", "d2", "d3")
