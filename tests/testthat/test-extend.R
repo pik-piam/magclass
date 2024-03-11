@@ -31,3 +31,5 @@ test_that("extend works", {
                                 KEEP.OUT.ATTRS = FALSE)
   expect_identical(getCoords(x), expectedCoords)
 })
+
+# TODO test checkInRange

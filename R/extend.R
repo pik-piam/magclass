@@ -14,7 +14,8 @@
 extend <- function(x,
                    xRange = c(-179.75, 179.75),
                    yRange = c(89.75, -89.75),
-                   res = NULL) {
+                   res = NULL,
+                   checkInRange = TRUE) {
   stopifnot(length(xRange) == 2, length(yRange) == 2)
   if (is.null(res)) {
     res <- guessResolution(x)
@@ -28,9 +29,16 @@ extend <- function(x,
   sparseCoords <- paste0(getItems(x, "x", full = TRUE),
                          ".",
                          getItems(x, "y", full = TRUE))
-  if (!all(sparseCoords %in% coords)) {
-    stop("The coordinates of the input object are not a subset of the extended coordinates. ",
-         "Try changing res, xRange or yRange.")
+  if (checkInRange) {
+    if (!all(sparseCoords %in% coords)) {
+      stop("The coordinates of the input object are not a subset of the extended coordinates. ",
+           "Try changing res, xRange or yRange.")
+    }
+  } else {
+    x <- x[sparseCoords %in% coords, , ]
+    sparseCoords <- paste0(getItems(x, "x", full = TRUE),
+                           ".",
+                           getItems(x, "y", full = TRUE))
   }
 
   subdims1 <- getSets(x)[grep("^d1\\.", names(getSets(x)))]
