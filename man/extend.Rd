@@ -4,7 +4,13 @@
 \alias{extend}
 \title{extend}
 \usage{
-extend(x, xRange = c(-179.75, 179.75), yRange = c(89.75, -89.75), res = NULL)
+extend(
+  x,
+  xRange = c(-179.75, 179.75),
+  yRange = c(89.75, -89.75),
+  res = NULL,
+  checkInRange = TRUE
+)
 }
 \arguments{
 \item{x}{A magpie object}
