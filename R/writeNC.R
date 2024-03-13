@@ -7,7 +7,7 @@
 #' @param compression Level of compression to use (1-9), NA for no compression
 #' @param missval The value that encodes NA in the resulting netCDF file
 #' @param gridDefinition A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
-#' Use c(-179.75, 179.75, -89.75, 89.75), 0.5) to write a standard 0.5-degree-resolution
+#' Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to write a standard 0.5-degree-resolution
 #' lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution
 #' @param zname Name of the z dimension in the netCDF file
 #' @param chunkSize Data is written in dense grid chunks of this size,
@@ -28,8 +28,8 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     coords <- getCoords(x)
     firstX <- min(coords$x)
     lastX <- max(coords$x)
-    firstY <- min(coords$y)
-    lastY <- max(coords$y)
+    firstY <- max(coords$y)
+    lastY <- min(coords$y)
     res <- guessResolution(coords)
   } else {
     stopifnot(length(gridDefinition) == 5,
@@ -41,8 +41,8 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     lastY <- gridDefinition[3]
     res <- gridDefinition[5]
   }
-  xCoords <- seq(min(coords$x), max(coords$x), res)
-  yCoords <- seq(max(coords$y), min(coords$y), -res)
+  xCoords <- seq(firstX, lastX, res)
+  yCoords <- seq(firstY, lastY, -res)
 
   if (zname != "time") {
     message("terra will not recognize zname != 'time' as time dimension")
