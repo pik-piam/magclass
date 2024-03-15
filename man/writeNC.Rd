@@ -30,7 +30,7 @@ writeNC(
 \item{missval}{The value that encodes NA in the resulting netCDF file}
 
 \item{gridDefinition}{A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
-Use c(-179.75, 179.75, -89.75, 89.75), 0.5) to write a standard 0.5-degree-resolution
+Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to write a standard 0.5-degree-resolution
 lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution}
 
 \item{zname}{Name of the z dimension in the netCDF file}

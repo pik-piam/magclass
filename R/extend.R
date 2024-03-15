@@ -36,9 +36,13 @@ extend <- function(x,
     }
   } else {
     x <- x[sparseCoords %in% coords, , ]
-    sparseCoords <- paste0(getItems(x, "x", full = TRUE),
-                           ".",
-                           getItems(x, "y", full = TRUE))
+    if (length(x) > 0) {
+      sparseCoords <- paste0(getItems(x, "x", full = TRUE),
+                             ".",
+                             getItems(x, "y", full = TRUE))
+    } else {
+      sparseCoords <- character(0)
+    }
   }
 
   subdims1 <- getSets(x)[grep("^d1\\.", names(getSets(x)))]
