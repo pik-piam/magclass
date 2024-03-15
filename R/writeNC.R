@@ -57,7 +57,8 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
                   ncdf4::ncdim_def("lat", "degrees_north", yCoords))
   hasTime <- !is.null(getItems(x, 2))
   if (hasTime) {
-    dimVars <- c(dimVars, list(ncdf4::ncdim_def(zname, "years since 0", getYears(x, as.integer = TRUE), unlim = TRUE)))
+    dimVars <- c(dimVars, list(ncdf4::ncdim_def(zname, "years since 0",
+                                                getYears(x, as.integer = TRUE), unlim = TRUE)))
   }
   vars <- lapply(getItems(x, 3), function(vname) {
     return(ncdf4::ncvar_def(vname, units = unit, dim = dimVars,
