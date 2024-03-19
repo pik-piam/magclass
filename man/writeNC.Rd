@@ -13,7 +13,8 @@ writeNC(
   missval = NA,
   gridDefinition = NULL,
   zname = "time",
-  chunkSize = 250000
+  chunkSize = Inf,
+  progress = FALSE
 )
 }
 \arguments{
@@ -35,8 +36,10 @@ lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution}
 
 \item{zname}{Name of the z dimension in the netCDF file}
 
-\item{chunkSize}{Data is written in dense grid chunks of this size,
-smaller values reduce memory footprint, but increase write time}
+\item{chunkSize}{Data is written in dense grid chunks of at most this size,
+smaller values reduce memory footprint, but increase write time.}
+
+\item{progress}{If TRUE, print progress messages}
 }
 \description{
 Write a magpie object to a netCDF file

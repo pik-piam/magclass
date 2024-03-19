@@ -10,11 +10,13 @@
 #' Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to write a standard 0.5-degree-resolution
 #' lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution
 #' @param zname Name of the z dimension in the netCDF file
-#' @param chunkSize Data is written in dense grid chunks of this size,
-#' smaller values reduce memory footprint, but increase write time
+#' @param chunkSize Data is written in dense grid chunks of at most this size,
+#' smaller values reduce memory footprint, but increase write time.
+#' @param progress If TRUE, print progress messages
 #' @author Pascal Sauer
 writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
-                    gridDefinition = NULL, zname = "time", chunkSize = 250000) {
+                    gridDefinition = NULL, zname = "time", chunkSize = Inf,
+                    progress = FALSE) {
   if (!requireNamespace("ncdf4", quietly = TRUE)) {
     stop("The ncdf4 package is required to write netCDF files, please install it.")
   }
@@ -74,15 +76,31 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
 
   nYears <- max(1, length(getYears(x)))
   rowsPerChunk <- max(1, floor(chunkSize / nYears / length(xCoords)))
-  for (vname in getItems(x, 3)) {
-    for (i in seq.int(1, length(yCoords), rowsPerChunk)) {
-      chunk <- extend(x[, , vname], c(firstX, lastX),
-                      c(yCoords[i], yCoords[min(i + rowsPerChunk - 1, length(yCoords))]),
-                      res = res, checkInRange = FALSE)
-      ncdf4::ncvar_put(nc, vname, chunk,
-                       start = c(1, i, if (hasTime) 1),
-                       count = c(-1, length(chunk) / nYears / length(xCoords),
-                                 if (hasTime) -1))
+  for (iVariable in seq_along(getItems(x, 3))) {
+    vname <- getItems(x, 3)[iVariable]
+    if (progress) {
+      message(iVariable, "/", length(getItems(x, 3)), " Writing ", vname)
+    }
+    if (is.finite(chunkSize)) {
+      startRows <- seq.int(1, length(yCoords), rowsPerChunk)
+      for (iStartRow in seq_along(startRows)) {
+        if (progress) {
+          message("Writing chunk ", iStartRow, "/", length(startRows))
+        }
+        startRow <- startRows[iStartRow]
+        chunk <- extend(x[, , vname],
+                        gridDefinition = c(firstX, lastX,
+                                           yCoords[startRow], yCoords[min(startRow + rowsPerChunk - 1,
+                                                                          length(yCoords))],
+                                           res),
+                        crop = TRUE)
+        ncdf4::ncvar_put(nc, vname, chunk,
+                         start = c(1, startRow, if (hasTime) 1),
+                         count = c(-1, length(chunk) / nYears / length(xCoords),
+                                   if (hasTime) -1))
+      }
+    } else {
+      ncdf4::ncvar_put(nc, vname, extend(x[, , vname], gridDefinition = gridDefinition))
     }
   }
 }

@@ -5,23 +5,33 @@
 #' requires much more memory, so use with caution.
 #'
 #' @param x A magpie object
-#' @param xRange Range of x coordinates, in ascending order when writing to netCDF
-#' @param yRange Range of y coordinates, in descending order when writing to netCDF
-#' @param res Resolution of the data, if not provided it will be guessed
-#' @return An extended magpie object with the same data as x and gaps filled with NA
+#' @param gridDefinition A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
+#' Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to extend to a standard 0.5-degree-resolution
+#' lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution.
+#' @param crop If TRUE, discard cells from x which are not in the gridDefinition grid. If FALSE,
+#' throw an error if the coordinates of x are not a subset of the extended coordinates.
+#' @return Magpie object x with dense grid according to gridDefinition, gaps filled with NA.
 #' @author Pascal Sauer
 #' @export
-extend <- function(x,
-                   xRange = c(-179.75, 179.75),
-                   yRange = c(89.75, -89.75),
-                   res = NULL,
-                   checkInRange = TRUE) {
-  stopifnot(length(xRange) == 2, length(yRange) == 2)
-  if (is.null(res)) {
-    res <- guessResolution(x)
+extend <- function(x, gridDefinition = NULL, crop = FALSE) {
+  if (is.null(gridDefinition)) {
+    coords <- getCoords(x)
+    firstX <- min(coords$x)
+    lastX <- max(coords$x)
+    firstY <- max(coords$y)
+    lastY <- min(coords$y)
+    res <- guessResolution(coords)
+  } else {
+    stopifnot(length(gridDefinition) == 5)
+    firstX <- gridDefinition[1]
+    lastX <- gridDefinition[2]
+    firstY <- gridDefinition[3]
+    lastY <- gridDefinition[4]
+    res <- gridDefinition[5]
   }
-  coords <- expand.grid(x = seq(xRange[1], xRange[2], if (xRange[1] < xRange[2]) res else -res),
-                        y = seq(yRange[1], yRange[2], if (yRange[1] < yRange[2]) res else -res))
+
+  coords <- expand.grid(x = seq(firstX, lastX, if (firstX < lastX) res else -res),
+                        y = seq(firstY, lastY, if (firstY < lastY) res else -res))
   coords <- paste0(coords$x, "|", coords$y)
   coords <- gsub("\\.", "p", coords)
   coords <- sub("\\|", ".", coords)
@@ -29,12 +39,7 @@ extend <- function(x,
   sparseCoords <- paste0(getItems(x, "x", full = TRUE),
                          ".",
                          getItems(x, "y", full = TRUE))
-  if (checkInRange) {
-    if (!all(sparseCoords %in% coords)) {
-      stop("The coordinates of the input object are not a subset of the extended coordinates. ",
-           "Try changing res, xRange or yRange.")
-    }
-  } else {
+  if (crop) {
     x <- x[sparseCoords %in% coords, , ]
     if (length(x) > 0) {
       sparseCoords <- paste0(getItems(x, "x", full = TRUE),
@@ -42,6 +47,11 @@ extend <- function(x,
                              getItems(x, "y", full = TRUE))
     } else {
       sparseCoords <- character(0)
+    }
+  } else {
+    if (!all(sparseCoords %in% coords)) {
+      stop("The coordinates of the input object are not a subset of the extended coordinates. ",
+           "Try changing res, xRange or yRange.")
     }
   }
 
