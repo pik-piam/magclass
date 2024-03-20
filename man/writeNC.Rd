@@ -13,7 +13,6 @@ writeNC(
   missval = NA,
   gridDefinition = NULL,
   zname = "time",
-  chunkSize = Inf,
   progress = FALSE
 )
 }
@@ -35,9 +34,6 @@ Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to write a standard 0.5-degree-resolu
 lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution}
 
 \item{zname}{Name of the z dimension in the netCDF file}
-
-\item{chunkSize}{Data is written in dense grid chunks of at most this size,
-smaller values reduce memory footprint, but increase write time.}
 
 \item{progress}{If TRUE, print progress messages}
 }
