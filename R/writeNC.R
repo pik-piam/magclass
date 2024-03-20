@@ -74,19 +74,17 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     ncdf4::ncatt_put(nc, "time", "axis", "T")
   }
 
+  messageIf(progress, "Writing ", filename)
+
   nYears <- max(1, length(getYears(x)))
   rowsPerChunk <- max(1, floor(chunkSize / nYears / length(xCoords)))
   for (iVariable in seq_along(getItems(x, 3))) {
     vname <- getItems(x, 3)[iVariable]
-    if (progress) {
-      message(iVariable, "/", length(getItems(x, 3)), " Writing ", vname)
-    }
+    messageIf(progress, iVariable, "/", length(getItems(x, 3)), " Writing ", vname)
     if (is.finite(chunkSize)) {
       startRows <- seq.int(1, length(yCoords), rowsPerChunk)
       for (iStartRow in seq_along(startRows)) {
-        if (progress) {
-          message("Writing chunk ", iStartRow, "/", length(startRows))
-        }
+        messageIf(progress, "Writing chunk ", iStartRow, "/", length(startRows))
         startRow <- startRows[iStartRow]
         chunk <- extend(x[, , vname],
                         gridDefinition = c(firstX, lastX,
@@ -102,5 +100,11 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     } else {
       ncdf4::ncvar_put(nc, vname, extend(x[, , vname], gridDefinition = gridDefinition))
     }
+  }
+}
+
+messageIf <- function(condition, ...) {
+  if (condition) {
+    message(...)
   }
 }
