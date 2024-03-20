@@ -4,19 +4,20 @@
 \alias{extend}
 \title{extend}
 \usage{
-extend(x, xRange = c(-179.75, 179.75), yRange = c(89.75, -89.75), res = NULL)
+extend(x, gridDefinition = NULL, crop = FALSE)
 }
 \arguments{
 \item{x}{A magpie object}
 
-\item{xRange}{Range of x coordinates, in ascending order when writing to netCDF}
+\item{gridDefinition}{A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
+Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to extend to a standard 0.5-degree-resolution
+lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution.}
 
-\item{yRange}{Range of y coordinates, in descending order when writing to netCDF}
-
-\item{res}{Resolution of the data, if not provided it will be guessed}
+\item{crop}{If TRUE, discard cells from x which are not in the gridDefinition grid. If FALSE,
+throw an error if the coordinates of x are not a subset of the extended coordinates.}
 }
 \value{
-An extended magpie object with the same data as x and gaps filled with NA
+Magpie object x with dense grid according to gridDefinition, gaps filled with NA.
 }
 \description{
 Extend a magpie object to a dense grid based on the given xRange, yRange and resolution.

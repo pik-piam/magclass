@@ -11,8 +11,9 @@ writeNC(
   ...,
   compression = 2,
   missval = NA,
-  res = NULL,
-  zname = "time"
+  gridDefinition = NULL,
+  zname = "time",
+  progress = FALSE
 )
 }
 \arguments{
@@ -22,15 +23,19 @@ writeNC(
 
 \item{unit}{Unit of the data, to omit pass "" (empty string)}
 
-\item{...}{For future expansion.}
+\item{...}{For future expansion}
 
 \item{compression}{Level of compression to use (1-9), NA for no compression}
 
 \item{missval}{The value that encodes NA in the resulting netCDF file}
 
-\item{res}{Resolution of the data, if not provided it will be guessed}
+\item{gridDefinition}{A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
+Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to write a standard 0.5-degree-resolution
+lon/lat grid. If NULL, use min/max of coordinates in x and guessResolution}
 
 \item{zname}{Name of the z dimension in the netCDF file}
+
+\item{progress}{If TRUE, print progress messages}
 }
 \description{
 Write a magpie object to a netCDF file

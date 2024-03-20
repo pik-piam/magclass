@@ -78,6 +78,7 @@ test_that("read supports older formats", {
 })
 
 test_that("handling of spatial data works", {
+  skip_if_not_installed("ncdf4")
   td <- withr::local_tempdir()
 
   md <- magclass:::magclassdata$half_deg
@@ -117,6 +118,12 @@ test_that("handling of spatial data works", {
   getItems(anc, dim = 3) <- NULL
   getSets(anc) <- c("x", "y", "d2", "d3")
   expect_identical(anc, a)
+
+  write.magpie(a, file.path(td, "animal2.nc"), gridDefinition = c(3, 7, 49, 54, 0.25))
+  animalRaster <- ncdf4::nc_open(file.path(td, "animal2.nc"))
+  withr::defer(ncdf4::nc_close(animalRaster))
+  expect_identical(as.vector(animalRaster$dim$lon$vals), seq(3, 7, 0.25))
+  expect_identical(as.vector(animalRaster$dim$lat$vals), seq(54, 49, -0.25))
 })
 
 
@@ -162,9 +169,11 @@ test_that("read/write triggers errors and warnings correctly", {
   expect_error(read.magpie(tmpfile), "does not contain a magpie object")
   unlink(tmpfile)
 
-  expect_error(write.magpie(as.magpie(1), "bla.nc"), "No coordinates")
   expect_error(write.magpie(a, "blub.grd"), "no support for multiple variables")
   expect_error(write.magpie(a[, , 1], "blub.asc"), "choose just one")
+
+  skip_if_not_installed("ncdf4")
+  expect_error(write.magpie(as.magpie(1), "bla.nc"), "No coordinates")
 })
 
 test_that("copy.magpie works", {
