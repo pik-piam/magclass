@@ -39,7 +39,7 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     firstY <- gridDefinition[4]
     lastY <- gridDefinition[3]
     res <- gridDefinition[5]
-    # swap y values before passing gridDefinition to extend
+    # swap y values before passing gridDefinition to magclass::extend
     gridDefinition[3] <- firstY
     gridDefinition[4] <- lastY
   }
