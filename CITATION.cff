@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'magclass: Data Class and Tools for Handling Spatial-Temporal Data'
-version: 6.15.1
-date-released: '2024-04-29'
+version: 6.15.0
+date-released: '2024-03-20'
 abstract: Data class for increased interoperability working with spatial-temporal
   data together with corresponding functions and methods (conversions, basic calculations
   and basic data manipulation). The class distinguishes between spatial, temporal

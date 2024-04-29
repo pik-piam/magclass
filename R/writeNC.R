@@ -32,7 +32,8 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     res <- guessResolution(coords)
   } else {
     stopifnot(length(gridDefinition) == 5,
-              gridDefinition[1] < gridDefinition[2])
+              gridDefinition[1] < gridDefinition[2],
+              gridDefinition[3] < gridDefinition[4])
     firstX <- gridDefinition[1]
     lastX <- gridDefinition[2]
     firstY <- gridDefinition[4]
