@@ -40,7 +40,7 @@ writeNC <- function(x, filename, unit, ..., compression = 2, missval = NA,
     res <- gridDefinition[5]
   }
   xCoords <- seq(firstX, lastX, res)
-  yCoords <- seq(firstY, lastY, if (firstY < lastY) res else -res)
+  yCoords <- seq(firstY, lastY, -res)
 
   if (zname != "time") {
     message("terra will not recognize zname != 'time' as time dimension")
