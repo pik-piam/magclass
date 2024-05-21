@@ -1,29 +1,30 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.15.1
-Date: 2024-04-29
+Version: 6.15.2
+Date: 2024-05-21
 Authors@R: c(
-    person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre")),
-    person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = "aut"),
+    person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", 
+    comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0002-4309-6431"), role = c("aut", "cre")),
+    person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "aut"),
     person("Markus", "Bonsch", role = "aut"),
-    person("Florian", "Humpenoeder", , "humpenoeder@pik-potsdam.de", role = "aut"),
+    person("Florian", "Humpenoeder", , "humpenoeder@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "aut"),
     person("Stephen", "Bi", role = "aut"),
-    person("Kristine", "Karstens", , "karstens@pik-potsdam.de", role = "aut"),
-    person("Debbora", "Leip", , "leip@pik-potsdam.de", role = "aut"),
-    person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", role = "aut"),
-    person("Lavinia", "Baumstark", , "lavinia@pik-potsdam.de", role = "ctb"),
+    person("Kristine", "Karstens", , "karstens@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "aut"),
+    person("Debbora", "Leip", , "leip@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "aut"),
+    person("Pascal", "Sauer", , "pascal.sauer@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "aut"),
+    person("Lavinia", "Baumstark", , "lavinia@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Christoph", "Bertram", , "bertram@pik-potsdam.de", role = "ctb"),
     person("Anastasis", "Giannousakis", , "giannou@pik-potsdam.de", role = "ctb"),
-    person("David", "Klein", , "dklein@pik-potsdam.de", role = "ctb"),
+    person("David", "Klein", , "dklein@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Ina", "Neher", role = "ctb"),
-    person("Michaja", "Pehl", , "pehl@pik-potsdam.de", role = "ctb"),
+    person("Michaja", "Pehl", , "pehl@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Anselm", "Schultes", role = "ctb"),
-    person("Miodrag", "Stevanovic", , "miodrag@pik-potsdam.de", role = "ctb"),
+    person("Miodrag", "Stevanovic", , "miodrag@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Xiaoxi", "Wang", , "wang@pik-potsdam.de", role = "ctb"),
-    person("Felicitas", "Beier", , "beier@pik-potsdam.de", role = "ctb"),
+    person("Felicitas", "Beier", , "beier@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Mika", "Pflüger", role = "ctb"),
-    person("Oliver", "Richters", role = "ctb")
+    person("Oliver", "Richters", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb")
   )
 Description: Data class for increased interoperability working with
     spatial-temporal data together with corresponding functions and
@@ -63,3 +64,4 @@ VignetteBuilder:
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
+Config/Keywords: tool
