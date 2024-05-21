@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'magclass: Data Class and Tools for Handling Spatial-Temporal Data'
-version: 6.15.1
-date-released: '2024-04-29'
+version: 6.15.2
+date-released: '2024-05-21'
 abstract: Data class for increased interoperability working with spatial-temporal
   data together with corresponding functions and methods (conversions, basic calculations
   and basic data manipulation). The class distinguishes between spatial, temporal
@@ -14,28 +14,36 @@ authors:
 - family-names: Dietrich
   given-names: Jan Philipp
   email: dietrich@pik-potsdam.de
+  orcid: 0000-0002-4309-6431
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Bodirsky
   given-names: Benjamin Leon
   email: bodirsky@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Bonsch
   given-names: Markus
 - family-names: Humpenoeder
   given-names: Florian
   email: humpenoeder@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Bi
   given-names: Stephen
 - family-names: Karstens
   given-names: Kristine
   email: karstens@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Leip
   given-names: Debbora
   email: leip@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Sauer
   given-names: Pascal
   email: pascal.sauer@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Baumstark
   given-names: Lavinia
   email: lavinia@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Bertram
   given-names: Christoph
   email: bertram@pik-potsdam.de
@@ -45,27 +53,33 @@ authors:
 - family-names: Klein
   given-names: David
   email: dklein@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Neher
   given-names: Ina
 - family-names: Pehl
   given-names: Michaja
   email: pehl@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Schultes
   given-names: Anselm
 - family-names: Stevanovic
   given-names: Miodrag
   email: miodrag@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Wang
   given-names: Xiaoxi
   email: wang@pik-potsdam.de
 - family-names: Beier
   given-names: Felicitas
   email: beier@pik-potsdam.de
+  affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Pflüger
   given-names: Mika
 - family-names: Richters
   given-names: Oliver
+  affiliation: Potsdam Institute for Climate Impact Research
 license: LGPL-3.0
+keywords: tool
 repository-code: https://github.com/pik-piam/magclass
 doi: 10.5281/zenodo.1158580
 
