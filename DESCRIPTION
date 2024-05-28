@@ -1,7 +1,7 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.15.2.9001
+Version: 6.16.0
 Date: 2024-05-28
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", 
