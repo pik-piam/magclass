@@ -76,9 +76,49 @@ mbind <- function(...) { #nolint
          " data objects! Cannot handle this case!")
   }
 
-  if (diffspat && difftemp) stop("Cannot handle objects! Spatial as well as temporal dimensions differ!")
-  if (difftemp && diffdata) stop("Cannot handle objects! Data as well as temporal dimensions differ!")
-  if (diffdata && diffspat) stop("Cannot handle objects! Data as well as spatial dimensions differ!")
+  diffall <- c("spatial" = diffspat, "temporal" = difftemp, "data" = diffdata)
+  if (1 < sum(diffall)) {
+    msg <- c("Cannot handle objects!",
+             paste(paste(head(names(diffall)[diffall], n = -1),
+                         collapse = ", "),
+                   tail(names(diffall)[diffall], n = 1),
+                   sep = " as well as "),
+             "dimensions differ!")
+    substr(msg[2], 1, 1) <- toupper(substr(msg[2], 1, 1))
+
+    msg <- paste(c(paste(msg, collapse = " "),
+                   "  Differences from first mbind() input:",
+                   vapply(which(diffall), function(i) {
+
+                     lhs <- getItems(inputs[[1]], dim = i)
+                     rhs <- Reduce(union, lapply(tail(inputs, n = -1),
+                                                 getItems, dim = i))
+
+                     # do a kind of three-way diff
+                     diff <- list("missing" = setdiff(lhs, rhs),
+                                  " having" = intersect(lhs, rhs),
+                                  " adding" = setdiff(rhs, lhs))
+
+                     diff <- lapply(diff, function(x) {
+                       if (4 < length(x)) {
+                         # shorten to four elements, like str() does
+                         x <- c(paste0("`", x[1:4], "`"), "...")
+                       } else if (0 < length(x)) {
+                         x <- paste0("`", x, "`")
+                       }
+                       return(paste(x, collapse = ", "))
+                     })
+
+                     # paste diff
+                     d <- nzchar(diff)
+                     paste(c(paste0("  ", names(diffall)[i], ":"),
+                             paste(paste0("      ", names(diff)[d], ":"),
+                                   diff[d])),
+                           collapse = "\n")
+                   }, character(1))), collapse = "\n")
+    stop(msg)
+  }
+
   if (difftemp) {
     if (length(years) != length(unique(years))) stop("Some years occur more than once!",
                                                      " Cannot handle this case!")
