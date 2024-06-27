@@ -14,7 +14,7 @@ authors:
 - family-names: Dietrich
   given-names: Jan Philipp
   email: dietrich@pik-potsdam.de
-  orcid: 0000-0002-4309-6431
+  orcid: https://orcid.org/0000-0002-4309-6431
   affiliation: Potsdam Institute for Climate Impact Research
 - family-names: Bodirsky
   given-names: Benjamin Leon
@@ -79,7 +79,8 @@ authors:
   given-names: Oliver
   affiliation: Potsdam Institute for Climate Impact Research
 license: LGPL-3.0
-keywords: tool
+keywords:
+- tool
 repository-code: https://github.com/pik-piam/magclass
 doi: 10.5281/zenodo.1158580
 
