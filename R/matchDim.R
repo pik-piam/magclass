@@ -7,8 +7,8 @@
 #' @param x a magclass object to be modified
 #' @param ref a magclass object used as a reference for the modification
 #' @param fill value to be set in new dimensions
-#' @param dim subset of dimensions for which the matching should be done. Either number or
-#' name of dimension or a vector of these. See \code{\link{dimCode}} for more details.
+#' @param dim subset of dimensions for which the matching should be done.
+#' Can be either a number between 1 and 3 or a vector of these.
 #' Set to NULL (default) for matching all dimensions.
 #' @author Falk Benke
 #'
@@ -17,8 +17,8 @@ matchDim <- function(x, ref, dim = NULL, fill = NA) {
 
   if (is.null(dim)) {
     dim <- c(1, 2, 3)
-  } else {
-    dim <- dimCode(dim, x, missing = "stop")
+  } else if (length(setdiff(dim, c(1, 2, 3))) > 0) {
+    stop("argument 'dim' can only contain numbers between 1 and 3")
   }
 
   if (3 %in% dim && ndim(x, dim = 3) != ndim(ref, dim = 3)) {

@@ -11,8 +11,8 @@ matchDim(x, ref, dim = NULL, fill = NA)
 
 \item{ref}{a magclass object used as a reference for the modification}
 
-\item{dim}{subset of dimensions for which the matching should be done. Either number or
-name of dimension or a vector of these. See \code{\link{dimCode}} for more details.
+\item{dim}{subset of dimensions for which the matching should be done.
+Can be either a number between 1 and 3 or a vector of these.
 Set to NULL (default) for matching all dimensions.}
 
 \item{fill}{value to be set in new dimensions}
