@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'magclass: Data Class and Tools for Handling Spatial-Temporal Data'
-version: 6.16.0
-date-released: '2024-05-28'
+version: 6.16.1
+date-released: '2024-06-28'
 abstract: Data class for increased interoperability working with spatial-temporal
   data together with corresponding functions and methods (conversions, basic calculations
   and basic data manipulation). The class distinguishes between spatial, temporal
@@ -79,7 +79,7 @@ authors:
   given-names: Oliver
   affiliation: Potsdam Institute for Climate Impact Research
 license: LGPL-3.0
-keywords: 
+keywords:
 - tool
 repository-code: https://github.com/pik-piam/magclass
 doi: 10.5281/zenodo.1158580
