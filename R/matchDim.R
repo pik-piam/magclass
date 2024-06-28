@@ -21,11 +21,15 @@ matchDim <- function(x, ref, dim = NULL, fill = NA) {
     stop("argument 'dim' can only contain numbers between 1 and 3")
   }
 
-  if (3 %in% dim && ndim(x, dim = 3) != ndim(ref, dim = 3)) {
-    stop(
-      "Unsupported case: magclass objects x and ref have different number of ",
-      "subdimensions in third dimension."
-    )
+  for (i in dim) {
+    if (ndim(x, dim = i) != ndim(ref, dim = i)) {
+      stop(
+        paste0(
+          "Unsupported case: magclass objects x and ref have different number of ",
+          "subdimensions in dimension ", i
+        )
+      )
+    }
   }
 
   # extend new object to the union of both objects
