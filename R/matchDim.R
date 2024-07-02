@@ -1,32 +1,51 @@
-#' match object dimensions of a magclass object to the dimensions of a reference object
+#' Match dimensions of a magpie object to those of a reference object
 #'
-#' A helper that restricts and expands a magclass object x to the size of a magclass object ref.
-#' Dimension names not present in x are added and set to the value provided by 'fill'.
-#' Dimension names not present in ref are cropped.
+#' A helper that restricts and expands a magpie object `x` to the size of a
+#' magpie object `ref`.  Dimension names not present in `x` are added and set to
+#' the value provided by `fill`.  Dimension names not present in `ref` are
+#' cropped.
 #'
-#' @param x a magclass object to be modified
-#' @param ref a magclass object used as a reference for the modification
-#' @param fill value to be set in new dimensions
-#' @param dim subset of dimensions for which the matching should be done.
-#' Can be either a number between 1 and 3 or a vector of these.
-#' Set to NULL (default) for matching all dimensions.
+#' @md
+#' @param x A `magpie` object to be modified.
+#' @param ref A `magpie` object used as a reference for the modification.
+#'   Returns `x` if `ref` is `NULL`.
+#' @param fill Value to be set in new dimensions.
+#' @param dim Subset of dimensions for which the matching should be done.  Can
+#'   be either a number between 1 and 3 or a vector of these.  Defaults to all
+#'   dimensions (i.e. `1:3`).
+#'
+#' @return The modified `magpie` object.
+#'
 #' @author Falk Benke
 #'
 #' @export
-matchDim <- function(x, ref, dim = NULL, fill = NA) {
+matchDim <- function(x, ref, dim = 1:3, fill = NA) {
 
-  if (is.null(dim)) {
-    dim <- c(1, 2, 3)
-  } else if (length(setdiff(dim, c(1, 2, 3))) > 0) {
-    stop("argument 'dim' can only contain numbers between 1 and 3")
+  if (is.null(ref)) {
+    return(x)
+  }
+
+  if (!is.magpie(x)) {
+    stop("`x` must be a magpie object, not `", paste(class(x), collapse = ", "),
+         "`")
+  }
+
+  if (!is.magpie(ref)) {
+    stop("`ref` must be a magpie object or NULL, not `",
+         paste(class(ref), collapse = ", "), "`")
+  }
+
+  if (!is.numeric(dim) || any(!dim %in% 1:3)) {
+    stop("`dim` must be a numeric vector containing only numbers between 1 ",
+         "and 3, not `", utils::capture.output(dput(dim)), "`")
   }
 
   for (i in dim) {
     if (ndim(x, dim = i) != ndim(ref, dim = i)) {
       stop(
         paste0(
-          "Unsupported case: magclass objects x and ref have different number of ",
-          "subdimensions in dimension ", i
+          "Unsupported case: magclass objects x and ref have different number ",
+          "of subdimensions in dimension ", i
         )
       )
     }
