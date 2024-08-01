@@ -2,25 +2,30 @@
 % Please edit documentation in R/matchDim.R
 \name{matchDim}
 \alias{matchDim}
-\title{match object dimensions of a magclass object to the dimensions of a reference object}
+\title{Match dimensions of a magpie object to those of a reference object}
 \usage{
-matchDim(x, ref, dim = NULL, fill = NA)
+matchDim(x, ref, dim = 1:3, fill = NA)
 }
 \arguments{
-\item{x}{a magclass object to be modified}
+\item{x}{A \code{magpie} object to be modified.}
 
-\item{ref}{a magclass object used as a reference for the modification}
+\item{ref}{A \code{magpie} object used as a reference for the modification.
+Returns \code{x} if \code{ref} is \code{NULL}.}
 
-\item{dim}{subset of dimensions for which the matching should be done.
-Can be either a number between 1 and 3 or a vector of these.
-Set to NULL (default) for matching all dimensions.}
+\item{dim}{Subset of dimensions for which the matching should be done.  Can
+be either a number between 1 and 3 or a vector of these.  Defaults to all
+dimensions (i.e. \code{1:3}).}
 
-\item{fill}{value to be set in new dimensions}
+\item{fill}{Value to be set in new dimensions.}
+}
+\value{
+The modified \code{magpie} object.
 }
 \description{
-A helper that restricts and expands a magclass object x to the size of a magclass object ref.
-Dimension names not present in x are added and set to the value provided by 'fill'.
-Dimension names not present in ref are cropped.
+A helper that restricts and expands a magpie object \code{x} to the size of a
+magpie object \code{ref}.  Dimension names not present in \code{x} are added and set to
+the value provided by \code{fill}.  Dimension names not present in \code{ref} are
+cropped.
 }
 \author{
 Falk Benke

@@ -11,6 +11,7 @@
 #'
 #' @author Pascal Sauer
 #' @seealso \code{\link{suppressWarnings}}
+#' @export
 suppressSpecificWarnings <- function(expr, regularExpr, fixed = FALSE) {
   withCallingHandlers(expr, warning = function(m) {
     if (grepl(regularExpr, m[["message"]], fixed = fixed)) {
