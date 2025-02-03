@@ -1,4 +1,4 @@
-test_that("unitsplit on vectors and strings works", {
+test_that("unitsplit and unitjoin on vectors and strings works", {
   teststring <- "Emi|CO2|+|Energy (Mt CO2/yr)"
   expected <- data.frame(
     variable = "Emi|CO2|+|Energy",
@@ -7,6 +7,7 @@ test_that("unitsplit on vectors and strings works", {
   expect_identical(unitsplit(teststring), expected)
   expect_identical(unitsplit(teststring, 1), expected)
   expect_identical(unitsplit(teststring, "variable"), expected)
+  expect_equal(unitjoin(expected)$variable, teststring)
   testvector <- c("Emi|CO2|+|Energy (Mt CO2/yr)", "Emi|CO|Land Use (Mt CO/yr)")
   expected <- data.frame(
     variable = c("Emi|CO2|+|Energy", "Emi|CO|Land Use"),
@@ -15,6 +16,9 @@ test_that("unitsplit on vectors and strings works", {
   expect_identical(unitsplit(testvector), expected)
   expect_identical(unitsplit(testvector, 1), expected)
   expect_identical(unitsplit(testvector, "variable"), expected)
+  expect_equal(unitjoin(expected)$variable, testvector)
+  expect_identical(unitjoin(as.factor("V"), as.factor("U")), as.factor("V (U)"))
+  expect_identical(unitjoin("V", "U"), "V (U)")
 })
 
 test_that("simple unitsplit works", {
@@ -41,6 +45,8 @@ test_that("simple unitsplit works", {
   )
   expect_identical(unitsplit(df, 4), expected)
   expect_identical(unitsplit(df, "Data"), expected)
+  expect_equal(unitjoin(expected, col = "Data")[colnames(df)], df)
+  expect_error(unitjoin(expected, col = "doesnotexist"))
 })
 
 test_that("unitsplit works with braces", {
