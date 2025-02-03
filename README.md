@@ -1,6 +1,6 @@
 # Data Class and Tools for Handling Spatial-Temporal Data
 
-R package **magclass**, version **6.17.1**
+R package **magclass**, version **6.17.2**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/magclass)](https://cran.r-project.org/package=magclass) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158580.svg)](https://doi.org/10.5281/zenodo.1158580) [![R build status](https://github.com/pik-piam/magclass/workflows/check/badge.svg)](https://github.com/pik-piam/magclass/actions) [![codecov](https://codecov.io/gh/pik-piam/magclass/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/magclass) [![r-universe](https://pik-piam.r-universe.dev/badges/magclass)](https://pik-piam.r-universe.dev/builds)
 
@@ -56,17 +56,18 @@ In case of questions / problems please contact Jan Philipp Dietrich <dietrich@pi
 
 To cite package **magclass** in publications use:
 
-Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip D, Sauer P (2024). _magclass: Data Class and Tools for Handling Spatial-Temporal Data_. doi:10.5281/zenodo.1158580 <https://doi.org/10.5281/zenodo.1158580>, R package version 6.17.1, <https://github.com/pik-piam/magclass>.
+Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip D, Sauer P, Baumstark L, Bertram C, Giannousakis A, Klein D, Neher I, Pehl M, Schultes A, Stevanovic M, Wang X, Beier F, Pflüger M, Richters O (2025). "magclass: Data Class and Tools for Handling Spatial-Temporal Data." doi:10.5281/zenodo.1158580 <https://doi.org/10.5281/zenodo.1158580>, Version: 6.17.2, <https://github.com/pik-piam/magclass>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
-@Manual{,
+@Misc{,
   title = {magclass: Data Class and Tools for Handling Spatial-Temporal Data},
-  author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens and Debbora Leip and Pascal Sauer},
-  year = {2024},
-  note = {R package version 6.17.1},
-  url = {https://github.com/pik-piam/magclass},
+  author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens and Debbora Leip and Pascal Sauer and Lavinia Baumstark and Christoph Bertram and Anastasis Giannousakis and David Klein and Ina Neher and Michaja Pehl and Anselm Schultes and Miodrag Stevanovic and Xiaoxi Wang and Felicitas Beier and Mika Pflüger and Oliver Richters},
   doi = {10.5281/zenodo.1158580},
+  date = {2025-02-03},
+  year = {2025},
+  url = {https://github.com/pik-piam/magclass},
+  note = {Version: 6.17.2},
 }
 ```

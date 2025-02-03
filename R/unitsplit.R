@@ -37,7 +37,7 @@ unitsplit <- function(x, col = "variable") {
   varName <- sub(pattern, "\\1", x[[col]], perl = TRUE)
   unit <- sub(pattern, "\\3", x[[col]], perl = TRUE)
   unit[grep(pattern, x[[col]], invert = TRUE, perl = TRUE)] <- "N/A"
-  tmp <- data.frame(varName, unit, stringsAsFactors = FALSE)
+  tmp <- data.frame(varName, unit, stringsAsFactors = is.factor(x[[col]]))
   names(tmp) <- c(names(x[col]), "unit")
   x <- cbind(tmp, x[setdiff(names(x), names(x[col]))])
   return(x)
