@@ -20,7 +20,7 @@ Convert magclass object to a SpatRaster object. Requires the terra package.
 \examples{
 
 if (requireNamespace("terra", quietly = TRUE)) {
-   r <- terra::rast(ncols = 360, nrows = 180, nl = 4)
+   r <- terra::rast(ncols = 360, nrows = 180, nlyrs = 4)
    r[85:89, 176:179] <- (1:20 \%*\% t(1:4))
    r[15:19, 76:79] <-   (10 + 1:20 \%*\% t(1:4))
    names(r) <- c("y2000..bla", "y2001..bla", "y2000..blub", "y2001..blub")
