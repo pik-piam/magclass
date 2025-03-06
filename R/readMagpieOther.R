@@ -1,7 +1,7 @@
 readMagpieOther <- function(fileName, fileType, comment.char = "*", check.names = FALSE) {  # nolint
   sep <- ifelse(fileType == "put", "\t", ",")
   # check for header
-  temp <- utils::read.csv(fileName, nrow = 1, header = FALSE, sep = sep, comment.char = comment.char,
+  temp <- utils::read.csv(fileName, nrows = 1, header = FALSE, sep = sep, comment.char = comment.char,
                           check.names = check.names, stringsAsFactors = TRUE)
 
   # check for numeric elements in first row, which means a missing header

@@ -108,7 +108,7 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
     readMagpie <- as.magpie(x, tidy = TRUE,
                             spatial = grep(".spat", m$metadata$dimtype, fixed = TRUE),
                             temporal = grep(".temp", m$metadata$dimtype, fixed = TRUE),
-                            data = grep(".data", m$metadata$dimtype, fixed = TRUE))
+                            datacol = grep(".data", m$metadata$dimtype, fixed = TRUE))
     attr(readMagpie, "comment") <- m$comment
   } else if (fileType %in% c("asc", "nc", "grd", "tif")) {
     if (fileType == "nc") {

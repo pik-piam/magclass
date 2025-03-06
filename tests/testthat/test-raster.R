@@ -5,7 +5,7 @@ test_that("terra conversion does not alter data", {
   for (i in c(0.5, 2)) {
     for (j in c(1, 4)) {
       for (t in c(1, 3)) {
-        r <- terra::rast(ncols = 360 / i, nrows = 180 / i, nl = j * t)
+        r <- terra::rast(ncols = 360 / i, nrows = 180 / i, nlyrs = j * t)
         if (t > 1) {
           years <- paste0("y", 1900 + 1:t)
           data  <- paste0("bla", 1:j)

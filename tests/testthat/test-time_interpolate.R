@@ -3,10 +3,11 @@ attr(p, "Metadata") <- NULL
 
 
 test_that("time interpolate works", {
-  expect_silent(p2 <- time_interpolate(p, "y2000", integrate = TRUE))
+  expect_silent(p2 <- time_interpolate(p, "y2000", integrate_interpolated_years = TRUE))
   expect_identical(p2[, 2000, , invert = TRUE], p)
   expect_true(all(p2[, 2000, ] - magpply(p[, c(1995, 2005), ], mean, DIM = 2) == 0))
-  expect_silent(p3 <- time_interpolate(p, c(1980, 2000), integrate = TRUE, extrapolation_type = "constant"))
+  expect_silent(p3 <- time_interpolate(p, c(1980, 2000), integrate_interpolated_years = TRUE,
+                                       extrapolation_type = "constant"))
   expect_identical(p3[, c(1980, 2000), , invert = TRUE], p)
   expect_true(all(p3[, 1980, ] - setYears(p3[, 1995, ], NULL) == 0))
   expect_error(time_interpolate(1), "Invalid data format")
@@ -15,7 +16,7 @@ test_that("time interpolate works", {
   expect_true(all(dimSums(p4, dim = 2) - 2 * p[, 1, ] == 0))
   expect_silent(p5 <- time_interpolate(p[, 1, ], c(1900, 1995, 2100)))
   expect_true(all(dimSums(p5, dim = 2) - 3 * p[, 1, ] == 0))
-  expect_silent(p6 <- time_interpolate(p[, 1, ], c(1900, 1995, 2100), integrate = TRUE))
+  expect_silent(p6 <- time_interpolate(p[, 1, ], c(1900, 1995, 2100), integrate_interpolated_years = TRUE))
   expect_identical(p5, p6)
 })
 
