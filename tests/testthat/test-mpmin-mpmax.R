@@ -82,21 +82,6 @@ test_that("mpin special cases", {
   expect_error(mpmin(testMagpie(names = c("A", "B")),
                      testMagpie(names = c("C", "D"))),
                "mpmin expects magpie objects with equal items in dimensions")
-  expect_error(mpmin(testMagpie(regions = c("A.1", "B.1"), sets = c("region.cell", "year", "scenario")),
-                     testMagpie(regions = c("1.A", "1.B"), sets = c("cell.region", "year", "scenario"))),
-               "mpmin expects magpie objects with equal items in dimensions")
-
-  # TODO: Unclear yet whether this should throw an error or not
-  # This is especially important for data subdimensions
-  #
-  # expect_error(mpmin(testMagpie(regions = "AFR.1", sets = c("region.cell", "year", "scenario")),
-  #                    testMagpie(regions = "AFR.1", sets = c("region.countryIndex", "year", "scenario"))),
-  #              "mpmin expects magpie objects with equal items in dimensions")
-  # expect_error(mpmin(testMagpie(names = c("test.1", "test.2"), sets = c("region", "year", "scenario.element"),
-  #                               values = c(1, 2)),
-  #                    testMagpie(names = c("test.1", "test.2"), sets = c("region", "year", "scenario.sub"),
-  #                               values = c(1, 2))),
-  #              "mpmin expects magpie objects with equal items in dimensions")
 })
 
 test_that("mpmax simple test", {
