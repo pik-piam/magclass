@@ -20,6 +20,17 @@ test_that("mpmin on simple magpie objects", {
                       testMagpie(values = 121))
 })
 
+test_that("variadic mpmin", {
+  # Single argument is fine, but simply returns the same object
+  expect_equal(mpmin(testMagpie()), testMagpie())
+
+  # More than two arguments are also fine
+  expect_equal(mpmin(testMagpie(values = 123),
+                     testMagpie(values = 1),
+                     testMagpie(values = 123)),
+               testMagpie(values = 1))
+})
+
 test_that("mpmin on magpie objects with different orderings in one dimension", {
   expect_mpmin_result(testMagpie(regions = c("AFR.1", "AFR.2"), values = c(120, 345)),
                       testMagpie(regions = c("AFR.2", "AFR.1"), values = c(340, 123)),
@@ -50,7 +61,7 @@ test_that("mpmin on magpie objects with different orderings in all dimensions", 
                                  values = c(1, 2, 3, 4, 4, 3, 2, 1)))
 })
 
-test_that("mpin error handling", {
+test_that("mpin special cases", {
   expect_error(mpmin(new.magpie(), 2), "mpmin expects two magpie objects")
   expect_error(mpmin(2, new.magpie()), "mpmin expects two magpie objects")
 
@@ -86,4 +97,11 @@ test_that("mpin error handling", {
   #                    testMagpie(names = c("test.1", "test.2"), sets = c("region", "year", "scenario.sub"),
   #                               values = c(1, 2))),
   #              "mpmin expects magpie objects with equal items in dimensions")
+})
+
+test_that("mpmax simple test", {
+  # As mpmin and mpmax use the same underlying function to rearrange data,
+  # a basic test whether pmax works is sufficient.
+  expect_equal(mpmax(testMagpie(values = 5), testMagpie(values = 10), testMagpie(values = 5)),
+               testMagpie(values = 10))
 })
