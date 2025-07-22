@@ -11,6 +11,7 @@
 #' value per year.
 #' @param total Whether the total of all data values should also be visualized (by default TRUE).
 #' @author Pascal Sauer, Patrick Rein
+#' @importFrom rlang .data
 #' @export
 mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, total = FALSE) {
 
@@ -55,15 +56,16 @@ mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, tota
   if (global) {
     # Transform to global values
     px <- dimSums(px, 1)
+    spatialDimName <- names(dimnames(px))[[1]]
   } else {
     # Rewrite names of spatial dimension to symbols
     if (grepl(".", spatialDimName, fixed = TRUE)) {
       # We have subdimensions, convert to symbols
       dimnames(px)[[1]] <- gsub(".", "_", dimnames(px)[[spatialDimName]], fixed = TRUE)
       spatialDimName <- "spatial"
+      names(dimnames(px))[[1]] <- spatialDimName
     }
   }
-  names(dimnames(px))[[1]] <- spatialDimName
 
   # Calculate and add total
   # If temporal is categorial, we will render stacked bar charts and
@@ -89,9 +91,9 @@ mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, tota
                                                   group = .data[[dataDimName]]))
 
   if (!temporalCategorial) {
-    plot <- plot + ggplot2::geom_line(linewidth = 1.5, ggplot2::aes(y = .value))
+    plot <- plot + ggplot2::geom_line(linewidth = 1.5, ggplot2::aes(y = .data[[".value"]]))
   } else {
-    plot <- plot + ggplot2::geom_bar(linewidth = 1.5, ggplot2::aes(weight = .value))
+    plot <- plot + ggplot2::geom_bar(linewidth = 1.5, ggplot2::aes(weight = .data[[".value"]]))
   }
 
   if (!global) {

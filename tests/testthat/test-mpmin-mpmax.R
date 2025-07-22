@@ -2,7 +2,7 @@ testMagpie <- function(regions = "AFR.1", years = "2000", names = "test", values
   return(new.magpie(regions, years, names, values, ...))
 }
 
-expect_mpmin_result <- function(a, b, result) {
+expect_mpmin_result <- function(a, b, result) { # nolint: object_name_linter. Mimics testthat style.
   mpminResult <- mpmin(a, b)
   expect_equal(!!result, !!mpminResult)
   return(mpminResult)
