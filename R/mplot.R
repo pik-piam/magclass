@@ -3,17 +3,12 @@
 #' Get a quick visualization of the content of most magpie objects.
 #'
 #' @param px The magpie object to be visualized
-#' @param dim3 A character string for filtering the items in the data dimensions to be visualized
-#' (by default all are shown).
 #' @param global Whether data should be aggregated over regions to global values (by default TRUE).
-#' @param dim1 A character string to filter which regions should be shown (by default all, if global is FALSE).
-#' @param perYear Is the data perYear? If TRUE, the visualization will visualize the accumulated
-#' value per year.
 #' @param total Whether the total of all data values should also be visualized (by default TRUE).
 #' @author Pascal Sauer, Patrick Rein
 #' @importFrom rlang .data
 #' @export
-mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, total = FALSE) {
+mplot <- function(px, global = TRUE, total = FALSE) {
 
   rlang::check_installed("ggplot2")
 
@@ -36,7 +31,6 @@ mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, tota
 
   # Rewrite names of data dimension to make them symbols
   # Simplify and keep the data dimension name
-  px <- px[, , dim3, pmatch = TRUE]
   getNames(px) <- gsub(".", "_", getNames(px), fixed = TRUE)
   dataDimName <- firstDimensionPart(originalDimNames[[3]])
   names(dimnames(px))[[3]] <- dataDimName
@@ -79,11 +73,7 @@ mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, tota
   }
 
   # Convert to data.frame
-  if (global) {
-    px <- as.data.frame(px, rev = 3)
-  } else {
-    px <- as.data.frame(px[dim1, , , pmatch = TRUE], rev = 3)
-  }
+  px <- as.data.frame(px, rev = 3)
 
   # Plot
   plot <- ggplot2::ggplot(data = px, ggplot2::aes(x = .data[[temporalDimName]],
@@ -91,9 +81,9 @@ mplot <- function(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, tota
                                                   group = .data[[dataDimName]]))
 
   if (!temporalCategorial) {
-    plot <- plot + ggplot2::geom_line(linewidth = 1.5, ggplot2::aes(y = .data[[".value"]]))
+    plot <- plot + ggplot2::geom_line(linewidth = 1.5, ggplot2::aes(y = .data$.value))
   } else {
-    plot <- plot + ggplot2::geom_bar(linewidth = 1.5, ggplot2::aes(weight = .data[[".value"]]))
+    plot <- plot + ggplot2::geom_bar(linewidth = 1.5, ggplot2::aes(weight = .data$.value))
   }
 
   if (!global) {

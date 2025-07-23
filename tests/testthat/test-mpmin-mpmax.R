@@ -1,4 +1,4 @@
-testMagpie <- function(regions = "AFR.1", years = "2000", names = "test", values = c(123), ...) {
+testMagpie <- function(regions = "AFR.1", years = "y2000", names = "test", values = c(123), ...) {
   return(new.magpie(regions, years, names, values, ...))
 }
 
@@ -59,9 +59,23 @@ test_that("mpmin on magpie objects with different orderings in all dimensions", 
                                  years = c("2000", "2001"),
                                  names = c("test1", "test2"),
                                  values = c(1, 2, 3, 4, 4, 3, 2, 1)))
+
+  # Sanity check: pmin fails in the same scenario as above
+  expect_failure(expect_equal(pmin(testMagpie(regions = c("AFR.1", "AFR.2"),
+                                              years = c("2000", "2001"),
+                                              names = c("test1", "test2"),
+                                              values = c(1, 2, 3, 4, 5, 6, 7, 8)),
+                                   testMagpie(regions = c("AFR.2", "AFR.1"),
+                                              years = c("2001", "2000"),
+                                              names = c("test2", "test1"),
+                                              values = c(1, 2, 3, 4, 5, 6, 7, 8))),
+                              testMagpie(regions = c("AFR.1", "AFR.2"),
+                                         years = c("2000", "2001"),
+                                         names = c("test1", "test2"),
+                                         values = c(1, 2, 3, 4, 4, 3, 2, 1))))
 })
 
-test_that("mpin special cases", {
+test_that("mpmin special cases", {
   expect_error(mpmin(new.magpie(), 2), "mpmin expects two magpie objects")
   expect_error(mpmin(2, new.magpie()), "mpmin expects two magpie objects")
 
