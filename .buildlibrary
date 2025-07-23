@@ -5,7 +5,7 @@ AcceptedWarnings:
 - is.na\(\) applied to non-\(list or vector\) of type 'closure'
 AcceptedNotes: unable to verify current time
 AutocreateReadme: yes
-allowLinterWarnings: yes
+allowLinterWarnings: no
 enforceVersionUpdate: no
 AutocreateCITATION: yes
 skipCoverage: no
