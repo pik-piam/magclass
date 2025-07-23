@@ -65,7 +65,7 @@ A BibTeX entry for LaTeX users is
   title = {magclass: Data Class and Tools for Handling Spatial-Temporal Data},
   author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens and Debbora Leip and Pascal Sauer and Lavinia Baumstark and Christoph Bertram and Anastasis Giannousakis and David Klein and Ina Neher and Michaja Pehl and Anselm Schultes and Miodrag Stevanovic and Xiaoxi Wang and Felicitas Beier and Mika Pflüger and Oliver Richters},
   doi = {10.5281/zenodo.1158580},
-  date = {2025-07-22},
+  date = {2025-07-23},
   year = {2025},
   url = {https://github.com/pik-piam/magclass},
   note = {Version: 6.19.0},

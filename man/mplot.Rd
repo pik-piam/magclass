@@ -4,20 +4,12 @@
 \alias{mplot}
 \title{mplot}
 \usage{
-mplot(px, dim3 = "", global = TRUE, dim1 = "", perYear = FALSE, total = FALSE)
+mplot(px, global = TRUE, total = FALSE)
 }
 \arguments{
 \item{px}{The magpie object to be visualized}
 
-\item{dim3}{A character string for filtering the items in the data dimensions to be visualized
-(by default all are shown).}
-
 \item{global}{Whether data should be aggregated over regions to global values (by default TRUE).}
-
-\item{dim1}{A character string to filter which regions should be shown (by default all, if global is FALSE).}
-
-\item{perYear}{Is the data perYear? If TRUE, the visualization will visualize the accumulated
-value per year.}
 
 \item{total}{Whether the total of all data values should also be visualized (by default TRUE).}
 }
