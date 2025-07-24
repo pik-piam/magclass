@@ -76,8 +76,8 @@ test_that("mpmin on magpie objects with different orderings in all dimensions", 
 })
 
 test_that("mpmin special cases", {
-  expect_error(mpmin(new.magpie(), 2), "mpmin expects two magpie objects")
-  expect_error(mpmin(2, new.magpie()), "mpmin expects two magpie objects")
+  expect_error(mpmin(new.magpie(), 2), "mpmin cannot handle non-magpie objects")
+  expect_error(mpmin(2, new.magpie()), "mpmin cannot handle non-magpie objects")
 
   expect_error(mpmin(testMagpie(regions = "A"),
                      testMagpie(regions = c("A", "B"))),
