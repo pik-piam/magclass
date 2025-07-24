@@ -3,8 +3,8 @@
 #' Get a quick visualization of the content of most magpie objects.
 #'
 #' @param px The magpie object to be visualized
-#' @param global Whether data should be aggregated over regions to global values (by default TRUE).
-#' @param total Whether the total of all data values should also be visualized (by default TRUE).
+#' @param global Whether data should be aggregated over regions to global values.
+#' @param total Whether the total of all data values should also be visualized.
 #' @author Pascal Sauer, Patrick Rein
 #' @importFrom rlang .data
 #' @export
