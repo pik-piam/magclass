@@ -22,7 +22,7 @@ withAlignedDims <- function(func, funcName, ...) {
 
   a <- ms[[1]]
   .allSetequal <- function(vs) all(vapply(vs[-1], function(x) setequal(vs[[1]], x), logical(1)))
-  itemsWarning <- paste0(funcName, " expects magpie objects with equal items in dimensions")
+  itemsWarning <- paste0(funcName, " expects magpie objects with the same items in all dimensions")
   if (dim(a)[1] > 1) {
     if (!.allSetequal(lapply(ms, getItems, dim = 1))) stop(itemsWarning)
     ms <- lapply(ms, function(x) x[getItems(a, 1), , ])

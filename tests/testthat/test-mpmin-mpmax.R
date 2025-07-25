@@ -95,7 +95,7 @@ test_that("mpmin special cases", {
 
   expect_error(mpmin(testMagpie(names = c("A", "B")),
                      testMagpie(names = c("C", "D"))),
-               "mpmin expects magpie objects with equal items in dimensions")
+               "mpmin expects magpie objects with the same items in all dimensions")
 })
 
 test_that("mpmax simple test", {
