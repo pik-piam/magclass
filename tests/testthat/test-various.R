@@ -141,3 +141,28 @@ test_that("log methods work", {
   expect_identical(as.vector(logb(as.magpie(10), 10)), 1)
   expect_identical(as.vector(log(as.magpie(10), 10)), 1)
 })
+
+test_that("sameDims works", {
+  expect_true(sameDims(new.magpie(), new.magpie()))
+
+  expect_true(sameDims(new.magpie(c("A", "B")), new.magpie(c("A", "B"))))
+  expect_true(sameDims(new.magpie(c("A", "B")), new.magpie(c("B", "A"))))
+  expect_false(sameDims(new.magpie(c("A", "C")), new.magpie(c("A", "B"))))
+
+  expect_true(sameDims(new.magpie(years =  c(2, 3)),    new.magpie(years = c(2, 3))))
+  expect_true(sameDims(new.magpie(years =  c(2, 3)),    new.magpie(years = c(3, 2))))
+  expect_false(sameDims(new.magpie(years = c(1, 3)),    new.magpie(years = c(2, 3))))
+
+  expect_false(sameDims(new.magpie(names =  c("A", "B")),    new.magpie(names = c("B", "C"))))
+
+  expect_true(sameDims(new.magpie(c("A", "B"), c(2, 3), c("SSP1.urban", "SSP1.rural")),
+                       new.magpie(c("B", "A"), c(3, 2), c("SSP1.rural", "SSP1.urban"))))
+
+  # Variadic
+  expect_true(sameDims(new.magpie(c("A", "B")), new.magpie(c("A", "B")), new.magpie(c("B", "A"))))
+  expect_true(sameDims())
+  expect_true(sameDims(new.magpie(c("A", "B"))))
+
+  # Wrong input
+  expect_error(sameDims(new.magpie(c("A", "B")), list("A", "B")), "cannot handle non-magpie objects")
+})

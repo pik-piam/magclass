@@ -10,7 +10,9 @@ withAlignedDims <- function(func, funcName, ...) {
   ms <- list(...)
   .allIdentical <- function(vs) all(vapply(vs[-1], function(x) identical(vs[[1]], x), logical(1)))
 
-  if (!all(vapply(ms, is.magpie, logical(1)))) stop(paste0(funcName, " cannot handle non-magpie objects"))
+  if (!all(vapply(ms, is.magpie, logical(1)))) {
+    stop(paste0(funcName, " cannot handle non-magpie objects"))
+  }
 
   if (.allIdentical(lapply(ms, dimnames))) {
     return(func(...))
@@ -20,19 +22,18 @@ withAlignedDims <- function(func, funcName, ...) {
     stop(paste0(funcName, " expects magpie objects with equal dimensions"))
   }
 
+  if (!do.call(sameDims, ms)) {
+    stop(paste0(funcName, " expects magpie objects with the same items in all dimensions"))
+  }
+
   a <- ms[[1]]
-  .allSetequal <- function(vs) all(vapply(vs[-1], function(x) setequal(vs[[1]], x), logical(1)))
-  itemsWarning <- paste0(funcName, " expects magpie objects with the same items in all dimensions")
   if (dim(a)[1] > 1) {
-    if (!.allSetequal(lapply(ms, getItems, dim = 1))) stop(itemsWarning)
     ms <- lapply(ms, function(x) x[getItems(a, 1), , ])
   }
   if (dim(a)[2] > 1) {
-    if (!.allSetequal(lapply(ms, function(m) getItems(m, 2)))) stop(itemsWarning)
     ms <- lapply(ms, function(x) x[, getItems(a, 2), ])
   }
   if (dim(a)[3] > 1) {
-    if (!.allSetequal(lapply(ms, function(m) getItems(m, 3)))) stop(itemsWarning)
     ms <- lapply(ms, function(x) x[, , getItems(a, 3)])
   }
 
