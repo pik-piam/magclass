@@ -1,8 +1,8 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.18.0
-Date: 2025-03-06
+Version: 6.19.0
+Date: 2025-07-28
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", 
     comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0002-4309-6431"), role = c("aut", "cre")),
@@ -24,7 +24,9 @@ Authors@R: c(
     person("Xiaoxi", "Wang", , "wang@pik-potsdam.de", role = "ctb"),
     person("Felicitas", "Beier", , "beier@pik-potsdam.de", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
     person("Mika", "Pflüger", role = "ctb"),
-    person("Oliver", "Richters", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb")
+    person("Oliver", "Richters", comment = c(affiliation = "Potsdam Institute for Climate Impact Research"), role = "ctb"),
+    person("Patrick", "Rein", , "patrick.rein@pik-potsdam.de", role = "aut",
+    comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0001-9454-8381"))
   )
 Description: Data class for increased interoperability working with
     spatial-temporal data together with corresponding functions and
@@ -44,9 +46,11 @@ Depends:
 Imports:
     abind,
     data.table,
+    rlang,
     stats
 Suggests:
     covr,
+    ggplot2,
     lpjmlkit,
     knitr,
     ncdf4,

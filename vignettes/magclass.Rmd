@@ -140,6 +140,11 @@ rename region set in "zones"
 getSets(pm)[2] <- "year"
 ```
 
+Finally, to get a quick impression of the content of the object, you can get a rough plot:
+```{r, fig.show}
+mplot(pm)
+```
+
 ### Subsets
 
 Now that we have had a look into the structure of the object let's extract some subsets out of it. There are different methods that can be used to extract data from a magpie object. Here are some examples:
