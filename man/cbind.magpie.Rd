@@ -11,6 +11,9 @@
 
 \item{deparse.level}{see \link[base]{cbind}}
 }
+\value{
+A matrix as if cbind was applied to the internal vector of the MAgPIE objects
+}
 \description{
 cbind method for MAgPIE-objects. Issues a warning that mbind should be used
 if all objects are magpie objects and continues afterwards.
