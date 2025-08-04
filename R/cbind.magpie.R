@@ -10,7 +10,7 @@
 #' @export
 
 cbind.magpie <- function(..., deparse.level = 1) { # nolint: object_name_linter.
-  warning("Using cbind on magpie objects is not adviced. Use mbind instead.")
+  warning("Using cbind on magpie objects is not adviced as it is not merging based on element names. Use mbind instead.")
   objectsToCbind <- lapply(list(...), function(o) {
     if (inherits(o, "magpie")) {
       return(o@.Data)
