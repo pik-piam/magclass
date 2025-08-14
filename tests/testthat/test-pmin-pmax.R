@@ -1,5 +1,15 @@
 testMagpie <- function(regions = "AFR.1", years = "y2000", names = "test", values = c(123), ...) {
-  return(new.magpie(regions, years, names, values, ...))
+  # The special handling of null is necessary, as new.magpie creates 0-length
+  # magpie objects when arguments are NULL
+  if (is.null(regions)) regions <- "dummy"
+  if (is.null(years)) years <- 0
+  if (is.null(names)) names <- "dummy"
+  newObject <- new.magpie(regions, years, names, values, ...)
+  if (all(regions == "dummy")) newObject <- collapseDim(newObject, dim = 1)
+  if (all(years == 0)) newObject <- collapseDim(newObject, dim = 2)
+  if (all(names == "dummy")) newObject <- collapseDim(newObject, dim = 3)
+  names(dimnames(newObject)) <- c("region", "year", "data")
+  return(newObject)
 }
 
 expect_pmin_result <- function(a, b, result) { # nolint: object_name_linter. Mimics testthat style.
@@ -75,15 +85,75 @@ test_that("pmin on magpie objects with different orderings in all dimensions", {
                                          values = c(1, 2, 3, 4, 4, 3, 2, 1))))
 })
 
+test_that("pmin allows different items, if there is only one item in that dimension", {
+  # A single item in one dimension
+  expect_pmin_result(testMagpie(regions = c("A"), years = 2001:2002, names = c("test1", "test2"),
+                                values = c(3, 3, 3, 3)),
+                     testMagpie(regions = c("B"), years = 2001:2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 4)),
+                     testMagpie(regions = NULL, years = 2001:2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 3)))
+
+  expect_pmin_result(testMagpie(regions = c("A", "B"), years = 2001, names = c("test1", "test2"),
+                                values = c(3, 3, 3, 3)),
+                     testMagpie(regions = c("A", "B"), years = 2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 4)),
+                     testMagpie(regions = c("A", "B"), years = NULL, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 3)))
+
+  expect_pmin_result(testMagpie(regions = c("A", "B"), years = 2001:2002, names = c("test1"),
+                                values = c(3, 3, 3, 3)),
+                     testMagpie(regions = c("A", "B"), years = 2001:2002, names = c("test2"),
+                                values = c(1, 2, 3, 4)),
+                     testMagpie(regions = c("A", "B"), years = 2001:2002, names = NULL,
+                                values = c(1, 2, 3, 3)))
+
+  # A single item in two dimensions
+  expect_pmin_result(testMagpie(regions = c("A"), years = 2001:2002, names = c("test1"),
+                                values = c(3, 3)),
+                     testMagpie(regions = c("B"), years = 2001:2002, names = c("test2"),
+                                values = c(1, 4)),
+                     testMagpie(regions = NULL, years = 2001:2002, names = NULL,
+                                values = c(1, 3)))
+
+  expect_pmin_result(testMagpie(regions = c("A"), years = 2001, names = c("test1", "test2"),
+                                values = c(3, 3)),
+                     testMagpie(regions = c("B"), years = 2002, names = c("test1", "test2"),
+                                values = c(1, 4)),
+                     testMagpie(regions = NULL, years = NULL, names = c("test1", "test2"),
+                                values = c(1, 3)))
+
+  expect_pmin_result(testMagpie(regions = c("A", "B"), years = 2001, names = c("test1"),
+                                values = c(3, 3)),
+                     testMagpie(regions = c("A", "B"), years = 2002, names = c("test2"),
+                                values = c(1, 4)),
+                     testMagpie(regions = c("A", "B"), years = NULL, names = NULL,
+                                values = c(1, 3)))
+
+
+  # A single item in all three dimensions
+  expect_pmin_result(testMagpie(regions = c("A"), years = 2001, names = c("test1"),
+                                values = c(3)),
+                     testMagpie(regions = c("B"), years = 2002, names = c("test2"),
+                                values = c(2)),
+                     testMagpie(regions = NULL, years = NULL, names = NULL,
+                                values = c(2)))
+})
+
 test_that("pmin special cases", {
-  expect_pmin_result(testMagpie(years = 2001:2002, values = c(1, 3)), 2,
+  # pmin with a single number
+  expect_pmin_result(testMagpie(years = 2001:2002, values = c(1, 3)),
+                     2,
                      testMagpie(years = 2001:2002, values = c(1, 2)))
-  expect_pmin_result(2, testMagpie(years = 2001:2002, values = c(1, 3)),
+  expect_pmin_result(2,
+                     testMagpie(years = 2001:2002, values = c(1, 3)),
                      c(1, 2))
 
-  expect_error(pmin(testMagpie(regions = "A"),
-                    testMagpie(regions = c("A", "B"))),
-               "pmin expects magpie objects with equal dimensions")
+  # pmin with a vector
+  expect_pmin_result(c(2, 5),
+                     testMagpie(years = 2001:2002, values = c(1, 3)),
+                     c(1, 3))
+
   expect_error(pmin(testMagpie(regions = "A"),
                     testMagpie(regions = c("A", "B"))),
                "pmin expects magpie objects with equal dimensions")
