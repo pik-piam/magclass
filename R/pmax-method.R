@@ -4,8 +4,9 @@
 existingPmaxGeneric <- getGeneric("pmax")
 if (!is.null(existingPmaxGeneric)) {
   if (any(existingPmaxGeneric@signature != "...")) {
-    warning(paste0("Redefining pmax generic function with new signature \"...\", ",
-                   "while there already is a pmax generic with signature: ", existingPmaxGeneric@signature))
+    warning("Redefining pmax generic function with new signature \"...\", ",
+            "while there already is a pmax generic with signature: ",
+            paste0(existingPmaxGeneric@signature, collapse = ", "))
   }
 }
 setGeneric("pmax", signature = "...")
