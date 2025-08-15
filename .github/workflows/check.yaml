@@ -65,4 +65,3 @@ jobs:
           if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) covr::codecov(quiet = FALSE, token = "${{ secrets.CODECOV_TOKEN }}")
         env:
           NOT_CRAN: "true"
-          CODECOV_TOKEN: 
