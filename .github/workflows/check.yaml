@@ -62,6 +62,7 @@ jobs:
         shell: Rscript {0}
         run: |
           nonDummyTests <- setdiff(list.files("./tests/testthat/"), c("test-dummy.R", "_snaps"))
-          if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) covr::codecov(quiet = FALSE, token = "${{ secrets.CODECOV_TOKEN }}")
+          if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) covr::codecov(quiet = FALSE)
         env:
           NOT_CRAN: "true"
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
