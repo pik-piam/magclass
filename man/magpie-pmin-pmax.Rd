@@ -7,7 +7,7 @@
 \alias{pmin}
 \alias{pmax}
 \alias{pmin,magpie-method}
-\alias{pmin,ANY-method,}
+\alias{pmin,ANY-method}
 \alias{pmax,ANY-method}
 \title{pmin/pmax}
 \usage{
@@ -16,7 +16,8 @@
 \S4method{pmin}{magpie}(..., na.rm = FALSE)
 }
 \arguments{
-\item{...}{Multiple magpie objects with the same dimensions.}
+\item{...}{Multiple magpie objects with dimensions that each are either the same or only
+contain one item among all objects.}
 
 \item{na.rm}{Passed to \code{\link[base]{pmin}}}
 }

@@ -1,7 +1,7 @@
 #'
 #' @title pmin/pmax
 #' @name magpie-pmin-pmax
-#' @aliases pmin,magpie-method pmin,ANY-method, pmax,magpie-method pmax,ANY-method
+#' @aliases pmin pmax pmin,magpie-method pmin,ANY-method pmax,magpie-method pmax,ANY-method
 #' @description magclass-aware pmin/pmax, which calculate the parallel minima/maxima of the input values
 #' @details
 #' \code{\link[base]{pmin}}/\code{\link[base]{pmax}} do not care about the order of items in a magclass
