@@ -62,6 +62,16 @@ jobs:
         shell: Rscript {0}
         run: |
           nonDummyTests <- setdiff(list.files("./tests/testthat/"), c("test-dummy.R", "_snaps"))
-          if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) covr::codecov(quiet = FALSE, token = "${{ secrets.CODECOV_TOKEN }}")
+          if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) {
+            coverage <- covr::package_coverage(quiet = FALSE)
+            writeLines(covr:::to_coveralls(per_line(coverage), "coveralls-codecov.json"))
+          }
         env:
           NOT_CRAN: "true"
+
+      - uses: codecov/codecov-action@v4
+        with:
+          file: ./coveralls-codecov.json
+          plugin: noop
+          disable_search: true
+          token: ${{ secrets.CODECOV_TOKEN }}
