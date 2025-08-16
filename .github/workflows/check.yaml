@@ -64,7 +64,7 @@ jobs:
           nonDummyTests <- setdiff(list.files("./tests/testthat/"), c("test-dummy.R", "_snaps"))
           if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) {
             coverage <- covr::package_coverage(quiet = FALSE)
-            writeLines(covr:::to_coveralls(coverage, "coveralls-codecov.json"))
+            writeLines(covr:::to_coveralls(coverage, service_name = "github-actions"), "coveralls-codecov.json")
           }
         env:
           NOT_CRAN: "true"
