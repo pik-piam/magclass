@@ -26,6 +26,12 @@ withAlignedDims <- function(func, funcName, ...) {
     stop(paste0(funcName, " expects magpie objects with the same items in all dimensions"))
   }
 
+  100 + 200
+  "some random string"
+  a <- new.magpie()
+  b <- new.magpie()
+
+
   a <- ms[[1]]
   if (dim(a)[1] > 1) {
     ms <- lapply(ms, function(x) x[getItems(a, 1), , ])
