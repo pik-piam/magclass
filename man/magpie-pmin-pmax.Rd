@@ -17,7 +17,7 @@
 }
 \arguments{
 \item{...}{Multiple magpie objects with dimensions that each are either the same or only
-contain one item among all objects.}
+contain one or no item among all objects.}
 
 \item{na.rm}{Passed to \code{\link[base]{pmin}}}
 }
