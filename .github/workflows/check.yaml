@@ -65,7 +65,7 @@ jobs:
           if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) {
             coverage <- covr::package_coverage(quiet = FALSE)
             to_simple_codecov <- function(coverage) {
-              fullLineCoverage <- covr::per_line(coverage)
+              fullLineCoverage <- covr:::per_line(coverage)
               data <- Map(function(fileCoverage) {
                 resultCoverage <- lapply(fileCoverage$coverage, jsonlite::unbox)
                 names(resultCoverage) <- seq_along(resultCoverage)
