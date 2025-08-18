@@ -138,6 +138,22 @@ test_that("pmin allows different items, if there is only one item in that dimens
                                 values = c(2)),
                      testMagpie(regions = NULL, years = NULL, names = NULL,
                                 values = c(2)))
+
+  # This also holds if one object has only one item and the other one has none
+  expect_pmin_result(testMagpie(regions = NULL, years = 2001:2002, names = c("test1", "test2"),
+                                values = c(3, 3, 3, 3)),
+                     testMagpie(regions = c("B"), years = 2001:2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 4)),
+                     testMagpie(regions = NULL, years = 2001:2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 3)))
+
+  expect_pmin_result(testMagpie(regions = NULL, years = NULL, names = c("test1", "test2"),
+                                values = c(3, 3)),
+                     testMagpie(regions = c("B"), years = 2001, names = c("test1", "test2"),
+                                values = c(1, 4)),
+                     testMagpie(regions = NULL, years = NULL, names = c("test1", "test2"),
+                                values = c(1, 3)))
+
 })
 
 test_that("pmin special cases", {

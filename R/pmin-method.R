@@ -7,7 +7,7 @@
 #' \code{\link[base]{pmin}}/\code{\link[base]{pmax}} do not care about the order of items in a magclass
 #' object's dim. magclass pmin/pmax reorder items in each dim so they are in the same order.
 #' @param ... Multiple magpie objects with dimensions that each are either the same or only
-#' contain one item among all objects.
+#' contain one or no item among all objects.
 #' @param na.rm Passed to \code{\link[base]{pmin}}
 #' @return A new magpie object that contains the minimum/maximum of values between all the passed magpie objects.
 #' @usage NULL
