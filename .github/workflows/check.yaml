@@ -64,14 +64,23 @@ jobs:
           nonDummyTests <- setdiff(list.files("./tests/testthat/"), c("test-dummy.R", "_snaps"))
           if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) {
             coverage <- covr::package_coverage(quiet = FALSE)
-            writeLines(covr:::to_coveralls(coverage, service_name = "github-actions"), "coveralls-codecov.json")
+            to_simple_codecov <- function(coverage) {
+              fullLineCoverage <- covr::per_line(coverage)
+              data <- Map(function(fileCoverage) {
+                resultCoverage <- lapply(fileCoverage$coverage, jsonlite::unbox)
+                names(resultCoverage) <- seq_along(resultCoverage)
+                return(resultCoverage)
+              }, fullLineCoverage)
+              return(jsonlite::toJSON(list("coverage" = data), na = "null"))
+            }
+            writeLines(to_simple_codecov(coverage), "simple-codecov.json")
           }
         env:
           NOT_CRAN: "true"
 
       - uses: codecov/codecov-action@v4
         with:
-          file: ./coveralls-codecov.json
+          file: ./simple-codecov.json
           plugin: noop
           disable_search: true
           token: ${{ secrets.CODECOV_TOKEN }}
