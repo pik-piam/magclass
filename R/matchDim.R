@@ -61,7 +61,7 @@ matchDim <- function(x, ref, dim = 1:3, fill = NA) {
     years = d2,
     names = d3,
     fill = fill,
-    sets = names(dimnames(ref))
+    sets = names(dimnames(x))
   )
 
   # copy over values from x
