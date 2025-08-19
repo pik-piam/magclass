@@ -154,6 +154,23 @@ test_that("pmin allows different items, if there is only one item in that dimens
                      testMagpie(regions = NULL, years = NULL, names = c("test1", "test2"),
                                 values = c(1, 3)))
 
+  # This also holds if a dimension is not present in one object and the other contains only one value
+  # The following tests use collapseDim to create objects with "removed" dimensions. The single items
+  # in these testMagpie objects are only placeholders so that collapseDim "removes" the dimension.
+  expect_pmin_result(collapseDim(testMagpie(regions = "GLO", years = 2001:2002, names = c("test1", "test2"),
+                                            values = c(3, 3, 3, 3))),
+                     testMagpie(regions = c("B"), years = 2001:2002, names = c("test1", "test2"),
+                                values = c(1, 2, 3, 4)),
+                     collapseDim(testMagpie(regions = "GLO", years = 2001:2002, names = c("test1", "test2"),
+                                            values = c(1, 2, 3, 3))))
+
+  expect_pmin_result(collapseDim(testMagpie(regions = "GLO", years = 1, names = c("test1", "test2"),
+                                            values = c(3, 3))),
+                     testMagpie(regions = c("B"), years = 2001, names = c("test1", "test2"),
+                                values = c(1, 4)),
+                     collapseDim(testMagpie(regions = "GLO", years = 1, names = c("test1", "test2"),
+                                            values = c(1, 3))))
+
 })
 
 test_that("pmin special cases", {
