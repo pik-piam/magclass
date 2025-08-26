@@ -6,7 +6,7 @@
 #' @param funcName The name of the resulting function, to improve error messages
 #' @author Pascal Sauer, Patrick Rein
 #' @keywords internal
-withAlignedDims <- function(func, funcName, ...) {
+withAlignedDims <- function(func, funcName = "anonymous func", ...) {
   ms <- list(...)
   .allIdentical <- function(vs) all(vapply(vs[-1], function(x) identical(vs[[1]], x), logical(1)))
 
