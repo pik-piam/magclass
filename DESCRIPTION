@@ -1,8 +1,8 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 6.19.2
-Date: 2025-08-18
+Version: 6.20.0
+Date: 2025-09-25
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", 
     comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0002-4309-6431"), role = c("aut", "cre")),
@@ -67,5 +67,5 @@ VignetteBuilder:
     knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/Keywords: tool
