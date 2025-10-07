@@ -27,3 +27,16 @@ test_that("mbind works", {
     expect_null(getItems(mbind(p0, p0), dim = i))
   }
 })
+
+test_that("cbind issues a warning but works otherwise", {
+  expect_warning(cbind(new.magpie(), new.magpie()))
+  expect_warning(cbind(new.magpie(), c()))
+  expect_warning(cbind(c(), new.magpie()))
+
+  cbindResult <- suppressWarnings(cbind(c(1, 2), p[1, , ]))
+  expect_is(cbindResult, "matrix")
+  expect_equal(cbindResult[2:3, 1],
+               c(2, 1))
+  expect_equal(cbindResult[, 2],
+               as.vector(p[1, , ]))
+})
