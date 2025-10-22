@@ -91,7 +91,7 @@ asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) { # nolint
   types <- c(".spat", ".temp", ".data")
   for (i in 3:1) {
     if (grepl(".", names(x)[i], fixed = TRUE)) {
-      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[i]]), split = "\\.")), ncol = nrow(x))),
+      tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[i]]), split = ".", fixed = TRUE)), ncol = nrow(x))),
                         stringsAsFactors = FALSE)
       names(tmp) <-  strsplit(names(x)[i], split = "\\.")[[1]]
       if (i == 1) {
@@ -116,7 +116,7 @@ asDataFrameX <- function(x, raw, stringsAsFactors = FALSE) { # nolint
         }
         # convert coordinates
         if (grepl("^-?[0-9]+p-?[0-9]+", x[[i]][1]) && all(grepl("^-?[0-9]+p-?[0-9]+", x[[i]]))) {
-          x[[i]] <- sub("p", ".", x[[i]])
+          x[[i]] <- sub("p", ".", x[[i]], fixed = TRUE)
         }
       }
       x[[i]] <- type.convert(x[[i]], as.is = TRUE)
