@@ -57,7 +57,7 @@ setMethod("as.data.frame",
       }
       if (all(grepl(".", x[[3]], fixed = TRUE))) {
         levels(x[[3]]) <- gsub("\\.$", "\\.STRINGTORESETAG", levels(x[[3]]))
-        tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[3]]), split = "\\.")), ncol = nrow(x))),
+        tmp <- data.frame(t(matrix(unlist(strsplit(as.character(x[[3]]), split = ".", fixed = TRUE)), ncol = nrow(x))),
                           stringsAsFactors = FALSE)
         for (i in seq_len(ncol(tmp))) {
           tmp[[i]] <- factor(tmp[[i]], unique(tmp[[i]]))
