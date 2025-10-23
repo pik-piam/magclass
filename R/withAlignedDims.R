@@ -6,7 +6,7 @@
 #' @param funcName The name of the resulting function, to improve error messages
 #' @author Pascal Sauer, Patrick Rein
 #' @keywords internal
-withAlignedDims <- function(func, funcName, ...) {
+withAlignedDims <- function(func, funcName = "anonymous func", ...) {
   ms <- list(...)
   .allIdentical <- function(vs) all(vapply(vs[-1], function(x) identical(vs[[1]], x), logical(1)))
 
@@ -16,6 +16,20 @@ withAlignedDims <- function(func, funcName, ...) {
 
   if (.allIdentical(lapply(ms, dimnames))) {
     return(func(...))
+  }
+
+  # collapseDim if the dim has a single item in all and they differ
+  singleDifferingItemDims <- Filter(function(dimCode) {
+    items <- lapply(ms, function(m) dimnames(m)[[dimCode]])
+    return(all(lapply(items, length) <= 1) && !.allIdentical(items))
+  }, 1:3)
+  if (length(singleDifferingItemDims) > 0) {
+    originalDimensionNames <- names(dimnames(ms[[1]]))
+    ms <- lapply(ms, function(m) {
+      m <- collapseDim(m, dim = singleDifferingItemDims)
+      names(dimnames(m)) <- originalDimensionNames
+      return(m)
+    })
   }
 
   if (!.allIdentical(lapply(ms, dim))) {

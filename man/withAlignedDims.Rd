@@ -4,7 +4,7 @@
 \alias{withAlignedDims}
 \title{withAlignedDims}
 \usage{
-withAlignedDims(func, funcName, ...)
+withAlignedDims(func, funcName = "anonymous func", ...)
 }
 \arguments{
 \item{func}{The function that should be executed with prior alignment of dimensions}
