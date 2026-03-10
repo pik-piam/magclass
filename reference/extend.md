@@ -1,0 +1,40 @@
+# extend
+
+Extend a magpie object to a dense grid based on the given xRange, yRange
+and resolution. This is e.g. required when writing netCDF files.
+Extending a sparse magpie object to a dense grid requires much more
+memory, so use with caution.
+
+## Usage
+
+``` r
+extend(x, gridDefinition = NULL, crop = FALSE)
+```
+
+## Arguments
+
+- x:
+
+  A magpie object
+
+- gridDefinition:
+
+  A vector of 5 numeric values: c(xMin, xMax, yMin, yMax, resolution).
+  Use c(-179.75, 179.75, -89.75, 89.75, 0.5) to extend to a standard
+  0.5-degree-resolution lon/lat grid. If NULL, use min/max of
+  coordinates in x and guessResolution.
+
+- crop:
+
+  If TRUE, discard cells from x which are not in the gridDefinition
+  grid. If FALSE, throw an error if the coordinates of x are not a
+  subset of the extended coordinates.
+
+## Value
+
+Magpie object x with dense grid according to gridDefinition, gaps filled
+with NA.
+
+## Author
+
+Pascal Sauer

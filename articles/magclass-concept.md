@@ -1,0 +1,270 @@
+# Concept behind magclass
+
+## magclass vs other data-classes
+
+In order to understand the magclass format it is helpful to know the
+basic data structures in R:
+
+### dataclass: matrix
+
+A matrix is a 2D table (columns and rows) with values in it which all
+belong to the same variable type (e.g. all numeric or all characters).
+It can have dimnames giving each row and each column a name.
+
+``` r
+a <- matrix(1:9, 3, 3, dimnames = list(c("AFR", "CPA", "EUR"),
+                                       paste0("y", 2000:2002)))
+a
+#>     y2000 y2001 y2002
+#> AFR     1     4     7
+#> CPA     2     5     8
+#> EUR     3     6     9
+```
+
+It is very handy for mathematical operations such as matrix
+multiplications and so on, but quite limited due to its restriction to 2
+dimenions and only one allowed variable type for all entries.
+
+### dataclass: array
+
+An array is the extension of a matrix to more than two dimensions. A 2D
+array is identical to a matrix. As the matrix also the array is a very
+efficient structure for mathematical operations.
+
+``` r
+b <- array(1:18, dim = c(3, 3, 2),
+           dimnames = list(paste0("y", 2000:2002),
+                           c("AFR", "CPA", "EUR"),
+                           c("IndexA", "IndexB")))
+b
+#> , , IndexA
+#> 
+#>       AFR CPA EUR
+#> y2000   1   4   7
+#> y2001   2   5   8
+#> y2002   3   6   9
+#> 
+#> , , IndexB
+#> 
+#>       AFR CPA EUR
+#> y2000  10  13  16
+#> y2001  11  14  17
+#> y2002  12  15  18
+```
+
+### dataclass: dataframe
+
+A dataframe is similar in its structure to a matrix but has quite
+different advantages and disadvantages. As the matrix also the data
+frame is only two dimensional. The major difference between matrices and
+dataframes is that dataframes allow for different variable types per
+column. That means that one column can contain characters describing the
+data whereas another column can contain the values itself. Having this
+extension it is much easier to store higher dimensional data in it, as
+you can always use a structure in which each column except the last
+represent one dimension and the last dimension contains the data itself.
+The higher flexibility means that you can store the same data in very
+different ways, making it often hard to predict how the data frame will
+look like.
+
+``` r
+library(magclass)
+#> 
+#> Attaching package: 'magclass'
+#> The following objects are masked from 'package:base':
+#> 
+#>     pmax, pmin
+
+as.data.frame(b)
+#>       AFR.IndexA CPA.IndexA EUR.IndexA AFR.IndexB CPA.IndexB
+#> y2000          1          4          7         10         13
+#> y2001          2          5          8         11         14
+#> y2002          3          6          9         12         15
+#>       EUR.IndexB
+#> y2000         16
+#> y2001         17
+#> y2002         18
+
+as.data.frame(as.magpie(b))
+#>    Cell Region Year  Data1 Value
+#> 1    NA    AFR 2000 IndexA     1
+#> 2    NA    CPA 2000 IndexA     4
+#> 3    NA    EUR 2000 IndexA     7
+#> 4    NA    AFR 2001 IndexA     2
+#> 5    NA    CPA 2001 IndexA     5
+#> 6    NA    EUR 2001 IndexA     8
+#> 7    NA    AFR 2002 IndexA     3
+#> 8    NA    CPA 2002 IndexA     6
+#> 9    NA    EUR 2002 IndexA     9
+#> 10   NA    AFR 2000 IndexB    10
+#> 11   NA    CPA 2000 IndexB    13
+#> 12   NA    EUR 2000 IndexB    16
+#> 13   NA    AFR 2001 IndexB    11
+#> 14   NA    CPA 2001 IndexB    14
+#> 15   NA    EUR 2001 IndexB    17
+#> 16   NA    AFR 2002 IndexB    12
+#> 17   NA    CPA 2002 IndexB    15
+#> 18   NA    EUR 2002 IndexB    18
+```
+
+In the first example the array is directly transformed to a data frame
+whereas in the second example the matrix is transformed first to a
+magclass object and then to a data frame. Both data frames still contain
+the same data but in a different representation.
+
+### dataclass: magclass
+
+The main idea behind the magclass object was to have a data class for
+which it is always quite clear how the data is organized. Having this
+knowledge independent of the data itself allows to write more generic
+functions which can treat various kinds of data sets without knowing
+anything about it in advance.
+
+The magclass data class is a child class of an array, meaning that it is
+based on most of its features. Contrary to an array the magpie object is
+always three dimensional, containing spatial information in the first
+dimension, temporal information in the second dimension and everything
+else in the third dimension.
+
+``` r
+as.magpie(b)
+#> An object of class "magpie"
+#> , , NA = IndexA
+#> 
+#>      NA
+#> fake  y2000 y2001 y2002
+#>   AFR     1     2     3
+#>   CPA     4     5     6
+#>   EUR     7     8     9
+#> 
+#> , , NA = IndexB
+#> 
+#>      NA
+#> fake  y2000 y2001 y2002
+#>   AFR    10    11    12
+#>   CPA    13    14    15
+#>   EUR    16    17    18
+```
+
+However, that limitation to a 3D-structure does not mean that you are
+limited to data which only has 3 dimensions. Also data with more than
+one so-called “data dimension” (a dimension which is neither temporal
+nor spatial) can be handled:
+
+``` r
+ar <- array(1:6, c(3, 2), list(c("bla", "blub", "ble"),
+                               c("up", "down")))
+a <- as.magpie(ar)
+head(a)
+#> An object of class "magpie"
+#> , , NA = bla.up
+#> 
+#>      NA
+#> fake  [,1]
+#>   GLO    1
+#> 
+#> , , NA = blub.up
+#> 
+#>      NA
+#> fake  [,1]
+#>   GLO    2
+
+getItems(a, dim = 3)
+#> [1] "bla.up"    "blub.up"   "ble.up"    "bla.down"  "blub.down"
+#> [6] "ble.down"
+
+getItems(a[, , "up"], dim = 3)
+#> [1] "bla.up"  "blub.up" "ble.up"
+
+getItems(a[, , "up", drop = TRUE], dim = 3)
+#> [1] "bla"  "blub" "ble"
+
+getItems(a, dim = 3, split = TRUE)
+#> $V1
+#> [1] "bla"  "blub" "ble" 
+#> 
+#> $V2
+#> [1] "up"   "down"
+```
+
+If an array has three dimensions and you take in one dimension exactly
+one element the array will be reduced to an 2D object, whereas the
+magclass object will always remain as 3D object. In addition to that a
+lot of checks will be executed when you do calculations with magclass
+objects that should prevent you from doing unwanted things such as
+accidentally sum up the wrong numbers if your objects are ordered
+differently:
+
+``` r
+c <- as.magpie(b)
+# change order of spatial components
+d <- c[3:1, , ]
+
+# correct summation based on dimension names:
+c + d
+#> An object of class "magpie"
+#> , , data = IndexA
+#> 
+#>      year
+#> fake  y2000 y2001 y2002
+#>   AFR     2     4     6
+#>   CPA     8    10    12
+#>   EUR    14    16    18
+#> 
+#> , , data = IndexB
+#> 
+#>      year
+#> fake  y2000 y2001 y2002
+#>   AFR    20    22    24
+#>   CPA    26    28    30
+#>   EUR    32    34    36
+
+# wrong summation (dimension names ignored):
+as.array(c) + as.array(d)
+#> , , NA = IndexA
+#> 
+#>      NA
+#> fake  y2000 y2001 y2002
+#>   AFR     8    10    12
+#>   CPA     8    10    12
+#>   EUR     8    10    12
+#> 
+#> , , NA = IndexB
+#> 
+#>      NA
+#> fake  y2000 y2001 y2002
+#>   AFR    26    28    30
+#>   CPA    26    28    30
+#>   EUR    26    28    30
+```
+
+This additional comfort and safety is bought with performance meaning
+that if you are doing calculations which are very resource consuming you
+might want to convert your magclass object to an array, do your
+calculations (for which you then have to be very careful) and convert it
+back to a magclass object.
+
+### Why use magclass for your work?
+
+Magclass can be a good choice if you work with tempo-spatial data and
+want to establish a data standard for exchange between different R
+functions. If everybody is writing functions based on magclass objects
+all these functions will be directly compatible to each other. Having
+this compatibility your work will directly profit from the work of
+others, e.g. you are able to use plotting routines for your purposes
+even though they were developed for a completely different data source.
+Your code will be highly modular so that you can easily adapt it to
+modified requirements (e.g. exchanging a data read function by an API to
+a database). Having everybody working with the same functions can also
+lower the number of bugs in your code as each part of the code will be
+tested by several people and bugs will be found easier and fixed faster.
+
+But why use magclass objects as this standard class for all functions
+and not something else as for instance data frames?
+
+The main argument is that magclass objects are more standardized than
+the default data classes in R. It is always clear that the first
+dimension contains the spatial information, the second dimension
+contains temporal information and the third dimension contains the data.
+This makes it easier to develop generic plots because it is clear how
+the data has to be accessed.

@@ -1,0 +1,188 @@
+# Write MAgPIE-object to file
+
+Writes a magpie object to a file. The file type is determined by the
+filename extension. The written file can be read again using
+[`read.magpie`](read.magpie.md).
+
+## Usage
+
+``` r
+write.magpie(
+  x,
+  file_name,
+  file_folder = "",
+  file_type = NULL,
+  append = FALSE,
+  comment = NULL,
+  comment.char = "*",
+  mode = NULL,
+  zname = "time",
+  ...
+)
+```
+
+## Arguments
+
+- x:
+
+  a magclass object. An exception is that formats written via the raster
+  package (currently "asc", "grd" and "tif") also accept RasterBrick
+  objects which have been previously created from a magclass object via
+  as.RasterBrick)
+
+- file_name:
+
+  file name including file ending (wildcards are supported). Optionally
+  also the full path can be specified here (instead of splitting it to
+  file_name and file_folder)
+
+- file_folder:
+
+  folder the file should be written to (alternatively you can also
+  specify the full path in file_name - wildcards are supported)
+
+- file_type:
+
+  Format the data should be stored as. If file_type=NULL the file ending
+  of the file_name is used as format. See detailed description for a
+  list of available file types. Please be aware that the file_name is
+  independent of the file_type you choose here, so no additional file
+  ending will be added!
+
+- append:
+
+  Decides whether an existing file should be overwritten (FALSE) or the
+  data should be added to it (TRUE). Append = TRUE only works if the
+  existing data can be combined with the new data using the mbind
+  function
+
+- comment:
+
+  Vector of strings: Optional comment giving additional information
+  about the data. If different to NULL this will overwrite the content
+  of attr(x,"comment"). For nc files the unit can be passed with e.g.
+  'comment = "unit: kg"'.
+
+- comment.char:
+
+  character: a character vector of length one containing a single
+  character or an empty string. Use "" to turn off the interpretation of
+  comments altogether.
+
+- mode:
+
+  File permissions the file should be written with as 3-digit number
+  (e.g. "777" means full access for user, group and all, "750" means
+  full access for user, read access for group and no acess for anybody
+  else). Set to NULL system defaults will be used. Access codes are
+  identical to the codes used in unix function chmod.
+
+- zname:
+
+  name of the time variable for raster files like nc, asc, grd and tif
+
+- ...:
+
+  additional arguments passed to specific write functions. Check
+  ?magclass::writeNC for available arguments when writing nc files.
+
+## Details
+
+This function supports writing the following file types:
+
+- "cs2" is the new standard format for cellular data with or without
+  header and the first columns (year,regiospatial) or only
+  (regiospatial)
+
+- "cs2b" is identical to "cs2" except that it will suppress the data
+  name if it has only 1 element in the data dimension.
+
+- "csv" is the standard format for regional data with or without header
+  and the first columns (year,region,cellnumber) or only
+  (region,cellnumber)
+
+- "cs3" is another csv format which is specifically designed for
+  multidimensional data for usage in GAMS.
+
+- "cs4" alternative multidimensional format compatible to GAMS, in
+  contrast to cs3 it can also handle sparse data
+
+- "csvr", "cs2r", "cs3r", "cs4r" which are the same formats as the ones
+  previously explained with the only difference that they have a REMIND
+  compatible format
+
+- "cs5" a more generalized version of cs4
+
+- "rds" is an R-default format for storing R objects
+
+- "m" (magpie) and "mz" (magpie zipped) are new formats developed to
+  allow a less storage intensive management of MAgPIE-data. The only
+  difference between both formats is that .mz is gzipped whereas .m is
+  not compressed. So .mz needs less memory, whereas .m might have a
+  higher compatibility to other languages
+
+- "asc" is the ASCII grid format. It can only be applied for gridded
+  data and writes one file per year per data column. In the case that
+  more than one year and data column is supplied several files are
+  written with the structure filename_year_datacolumn.asc
+
+- "tif" is the GEOtiff format for gridded data.
+
+- "grd" is the native raster format for gridded data.
+
+- "nc" is the netCDF format for gridded data. Check ?magclass::writeNC
+  for more details on how nc files are written.
+
+## Note
+
+The binary MAgPIE formats .m and .mz have the following
+content/structure (you only have to care for that if you want to
+implement read.magpie/write.magpie functions in other languages):  
+  
+\[ FileFormatVersion \| Current file format version number (currently 6)
+\| integer \| 2 Byte \]  
+\[ nchar_comment \| Number of character bytes of the file comment \|
+integer \| 4 Byte \]  
+\[ nbyte_metadata \| Number of bytes of the serialized metadata
+(currently = 0) \| integer \| 4 Byte \]  
+\[ nchar_sets \| Number of characters bytes of all regionnames + 2
+delimiter \| integer \| 2 Byte\]  
+\[ nyears \| Number of years \| integer \| 2 Byte \]  
+\[ yearList \| All years of the dataset (0, if year is not present) \|
+integer \| 2\*nyears Byte \]  
+\[ ncells \| Number of cells \| integer \| 4 Byte \]  
+\[ nchar_cell \| Number of characters bytes of all regionnames +
+(nreg-1) for delimiters \| integer \| 4 Byte \]  
+\[ cells \| Cell names saved as cell1\cell2 (\n is the delimiter) \|
+character \| 1\*nchar_cell Byte \]  
+\[ nelem \| Total number of data elements \| integer \| 4 Byte \]  
+\[ nchar_data \| Number of char. bytes of all datanames + (ndata - 1)
+for delimiters \| integer \| 4 Byte \]  
+\[ datanames \| Names saved in the format data1\ndata2 (\n as del.) \|
+character \| 1\*nchar_data Byte \]  
+\[ data \| Data of the MAgPIE array in vectorized form \| numeric \|
+4\*nelem Byte \]  
+\[ comment \| Comment with additional information about the data \|
+character \| 1\*nchar_comment Byte \]  
+\[ sets \| Set names with \n as delimiter \| character \| 1\*nchar_sets
+Byte\]  
+\[ metadata \| serialized metadata information (currently not in use) \|
+bytes \| 1\*nbyte_metadata Byte\]  
+
+## See also
+
+`"`[`magpie`](magpie-class.md)`"`,
+[`read.magpie`](read.magpie.md),[`mbind`](mbind.md)
+
+## Author
+
+Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer
+
+## Examples
+
+``` r
+pop <- maxample("pop")
+path <- tempfile(fileext = ".mz")
+write.magpie(pop, path)
+pop2 <- read.magpie(path)
+```
