@@ -78,3 +78,13 @@ as_tibble(
 ## Value
 
 A tibble object
+
+## See also
+
+Other MAgPIE-Conversions: [`as.RasterBrick()`](as.RasterBrick.md),
+[`as.SpatRaster()`](as.SpatRaster.md),
+[`as.SpatRasterDataset()`](as.SpatRasterDataset.md),
+[`as.SpatVector()`](as.SpatVector.md),
+[`as.array-methods`](as.array-methods.md),
+[`as.data.frame-methods`](as.data.frame-methods.md),
+[`unwrap()`](unwrap.md), [`wrap()`](wrap.md)

@@ -71,6 +71,11 @@ write.report(
 
 [`read.report`](read.report.md)
 
+Other FileIO: [`copy.magpie()`](copy.magpie.md),
+[`read.magpie()`](read.magpie.md), [`read.report()`](read.report.md),
+[`write.magpie()`](write.magpie.md),
+[`write.report2()`](write.report2.md)
+
 ## Author
 
 Jan Philipp Dietrich

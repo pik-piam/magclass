@@ -42,6 +42,14 @@ coordinates of the MAgPIE-object
 [`as.RasterBrick`](as.RasterBrick.md), [`getItems`](getItems.md),
 `"`[`magpie`](magpie-class.md)`"`
 
+Other GetterSetter: [`getCPR()`](getCPR.md),
+[`getCells()`](getCells.md), [`getComment()`](getComment.md),
+[`getDim()`](getDim.md), [`getItems()`](getItems.md),
+[`getNames()`](getNames.md), [`getRegionList()`](getRegionList.md),
+[`getRegions()`](getRegions.md), [`getSets()`](getSets.md),
+[`getYears()`](getYears.md), [`setItems()`](setItems.md),
+[`setNames-methods`](setNames-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

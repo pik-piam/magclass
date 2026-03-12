@@ -19,6 +19,14 @@ is.temporal(x)
 
 Returns TRUE or FALSE
 
+## See also
+
+Other ObjectInfo: [`dimExists()`](dimExists.md),
+[`fulldim()`](fulldim.md), [`hasCoords()`](hasCoords.md),
+[`hasSets()`](hasSets.md), [`isYear()`](isYear.md),
+[`ncells()`](ncells.md), [`ndim()`](ndim.md),
+[`sameDims()`](sameDims.md)
+
 ## Author
 
 Jan Philipp Dietrich

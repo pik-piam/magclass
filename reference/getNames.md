@@ -55,6 +55,14 @@ order to be consistent to the already existing function setNames.
 [`write.magpie`](write.magpie.md),[`ndata`](ncells.md),
 `"`[`magpie`](magpie-class.md)`"`
 
+Other GetterSetter: [`getCPR()`](getCPR.md),
+[`getCells()`](getCells.md), [`getComment()`](getComment.md),
+[`getCoords()`](getCoords.md), [`getDim()`](getDim.md),
+[`getItems()`](getItems.md), [`getRegionList()`](getRegionList.md),
+[`getRegions()`](getRegions.md), [`getSets()`](getSets.md),
+[`getYears()`](getYears.md), [`setItems()`](setItems.md),
+[`setNames-methods`](setNames-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

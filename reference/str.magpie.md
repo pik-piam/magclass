@@ -31,6 +31,10 @@ dimnames.
 
 [`str`](https://rdrr.io/r/utils/str.html)
 
+Other Display: [`head.magpie()`](head.magpie.md),
+[`maxample()`](maxample.md), [`mplot()`](mplot.md),
+[`print.magpie()`](print.magpie.md), [`show-methods`](show-methods.md)
+
 ## Author
 
 Pascal Sauer

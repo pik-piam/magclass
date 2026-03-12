@@ -21,6 +21,12 @@ maxample(data)
 
 the chosen example data set
 
+## See also
+
+Other Display: [`head.magpie()`](head.magpie.md), [`mplot()`](mplot.md),
+[`print.magpie()`](print.magpie.md), [`show-methods`](show-methods.md),
+[`str.magpie()`](str.magpie.md)
+
 ## Author
 
 Jan Philipp Dietrich

@@ -54,6 +54,11 @@ many other cases the results will differ.
 
 [`getItems`](getItems.md) `"`[`magpie`](magpie-class.md)`"`
 
+Other DimensionManipulation: [`addDim()`](addDim.md),
+[`add_columns()`](add_columns.md),
+[`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
+[`dimOrder()`](dimOrder.md), [`dimReduce()`](dimReduce.md)
+
 ## Author
 
 Jan Philipp Dietrich

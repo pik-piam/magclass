@@ -26,6 +26,14 @@ A RasterBrick object
 
 [`getCoords`](getCoords.md)
 
+Other MAgPIE-Conversions: [`as.SpatRaster()`](as.SpatRaster.md),
+[`as.SpatRasterDataset()`](as.SpatRasterDataset.md),
+[`as.SpatVector()`](as.SpatVector.md),
+[`as.array-methods`](as.array-methods.md),
+[`as.data.frame-methods`](as.data.frame-methods.md),
+[`as_tibble.magpie()`](as_tibble.magpie.md), [`unwrap()`](unwrap.md),
+[`wrap()`](wrap.md)
+
 ## Author
 
 Jan Philipp Dietrich

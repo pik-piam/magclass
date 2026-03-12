@@ -66,6 +66,11 @@ convergence(
 returns a time-series with the same timesteps as origin, which lineary
 fades into the values of the aim object
 
+## See also
+
+Other TemporalOperations: [`commonYears()`](commonYears.md),
+[`lowpass()`](lowpass.md), [`time_interpolate()`](time_interpolate.md)
+
 ## Author
 
 Benjamin Bodirsky, Jan Philipp Dietrich

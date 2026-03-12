@@ -43,6 +43,9 @@ the entries should be searched for!
 
 [`mselect`](mselect.md)
 
+Other SelectionCalculation: [`magpply()`](magpply.md),
+[`mselect()`](mselect.md), [`where()`](where.md)
+
 ## Author
 
 Jan Philipp Dietrich

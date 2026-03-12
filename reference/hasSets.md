@@ -22,6 +22,12 @@ Boolean indicating whether coordinates were found or not
 
 [`getCoords`](getCoords.md)
 
+Other ObjectInfo: [`dimExists()`](dimExists.md),
+[`fulldim()`](fulldim.md), [`hasCoords()`](hasCoords.md),
+[`is.temporal()`](is.temporal.md), [`isYear()`](isYear.md),
+[`ncells()`](ncells.md), [`ndim()`](ndim.md),
+[`sameDims()`](sameDims.md)
+
 ## Author
 
 Jan Philipp Dietrich

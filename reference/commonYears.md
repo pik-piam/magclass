@@ -25,6 +25,11 @@ commonYears(..., asInteger = FALSE)
 
 The years (as returned by getYears) the input objects have in common.
 
+## See also
+
+Other TemporalOperations: [`convergence()`](convergence.md),
+[`lowpass()`](lowpass.md), [`time_interpolate()`](time_interpolate.md)
+
 ## Author
 
 Pascal Sauer

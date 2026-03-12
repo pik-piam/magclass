@@ -24,6 +24,10 @@ The merged MAgPIE object
 
 `"`[`magpie`](magpie-class.md)`"`
 
+Other DataBinding: [`cbind.magpie()`](cbind.magpie.md),
+[`extend()`](extend.md), [`magpie_expand()`](magpie_expand.md),
+[`magpiesort()`](magpiesort.md), [`matchDim()`](matchDim.md)
+
 ## Author
 
 Jan Philipp Dietrich, Misko Stevanovic

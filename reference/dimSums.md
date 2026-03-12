@@ -33,6 +33,9 @@ A MAgPIE object with values summed over the specified dimensions
 [`rowSums`](https://rdrr.io/r/base/colSums.html),
 [`getItems`](getItems.md), [`dimCode`](dimCode.md)
 
+Other Aggregation: [`colSums-methods`](colSums-methods.md),
+[`rowSums-methods`](rowSums-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

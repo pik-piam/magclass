@@ -68,6 +68,14 @@ sub-dimension.
 
 [`dimCode`](dimCode.md)
 
+Other GetterSetter: [`getCPR()`](getCPR.md),
+[`getCells()`](getCells.md), [`getComment()`](getComment.md),
+[`getCoords()`](getCoords.md), [`getDim()`](getDim.md),
+[`getNames()`](getNames.md), [`getRegionList()`](getRegionList.md),
+[`getRegions()`](getRegions.md), [`getSets()`](getSets.md),
+[`getYears()`](getYears.md), [`setItems()`](setItems.md),
+[`setNames-methods`](setNames-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

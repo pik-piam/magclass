@@ -48,6 +48,9 @@ for extrapolation.
 
 [`convergence`](convergence.md)
 
+Other TemporalOperations: [`commonYears()`](commonYears.md),
+[`convergence()`](convergence.md), [`lowpass()`](lowpass.md)
+
 ## Author
 
 Benjamin Bodirsky, Jan Philipp Dietrich

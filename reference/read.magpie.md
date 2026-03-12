@@ -84,6 +84,11 @@ binary MAgPIE formats .m and .mz.
 
 `"`[`magpie`](magpie-class.md)`"`, [`write.magpie`](write.magpie.md)
 
+Other FileIO: [`copy.magpie()`](copy.magpie.md),
+[`read.report()`](read.report.md), [`write.magpie()`](write.magpie.md),
+[`write.report()`](write.report.md),
+[`write.report2()`](write.report2.md)
+
 ## Author
 
 Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer

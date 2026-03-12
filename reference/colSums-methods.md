@@ -39,3 +39,8 @@ colSums(x, na.rm = FALSE, dims = 1, ...)
 - list("signature(x = \\magpie\\)"):
 
   classical method prepared to handle MAgPIE objects
+
+## See also
+
+Other Aggregation: [`dimSums()`](dimSums.md),
+[`rowSums-methods`](rowSums-methods.md)

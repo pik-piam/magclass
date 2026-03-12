@@ -35,6 +35,14 @@ nyears(x)
 
 - `nyears()`: count years
 
+## See also
+
+Other ObjectInfo: [`dimExists()`](dimExists.md),
+[`fulldim()`](fulldim.md), [`hasCoords()`](hasCoords.md),
+[`hasSets()`](hasSets.md), [`is.temporal()`](is.temporal.md),
+[`isYear()`](isYear.md), [`ndim()`](ndim.md),
+[`sameDims()`](sameDims.md)
+
 ## Author
 
 Jan Philipp Dietrich

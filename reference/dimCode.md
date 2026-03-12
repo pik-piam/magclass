@@ -48,6 +48,11 @@ second data dimension).
 
 [`mselect`](mselect.md), [`getDim`](getDim.md)
 
+Other DimensionManipulation: [`addDim()`](addDim.md),
+[`add_columns()`](add_columns.md), [`collapseDim()`](collapseDim.md),
+[`collapseNames()`](collapseNames.md), [`dimOrder()`](dimOrder.md),
+[`dimReduce()`](dimReduce.md)
+
 ## Author
 
 Jan Philipp Dietrich, Kristine Karstens

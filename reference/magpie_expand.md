@@ -53,6 +53,10 @@ significantly! For more information have a look at
 [`as.magpie`](magpie-class.md),
 [`options`](https://rdrr.io/r/base/options.html)
 
+Other DataBinding: [`cbind.magpie()`](cbind.magpie.md),
+[`extend()`](extend.md), [`magpiesort()`](magpiesort.md),
+[`matchDim()`](matchDim.md), [`mbind()`](mbind.md)
+
 ## Author
 
 Jan Philipp Dietrich

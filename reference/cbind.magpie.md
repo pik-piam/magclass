@@ -25,6 +25,12 @@ cbind(..., deparse.level = 1)
 A matrix as if cbind was applied to the internal vector of the MAgPIE
 objects
 
+## See also
+
+Other DataBinding: [`extend()`](extend.md),
+[`magpie_expand()`](magpie_expand.md), [`magpiesort()`](magpiesort.md),
+[`matchDim()`](matchDim.md), [`mbind()`](mbind.md)
+
 ## Author
 
 Patrick Rein

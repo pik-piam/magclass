@@ -38,6 +38,10 @@ The eventually corrected MAgPIE object
 
 `"`[`magpie`](magpie-class.md)`"`
 
+Other ObjectCreation: [`complete_magpie()`](complete_magpie.md),
+[`copy.attributes()`](copy.attributes.md),
+[`new.magpie()`](new.magpie.md)
+
 ## Author
 
 Jan Philipp Dietrich

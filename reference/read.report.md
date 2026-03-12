@@ -84,6 +84,11 @@ have to be marked with "N/A".
 
 [`write.report`](write.report.md)
 
+Other FileIO: [`copy.magpie()`](copy.magpie.md),
+[`read.magpie()`](read.magpie.md), [`write.magpie()`](write.magpie.md),
+[`write.report()`](write.report.md),
+[`write.report2()`](write.report2.md)
+
 ## Author
 
 Jan Philipp Dietrich

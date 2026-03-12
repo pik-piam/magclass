@@ -49,6 +49,9 @@ the entries should be searched for!
 
 [`collapseNames`](collapseNames.md), `"`[`magpie`](magpie-class.md)`"`
 
+Other SelectionCalculation: [`magpply()`](magpply.md),
+[`mcalc()`](mcalc.md), [`where()`](where.md)
+
 ## Author
 
 Jan Philipp Dietrich

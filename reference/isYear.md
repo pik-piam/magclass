@@ -24,6 +24,14 @@ isYear(x, with_y = TRUE)
 
 Returns a vector of the length of x with TRUE and FALSE
 
+## See also
+
+Other ObjectInfo: [`dimExists()`](dimExists.md),
+[`fulldim()`](fulldim.md), [`hasCoords()`](hasCoords.md),
+[`hasSets()`](hasSets.md), [`is.temporal()`](is.temporal.md),
+[`ncells()`](ncells.md), [`ndim()`](ndim.md),
+[`sameDims()`](sameDims.md)
+
 ## Author
 
 Benjamin Bodirsky

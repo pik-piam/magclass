@@ -58,6 +58,10 @@ an empty magpie object filled with fill, with the given dimnames
 
 [`as.magpie`](magpie-class.md)
 
+Other ObjectCreation: [`clean_magpie()`](clean_magpie.md),
+[`complete_magpie()`](complete_magpie.md),
+[`copy.attributes()`](copy.attributes.md)
+
 ## Author
 
 Benjamin Bodirsky, Jan Philipp Dietrich

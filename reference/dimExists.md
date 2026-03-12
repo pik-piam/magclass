@@ -31,6 +31,12 @@ Boolean indicating whether the dimension exists or not.
 
 [`dimCode`](dimCode.md)
 
+Other ObjectInfo: [`fulldim()`](fulldim.md),
+[`hasCoords()`](hasCoords.md), [`hasSets()`](hasSets.md),
+[`is.temporal()`](is.temporal.md), [`isYear()`](isYear.md),
+[`ncells()`](ncells.md), [`ndim()`](ndim.md),
+[`sameDims()`](sameDims.md)
+
 ## Author
 
 Jan Philipp Dietrich

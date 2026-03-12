@@ -52,6 +52,12 @@ copy.attributes(
 - `copy.attributes( to, delete = c("names", "row.names", "class", "dim", "dimnames"), delete2 = NULL ) <- value`:
   assign attributes from object "value"
 
+## See also
+
+Other ObjectCreation: [`clean_magpie()`](clean_magpie.md),
+[`complete_magpie()`](complete_magpie.md),
+[`new.magpie()`](new.magpie.md)
+
 ## Author
 
 Jan Philipp Dietrich

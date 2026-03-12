@@ -16,6 +16,12 @@ show(object)
 
   A MAgPIE-object
 
+## See also
+
+Other Display: [`head.magpie()`](head.magpie.md),
+[`maxample()`](maxample.md), [`mplot()`](mplot.md),
+[`print.magpie()`](print.magpie.md), [`str.magpie()`](str.magpie.md)
+
 ## Author
 
 Pascal Sauer

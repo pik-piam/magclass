@@ -34,6 +34,14 @@ cells per region
 [`getRegions`](getRegions.md), [`read.magpie`](read.magpie.md),
 [`write.magpie`](write.magpie.md)
 
+Other GetterSetter: [`getCells()`](getCells.md),
+[`getComment()`](getComment.md), [`getCoords()`](getCoords.md),
+[`getDim()`](getDim.md), [`getItems()`](getItems.md),
+[`getNames()`](getNames.md), [`getRegionList()`](getRegionList.md),
+[`getRegions()`](getRegions.md), [`getSets()`](getSets.md),
+[`getYears()`](getYears.md), [`setItems()`](setItems.md),
+[`setNames-methods`](setNames-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

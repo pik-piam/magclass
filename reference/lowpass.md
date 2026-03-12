@@ -40,6 +40,12 @@ lowpass(x, i = 1, fix = NULL, altFilter = NULL, warn = TRUE)
 
 The filtered data vector or MAgPIE object
 
+## See also
+
+Other TemporalOperations: [`commonYears()`](commonYears.md),
+[`convergence()`](convergence.md),
+[`time_interpolate()`](time_interpolate.md)
+
 ## Author
 
 Jan Philipp Dietrich, Misko Stevanovic

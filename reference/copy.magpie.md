@@ -28,6 +28,11 @@ copy.magpie(input_file, output_file, round = NULL)
 
 [`read.magpie`](read.magpie.md),[`write.magpie`](write.magpie.md)
 
+Other FileIO: [`read.magpie()`](read.magpie.md),
+[`read.report()`](read.report.md), [`write.magpie()`](write.magpie.md),
+[`write.report()`](write.report.md),
+[`write.report2()`](write.report2.md)
+
 ## Author
 
 Jan Philipp Dietrich

@@ -29,6 +29,13 @@ dimOrder(x, perm, dim = 3)
 
 magpie object
 
+## See also
+
+Other DimensionManipulation: [`addDim()`](addDim.md),
+[`add_columns()`](add_columns.md), [`collapseDim()`](collapseDim.md),
+[`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
+[`dimReduce()`](dimReduce.md)
+
 ## Author
 
 Jan Philipp Dietrich, Benjamin Leon Bodirsky

@@ -36,6 +36,11 @@ but in many other cases the results will differ.
 
 [`addDim`](addDim.md)
 
+Other DimensionManipulation: [`addDim()`](addDim.md),
+[`add_columns()`](add_columns.md), [`collapseDim()`](collapseDim.md),
+[`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
+[`dimOrder()`](dimOrder.md)
+
 ## Author
 
 Jan Philipp Dietrich

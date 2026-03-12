@@ -36,6 +36,12 @@ matchDim(x, ref, dim = 1:3, fill = NA)
 
 The modified `magpie` object.
 
+## See also
+
+Other DataBinding: [`cbind.magpie()`](cbind.magpie.md),
+[`extend()`](extend.md), [`magpie_expand()`](magpie_expand.md),
+[`magpiesort()`](magpiesort.md), [`mbind()`](mbind.md)
+
 ## Author
 
 Falk Benke

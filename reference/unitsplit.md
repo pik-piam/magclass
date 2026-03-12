@@ -19,6 +19,11 @@ unitsplit(x, col = "variable")
 
   column name. Default: variable
 
+## See also
+
+Other Utility: [`replace_non_finite()`](replace_non_finite.md),
+[`unitjoin()`](unitjoin.md)
+
 ## Author
 
 Jan Philipp Dietrich, Mika Pflüger, Oliver Richters

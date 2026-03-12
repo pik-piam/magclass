@@ -27,3 +27,8 @@ unitjoin(x, unit = NULL, col = "variable")
 ## Value
 
 data.frame or vector of strings, dependent on x
+
+## See also
+
+Other Utility: [`replace_non_finite()`](replace_non_finite.md),
+[`unitsplit()`](unitsplit.md)

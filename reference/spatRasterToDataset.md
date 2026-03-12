@@ -18,6 +18,10 @@ spatRasterToDataset(x)
 
 SpatRasterDataset
 
+## See also
+
+Other SpatialOperations: [`guessResolution()`](guessResolution.md)
+
 ## Author
 
 Pascal Sauer

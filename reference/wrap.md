@@ -36,6 +36,14 @@ under LGPL\>=2.1 and written by Henrik Bengtsson.
 
 [`unwrap`](unwrap.md),[`fulldim`](fulldim.md)
 
+Other MAgPIE-Conversions: [`as.RasterBrick()`](as.RasterBrick.md),
+[`as.SpatRaster()`](as.SpatRaster.md),
+[`as.SpatRasterDataset()`](as.SpatRasterDataset.md),
+[`as.SpatVector()`](as.SpatVector.md),
+[`as.array-methods`](as.array-methods.md),
+[`as.data.frame-methods`](as.data.frame-methods.md),
+[`as_tibble.magpie()`](as_tibble.magpie.md), [`unwrap()`](unwrap.md)
+
 ## Author
 
 Henrik Bengtsson, Jan Philipp Dietrich

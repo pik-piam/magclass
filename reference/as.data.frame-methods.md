@@ -40,6 +40,16 @@ as.data.frame(x, rev = 1, raw = FALSE)
   Conversion creates columns for Cell, Region, Year, Data1, Data2,...
   and Value
 
+## See also
+
+Other MAgPIE-Conversions: [`as.RasterBrick()`](as.RasterBrick.md),
+[`as.SpatRaster()`](as.SpatRaster.md),
+[`as.SpatRasterDataset()`](as.SpatRasterDataset.md),
+[`as.SpatVector()`](as.SpatVector.md),
+[`as.array-methods`](as.array-methods.md),
+[`as_tibble.magpie()`](as_tibble.magpie.md), [`unwrap()`](unwrap.md),
+[`wrap()`](wrap.md)
+
 ## Examples
 
 ``` r

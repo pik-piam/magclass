@@ -45,6 +45,11 @@ magpply(X, FUN, MARGIN = NULL, DIM = NULL, ..., INTEGRATE = FALSE)
 
 magpie object
 
+## See also
+
+Other SelectionCalculation: [`mcalc()`](mcalc.md),
+[`mselect()`](mselect.md), [`where()`](where.md)
+
 ## Author
 
 Jan Philipp Dietrich, Benjamin Leon Bodirsky

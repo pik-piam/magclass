@@ -39,3 +39,11 @@ order to be consistent to the already existing function setNames.
 ## See also
 
 [`getNames`](getNames.md),
+
+Other GetterSetter: [`getCPR()`](getCPR.md),
+[`getCells()`](getCells.md), [`getComment()`](getComment.md),
+[`getCoords()`](getCoords.md), [`getDim()`](getDim.md),
+[`getItems()`](getItems.md), [`getNames()`](getNames.md),
+[`getRegionList()`](getRegionList.md), [`getRegions()`](getRegions.md),
+[`getSets()`](getSets.md), [`getYears()`](getYears.md),
+[`setItems()`](setItems.md)

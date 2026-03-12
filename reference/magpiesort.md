@@ -25,6 +25,10 @@ temporal dimension)
 
 `"`[`magpie`](magpie-class.md)`"`
 
+Other DataBinding: [`cbind.magpie()`](cbind.magpie.md),
+[`extend()`](extend.md), [`magpie_expand()`](magpie_expand.md),
+[`matchDim()`](matchDim.md), [`mbind()`](mbind.md)
+
 ## Author
 
 Jan Philipp Dietrich

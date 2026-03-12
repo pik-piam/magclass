@@ -32,6 +32,10 @@ The completed MAgPIE object
 
 [`addDim`](addDim.md),[`clean_magpie`](clean_magpie.md)
 
+Other ObjectCreation: [`clean_magpie()`](clean_magpie.md),
+[`copy.attributes()`](copy.attributes.md),
+[`new.magpie()`](new.magpie.md)
+
 ## Author
 
 Jan Philipp Dietrich, Benjamin Bodirsky

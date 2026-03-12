@@ -35,6 +35,11 @@ The extended MAgPIE object
 
 [`addDim`](addDim.md),[`dimCode`](dimCode.md)
 
+Other DimensionManipulation: [`addDim()`](addDim.md),
+[`collapseDim()`](collapseDim.md),
+[`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
+[`dimOrder()`](dimOrder.md), [`dimReduce()`](dimReduce.md)
+
 ## Author
 
 Jan Philipp Dietrich, Benjamin Bodirsky

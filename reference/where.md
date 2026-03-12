@@ -26,6 +26,9 @@ A list of analysis parameters
 
 whereplot in package luplot
 
+Other SelectionCalculation: [`magpply()`](magpply.md),
+[`mcalc()`](mcalc.md), [`mselect()`](mselect.md)
+
 ## Author
 
 Benjamin Leon Bodirsky, Jan Philipp Dietrich

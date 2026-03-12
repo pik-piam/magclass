@@ -23,6 +23,11 @@ replace_non_finite(x, replace = 0)
 
 A vector or [`magpie`](magclass-package.md) object, same as `x`.
 
+## See also
+
+Other Utility: [`unitjoin()`](unitjoin.md),
+[`unitsplit()`](unitsplit.md)
+
 ## Author
 
 Michaja Pehl

@@ -35,6 +35,12 @@ extend(x, gridDefinition = NULL, crop = FALSE)
 Magpie object x with dense grid according to gridDefinition, gaps filled
 with NA.
 
+## See also
+
+Other DataBinding: [`cbind.magpie()`](cbind.magpie.md),
+[`magpie_expand()`](magpie_expand.md), [`magpiesort()`](magpiesort.md),
+[`matchDim()`](matchDim.md), [`mbind()`](mbind.md)
+
 ## Author
 
 Pascal Sauer

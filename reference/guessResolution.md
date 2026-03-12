@@ -21,6 +21,11 @@ guessResolution(x)
 
 The guessed resolution of the data
 
+## See also
+
+Other SpatialOperations:
+[`spatRasterToDataset()`](spatRasterToDataset.md)
+
 ## Author
 
 Jan Philipp Dietrich, Pascal Sauer

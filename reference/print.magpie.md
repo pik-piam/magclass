@@ -39,6 +39,10 @@ Invisibly, the MAgPIE object x.
 
 [`print`](https://rdrr.io/r/base/print.html)
 
+Other Display: [`head.magpie()`](head.magpie.md),
+[`maxample()`](maxample.md), [`mplot()`](mplot.md),
+[`show-methods`](show-methods.md), [`str.magpie()`](str.magpie.md)
+
 ## Author
 
 Jan Philipp Dietrich, Kristine Karstens, Felicitas Beier

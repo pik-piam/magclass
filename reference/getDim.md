@@ -39,6 +39,14 @@ The name or dimCode of the dimensions in which elems were found.
 
 [`mcalc`](mcalc.md),[`dimCode`](dimCode.md)
 
+Other GetterSetter: [`getCPR()`](getCPR.md),
+[`getCells()`](getCells.md), [`getComment()`](getComment.md),
+[`getCoords()`](getCoords.md), [`getItems()`](getItems.md),
+[`getNames()`](getNames.md), [`getRegionList()`](getRegionList.md),
+[`getRegions()`](getRegions.md), [`getSets()`](getSets.md),
+[`getYears()`](getYears.md), [`setItems()`](setItems.md),
+[`setNames-methods`](setNames-methods.md)
+
 ## Author
 
 Jan Philipp Dietrich

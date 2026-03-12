@@ -22,6 +22,12 @@ mplot(px, global = TRUE, total = FALSE)
 
   Whether the total of all data values should also be visualized.
 
+## See also
+
+Other Display: [`head.magpie()`](head.magpie.md),
+[`maxample()`](maxample.md), [`print.magpie()`](print.magpie.md),
+[`show-methods`](show-methods.md), [`str.magpie()`](str.magpie.md)
+
 ## Author
 
 Pascal Sauer, Patrick Rein

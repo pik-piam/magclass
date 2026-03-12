@@ -25,6 +25,14 @@ A SpatVector object
 
 [`as.SpatRaster`](as.SpatRaster.md)
 
+Other MAgPIE-Conversions: [`as.RasterBrick()`](as.RasterBrick.md),
+[`as.SpatRaster()`](as.SpatRaster.md),
+[`as.SpatRasterDataset()`](as.SpatRasterDataset.md),
+[`as.array-methods`](as.array-methods.md),
+[`as.data.frame-methods`](as.data.frame-methods.md),
+[`as_tibble.magpie()`](as_tibble.magpie.md), [`unwrap()`](unwrap.md),
+[`wrap()`](wrap.md)
+
 ## Author
 
 Jan Philipp Dietrich

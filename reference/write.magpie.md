@@ -174,6 +174,11 @@ bytes \| 1\*nbyte_metadata Byte\]
 `"`[`magpie`](magpie-class.md)`"`,
 [`read.magpie`](read.magpie.md),[`mbind`](mbind.md)
 
+Other FileIO: [`copy.magpie()`](copy.magpie.md),
+[`read.magpie()`](read.magpie.md), [`read.report()`](read.report.md),
+[`write.report()`](write.report.md),
+[`write.report2()`](write.report2.md)
+
 ## Author
 
 Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer
