@@ -42,6 +42,7 @@ mcalc(pop, `Nearly B1` ~ 0.5 * A2 + 99.5 * B1)
 \code{\link{mselect}}
 
 Other SelectionCalculation: 
+\code{\link{condReplace}()},
 \code{\link{magpply}()},
 \code{\link{mselect}()},
 \code{\link{where}()}

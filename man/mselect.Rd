@@ -47,6 +47,7 @@ mselect(pop, i = c("AFR", "EUR"), scenario = "A2", t = "y2035")
 \code{\link{collapseNames}}, \code{"\linkS4class{magpie}"}
 
 Other SelectionCalculation: 
+\code{\link{condReplace}()},
 \code{\link{magpply}()},
 \code{\link{mcalc}()},
 \code{\link{where}()}

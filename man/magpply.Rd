@@ -36,6 +36,7 @@ magpply(fourdim, FUN = sum, MARGIN = c(1, 3.1))
 }
 \seealso{
 Other SelectionCalculation: 
+\code{\link{condReplace}()},
 \code{\link{mcalc}()},
 \code{\link{mselect}()},
 \code{\link{where}()}
