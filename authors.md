@@ -65,11 +65,11 @@ Source:
 
 Dietrich J, Bodirsky B, Bonsch M, Humpenoeder F, Bi S, Karstens K, Leip
 D, Sauer P, Rein P (2026). *magclass: Data Class and Tools for Handling
-Spatial-Temporal Data*. R package version 7.4.2.
+Spatial-Temporal Data*. R package version 7.4.3.
 
     @Manual{,
       title = {magclass: Data Class and Tools for Handling Spatial-Temporal Data},
       author = {Jan Philipp Dietrich and Benjamin Leon Bodirsky and Markus Bonsch and Florian Humpenoeder and Stephen Bi and Kristine Karstens and Debbora Leip and Pascal Sauer and Patrick Rein},
       year = {2026},
-      note = {R package version 7.4.2},
+      note = {R package version 7.4.3},
     }
