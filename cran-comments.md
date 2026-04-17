@@ -21,6 +21,6 @@ All other
 
 ## revdep check results
 
-All CRAN reverse dependencies were successful.
+All CRAN reverse dependency checks were successful (using revdepcheck).
 
 Reviewed reverse dependencies for other repositories manually. All are covered by regular builds on r-universe / GH Action, which are successful.
