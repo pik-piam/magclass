@@ -30,9 +30,9 @@ replace_non_finite(part / total)
 
 }
 \seealso{
-Other Utility: 
-\code{\link{unitjoin}()},
-\code{\link{unitsplit}()}
+Other Utility:
+\code{\link[=unitjoin]{unitjoin()}},
+\code{\link[=unitsplit]{unitsplit()}}
 }
 \author{
 Michaja Pehl

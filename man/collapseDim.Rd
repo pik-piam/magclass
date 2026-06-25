@@ -51,13 +51,13 @@ collapseDim(x, dim = 3.2)
 \code{\link{getItems}}
 \code{"\linkS4class{magpie}"}
 
-Other DimensionManipulation: 
-\code{\link{addDim}()},
-\code{\link{add_columns}()},
-\code{\link{collapseNames}()},
-\code{\link{dimCode}()},
-\code{\link{dimOrder}()},
-\code{\link{dimReduce}()}
+Other DimensionManipulation:
+\code{\link[=addDim]{addDim()}},
+\code{\link[=add_columns]{add_columns()}},
+\code{\link[=collapseNames]{collapseNames()}},
+\code{\link[=dimCode]{dimCode()}},
+\code{\link[=dimOrder]{dimOrder()}},
+\code{\link[=dimReduce]{dimReduce()}}
 }
 \author{
 Jan Philipp Dietrich

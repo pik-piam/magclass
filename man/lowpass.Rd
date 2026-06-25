@@ -36,10 +36,10 @@ lowpass(c(1, 2, 11, 3, 4))
 lowpass(c(0, 9, 1, 5, 14, 20, 6, 11, 0), i = 2, fix = "start")
 }
 \seealso{
-Other TemporalOperations: 
-\code{\link{commonYears}()},
-\code{\link{convergence}()},
-\code{\link{time_interpolate}()}
+Other TemporalOperations:
+\code{\link[=commonYears]{commonYears()}},
+\code{\link[=convergence]{convergence()}},
+\code{\link[=time_interpolate]{time_interpolate()}}
 }
 \author{
 Jan Philipp Dietrich, Misko Stevanovic

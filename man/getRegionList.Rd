@@ -36,18 +36,18 @@ Extracts a vector containing the region of each cell of a MAgPIE-object
 \code{\link{getNames}}, \code{\link{getCPR}}, \code{\link{read.magpie}},
 \code{\link{write.magpie}}, \code{"\linkS4class{magpie}"}
 
-Other GetterSetter: 
-\code{\link{getCPR}()},
-\code{\link{getCells}()},
-\code{\link{getComment}()},
-\code{\link{getCoords}()},
-\code{\link{getDim}()},
-\code{\link{getItems}()},
-\code{\link{getNames}()},
-\code{\link{getRegions}()},
-\code{\link{getSets}()},
-\code{\link{getYears}()},
-\code{\link{setItems}()},
+Other GetterSetter:
+\code{\link[=getCPR]{getCPR()}},
+\code{\link[=getCells]{getCells()}},
+\code{\link[=getComment]{getComment()}},
+\code{\link[=getCoords]{getCoords()}},
+\code{\link[=getDim]{getDim()}},
+\code{\link[=getItems]{getItems()}},
+\code{\link[=getNames]{getNames()}},
+\code{\link[=getRegions]{getRegions()}},
+\code{\link[=getSets]{getSets()}},
+\code{\link[=getYears]{getYears()}},
+\code{\link[=setItems]{setItems()}},
 \code{\link{setNames-methods}}
 }
 \author{

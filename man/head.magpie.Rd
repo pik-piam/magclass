@@ -34,12 +34,12 @@ head(pop)
 \seealso{
 \code{\link[utils]{head}}, \code{\link[utils]{tail}}
 
-Other Display: 
-\code{\link{maxample}()},
-\code{\link{mplot}()},
-\code{\link{print.magpie}()},
+Other Display:
+\code{\link[=maxample]{maxample()}},
+\code{\link[=mplot]{mplot()}},
+\code{\link[=print.magpie]{print.magpie()}},
 \code{\link{show-methods}},
-\code{\link{str.magpie}()}
+\code{\link[=str.magpie]{str.magpie()}}
 }
 \author{
 Jan Philipp Dietrich

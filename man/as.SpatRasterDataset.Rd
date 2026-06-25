@@ -19,15 +19,15 @@ Convert magclass object to a SpatRasterDataset object. Requires the terra packag
 Calls \code{\link{as.SpatRaster}} and then \code{\link{spatRasterToDataset}}.
 }
 \seealso{
-Other MAgPIE-Conversions: 
-\code{\link{as.RasterBrick}()},
-\code{\link{as.SpatRaster}()},
-\code{\link{as.SpatVector}()},
+Other MAgPIE-Conversions:
+\code{\link[=as.RasterBrick]{as.RasterBrick()}},
+\code{\link[=as.SpatRaster]{as.SpatRaster()}},
+\code{\link[=as.SpatVector]{as.SpatVector()}},
 \code{\link{as.array-methods}},
 \code{\link{as.data.frame-methods}},
-\code{\link{as_tibble.magpie}()},
-\code{\link{unwrap}()},
-\code{\link{wrap}()}
+\code{\link[=as_tibble.magpie]{as_tibble.magpie()}},
+\code{\link[=unwrap]{unwrap()}},
+\code{\link[=wrap]{wrap()}}
 }
 \author{
 Pascal Sauer

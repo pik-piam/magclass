@@ -19,10 +19,10 @@ Given (a list of) magclass objects, return the years (getYears) they have in com
 ignoring magclass objects with 0 or 1 years.
 }
 \seealso{
-Other TemporalOperations: 
-\code{\link{convergence}()},
-\code{\link{lowpass}()},
-\code{\link{time_interpolate}()}
+Other TemporalOperations:
+\code{\link[=convergence]{convergence()}},
+\code{\link[=lowpass]{lowpass()}},
+\code{\link[=time_interpolate]{time_interpolate()}}
 }
 \author{
 Pascal Sauer

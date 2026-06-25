@@ -25,11 +25,11 @@ str(maxample("pop"))
 \seealso{
 \code{\link[utils]{str}}
 
-Other Display: 
-\code{\link{head.magpie}()},
-\code{\link{maxample}()},
-\code{\link{mplot}()},
-\code{\link{print.magpie}()},
+Other Display:
+\code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=maxample]{maxample()}},
+\code{\link[=mplot]{mplot()}},
+\code{\link[=print.magpie]{print.magpie()}},
 \code{\link{show-methods}}
 }
 \author{

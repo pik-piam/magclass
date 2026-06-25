@@ -35,13 +35,13 @@ each element (meaning that this data dimension contains exactly one element)
 \code{\link{collapseDim}}, \code{\link{getItems}},
 \code{"\linkS4class{magpie}"}
 
-Other DimensionManipulation: 
-\code{\link{addDim}()},
-\code{\link{add_columns}()},
-\code{\link{collapseDim}()},
-\code{\link{dimCode}()},
-\code{\link{dimOrder}()},
-\code{\link{dimReduce}()}
+Other DimensionManipulation:
+\code{\link[=addDim]{addDim()}},
+\code{\link[=add_columns]{add_columns()}},
+\code{\link[=collapseDim]{collapseDim()}},
+\code{\link[=dimCode]{dimCode()}},
+\code{\link[=dimOrder]{dimOrder()}},
+\code{\link[=dimReduce]{dimReduce()}}
 }
 \author{
 Jan Philipp Dietrich, David Klein, Xiaoxi Wang

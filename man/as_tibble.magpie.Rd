@@ -58,14 +58,14 @@ A tibble object
 magpie method for tibble::as_tibble
 }
 \seealso{
-Other MAgPIE-Conversions: 
-\code{\link{as.RasterBrick}()},
-\code{\link{as.SpatRaster}()},
-\code{\link{as.SpatRasterDataset}()},
-\code{\link{as.SpatVector}()},
+Other MAgPIE-Conversions:
+\code{\link[=as.RasterBrick]{as.RasterBrick()}},
+\code{\link[=as.SpatRaster]{as.SpatRaster()}},
+\code{\link[=as.SpatRasterDataset]{as.SpatRasterDataset()}},
+\code{\link[=as.SpatVector]{as.SpatVector()}},
 \code{\link{as.array-methods}},
 \code{\link{as.data.frame-methods}},
-\code{\link{unwrap}()},
-\code{\link{wrap}()}
+\code{\link[=unwrap]{unwrap()}},
+\code{\link[=wrap]{wrap()}}
 }
 \concept{MAgPIE-Conversions}

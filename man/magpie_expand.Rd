@@ -51,12 +51,12 @@ magpie_expand(b, a)
 \seealso{
 \code{\link{as.magpie}}, \code{\link[base]{options}}
 
-Other DataBinding: 
-\code{\link{cbind.magpie}()},
-\code{\link{extend}()},
-\code{\link{magpiesort}()},
-\code{\link{matchDim}()},
-\code{\link{mbind}()}
+Other DataBinding:
+\code{\link[=cbind.magpie]{cbind.magpie()}},
+\code{\link[=extend]{extend()}},
+\code{\link[=magpiesort]{magpiesort()}},
+\code{\link[=matchDim]{matchDim()}},
+\code{\link[=mbind]{mbind()}}
 }
 \author{
 Jan Philipp Dietrich

@@ -46,13 +46,13 @@ str(dimReduce(p))
 \seealso{
 \code{\link{addDim}}
 
-Other DimensionManipulation: 
-\code{\link{addDim}()},
-\code{\link{add_columns}()},
-\code{\link{collapseDim}()},
-\code{\link{collapseNames}()},
-\code{\link{dimCode}()},
-\code{\link{dimOrder}()}
+Other DimensionManipulation:
+\code{\link[=addDim]{addDim()}},
+\code{\link[=add_columns]{add_columns()}},
+\code{\link[=collapseDim]{collapseDim()}},
+\code{\link[=collapseNames]{collapseNames()}},
+\code{\link[=dimCode]{dimCode()}},
+\code{\link[=dimOrder]{dimOrder()}}
 }
 \author{
 Jan Philipp Dietrich

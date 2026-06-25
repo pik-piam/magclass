@@ -59,10 +59,10 @@ population <- add_columns(pop, "MIX")
 population[, , "MIX"] <- convergence(population[, , "A2"], population[, , "B1"])
 }
 \seealso{
-Other TemporalOperations: 
-\code{\link{commonYears}()},
-\code{\link{lowpass}()},
-\code{\link{time_interpolate}()}
+Other TemporalOperations:
+\code{\link[=commonYears]{commonYears()}},
+\code{\link[=lowpass]{lowpass()}},
+\code{\link[=time_interpolate]{time_interpolate()}}
 }
 \author{
 Benjamin Bodirsky, Jan Philipp Dietrich

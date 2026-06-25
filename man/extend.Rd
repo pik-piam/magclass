@@ -25,12 +25,12 @@ This is e.g. required when writing netCDF files. Extending a sparse magpie objec
 requires much more memory, so use with caution.
 }
 \seealso{
-Other DataBinding: 
-\code{\link{cbind.magpie}()},
-\code{\link{magpie_expand}()},
-\code{\link{magpiesort}()},
-\code{\link{matchDim}()},
-\code{\link{mbind}()}
+Other DataBinding:
+\code{\link[=cbind.magpie]{cbind.magpie()}},
+\code{\link[=magpie_expand]{magpie_expand()}},
+\code{\link[=magpiesort]{magpiesort()}},
+\code{\link[=matchDim]{matchDim()}},
+\code{\link[=mbind]{mbind()}}
 }
 \author{
 Pascal Sauer

@@ -35,9 +35,9 @@ handle MAgPIE objects } }
 }
 
 \seealso{
-Other Aggregation: 
+Other Aggregation:
 \code{\link{colSums-methods}},
-\code{\link{dimSums}()}
+\code{\link[=dimSums]{dimSums()}}
 }
 \concept{Aggregation}
 \keyword{keyword(s)}

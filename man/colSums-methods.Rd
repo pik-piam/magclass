@@ -35,8 +35,8 @@ handle MAgPIE objects } }
 }
 
 \seealso{
-Other Aggregation: 
-\code{\link{dimSums}()},
+Other Aggregation:
+\code{\link[=dimSums]{dimSums()}},
 \code{\link{rowSums-methods}}
 }
 \concept{Aggregation}
