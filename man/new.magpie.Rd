@@ -49,10 +49,10 @@ c <- new.magpie()
 \seealso{
 \code{\link{as.magpie}}
 
-Other ObjectCreation: 
-\code{\link{clean_magpie}()},
-\code{\link{complete_magpie}()},
-\code{\link{copy.attributes}()}
+Other ObjectCreation:
+\code{\link[=clean_magpie]{clean_magpie()}},
+\code{\link[=complete_magpie]{complete_magpie()}},
+\code{\link[=copy.attributes]{copy.attributes()}}
 }
 \author{
 Benjamin Bodirsky, Jan Philipp Dietrich

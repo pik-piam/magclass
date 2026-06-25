@@ -37,13 +37,13 @@ str(addDim(a, dim = 2.3, item = paste0("d", 1:3)))
 \seealso{
 \code{\link{add_columns}},\code{\link{mbind}}
 
-Other DimensionManipulation: 
-\code{\link{add_columns}()},
-\code{\link{collapseDim}()},
-\code{\link{collapseNames}()},
-\code{\link{dimCode}()},
-\code{\link{dimOrder}()},
-\code{\link{dimReduce}()}
+Other DimensionManipulation:
+\code{\link[=add_columns]{add_columns()}},
+\code{\link[=collapseDim]{collapseDim()}},
+\code{\link[=collapseNames]{collapseNames()}},
+\code{\link[=dimCode]{dimCode()}},
+\code{\link[=dimOrder]{dimOrder()}},
+\code{\link[=dimReduce]{dimReduce()}}
 }
 \author{
 Jan Philipp Dietrich, Benjamin Bodirsky, Pascal Sauer

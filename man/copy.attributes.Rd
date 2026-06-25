@@ -63,10 +63,10 @@ print(attributes(to))
 
 }
 \seealso{
-Other ObjectCreation: 
-\code{\link{clean_magpie}()},
-\code{\link{complete_magpie}()},
-\code{\link{new.magpie}()}
+Other ObjectCreation:
+\code{\link[=clean_magpie]{clean_magpie()}},
+\code{\link[=complete_magpie]{complete_magpie()}},
+\code{\link[=new.magpie]{new.magpie()}}
 }
 \author{
 Jan Philipp Dietrich

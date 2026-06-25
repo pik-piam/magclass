@@ -28,12 +28,12 @@ the value provided by \code{fill}.  Dimension names not present in \code{ref} ar
 cropped.
 }
 \seealso{
-Other DataBinding: 
-\code{\link{cbind.magpie}()},
-\code{\link{extend}()},
-\code{\link{magpie_expand}()},
-\code{\link{magpiesort}()},
-\code{\link{mbind}()}
+Other DataBinding:
+\code{\link[=cbind.magpie]{cbind.magpie()}},
+\code{\link[=extend]{extend()}},
+\code{\link[=magpie_expand]{magpie_expand()}},
+\code{\link[=magpiesort]{magpiesort()}},
+\code{\link[=mbind]{mbind()}}
 }
 \author{
 Falk Benke

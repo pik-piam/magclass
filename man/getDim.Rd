@@ -36,18 +36,18 @@ getDim(c("AFR", "CPA"), pop)
 \seealso{
 \code{\link{mcalc}},\code{\link{dimCode}}
 
-Other GetterSetter: 
-\code{\link{getCPR}()},
-\code{\link{getCells}()},
-\code{\link{getComment}()},
-\code{\link{getCoords}()},
-\code{\link{getItems}()},
-\code{\link{getNames}()},
-\code{\link{getRegionList}()},
-\code{\link{getRegions}()},
-\code{\link{getSets}()},
-\code{\link{getYears}()},
-\code{\link{setItems}()},
+Other GetterSetter:
+\code{\link[=getCPR]{getCPR()}},
+\code{\link[=getCells]{getCells()}},
+\code{\link[=getComment]{getComment()}},
+\code{\link[=getCoords]{getCoords()}},
+\code{\link[=getItems]{getItems()}},
+\code{\link[=getNames]{getNames()}},
+\code{\link[=getRegionList]{getRegionList()}},
+\code{\link[=getRegions]{getRegions()}},
+\code{\link[=getSets]{getSets()}},
+\code{\link[=getYears]{getYears()}},
+\code{\link[=setItems]{setItems()}},
 \code{\link{setNames-methods}}
 }
 \author{

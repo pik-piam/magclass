@@ -19,12 +19,12 @@ cbind method for MAgPIE-objects. Issues a warning that mbind should be used
 if all objects are magpie objects and continues afterwards.
 }
 \seealso{
-Other DataBinding: 
-\code{\link{extend}()},
-\code{\link{magpie_expand}()},
-\code{\link{magpiesort}()},
-\code{\link{matchDim}()},
-\code{\link{mbind}()}
+Other DataBinding:
+\code{\link[=extend]{extend()}},
+\code{\link[=magpie_expand]{magpie_expand()}},
+\code{\link[=magpiesort]{magpiesort()}},
+\code{\link[=matchDim]{matchDim()}},
+\code{\link[=mbind]{mbind()}}
 }
 \author{
 Patrick Rein

@@ -35,12 +35,12 @@ dim(a)
 \seealso{
 \code{"\linkS4class{magpie}"}
 
-Other DataBinding: 
-\code{\link{cbind.magpie}()},
-\code{\link{extend}()},
-\code{\link{magpie_expand}()},
-\code{\link{magpiesort}()},
-\code{\link{matchDim}()}
+Other DataBinding:
+\code{\link[=cbind.magpie]{cbind.magpie()}},
+\code{\link[=extend]{extend()}},
+\code{\link[=magpie_expand]{magpie_expand()}},
+\code{\link[=magpiesort]{magpiesort()}},
+\code{\link[=matchDim]{matchDim()}}
 }
 \author{
 Jan Philipp Dietrich, Misko Stevanovic

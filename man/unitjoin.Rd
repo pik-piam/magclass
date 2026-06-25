@@ -24,8 +24,8 @@ a data.frame with variable and unit joined as 'variable (unit)'.
 Use magclass::unitsplit to split them again
 }
 \seealso{
-Other Utility: 
-\code{\link{replace_non_finite}()},
-\code{\link{unitsplit}()}
+Other Utility:
+\code{\link[=replace_non_finite]{replace_non_finite()}},
+\code{\link[=unitsplit]{unitsplit()}}
 }
 \concept{Utility}

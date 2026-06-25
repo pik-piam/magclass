@@ -15,12 +15,12 @@ This function is deprecated, please use \code{\link{write.report}} instead.
 \seealso{
 \code{\link{write.report}}
 
-Other FileIO: 
-\code{\link{copy.magpie}()},
-\code{\link{read.magpie}()},
-\code{\link{read.report}()},
-\code{\link{write.magpie}()},
-\code{\link{write.report}()}
+Other FileIO:
+\code{\link[=copy.magpie]{copy.magpie()}},
+\code{\link[=read.magpie]{read.magpie()}},
+\code{\link[=read.report]{read.report()}},
+\code{\link[=write.magpie]{write.magpie()}},
+\code{\link[=write.report]{write.report()}}
 }
 \author{
 Jan Philipp Dietrich

@@ -1,8 +1,8 @@
 Type: Package
 Package: magclass
 Title: Data Class and Tools for Handling Spatial-Temporal Data
-Version: 7.4.3
-Date: 2026-03-25
+Version: 7.5.0
+Date: 2026-06-25
 Authors@R: c(
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = c("aut", "cre"),
            comment = c(affiliation = "Potsdam Institute for Climate Impact Research", ORCID = "0000-0002-4309-6431")),
@@ -79,5 +79,5 @@ Additional_repositories: https://pik-piam.r-universe.dev
 Config/Keywords: tool
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Config/Needs/website: tidyverse/tidytemplate
+Config/roxygen2/version: 8.0.0

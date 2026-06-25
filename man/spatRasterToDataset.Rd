@@ -16,8 +16,8 @@ SpatRasterDataset
 Convert a SpatRaster to a SpatRasterDataset.
 }
 \seealso{
-Other SpatialOperations: 
-\code{\link{guessResolution}()}
+Other SpatialOperations:
+\code{\link[=guessResolution]{guessResolution()}}
 }
 \author{
 Pascal Sauer

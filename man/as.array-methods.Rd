@@ -25,15 +25,15 @@ removing MAgPIE-object specific elements } }
 }
 
 \seealso{
-Other MAgPIE-Conversions: 
-\code{\link{as.RasterBrick}()},
-\code{\link{as.SpatRaster}()},
-\code{\link{as.SpatRasterDataset}()},
-\code{\link{as.SpatVector}()},
+Other MAgPIE-Conversions:
+\code{\link[=as.RasterBrick]{as.RasterBrick()}},
+\code{\link[=as.SpatRaster]{as.SpatRaster()}},
+\code{\link[=as.SpatRasterDataset]{as.SpatRasterDataset()}},
+\code{\link[=as.SpatVector]{as.SpatVector()}},
 \code{\link{as.data.frame-methods}},
-\code{\link{as_tibble.magpie}()},
-\code{\link{unwrap}()},
-\code{\link{wrap}()}
+\code{\link[=as_tibble.magpie]{as_tibble.magpie()}},
+\code{\link[=unwrap]{unwrap()}},
+\code{\link[=wrap]{wrap()}}
 }
 \concept{MAgPIE-Conversions}
 \keyword{methods}

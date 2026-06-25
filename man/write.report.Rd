@@ -55,12 +55,12 @@ write.report(maxample("pop"))
 \seealso{
 \code{\link{read.report}}
 
-Other FileIO: 
-\code{\link{copy.magpie}()},
-\code{\link{read.magpie}()},
-\code{\link{read.report}()},
-\code{\link{write.magpie}()},
-\code{\link{write.report2}()}
+Other FileIO:
+\code{\link[=copy.magpie]{copy.magpie()}},
+\code{\link[=read.magpie]{read.magpie()}},
+\code{\link[=read.report]{read.report()}},
+\code{\link[=write.magpie]{write.magpie()}},
+\code{\link[=write.report2]{write.report2()}}
 }
 \author{
 Jan Philipp Dietrich

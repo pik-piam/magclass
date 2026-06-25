@@ -35,12 +35,12 @@ print(pop[, 1, ])
 \seealso{
 \code{\link[base]{print}}
 
-Other Display: 
-\code{\link{head.magpie}()},
-\code{\link{maxample}()},
-\code{\link{mplot}()},
+Other Display:
+\code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=maxample]{maxample()}},
+\code{\link[=mplot]{mplot()}},
 \code{\link{show-methods}},
-\code{\link{str.magpie}()}
+\code{\link[=str.magpie]{str.magpie()}}
 }
 \author{
 Jan Philipp Dietrich, Kristine Karstens, Felicitas Beier

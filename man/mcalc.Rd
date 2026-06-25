@@ -41,10 +41,10 @@ mcalc(pop, `Nearly B1` ~ 0.5 * A2 + 99.5 * B1)
 \seealso{
 \code{\link{mselect}}
 
-Other SelectionCalculation: 
-\code{\link{magpply}()},
-\code{\link{mselect}()},
-\code{\link{where}()}
+Other SelectionCalculation:
+\code{\link[=magpply]{magpply()}},
+\code{\link[=mselect]{mselect()}},
+\code{\link[=where]{where()}}
 }
 \author{
 Jan Philipp Dietrich

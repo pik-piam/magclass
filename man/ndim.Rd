@@ -29,15 +29,15 @@ MAgPIE-object
 
 }
 \seealso{
-Other ObjectInfo: 
-\code{\link{dimExists}()},
-\code{\link{fulldim}()},
-\code{\link{hasCoords}()},
-\code{\link{hasSets}()},
-\code{\link{is.temporal}()},
-\code{\link{isYear}()},
-\code{\link{ncells}()},
-\code{\link{sameDims}()}
+Other ObjectInfo:
+\code{\link[=dimExists]{dimExists()}},
+\code{\link[=fulldim]{fulldim()}},
+\code{\link[=hasCoords]{hasCoords()}},
+\code{\link[=hasSets]{hasSets()}},
+\code{\link[=is.temporal]{is.temporal()}},
+\code{\link[=isYear]{isYear()}},
+\code{\link[=ncells]{ncells()}},
+\code{\link[=sameDims]{sameDims()}}
 }
 \author{
 Jan Philipp Dietrich

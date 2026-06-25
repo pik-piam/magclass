@@ -26,15 +26,15 @@ isYear(x, with_y = TRUE)
 isYear(x, with_y = FALSE)
 }
 \seealso{
-Other ObjectInfo: 
-\code{\link{dimExists}()},
-\code{\link{fulldim}()},
-\code{\link{hasCoords}()},
-\code{\link{hasSets}()},
-\code{\link{is.temporal}()},
-\code{\link{ncells}()},
-\code{\link{ndim}()},
-\code{\link{sameDims}()}
+Other ObjectInfo:
+\code{\link[=dimExists]{dimExists()}},
+\code{\link[=fulldim]{fulldim()}},
+\code{\link[=hasCoords]{hasCoords()}},
+\code{\link[=hasSets]{hasSets()}},
+\code{\link[=is.temporal]{is.temporal()}},
+\code{\link[=ncells]{ncells()}},
+\code{\link[=ndim]{ndim()}},
+\code{\link[=sameDims]{sameDims()}}
 }
 \author{
 Benjamin Bodirsky

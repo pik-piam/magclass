@@ -18,8 +18,8 @@ Guess the resolution of the given magpie object/coordinates by looking at the mi
 difference between unique sorted values. Fall back to 0.5 if guess is infinite.
 }
 \seealso{
-Other SpatialOperations: 
-\code{\link{spatRasterToDataset}()}
+Other SpatialOperations:
+\code{\link[=spatRasterToDataset]{spatRasterToDataset()}}
 }
 \author{
 Jan Philipp Dietrich, Pascal Sauer

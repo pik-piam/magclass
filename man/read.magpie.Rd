@@ -61,12 +61,12 @@ See \code{\link{write.magpie}} for the detailed structure of binary MAgPIE forma
 \seealso{
 \code{"\linkS4class{magpie}"}, \code{\link{write.magpie}}
 
-Other FileIO: 
-\code{\link{copy.magpie}()},
-\code{\link{read.report}()},
-\code{\link{write.magpie}()},
-\code{\link{write.report}()},
-\code{\link{write.report2}()}
+Other FileIO:
+\code{\link[=copy.magpie]{copy.magpie()}},
+\code{\link[=read.report]{read.report()}},
+\code{\link[=write.magpie]{write.magpie()}},
+\code{\link[=write.report]{write.report()}},
+\code{\link[=write.report2]{write.report2()}}
 }
 \author{
 Jan Philipp Dietrich, Stephen Bi, Florian Humpenoeder, Pascal Sauer

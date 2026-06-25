@@ -17,9 +17,9 @@ splits a data.frame or vector of strings with form 'variable (unit)' into
 a data.frame with variable and unit separated
 }
 \seealso{
-Other Utility: 
-\code{\link{replace_non_finite}()},
-\code{\link{unitjoin}()}
+Other Utility:
+\code{\link[=replace_non_finite]{replace_non_finite()}},
+\code{\link[=unitjoin]{unitjoin()}}
 }
 \author{
 Jan Philipp Dietrich, Mika Pflüger, Oliver Richters

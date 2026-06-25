@@ -18,12 +18,12 @@ Show a magpie object by calling the default show method, print, or str,
 depending on options("magclass_show_func").
 }
 \seealso{
-Other Display: 
-\code{\link{head.magpie}()},
-\code{\link{maxample}()},
-\code{\link{mplot}()},
-\code{\link{print.magpie}()},
-\code{\link{str.magpie}()}
+Other Display:
+\code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=maxample]{maxample()}},
+\code{\link[=mplot]{mplot()}},
+\code{\link[=print.magpie]{print.magpie()}},
+\code{\link[=str.magpie]{str.magpie()}}
 }
 \author{
 Pascal Sauer
