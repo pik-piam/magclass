@@ -64,6 +64,7 @@ Suggests:
     ggplot2,
     knitr,
     lpjmlkit,
+    maps,
     ncdf4,
     pkgconfig,
     quitte,

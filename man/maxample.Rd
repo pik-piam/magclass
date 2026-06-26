@@ -29,6 +29,7 @@ getItems(a, split = TRUE)
 \seealso{
 Other Display:
 \code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=mplot]{mplot()}},
 \code{\link[=print.magpie]{print.magpie()}},
 \code{\link{show-methods}},

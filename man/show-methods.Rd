@@ -20,6 +20,7 @@ depending on options("magclass_show_func").
 \seealso{
 Other Display:
 \code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=maxample]{maxample()}},
 \code{\link[=mplot]{mplot()}},
 \code{\link[=print.magpie]{print.magpie()}},

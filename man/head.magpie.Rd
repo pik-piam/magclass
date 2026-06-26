@@ -35,6 +35,7 @@ head(pop)
 \code{\link[utils]{head}}, \code{\link[utils]{tail}}
 
 Other Display:
+\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=maxample]{maxample()}},
 \code{\link[=mplot]{mplot()}},
 \code{\link[=print.magpie]{print.magpie()}},

@@ -19,6 +19,7 @@ Get a quick visualization of the content of most magpie objects.
 \seealso{
 Other Display:
 \code{\link[=head.magpie]{head.magpie()}},
+\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=maxample]{maxample()}},
 \code{\link[=print.magpie]{print.magpie()}},
 \code{\link{show-methods}},
