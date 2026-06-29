@@ -19,6 +19,7 @@
 #' p <- maxample("pop")
 #' a <- aperm(p, c(2, 1, 3))
 #' class(a) # "array", not "magpie"
+#' @family DimensionManipulation
 #' @export
 aperm.magpie <- function(a, perm = NULL, ...) {
   aperm(as(a, "array"), perm = perm, ...)
