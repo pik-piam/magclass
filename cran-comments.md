@@ -1,9 +1,9 @@
 CHANGES:
-- This brings the CRAN version up-to-date with recent developments in the package. This also fixes the current test error on CRAN test systems. With this version the test succeeds on rhub systems.
+- This brings the CRAN version up-to-date with recent developments in the package. This fixes an issues that arises in the newest devel version which already leads to problems in downstream packages, in particular the madrat package.
 
 ## Test environments
 * local R installation, R 4.5.1
-* rhub linux, m1-san, macos-arm64
+* rhub linux using R devel
 * win-builder
 
 ## R CMD check results
@@ -11,13 +11,9 @@ CHANGES:
 ### Local
 
 ── R CMD check results 
-Duration: 1m 44s
+Duration: 3m 10.6s
 
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
-
-### Rhub 
-
-All other 
 
 ## revdep check results
 
