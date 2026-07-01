@@ -54,10 +54,19 @@ mPlotMap <- function(px) {
                             inherit.aes = FALSE)
   }
 
+  # Zoom the map to the extent of the data, so a small region does not get lost
+  # on a full world map. Pad by at least half a cell (to avoid clipping edge
+  # tiles) plus a small context margin around the data.
+  res <- guessResolution(px)
+  xr <- range(df$x)
+  yr <- range(df$y)
+  xpad <- max(res / 2, 0.05 * diff(xr))
+  ypad <- max(res / 2, 0.05 * diff(yr))
+
   plot <- plot +
     ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data$.value)) +
     ggplot2::scale_fill_viridis_c() +
-    ggplot2::coord_quickmap() +
+    ggplot2::coord_quickmap(xlim = xr + c(-xpad, xpad), ylim = yr + c(-ypad, ypad)) +
     ggplot2::labs(x = "lon", y = "lat", fill = "value") +
     ggplot2::theme_minimal()
 
