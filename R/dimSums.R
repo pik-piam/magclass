@@ -37,24 +37,26 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   }
 
   # sum each requested (sub-)dimension one axis at a time via a compiled
-  # aperm + reshape + rowsum, instead of melting the whole array into a
-  # data.frame and grouping with tapply (which is O(N) with a very large
-  # constant and dominates both time and memory on large objects)
+  # reshape + rowsum, instead of melting the whole array into a data.frame
+  # and grouping with tapply (which is O(N) with a very large constant and
+  # dominates both time and memory on large objects). Items sharing a label
+  # after the removal above form the groups to be summed.
   for (d in 1:3) {
     xdim <- dim(x)
     dn <- dimnames(x)
-    labels <- dn[[d]]
-    groups <- unique(labels)
+    groups <- unique(dn[[d]])
     if (length(groups) == xdim[d]) {
       next
     }
-    gidx <- match(labels, groups)
+    gidx <- match(dn[[d]], groups)
+    # rowsum groups along rows, so d has to lead; for d = 1 it already does
+    # and both permutations degenerate to a (free) reshape
     perm <- c(d, setdiff(1:3, d))
-    xp <- aperm(x, perm)
-    dim(xp) <- c(xdim[d], prod(xdim) / xdim[d])
+    xp <- if (d == 1) as(x, "array") else aperm(x, perm)
+    dim(xp) <- c(xdim[d], prod(xdim[-d]))
     reduced <- rowsum(xp, group = gidx, reorder = FALSE, na.rm = na.rm)
     dim(reduced) <- c(length(groups), xdim[-d])
-    x <- aperm(reduced, order(perm))
+    x <- if (d == 1) reduced else aperm(reduced, order(perm))
     dn[[d]] <- groups
     dimnames(x) <- dn
   }
