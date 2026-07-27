@@ -53,3 +53,22 @@ test_that("dimSums works", {
   p0 <- p[, , -1:-2]
   expect_null(dimSums(p0, dim = 3))
 })
+
+test_that("dimSums handles na.rm with actual NAs correctly", {
+  aNA <- a
+  aNA[1, 1, 1] <- NA
+  aNA[2, 1, 3] <- NA
+
+  expect_identical(dimSums(aNA, dim = "species", na.rm = FALSE),
+                    magpply(aNA, sum, DIM = "species", na.rm = FALSE))
+  expect_identical(dimSums(aNA, dim = "species", na.rm = TRUE),
+                    magpply(aNA, sum, DIM = "species", na.rm = TRUE))
+
+  # group where every element is NA
+  pNA <- setNames(p[, 1, ], c("A", "A"))
+  pNA[1, , 1] <- NA
+  expect_identical(dimSums(pNA, dim = 3, na.rm = TRUE),
+                    magpply(pNA, sum, DIM = 3, na.rm = TRUE))
+  expect_identical(dimSums(pNA, dim = 3, na.rm = FALSE),
+                    magpply(pNA, sum, DIM = 3, na.rm = FALSE))
+})
