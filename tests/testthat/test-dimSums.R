@@ -60,15 +60,36 @@ test_that("dimSums handles na.rm with actual NAs correctly", {
   aNA[2, 1, 3] <- NA
 
   expect_identical(dimSums(aNA, dim = "species", na.rm = FALSE),
-                    magpply(aNA, sum, DIM = "species", na.rm = FALSE))
+                   magpply(aNA, sum, DIM = "species", na.rm = FALSE))
   expect_identical(dimSums(aNA, dim = "species", na.rm = TRUE),
-                    magpply(aNA, sum, DIM = "species", na.rm = TRUE))
+                   magpply(aNA, sum, DIM = "species", na.rm = TRUE))
 
   # group where every element is NA
   pNA <- setNames(p[, 1, ], c("A", "A"))
   pNA[1, , 1] <- NA
   expect_identical(dimSums(pNA, dim = 3, na.rm = TRUE),
-                    magpply(pNA, sum, DIM = 3, na.rm = TRUE))
+                   magpply(pNA, sum, DIM = 3, na.rm = TRUE))
   expect_identical(dimSums(pNA, dim = 3, na.rm = FALSE),
-                    magpply(pNA, sum, DIM = 3, na.rm = FALSE))
+                   magpply(pNA, sum, DIM = 3, na.rm = FALSE))
+})
+
+test_that("dimSums handles logical input like sum() does", {
+  l <- (p > 1000)
+  expect_identical(typeof(l@.Data), "logical")
+
+  # sum() coerces logical to integer, so the result must be an integer object
+  expect_identical(dimSums(l, dim = 3), magpply(l, sum, DIM = 3))
+  expect_identical(dimSums(l, dim = 1), magpply(l, sum, DIM = 1))
+  expect_identical(typeof(dimSums(l, dim = 3)@.Data), "integer")
+
+  lNA <- l
+  lNA[1, 1, 1] <- NA
+  expect_identical(dimSums(lNA, dim = 3, na.rm = TRUE), magpply(lNA, sum, DIM = 3, na.rm = TRUE))
+  expect_identical(dimSums(lNA, dim = 3, na.rm = FALSE), magpply(lNA, sum, DIM = 3, na.rm = FALSE))
+})
+
+test_that("dimSums rejects character data with the usual message", {
+  pChar <- p
+  storage.mode(pChar@.Data) <- "character"
+  expect_error(dimSums(pChar, dim = 3), "invalid 'type' \\(character\\)")
 })

@@ -27,6 +27,15 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   if (length(x) == 0) {
     return(NULL)
   }
+  # sum() coerces logical to integer, rowsum() below rejects it outright
+  if (is.logical(x)) {
+    storage.mode(x@.Data) <- "integer"
+  }
+  # rowsum() only handles double and integer, so fall back to the generic
+  # implementation for anything else (e.g. complex)
+  if (!is.numeric(x)) {
+    return(magpply(X = x, FUN = sum, DIM = dim, na.rm = na.rm))
+  }
 
   for (d in dim) {
     getItems(x, dim = d, raw = TRUE) <- NULL
