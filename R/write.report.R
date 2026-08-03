@@ -111,8 +111,14 @@ prepareData <- function(x, model = NULL, scenario = NULL, unit = NULL, skipempty
   }
 
   # convert to data.table, reshape and convert to data.frame
-  x <- data.table::setDF(data.table::dcast(data.table::as.data.table(x, na.rm = skipempty),
-                                           eval(parse(text = paste0("...~", names(dimnames(x))[2])))))
+  # dimnames are temporarily replaced with placeholders as the real set names (e.g. "value",
+  # "Region", "year") can collide with column names data.table uses internally for the
+  # conversion/reshape below; the real names are restored right after
+  dimNames <- names(dimnames(x))
+  names(dimnames(x)) <- paste0("d", seq_along(dim(x)))
+  dt <- data.table::as.data.table(x, na.rm = skipempty, value.name = ".value")
+  x <- data.table::setDF(data.table::dcast(dt, ... ~ d2, value.var = ".value"))
+  names(x)[1:2] <- dimNames[c(1, 3)]
 
   # split data and dimension information
   data <- x[3:length(x)]

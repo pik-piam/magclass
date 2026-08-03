@@ -122,3 +122,12 @@ test_that("write report does not crash with only NAs", {
   expect_message(write.report(foo, f),
                  "magclass object contains only NAs, returning empty data table. No file was written.")
 })
+
+test_that("write.report handles set names that collide with data.table columns", {
+  for (s in c("value", "Region", "year", "N")) {
+    foo <- new.magpie("DEU", c(2015, 2020), "Bla (Mt)", fill = 1,
+                      sets = c("region", "year", s))
+    expect_silent(r <- write.report(foo))
+    expect_identical(r$Unit, "Mt")
+  }
+})

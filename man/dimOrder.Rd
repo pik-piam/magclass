@@ -32,6 +32,7 @@ head(dimOrder(a, perm = c(2,1,3), dim = 3))
 Other DimensionManipulation:
 \code{\link[=addDim]{addDim()}},
 \code{\link[=add_columns]{add_columns()}},
+\code{\link[=aperm.magpie]{aperm.magpie()}},
 \code{\link[=collapseDim]{collapseDim()}},
 \code{\link[=collapseNames]{collapseNames()}},
 \code{\link[=dimCode]{dimCode()}},

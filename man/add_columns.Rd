@@ -34,6 +34,7 @@ head(a2[, , "magpie"])
 
 Other DimensionManipulation:
 \code{\link[=addDim]{addDim()}},
+\code{\link[=aperm.magpie]{aperm.magpie()}},
 \code{\link[=collapseDim]{collapseDim()}},
 \code{\link[=collapseNames]{collapseNames()}},
 \code{\link[=dimCode]{dimCode()}},

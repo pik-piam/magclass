@@ -34,7 +34,17 @@ class(a) # "array", not "magpie"
 }
 \seealso{
 \code{\link{dimOrder}}, \code{\link[base]{aperm}}
+
+Other DimensionManipulation:
+\code{\link[=addDim]{addDim()}},
+\code{\link[=add_columns]{add_columns()}},
+\code{\link[=collapseDim]{collapseDim()}},
+\code{\link[=collapseNames]{collapseNames()}},
+\code{\link[=dimCode]{dimCode()}},
+\code{\link[=dimOrder]{dimOrder()}},
+\code{\link[=dimReduce]{dimReduce()}}
 }
 \author{
 Patrick Rein
 }
+\concept{DimensionManipulation}

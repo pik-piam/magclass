@@ -49,6 +49,7 @@ str(dimReduce(p))
 Other DimensionManipulation:
 \code{\link[=addDim]{addDim()}},
 \code{\link[=add_columns]{add_columns()}},
+\code{\link[=aperm.magpie]{aperm.magpie()}},
 \code{\link[=collapseDim]{collapseDim()}},
 \code{\link[=collapseNames]{collapseNames()}},
 \code{\link[=dimCode]{dimCode()}},
