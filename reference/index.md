@@ -82,6 +82,8 @@ adding, collapsing, and reordering dimensions.
 
 - [`addDim()`](addDim.md) : addDim
 - [`add_columns()`](add_columns.md) : add_columns
+- [`aperm(`*`<magpie>`*`)`](aperm.magpie.md) : aperm method for magpie
+  objects
 - [`collapseDim()`](collapseDim.md) : Collapse dataset dimensions
 - [`collapseNames()`](collapseNames.md) : Collapse dataset names
 - [`dimCode()`](dimCode.md) : dimCode

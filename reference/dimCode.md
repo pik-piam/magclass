@@ -49,7 +49,8 @@ second data dimension).
 [`mselect`](mselect.md), [`getDim`](getDim.md)
 
 Other DimensionManipulation: [`addDim()`](addDim.md),
-[`add_columns()`](add_columns.md), [`collapseDim()`](collapseDim.md),
+[`add_columns()`](add_columns.md), [`aperm.magpie()`](aperm.magpie.md),
+[`collapseDim()`](collapseDim.md),
 [`collapseNames()`](collapseNames.md), [`dimOrder()`](dimOrder.md),
 [`dimReduce()`](dimReduce.md)
 

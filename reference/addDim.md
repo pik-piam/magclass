@@ -45,7 +45,7 @@ The extended MAgPIE object
 [`add_columns`](add_columns.md),[`mbind`](mbind.md)
 
 Other DimensionManipulation: [`add_columns()`](add_columns.md),
-[`collapseDim()`](collapseDim.md),
+[`aperm.magpie()`](aperm.magpie.md), [`collapseDim()`](collapseDim.md),
 [`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
 [`dimOrder()`](dimOrder.md), [`dimReduce()`](dimReduce.md)
 

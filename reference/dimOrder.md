@@ -32,7 +32,8 @@ magpie object
 ## See also
 
 Other DimensionManipulation: [`addDim()`](addDim.md),
-[`add_columns()`](add_columns.md), [`collapseDim()`](collapseDim.md),
+[`add_columns()`](add_columns.md), [`aperm.magpie()`](aperm.magpie.md),
+[`collapseDim()`](collapseDim.md),
 [`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
 [`dimReduce()`](dimReduce.md)
 

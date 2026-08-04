@@ -55,7 +55,7 @@ many other cases the results will differ.
 [`getItems`](getItems.md) `"`[`magpie`](magpie-class.md)`"`
 
 Other DimensionManipulation: [`addDim()`](addDim.md),
-[`add_columns()`](add_columns.md),
+[`add_columns()`](add_columns.md), [`aperm.magpie()`](aperm.magpie.md),
 [`collapseNames()`](collapseNames.md), [`dimCode()`](dimCode.md),
 [`dimOrder()`](dimOrder.md), [`dimReduce()`](dimReduce.md)
 
