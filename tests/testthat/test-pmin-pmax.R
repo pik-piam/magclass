@@ -173,6 +173,32 @@ test_that("pmin allows different items, if there is only one item in that dimens
 
 })
 
+test_that("pmin aligns reordered and single-item dimensions at the same time", {
+  expect_pmin_result(testMagpie(regions = c("AFR.1", "AFR.2"), years = 2001,
+                                names = c("test1", "test2"), values = c(1, 2, 3, 4)),
+                     testMagpie(regions = c("AFR.2", "AFR.1"), years = 2002,
+                                names = c("test2", "test1"), values = c(1, 2, 3, 4)),
+                     testMagpie(regions = c("AFR.1", "AFR.2"), years = NULL,
+                                names = c("test1", "test2"), values = c(1, 2, 2, 1)))
+})
+
+test_that("pmin and pmax treat NAs like their base equivalents", {
+  a <- testMagpie(years = 2001:2003, values = c(NA, 3, 5))
+  b <- testMagpie(years = 2001:2003, values = c(1, NA, 2))
+
+  expect_pmin_result(a, b, testMagpie(years = 2001:2003, values = c(NA, NA, 2)))
+  expect_equal(pmin(a, b, na.rm = TRUE), testMagpie(years = 2001:2003, values = c(1, 3, 2)))
+  expect_equal(pmax(a, b), testMagpie(years = 2001:2003, values = c(NA, NA, 5)))
+  expect_equal(pmax(a, b, na.rm = TRUE), testMagpie(years = 2001:2003, values = c(1, 3, 5)))
+})
+
+test_that("pmin keeps the attributes of the first object", {
+  a <- testMagpie(values = 1)
+  getComment(a) <- "a comment"
+  expect_equal(getComment(pmin(a, testMagpie(values = 2))), "a comment")
+  expect_equal(getComment(pmin(a, testMagpie(years = 2001, values = 2))), "a comment")
+})
+
 test_that("pmin special cases", {
   # pmin with a single number
   expect_pmin_result(testMagpie(years = 2001:2002, values = c(1, 3)),

@@ -30,6 +30,9 @@ withAlignedDims <- function(func, funcName = "anonymous func", ...) {
       names(dimnames(m)) <- originalDimensionNames
       return(m)
     })
+    if (.allIdentical(lapply(ms, dimnames))) {
+      return(do.call(func, ms))
+    }
   }
 
   if (!.allIdentical(lapply(ms, dim))) {
@@ -41,14 +44,13 @@ withAlignedDims <- function(func, funcName = "anonymous func", ...) {
   }
 
   a <- ms[[1]]
-  if (dim(a)[1] > 1) {
-    ms <- lapply(ms, function(x) x[getItems(a, 1), , ])
-  }
-  if (dim(a)[2] > 1) {
-    ms <- lapply(ms, function(x) x[, getItems(a, 2), ])
-  }
-  if (dim(a)[3] > 1) {
-    ms <- lapply(ms, function(x) x[, , getItems(a, 3)])
+  for (d in 1:3) {
+    if (dim(a)[d] == 1) {
+      next
+    }
+    items <- getItems(a, d)
+    # reordering by name is expensive, so only do it where the order actually differs
+    ms <- lapply(ms, function(x) if (identical(getItems(x, d), items)) x else x[items, dim = d])
   }
 
   return(do.call(func, ms))

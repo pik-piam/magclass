@@ -36,7 +36,7 @@ setGeneric("pmin", signature = "...")
 #' @rdname magpie-pmin-pmax
 #' @exportMethod pmin
 setMethod("pmin", "magpie", function(..., na.rm = FALSE) { # nolint: object_name_linter.
-  return(withAlignedDims(function(...) base::pmin(..., na.rm = na.rm),
+  return(withAlignedDims(function(...) parallelExtremum(base::pmin, na.rm, ...),
                          "pmin",
                          ...))
 })

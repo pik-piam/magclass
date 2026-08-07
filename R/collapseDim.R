@@ -42,9 +42,12 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
 
   if (is.null(x)) return(NULL)
 
-  x <- clean_magpie(x, what = c("sets", "items"))
+  # the set names are needed to resolve dim, cleaning them is cheap
+  x <- clean_magpie(x, what = "sets")
 
   if (is.null(dim)) {
+    # the dims to collapse are derived from the items, so all of them have to be cleaned
+    x <- clean_magpie(x, what = "items")
     sets <- getSets(x)
     if (anyDuplicated(sets)) getSets(x) <- make.unique(sets, sep = "")
     tmp <- vapply(unlist(getItems(x, split = TRUE), recursive = FALSE), length, integer(1))
@@ -62,6 +65,9 @@ collapseDim <- function(x, dim = NULL, keepdim = NULL) {
       warning("Some dimensions could not be found in the object and will be ignored!")
       dim <- dim[dim > 0]
     }
+    # cleaning the items scans every label of a dimension, so restrict it to the
+    # main dimensions whose labels are actually rebuilt below
+    x <- clean_magpie(x, what = "items", maindim = unique(floor(dim)))
   }
 
   for (d in sort(dim, decreasing = TRUE)) getItems(x, dim = d) <- NULL
