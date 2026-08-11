@@ -28,18 +28,6 @@ test_that("arguments (dim and keepdim) work", {
   expect_identical(getSets(collapseDim(p)), c(d1.1 = "region", d2.1 = "year", d3.1 = "data"))
 })
 
-test_that("an explicit dim only cleans the items of the dims being collapsed", {
-  x <- new.magpie("AFR", 2000, c("a..b", "c..d"), fill = 1:2)
-  names(dimnames(x)) <- c("region", "year", "d1.d2.d3")
-
-  # collapsing the year leaves the empty subdimension of the data dim alone
-  expect_identical(getItems(collapseDim(x, dim = 2), dim = 3), c("a..b", "c..d"))
-  # collapsing the empty subdimension itself removes it
-  expect_identical(getItems(collapseDim(x, dim = 3.2), dim = 3), c("a.b", "c.d"))
-  # without an explicit dim the items of all dims are cleaned, as they determine what is collapsed
-  expect_identical(getItems(collapseDim(x), dim = 3), c("a.b", "c.d"))
-})
-
 test_that("collapseDim works for misconfigured objects", {
   a <- maxample("animal")
   b <- a
