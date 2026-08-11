@@ -37,42 +37,46 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
     return(magpply(X = x, FUN = sum, DIM = dim, na.rm = na.rm))
   }
 
-  for (d in dim) {
-    getItems(x, dim = d, raw = TRUE) <- NULL
+  for (axis in dim) {
+    getItems(x, dim = axis, raw = TRUE) <- NULL
   }
-  noNames <- which(vapply(dimnames(x), is.null, logical(1)))
-  for (i in noNames) {
-    getItems(x, dim = i) <- rep("dummy", dim(x)[i])
-  }
+  dimNames <- dimnames(x)
+  x <- as(x, "array")
 
   # sum each requested (sub-)dimension one axis at a time via a compiled
   # reshape + rowsum, instead of melting the whole array into a data.frame
   # and grouping with tapply (which is O(N) with a very large constant and
   # dominates both time and memory on large objects). Items sharing a label
-  # after the removal above form the groups to be summed.
-  for (d in 1:3) {
-    xdim <- dim(x)
-    dn <- dimnames(x)
-    groups <- unique(dn[[d]])
-    if (length(groups) == xdim[d]) {
-      next
+  # after the removal above form the groups to be summed; an axis left
+  # without labels by that removal collapses to a single group.
+  for (axis in 1:3) {
+    axisLengths <- dim(x)
+    if (is.null(dimNames[[axis]])) {
+      if (axisLengths[axis] == 1) {
+        next
+      }
+      groupLabels <- NULL
+      nGroups <- 1L
+      groupIndex <- rep(1L, axisLengths[axis])
+    } else {
+      groupLabels <- unique(dimNames[[axis]])
+      nGroups <- length(groupLabels)
+      if (nGroups == axisLengths[axis]) {
+        next
+      }
+      groupIndex <- match(dimNames[[axis]], groupLabels)
     }
-    gidx <- match(dn[[d]], groups)
-    # rowsum groups along rows, so d has to lead; for d = 1 it already does
-    # and both permutations degenerate to a (free) reshape
-    perm <- c(d, setdiff(1:3, d))
-    xp <- if (d == 1) as(x, "array") else aperm(x, perm)
-    dim(xp) <- c(xdim[d], prod(xdim[-d]))
-    reduced <- rowsum(xp, group = gidx, reorder = FALSE, na.rm = na.rm)
-    dim(reduced) <- c(length(groups), xdim[-d])
-    x <- if (d == 1) reduced else aperm(reduced, order(perm))
-    dn[[d]] <- groups
-    dimnames(x) <- dn
+    # rowsum groups along rows, so axis has to lead; for axis = 1 it already
+    # does and both permutations degenerate to a (free) reshape
+    permOrder <- c(axis, setdiff(1:3, axis))
+    reshaped <- if (axis == 1) x else aperm(x, permOrder)
+    dim(reshaped) <- c(axisLengths[axis], prod(axisLengths[-axis]))
+    summed <- rowsum(reshaped, group = groupIndex, reorder = FALSE, na.rm = na.rm)
+    dim(summed) <- c(nGroups, axisLengths[-axis])
+    x <- if (axis == 1) summed else aperm(summed, order(permOrder))
+    dimNames[axis] <- list(groupLabels)
   }
+  dimnames(x) <- dimNames
 
-  x <- new("magpie", x)
-  for (i in noNames) {
-    getItems(x, dim = i) <- NULL
-  }
-  return(x)
+  return(new("magpie", x))
 }
