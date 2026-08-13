@@ -24,9 +24,6 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   if (any(dim == 0)) {
     stop("Invalid dimension(s) specified")
   }
-  if (length(x) == 0) {
-    return(NULL)
-  }
   # sum() coerces logical to integer, rowsum() below rejects it outright
   if (is.logical(x)) {
     storage.mode(x@.Data) <- "integer"
@@ -70,6 +67,11 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
     # does and both permutations degenerate to a (free) reshape
     permOrder <- c(axis, setdiff(1:3, axis))
     reshaped <- if (axis == 1) x else aperm(x, permOrder)
+
+    # The dimension over which whe sum are the rows and the columns
+    # are all combinations of items of the other dimensions. rowsum sums
+    # for each column, which are then expanded again into the two separate
+    # other dimensions.
     dim(reshaped) <- c(axisLengths[axis], prod(axisLengths[-axis]))
     summed <- rowsum(reshaped, group = groupIndex, reorder = FALSE, na.rm = na.rm)
     dim(summed) <- c(nGroups, axisLengths[-axis])
