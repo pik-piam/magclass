@@ -4,7 +4,7 @@
 #' @exportMethod as.magpie
 setGeneric("as.magpie", function(x, ...) standardGeneric("as.magpie")) # nolint: object_name_linter
 
-setMethod("as.magpie", signature(x = "magpie"), function(x) return(x))
+setMethod("as.magpie", signature(x = "magpie"), function(x, ...) return(x))
 
 
 tmpfilter <- function(x, sep = ".", replacement = "_") {
@@ -48,7 +48,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
           signature(x = "LPJmLData"),
-          function(x) {
+          function(x, ...) {
             if (!requireNamespace("lpjmlkit", quietly = TRUE)) {
               stop("The package \"lpjmlkit\" is required for LPJmLData conversions!")
             }
@@ -213,7 +213,7 @@ setMethod("as.magpie",
 
 setMethod("as.magpie",
   signature(x = "NULL"),
-  function(x) {
+  function(x, ...) {
     return(NULL)
   }
 )

@@ -42,6 +42,9 @@ test_that("special cases work", {
                                                       from = c("bla", "blub"))))
   expect_identical(as.magpie(bla), blaExpect)
   expect_identical(as.magpie(bla2), blaExpect)
+
+  expect_silent(as.magpie(NULL))
+  expect_silent(as.magpie(NULL, tidy = TRUE))
 })
 
 test_that("underscores are preserved", {
