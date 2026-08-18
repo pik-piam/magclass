@@ -24,6 +24,10 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   if (any(dim == 0)) {
     stop("Invalid dimension(s) specified")
   }
+  # mirrors magpply(): summing an empty object yields NULL
+  if (length(x) == 0) {
+    return(NULL)
+  }
   # sum() coerces logical to integer, rowsum() below rejects it outright
   if (is.logical(x)) {
     storage.mode(x@.Data) <- "integer"
