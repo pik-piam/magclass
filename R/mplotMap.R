@@ -1,7 +1,9 @@
 #' mPlotMap
 #'
 #' Render a simple world map of a coordinate-based (cell) magpie object. Each
-#' grid cell is drawn as a colored tile on top of country outlines. If the object
+#' grid cell is drawn as a colored tile on top of country outlines. Country
+#' outlines require the suggested package \code{maps}; if it is not installed,
+#' only the cell tiles are drawn and a message is emitted. If the object
 #' contains more than one year or data name, the remaining dimensions are spread
 #' across facets, so it is usually best to subset the object to the slice(s) of
 #' interest before plotting.
@@ -31,14 +33,24 @@ mPlotMap <- function(px) {
   df <- as.data.frame(px, rev = 3)
   dimtype <- attr(df, "dimtype")
 
-  # Facet over all temporal and data dimensions that vary; ignore extra spatial
-  # subdimensions (e.g. country, cell) and keep only the x/y coordinates.
+  # Facet over all temporal and data dimensions that vary; extra spatial
+  # subdimensions (e.g. country, cell) are not mapped and only x/y coordinates
+  # are used. Warn if they vary within a cell, because that produces
+  # overlapping tiles.
   facetCandidates <- names(df)[startsWith(dimtype, ".temp") | startsWith(dimtype, ".data")]
   facetCols <- facetCandidates[vapply(df[facetCandidates],
                                       function(col) length(unique(col)) > 1,
                                       logical(1))]
   if (length(facetCols) > 0) {
     df$.label <- do.call(paste, c(df[facetCols], sep = "."))
+  }
+
+  if (nrow(df) > nrow(unique(df[, c("x", "y", facetCols), drop = FALSE]))) {
+    extraSpat <- names(df)[startsWith(dimtype, ".spat") & !names(df) %in% c("x", "y")]
+    warning("Extra spatial subdimensions (", paste(extraSpat, collapse = ", "),
+            ") have more than one value per (x, y) cell. ",
+            "Tiles will overlap and only the last value will be visible. ",
+            "Subset to a single value per cell before plotting.")
   }
 
   plot <- ggplot2::ggplot(df)
@@ -52,6 +64,9 @@ mPlotMap <- function(px) {
                             ggplot2::aes(x = .data$long, y = .data$lat, group = .data$group),
                             colour = "grey70", fill = "grey95", linewidth = 0.2,
                             inherit.aes = FALSE)
+  } else {
+    message("Package \"maps\" is not installed; ",
+            "plotting cells without country outlines.")
   }
 
   # Zoom the map to the extent of the data, so a small region does not get lost
