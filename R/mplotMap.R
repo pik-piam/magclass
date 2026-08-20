@@ -33,7 +33,7 @@ mPlotMap <- function(px) {
 
   # Facet over all temporal and data dimensions that vary; ignore extra spatial
   # subdimensions (e.g. country, cell) and keep only the x/y coordinates.
-  facetCandidates <- names(df)[grepl("^\\.(temp|data)", dimtype)]
+  facetCandidates <- names(df)[startsWith(dimtype, ".temp") | startsWith(dimtype, ".data")]
   facetCols <- facetCandidates[vapply(df[facetCandidates],
                                       function(col) length(unique(col)) > 1,
                                       logical(1))]
@@ -58,10 +58,11 @@ mPlotMap <- function(px) {
   # on a full world map. Pad by at least half a cell (to avoid clipping edge
   # tiles) plus a small context margin around the data.
   res <- guessResolution(px)
+  pad <- function(r) max(res / 2, 0.05 * diff(r))
   xr <- range(df$x)
   yr <- range(df$y)
-  xpad <- max(res / 2, 0.05 * diff(xr))
-  ypad <- max(res / 2, 0.05 * diff(yr))
+  xpad <- pad(xr)
+  ypad <- pad(yr)
 
   plot <- plot +
     ggplot2::geom_tile(ggplot2::aes(x = .data$x, y = .data$y, fill = .data$.value)) +
@@ -74,6 +75,5 @@ mPlotMap <- function(px) {
     plot <- plot + ggplot2::facet_wrap(ggplot2::vars(.data$.label))
   }
 
-  print(plot)
-  return(invisible(plot))
+  invisible(print(plot))
 }
