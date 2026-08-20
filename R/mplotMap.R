@@ -10,6 +10,9 @@
 #'
 #' @param px The magpie object to be visualized. It must contain spatial
 #' coordinates (see \code{\link{hasCoords}}).
+#' @param draw Logical. If \code{TRUE} (the default), the plot is rendered on
+#' the current graphics device. If \code{FALSE}, the ggplot object is returned
+#' without drawing, so it can be modified or printed manually later.
 #' @return Invisibly returns the ggplot object.
 #' @author Patrick Rein
 #' @family Display
@@ -21,7 +24,7 @@
 #' }
 #' @importFrom rlang .data
 #' @export
-mPlotMap <- function(px) {
+mPlotMap <- function(px, draw = TRUE) {
 
   rlang::check_installed("ggplot2")
 
@@ -90,5 +93,9 @@ mPlotMap <- function(px) {
     plot <- plot + ggplot2::facet_wrap(ggplot2::vars(.data$.label))
   }
 
-  invisible(print(plot))
+  if (draw) {
+    print(plot)
+  }
+
+  invisible(plot)
 }
