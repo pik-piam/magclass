@@ -27,9 +27,9 @@ str(maxample("pop"))
 
 Other Display:
 \code{\link[=head.magpie]{head.magpie()}},
-\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=maxample]{maxample()}},
 \code{\link[=mplot]{mplot()}},
+\code{\link[=mplotMap]{mplotMap()}},
 \code{\link[=print.magpie]{print.magpie()}},
 \code{\link{show-methods}}
 }

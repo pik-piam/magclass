@@ -1,4 +1,4 @@
-#' mPlotMap
+#' mplotMap
 #'
 #' Render a simple world map of a coordinate-based (cell) magpie object. Each
 #' grid cell is drawn as a colored tile on top of country outlines. Country
@@ -20,16 +20,16 @@
 #' @examples
 #' \dontrun{
 #' a <- maxample("animal")
-#' mPlotMap(a[, 1, 1])
+#' mplotMap(a[, 1, 1])
 #' }
 #' @importFrom rlang .data
 #' @export
-mPlotMap <- function(px, draw = TRUE) {
+mplotMap <- function(px, draw = TRUE) {
 
   rlang::check_installed("ggplot2")
 
   if (!hasCoords(px)) {
-    stop("mPlotMap requires a magpie object with spatial coordinates ",
+    stop("mplotMap requires a magpie object with spatial coordinates ",
          "(see hasCoords). Region-based objects cannot be mapped.")
   }
 

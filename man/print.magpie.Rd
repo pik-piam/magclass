@@ -37,9 +37,9 @@ print(pop[, 1, ])
 
 Other Display:
 \code{\link[=head.magpie]{head.magpie()}},
-\code{\link[=mPlotMap]{mPlotMap()}},
 \code{\link[=maxample]{maxample()}},
 \code{\link[=mplot]{mplot()}},
+\code{\link[=mplotMap]{mplotMap()}},
 \code{\link{show-methods}},
 \code{\link[=str.magpie]{str.magpie()}}
 }
