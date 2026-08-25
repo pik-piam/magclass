@@ -71,6 +71,19 @@ test_that("dimSums handles na.rm with actual NAs correctly", {
                    magpply(pNA, sum, DIM = 3, na.rm = TRUE))
   expect_identical(dimSums(pNA, dim = 3, na.rm = FALSE),
                    magpply(pNA, sum, DIM = 3, na.rm = FALSE))
+
+  # magpie object with a single na value
+  singleNA <- new.magpie(NA)
+  expect_identical(dimSums(singleNA, na.rm = TRUE),
+                   magpply(singleNA, sum, na.rm = TRUE))
+  expect_identical(dimSums(singleNA, na.rm = FALSE),
+                   magpply(singleNA, sum, na.rm = FALSE))
+
+  # na.rm has to be applied even when no dimension actually gets aggregated
+  pOne <- p[, , 1]
+  pOne[1, 1, 1] <- NA
+  expect_identical(dimSums(pOne, dim = 3, na.rm = TRUE), magpply(pOne, sum, DIM = 3, na.rm = TRUE))
+  expect_identical(dimSums(pOne, dim = 3, na.rm = FALSE), magpply(pOne, sum, DIM = 3, na.rm = FALSE))
 })
 
 test_that("dimSums handles logical input like sum() does", {

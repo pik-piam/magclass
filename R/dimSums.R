@@ -16,7 +16,7 @@
 #' dimSums(a, dim = c("x", "y", "cell", "month"))
 #' @family Aggregation
 #' @export
-dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
+dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter, cyclocomp_linter.
   if (!is.magpie(x)) {
     stop("Input is not a MAgPIE object!")
   }
@@ -44,6 +44,10 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   dimNames <- dimnames(x)
   x <- as(x, "array")
 
+  # na.rm is only honored by rowsum() below; if every dim is skipped
+  # NAs remain, so force at least one rowsum
+  forceAxis <- if (na.rm && anyNA(x)) unique(floor(dim))[1] else 0L
+
   # sum each requested (sub-)dimension one axis at a time via a compiled
   # reshape + rowsum, instead of melting the whole array into a data.frame
   # and grouping with tapply (which is O(N) with a very large constant and
@@ -52,8 +56,9 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
   # without labels by that removal collapses to a single group.
   for (axis in 1:3) {
     axisLengths <- dim(x)
+    forcePass <- axis == forceAxis
     if (is.null(dimNames[[axis]])) {
-      if (axisLengths[axis] == 1) {
+      if (axisLengths[axis] == 1 && !forcePass) {
         next
       }
       groupLabels <- NULL
@@ -62,7 +67,7 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
     } else {
       groupLabels <- unique(dimNames[[axis]])
       nGroups <- length(groupLabels)
-      if (nGroups == axisLengths[axis]) {
+      if (nGroups == axisLengths[axis] && !forcePass) {
         next
       }
       groupIndex <- match(dimNames[[axis]], groupLabels)
@@ -82,7 +87,16 @@ dimSums <- function(x, dim = 3, na.rm = FALSE) { # nolint: object_name_linter.
     x <- if (axis == 1) summed else aperm(summed, order(permOrder))
     dimNames[axis] <- list(groupLabels)
   }
-  dimnames(x) <- dimNames
 
-  return(new("magpie", x))
+  emptyDims <- which(vapply(dimNames, is.null, logical(1)))
+  dimnames(x) <- dimNames
+  x <- new("magpie", x)
+  # dimensions without items are named d1/d2/d3 to remain
+  # compatible with the previous magpply-based implementation
+  # We should reconsider this in the future (and also for maggply) --pre
+  for (axis in emptyDims) {
+    getItems(x, dim = axis, raw = TRUE) <- NULL
+  }
+
+  return(x)
 }
