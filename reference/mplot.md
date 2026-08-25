@@ -25,8 +25,9 @@ mplot(px, global = TRUE, total = FALSE)
 ## See also
 
 Other Display: [`head.magpie()`](head.magpie.md),
-[`maxample()`](maxample.md), [`print.magpie()`](print.magpie.md),
-[`show-methods`](show-methods.md), [`str.magpie()`](str.magpie.md)
+[`maxample()`](maxample.md), [`mplotMap()`](mplotMap.md),
+[`print.magpie()`](print.magpie.md), [`show-methods`](show-methods.md),
+[`str.magpie()`](str.magpie.md)
 
 ## Author
 

@@ -20,7 +20,8 @@ show(object)
 
 Other Display: [`head.magpie()`](head.magpie.md),
 [`maxample()`](maxample.md), [`mplot()`](mplot.md),
-[`print.magpie()`](print.magpie.md), [`str.magpie()`](str.magpie.md)
+[`mplotMap()`](mplotMap.md), [`print.magpie()`](print.magpie.md),
+[`str.magpie()`](str.magpie.md)
 
 ## Author
 

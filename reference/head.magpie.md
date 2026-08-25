@@ -37,8 +37,8 @@ n2 x n3 entries.
 [`tail`](https://rdrr.io/r/utils/head.html)
 
 Other Display: [`maxample()`](maxample.md), [`mplot()`](mplot.md),
-[`print.magpie()`](print.magpie.md), [`show-methods`](show-methods.md),
-[`str.magpie()`](str.magpie.md)
+[`mplotMap()`](mplotMap.md), [`print.magpie()`](print.magpie.md),
+[`show-methods`](show-methods.md), [`str.magpie()`](str.magpie.md)
 
 ## Author
 

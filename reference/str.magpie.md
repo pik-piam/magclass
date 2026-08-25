@@ -33,7 +33,8 @@ dimnames.
 
 Other Display: [`head.magpie()`](head.magpie.md),
 [`maxample()`](maxample.md), [`mplot()`](mplot.md),
-[`print.magpie()`](print.magpie.md), [`show-methods`](show-methods.md)
+[`mplotMap()`](mplotMap.md), [`print.magpie()`](print.magpie.md),
+[`show-methods`](show-methods.md)
 
 ## Author
 

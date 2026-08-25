@@ -145,6 +145,8 @@ Functions for displaying, printing, and visualizing MAgPIE objects.
 
 - [`mplot()`](mplot.md) : mplot
 
+- [`mplotMap()`](mplotMap.md) : mplotMap
+
 - [`print(`*`<magpie>`*`)`](print.magpie.md) : print
 
 - [`show(`*`<magpie>`*`)`](show-methods.md) :

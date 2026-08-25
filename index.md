@@ -1,6 +1,6 @@
 # Data Class and Tools for Handling Spatial-Temporal Data
 
-R package **magclass**, version **7.5.6**
+R package **magclass**, version **7.6.0**
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/magclass)](https://cran.r-project.org/package=magclass)
@@ -74,7 +74,7 @@ D, Sauer P, Baumstark L, Bertram C, Giannousakis A, Klein D, Neher I,
 Pehl M, Schultes A, Stevanovic M, Wang X, Beier F, Pflüger M, Richters
 O, Rein P (2026). “magclass: Data Class and Tools for Handling
 Spatial-Temporal Data.” <doi:10.5281/zenodo.1158580>
-<https://doi.org/10.5281/zenodo.1158580>, Version: 7.5.6,
+<https://doi.org/10.5281/zenodo.1158580>, Version: 7.6.0,
 <https://github.com/pik-piam/magclass>.
 
 A BibTeX entry for LaTeX users is
@@ -87,6 +87,6 @@ A BibTeX entry for LaTeX users is
  date = {2026-08-25},
  year = {2026},
  url = {https://github.com/pik-piam/magclass},
- note = {Version: 7.5.6},
+ note = {Version: 7.6.0},
 }
 ```

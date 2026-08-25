@@ -41,7 +41,8 @@ Invisibly, the MAgPIE object x.
 
 Other Display: [`head.magpie()`](head.magpie.md),
 [`maxample()`](maxample.md), [`mplot()`](mplot.md),
-[`show-methods`](show-methods.md), [`str.magpie()`](str.magpie.md)
+[`mplotMap()`](mplotMap.md), [`show-methods`](show-methods.md),
+[`str.magpie()`](str.magpie.md)
 
 ## Author
 
