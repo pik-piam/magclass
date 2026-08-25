@@ -43,9 +43,9 @@ Jan Philipp Dietrich
 if (requireNamespace("terra", quietly = TRUE)) {
    r <- terra::rast(ncols = 360, nrows = 180, nlyrs = 4)
    r[85:89, 176:179] <- (1:20 %*% t(1:4))
-   r[15:19, 76:79] <-   (10 + 1:20 %*% t(1:4))
+   r[15:19, 76:79] <-   (100 + 1:20 %*% t(1:4))
    names(r) <- c("y2000..bla", "y2001..bla", "y2000..blub", "y2001..blub")
-   v <- terra::as.polygons(r)
+   v <- terra::as.polygons(r, dissolve = FALSE)
    m <- as.magpie(v)
    attr(m, "geometry")
    attr(m, "crs")
