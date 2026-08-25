@@ -34,7 +34,7 @@ test_that("terra conversion does not alter data", {
         }
         m2 <- as.magpie(r2)
         expect_identical(m, m2)
-        v <- terra::as.polygons(r)
+        v <- terra::as.polygons(r, dissolve = FALSE)
         m3 <- as.magpie(v)
         v2 <- as.SpatVector(m3)
         m4 <- as.magpie(v2)
