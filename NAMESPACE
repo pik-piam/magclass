@@ -120,22 +120,28 @@ exportMethods(show)
 import(data.table)
 import(methods)
 importFrom(abind,abind)
-importFrom(data.table,as.data.table)
-importFrom(data.table,melt)
-importFrom(data.table,tstrsplit)
-importFrom(methods,Ops)
-importFrom(methods,as)
-importFrom(methods,callGeneric)
-importFrom(methods,is)
-importFrom(methods,new)
-importFrom(methods,setClass)
-importFrom(methods,setGeneric)
-importFrom(methods,setMethod)
-importFrom(methods,signature)
+importFrom(data.table,
+  as.data.table,
+  melt,
+  tstrsplit
+)
+importFrom(methods,
+  Ops,
+  as,
+  callGeneric,
+  is,
+  new,
+  setClass,
+  setGeneric,
+  setMethod,
+  signature
+)
 importFrom(rlang,.data)
 importFrom(stats,as.formula)
-importFrom(utils,head)
-importFrom(utils,read.table)
-importFrom(utils,tail)
-importFrom(utils,type.convert)
-importFrom(utils,write.table)
+importFrom(utils,
+  head,
+  read.table,
+  tail,
+  type.convert,
+  write.table
+)

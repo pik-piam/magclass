@@ -117,7 +117,9 @@ read.magpie <- function(file_name, file_folder = "", file_type = NULL, # nolint:
         stop("The package \"terra\" is required!")
       }
 
-      x <- terra::rast(fileName)
+      # The time not combined warning only states that there was no timestep attribute
+      # derived. The data is still read correctly.
+      suppressSpecificWarnings(x <- terra::rast(fileName), "time not combined")
       if (all(grepl("Time=[0-9]+", names(x)))) {
         names(x) <- sub("(.+)_Time=([0-9]+)", "y\\2..\\1", names(x))
       } else {
