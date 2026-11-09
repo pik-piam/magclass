@@ -89,6 +89,40 @@ test_that("invert argument works", {
   expect_identical(p[-1:-3, , ], p[1:3, , , invert = TRUE])
 })
 
+test_that("invert argument tolerates missing items and issues a note", {
+  # fast path (full element names)
+  expect_message(x <- p["XXX", , invert = TRUE], "not found in dim 1: \"XXX\"")
+  expect_identical(x, p)
+  expect_message(x <- p[c("AFR", "XXX"), , invert = TRUE], "dim 1: \"XXX\"\n?$")
+  expect_identical(x, p[-1, , ])
+  expect_silent(p["AFR", , invert = TRUE])
+  expect_silent(x <- p[c("AFR", "AFR"), , invert = TRUE])
+  expect_identical(x, p[-1, , ])
+  expect_message(x <- p[, 2222, , invert = TRUE], "\"y2222\"")
+  expect_identical(x, p)
+
+  # numeric indices behave like base R (silently ignored)
+  expect_silent(x <- p[99, , invert = TRUE])
+  expect_identical(x, p)
+
+  # grep path (subdimensions, lists, pmatch)
+  a <- maxample("animal")
+  expect_message(x <- a[, , c("rabbit", "XXX"), invert = TRUE], "not found in dim 3: \"XXX\"")
+  expect_identical(x, a[, , "rabbit", invert = TRUE])
+  expect_message(x <- a[, , list(species = "XXX"), invert = TRUE], "\"XXX\"")
+  expect_identical(x, a)
+  expect_message(x <- a[, , "rabbit.XXX", invert = TRUE], "\"rabbit.XXX\"")
+  expect_identical(x, a)
+  expect_message(x <- a["XXX", , , invert = TRUE], "not found in dim 1")
+  expect_identical(x, a)
+  expect_message(x <- p["XX", , pmatch = TRUE, invert = TRUE], "\"XX\"")
+  expect_identical(x, p)
+  expect_silent(a[, , "rabbit", invert = TRUE])
+
+  # without invert missing items still fail
+  expect_error(p["XXX", , ], "out of bounds")
+})
+
 test_that("drop works", {
   a <- maxample("animal")
   expect_identical(getItems(a[, , , drop = TRUE], dim = 3)[1], "rabbit.black")
