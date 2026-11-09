@@ -209,6 +209,13 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
   return(x)
 }
 
+.noteNotRemoved <- function(items, dim) {
+  if (length(items) > 0) {
+    message("NOTE ([): The following elements could not be removed as they were not found in dim ", dim,
+            ": \"", paste(items, collapse = "\", \""), "\"")
+  }
+}
+
 .dimextract <- function(x, i, dim, pmatch = FALSE, invert = FALSE) { # nolint: cyclocomp_linter.
 
   if (is.magpie(i) && is.logical(i)) {
@@ -249,7 +256,12 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     # i vector seems to specify the full dimname
     if (!anyDuplicated(dimnames)) {
       if (invert) {
-        return(which(!(dimnames %in% i)))
+        out <- which(!(dimnames %in% i))
+        # dimnames are unique here, so a count mismatch indicates missing (or duplicated) items in i
+        if (length(dimnames) - length(out) != length(i)) {
+          .noteNotRemoved(setdiff(i, dimnames), dim)
+        }
+        return(out)
       } else if (identical(i, dimnames)) {
         return(seq_along(i))
       } else {
@@ -282,6 +294,7 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     }
   }
   k <- 1
+  notFound <- NULL
   for (j in i) {
     if (is.factor(j)) {
       j <- as.character(j)
@@ -294,15 +307,20 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     }
     tmp <- lapply(paste0(startpattern, pmatch1, escapeRegex(j), pmatch2, "(\\.|$)"),
                   grep, dimnames[elems], perl = TRUE)
-    if (any(vapply(tmp, length, length(tmp)) == 0)) {
-      stop("subscript out of bounds (\"", paste(j[vapply(tmp, length, length(tmp)) == 0], collapse = "\", \""), "\")")
+    noMatch <- vapply(tmp, length, integer(1)) == 0
+    if (!invert && any(noMatch)) {
+      stop("subscript out of bounds (\"", paste(j[noMatch], collapse = "\", \""), "\")")
     }
+    notFound <- c(notFound, j[noMatch])
     tmp <- unlist(tmp)
     if (invert) {
       tmp <- setdiff(seq_along(elems), tmp)
     }
     elems <- elems[tmp]
     k <- k + 1
+  }
+  if (invert) {
+    .noteNotRemoved(notFound, dim)
   }
   return(elems)
 }
