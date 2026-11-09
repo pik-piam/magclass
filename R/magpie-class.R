@@ -319,7 +319,9 @@ setClass("magpie", contains = "array", prototype = array(0, c(0, 0, 0)))
     elems <- elems[tmp]
     k <- k + 1
   }
-  .noteNotRemoved(notFound, dim)
+  if (invert) {
+    .noteNotRemoved(notFound, dim)
+  }
   return(elems)
 }
 
